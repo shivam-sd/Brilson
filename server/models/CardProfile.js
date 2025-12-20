@@ -32,7 +32,7 @@ const CardProfileSchema = new mongoose.Schema({
   },
 
   tempSessionId: String,
-
+ 
   profile: {
     name: String,
     phone: String,

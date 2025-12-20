@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { FiCreditCard, FiArrowRight } from "react-icons/fi";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const ActivateCard = () => {
   const navigate = useNavigate();
@@ -48,7 +48,6 @@ const ActivateCard = () => {
 
       const data = res.data;
 
-
       toast.success("Card activated successfully");
 
       // small delay
@@ -62,8 +61,6 @@ const ActivateCard = () => {
         err?.response?.data?.error ||
           "Unable to activate card. Please check details."
       );
-
-
     } finally {
       setLoading(false);
     }
@@ -172,6 +169,11 @@ const ActivateCard = () => {
           {loading ? "Activating..." : "Activate Card"}
           {!loading && <FiArrowRight />}
         </motion.button>
+
+        {/* login */}
+        <p className="text-sm text-cyan-600 w-full text-bold text-center mt-6">
+          <Link to={"/login"}>For Card Activation First Login</Link>
+        </p>
 
         {/* Footer */}
         <p className="text-xs text-gray-500 text-center mt-6">

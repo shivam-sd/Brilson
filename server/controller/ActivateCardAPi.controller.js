@@ -17,23 +17,22 @@ const ActivateCardAPi = async (req, res) => {
     if (!card) {
       return res.status(400).json({ error: "Invalid card details" });
     }
-
-    const user = await CardProfileModel.findOne({ cardId, activationCode }).populate("owner");
-    console.log("User Details:", user);
-    card.slug = generateSlug(user.owner.name);
- await card.save();
-
-
-
-     if (card.isActivated) {
-      return res.status(200).json({ message: "Card already activated", slug:card.slug });
-    }
     
-    card.isActivated = true;
+    if (card.isActivated) {
+     return res.status(200).json({ message: "Card already activated", slug:card.slug });
+   }
+   
+card.isActivated = true;
     card.owner = userId;
     card.tempSessionId = generateSlug(cardId + Date.now());
     card.activatedAt = new Date();
     await card.save();
+
+
+   const user = await CardProfileModel.findOne({ cardId, activationCode }).populate("owner");
+   console.log("User Details:", user.owner.name);
+   card.slug = generateSlug(user.owner.name);
+   await card.save();
 
 
 
