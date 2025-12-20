@@ -1,0 +1,64 @@
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      // required: true,
+      trim: true,
+    },
+
+    email: {
+      type: String,
+      // required: true,
+      lowercase: true,
+      trim: true,
+    },
+
+    password: {
+      type: String,
+      // required: true,
+    },
+
+    // referral
+
+    referralCode: {
+      type: String,
+      unique: true,
+    },
+
+    referredBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    // referral chain
+
+    referralChain: {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      level: Number, // 1 se 7 tak
+    },
+
+    // wallet
+    walletBalance: {
+      type: Number,
+      default: 0,
+    },
+
+    myCards: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CardProfile",
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model("User", userSchema);
+
+// const referralLink = `${window.location.origin}/product/${productId}?ref=${user.referralCode}`;
