@@ -197,10 +197,10 @@ const UserRegister = async (req, res) => {
     const isProduction = process.env.NODE_ENV === "production";
     
     res.cookie("token", token, {
-      //      httpOnly: true,
-      // secure: isProduction,
-      // sameSite: isProduction ? "none" : "lax",
-      // maxAge: 30 * 24 * 60 * 60 * 1000,
+           httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(201).json({
@@ -241,10 +241,10 @@ const UserLogin = async (req, res) => {
     const isProduction = process.env.NODE_ENV === "production";
     
     res.cookie("token", token, {
-      //    httpOnly: true,
-      // secure: isProduction,
-      // sameSite: isProduction ? "none" : "lax",
-      // maxAge: 30 * 24 * 60 * 60 * 1000,
+         httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json({
@@ -258,7 +258,29 @@ const UserLogin = async (req, res) => {
   }
 };
 
+
+const findLoggedInUser = (req, res) => {
+  try {
+    const userId = req.user; 
+
+    if (!userId) {
+      return res.status(401).json({ error: "Please login first" });
+    }
+
+    res.status(200).json({
+      success: true,
+      userId,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: "Server error while finding logged-in user",
+    });
+  }
+};
+
 module.exports = {
   UserRegister,
   UserLogin,
+  findLoggedInUser
 };

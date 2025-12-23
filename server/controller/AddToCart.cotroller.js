@@ -1,41 +1,52 @@
 const CartModel = require("../models/Cart.model");
 const UserModel = require("../models/User.model");
+const ProductModel = require("../models/Product.model");
 
 const addToCart = async (req, res) => {
-  try {
+   try {
     const userId = req.user;
-    console.log(userId);
-    const { productId } = req.body;
+    const { productId, variantId, quantity } = req.body;
 
-    const existingItem = await CartModel.findOne({ userId, productId });
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
-    if (existingItem) {
-      existingItem.quantity += 1;
-      await existingItem.save();
+    const variant = product.variants.id(variantId);
+    if (!variant) {
+      return res.status(404).json({ message: "Variant not found" });
+    }
 
-      return res.json({
-        message: "Cart updated",
-        cart: existingItem,
+    let cartItem = await CartModel.findOne({
+      userId,
+      productId,
+      variantId,
+    });
+
+    if (cartItem) {
+      cartItem.quantity += quantity || 1;
+      await cartItem.save();
+    } else {
+      cartItem = await CartModel.create({
+        userId,
+        productId,
+        variantId,
+        variantName: variant.name,
+        price: variant.price,
+        quantity: quantity || 1,
       });
     }
 
-    const cartItem = await CartModel.create({
-      userId,
-      productId,
-      // price,
-      quantity: 1,
-    });
-
     res.status(201).json({
-      message: "Product added to cart",
-      cart: cartItem,
+      success: true,
+      message: "Added to cart",
+      cartItem,
     });
-  } catch (err) {
-    console.log("Add to cart error", err);
-    res.status(500).json({ error: "Internal server error",err });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Add to cart failed" });
   }
 };
-
 
 
 const getUserCart = async (req, res) => {
@@ -104,5 +115,5 @@ module.exports = {
     getUserCart,
     updateCartQty,
     removeFromCart,
-    clearCart
-}
+    clearCart,
+  }

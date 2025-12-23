@@ -38,6 +38,10 @@ const ActivateCard = () => {
         {
           cardId: form.cardId,
           activationCode: form.activationCode,
+        },{
+          headers: {
+             Authorization: `Bearer ${localStorage.getItem("token")}`,
+          }
         },
         {
           withCredentials: true,

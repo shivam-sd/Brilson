@@ -86,7 +86,11 @@ const handleSubmit = async (e) => {
 
       await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/card/${Id}/edit`,
-        form,
+        form,{
+          headers:{
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        },
         { withCredentials: true }
       );
 

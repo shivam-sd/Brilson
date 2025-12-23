@@ -6,7 +6,7 @@ const {
   addToCart,
   getUserCart,
   updateCartQty,
-  removeFromCart,
+  removeFromCart, 
   clearCart,
 } = require("../controller/AddToCart.cotroller");
 

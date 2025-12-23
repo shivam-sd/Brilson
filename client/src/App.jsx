@@ -29,6 +29,8 @@ import ProtectedRoute from './Admin/components.jsx/ProtectedRoute';
 import ActivateCard from './Pages/ActivateCard';
 import ProfilePage from './Pages/ProfilePage';
 import EditProfile from './Pages/EditProfile';
+import Checkout from './Component/Checkout';
+import PaymentSuccessPage from './Pages/PaymentSuccessPage';
 
 
 function App() {
@@ -48,6 +50,8 @@ function App() {
           <Route path='/products/:id' element={<ProductCardDetails />} />
           <Route path='/contact-sale' element={<ContactSales />} />
           <Route path='/your-items' element={<CartPage />} />
+          <Route path='/checkout' element={<Checkout />} />
+          <Route path='/paymentsucess' element={<PaymentSuccessPage />} />
           </Route>
 
 <Route path='/profile/:slug' element={<ProfilePage />} />
