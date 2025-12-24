@@ -1,7 +1,7 @@
 const QRCode = require("qrcode");
 
 const generateQR = async (cardId) => {
-  const url = `${process.env.BASE_URL}/c/card/${cardId}`;
+  const url = `${process.env.BASE_URL1}/c/card/${cardId}`;
 
   const QRDataURL = await QRCode.toDataURL(url, {
     errorCorrectionLevel: "H",
