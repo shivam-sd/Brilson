@@ -71,20 +71,32 @@ const updateCartQty = async (req, res) => {
     const { cartId } = req.params;
     const { quantity } = req.body;
 
+    if (quantity < 1) {
+      return res.status(400).json({ error: "Quantity must be at least 1" });
+    }
+
     const cartItem = await CartModel.findById(cartId);
 
     if (!cartItem) {
-      return res.status(404).json({ error: "Item not found" });
+      return res.status(404).json({ error: "Cart item not found" });
     }
 
-    cartItem.quantity += quantity;
+   
+    cartItem.quantity = quantity;
+
     await cartItem.save();
 
-    res.json({ message: "Quantity updated", cartItem });
+    res.status(200).json({
+      success: true,
+      message: "Quantity updated",
+      cartItem,
+    });
   } catch (err) {
+    console.error("Update cart error:", err);
     res.status(500).json({ error: "Update failed" });
   }
 };
+
 
 
 

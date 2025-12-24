@@ -31,6 +31,7 @@ import ProfilePage from './Pages/ProfilePage';
 import EditProfile from './Pages/EditProfile';
 import Checkout from './Component/Checkout';
 import PaymentSuccessPage from './Pages/PaymentSuccessPage';
+import Orders from './Pages/Orders';
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
           <Route path='/your-items' element={<CartPage />} />
           <Route path='/checkout' element={<Checkout />} />
           <Route path='/paymentsucess' element={<PaymentSuccessPage />} />
+          <Route path='/orders' element={<Orders />} />
           </Route>
 
 <Route path='/profile/:slug' element={<ProfilePage />} />

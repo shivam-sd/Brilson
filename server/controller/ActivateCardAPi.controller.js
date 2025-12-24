@@ -2,57 +2,130 @@ const CardProfileModel = require("../models/CardProfile");
 const generateSlug = require("../utils/generateSlug");
 const UserModel = require("../models/User.model");
 
+
 const ActivateCardAPi = async (req, res) => {
   try {
     const userId = req.user;
-    console.log(userId)
     const { cardId, activationCode } = req.body;
 
     if (!cardId || !activationCode) {
-      return res.status(400).json({ error: "Card ID and activation code required" });
+      return res.status(400).json({
+        error: "Card ID and activation code required",
+      });
     }
 
-    const card = await CardProfileModel.findOne({ cardId, activationCode });
+    /*  FIND CARD  */
+    const card = await CardProfileModel
+      .findOne({ cardId, activationCode })
+      .populate("owner");
 
     if (!card) {
-      return res.status(400).json({ error: "Invalid card details" });
+      return res.status(400).json({
+        error: "Invalid card details",
+      });
     }
-    
+
+    /*  ALREADY ACTIVATED  */
     if (card.isActivated) {
-     return res.status(200).json({ message: "Card already activated", slug:card.slug });
-   }
-   
-card.isActivated = true;
+      return res.status(200).json({
+        message: "Card already activated",
+        slug: card.slug,
+      });
+    }
+
+    /*  ACTIVATE CARD  */
+    card.isActivated = true;
     card.owner = userId;
-    card.tempSessionId = generateSlug(cardId + Date.now());
     card.activatedAt = new Date();
+    card.tempSessionId = generateSlug(cardId + Date.now());
+
+    /*  GENERATE SLUG  */
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    card.slug = generateSlug(user.name);
+
+    /*  SAVE CARD  */
     await card.save();
 
+    /*  ADD CARD TO USER  */
+    await UserModel.findByIdAndUpdate(
+      userId,
+      { $addToSet: { myCards: card._id } }
+    );
 
-   const user = await CardProfileModel.findOne({ cardId, activationCode }).populate("owner");
-   console.log("User Details:", user.owner.name);
-   card.slug = generateSlug(user.owner.name);
-   await card.save();
+    /*  FINAL RESPONSE  */
+    return res.status(200).json({
+      message: "Card activated successfully",
+      cardId: card.cardId,
+      slug: card.slug, 
+    });
+
+  } catch (err) {
+    console.error("Activate Card Error:", err);
+    return res.status(500).json({
+      error: "Server error",
+    });
+  }
+};
+
+
+
+
+// const ActivateCardAPi = async (req, res) => {
+//   try {
+//     const userId = req.user;
+//     console.log(userId)
+//     const { cardId, activationCode } = req.body;
+
+//     if (!cardId || !activationCode) {
+//       return res.status(400).json({ error: "Card ID and activation code required" });
+//     }
+
+//     const card = await CardProfileModel.findOne({ cardId, activationCode });
+
+//     if (!card) {
+//       return res.status(400).json({ error: "Invalid card details" });
+//     }
+    
+//     if (card.isActivated) {
+//      return res.status(200).json({ message: "Card already activated", slug:card.slug });
+//    }
+   
+// card.isActivated = true;
+//     card.owner = userId;
+//     card.tempSessionId = generateSlug(cardId + Date.now());
+//     card.activatedAt = new Date();
+//     await card.save();
+
+
+//    const user = await CardProfileModel.findOne({ cardId, activationCode }).populate("owner");
+//    console.log("User Details:", user.owner.name);
+//    card.slug = generateSlug(user.owner.name);
+//    await card.save();
 
 
 
  
- await UserModel.findByIdAndUpdate(
-   userId,
-   { $addToSet: { myCards: card._id } }
-  );
+//  await UserModel.findByIdAndUpdate(
+//    userId,
+//    { $addToSet: { myCards: card._id } }
+//   );
   
 
 
-    res.status(200).json({
-      message: "Card activated successfully",
-      cardId: card.cardId,
-    });
-  } catch (err) {
-    console.error("Activate Card Error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
+//     res.status(200).json({
+//       message: "Card activated successfully",
+//       cardId: card.cardId,
+//     });
+//   } catch (err) {
+//     console.error("Activate Card Error:", err);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
 
 
 

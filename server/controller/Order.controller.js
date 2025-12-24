@@ -10,23 +10,22 @@ const orderCreate = async (req, res) => {
     const { address } = req.body;
 
     if (!address) {
-      return res.status(400).json({ error: "Address is required" });
+      return res.status(400).json({ error: "Address required" });
     }
 
     const cartItems = await CartModel.find({ userId }).populate("productId");
-// console.log(cartItems)
-    if (cartItems.length === 0) {
-      return res.status(400).json({ error: "Cart is empty" });
+
+    if (!cartItems.length) {
+      return res.status(400).json({ error: "Please add product in cart" });
     }
 
-    const orderItems = cartItems.map((item) => ({
+    const orderItems = cartItems.map(item => ({
       productId: item.productId._id,
-      productTitle:item.productId?.title,
-      quantity: item.quantity,
-      price: Number(item.price) + 29,
+      productTitle: item.productId.title,
       variantId: item.variantId,
-      variantName: item.variantName ,
-
+      variantName: item.variantName,
+      quantity: item.quantity,
+      price: item.price,
     }));
 
     const totalAmount = orderItems.reduce(
@@ -34,27 +33,24 @@ const orderCreate = async (req, res) => {
       0
     );
 
-    if (isNaN(totalAmount)) {
-      return res.status(400).json({ error: "Invalid total amount" });
-    }
-
     const order = await OrderModel.create({
       userId,
       items: orderItems,
-      totalAmount,
       address,
+      totalAmount:totalAmount,
+      status:"pending"
     });
 
-    res.status(201).json({
-      success: true,
-      order,
-    });
+    await CartModel.deleteMany({ userId });
 
-  } catch (error) {
-    console.error("Order create error:", error);
-    res.status(500).json({ error: "Server Error" ,error });
+    res.status(201).json({ success: true, order });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Order create failed" });
   }
 };
+
 
 
 
@@ -115,10 +111,31 @@ const updateOrderStatus = async (req, res) => {
 };
 
 
+const allOrders = async (req,res) => {
+  try {
+    const orders = await OrderModel
+      .find().sort({ createdAt: -1 }); 
+
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      orders,
+    });
+
+  } catch (err) {
+    console.error("All Orders Error:", err);
+    res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
+  }
+};
+
 
 
 module.exports = {
   orderCreate,
   getOrderProduct,
-  updateOrderStatus
+  updateOrderStatus,
+  allOrders
 }

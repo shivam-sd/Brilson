@@ -8,7 +8,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
   const { id } = useParams();
-  console.log(id)
+  // console.log(id)
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [Id, setId] = useState(null);
@@ -36,7 +36,7 @@ const EditProfile = () => {
           `${import.meta.env.VITE_BASE_URL}/api/card/${id}`,
           { withCredentials: true }
         );
-console.log(res.data.card._id)
+// console.log(res.data.card._id)
 setId(res.data.card._id);
 const profile = res.data.card.profile;
 

@@ -38,26 +38,33 @@ const ActivateCard = () => {
         {
           cardId: form.cardId,
           activationCode: form.activationCode,
-        },{
-          headers: {
-             Authorization: `Bearer ${localStorage.getItem("token")}`,
-          }
         },
         {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
           withCredentials: true,
         }
       );
 
-      console.log(res);
+      console.log("ACTIVATE RESPONSE ", res);
 
-      const data = res.data;
+      const slug =
+        res?.data?.slug ||
+        res?.data?.card?.slug ||
+        res?.data?.data?.slug;
+
+      if (!slug) {
+        toast.error("Profile slug not found. Please try again.");
+        return;
+      }
 
       toast.success("Card activated successfully");
 
-      // small delay
+      // ensure state settle
       setTimeout(() => {
-        navigate(`/profile/${data.slug}`);
-      }, 1200);
+        navigate(`/profile/${slug}`);
+      }, 300);
     } catch (err) {
       console.error("Activate Card Error:", err);
 
@@ -75,31 +82,14 @@ const ActivateCard = () => {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="
-          w-full max-w-md
-          bg-[#111827]
-          border border-gray-800
-          rounded-3xl
-          p-8
-          shadow-2xl
-        "
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-md bg-[#111827] border border-gray-800 rounded-3xl p-8 shadow-2xl"
       >
         {/* Header */}
         <div className="text-center mb-8">
-          <motion.div
-            animate={{ rotate: [0, 10, -10, 0] }}
-            transition={{ duration: 1 }}
-            className="
-              w-14 h-14 mx-auto mb-4
-              rounded-2xl
-              bg-indigo-600/20
-              flex items-center justify-center
-              text-indigo-400
-            "
-          >
+          <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-indigo-600/20 flex items-center justify-center text-indigo-400">
             <FiCreditCard size={26} />
-          </motion.div>
+          </div>
 
           <h2 className="text-3xl font-semibold text-white">
             Activate Your Card
@@ -112,22 +102,16 @@ const ActivateCard = () => {
 
         {/* Card ID */}
         <div className="mb-5">
-          <label className="text-sm text-gray-400 mb-2 block">Card ID</label>
-          <motion.input
-            whileFocus={{ scale: 1.02 }}
+          <label className="text-sm text-gray-400 mb-2 block">
+            Card ID
+          </label>
+          <input
             type="text"
             name="cardId"
-            placeholder="CARD_XXXXXX"
+            placeholder="Card Id"
             value={form.cardId}
             onChange={handleChange}
-            className="
-              w-full px-4 py-3 rounded-xl
-              bg-[#0B1220]
-              border border-gray-700
-              text-white outline-none
-              focus:border-indigo-500
-              focus:ring-2 focus:ring-indigo-500/30
-            "
+            className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white"
           />
         </div>
 
@@ -136,52 +120,27 @@ const ActivateCard = () => {
           <label className="text-sm text-gray-400 mb-2 block">
             Activation Code
           </label>
-          <motion.input
-            whileFocus={{ scale: 1.02 }}
+          <input
             type="text"
             name="activationCode"
-            placeholder="XXXX-XXXX"
+            placeholder="Activation Code"
             value={form.activationCode}
             onChange={handleChange}
-            className="
-              w-full px-4 py-3 rounded-xl
-              bg-[#0B1220]
-              border border-gray-700
-              text-white outline-none
-              focus:border-indigo-500
-              focus:ring-2 focus:ring-indigo-500/30
-            "
+            className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white"
           />
         </div>
 
-        {/* Button */}
-        <motion.button
-          whileHover={{ scale: loading ? 1 : 1.03 }}
-          whileTap={{ scale: loading ? 1 : 0.96 }}
+        <button
           onClick={handleActivate}
           disabled={loading}
-          className="
-            w-full py-3 rounded-xl
-            bg-gradient-to-r from-indigo-600 to-cyan-500
-            text-white font-medium
-            flex items-center justify-center gap-2
-            shadow-lg shadow-indigo-600/30
-            disabled:opacity-60
-            disabled:cursor-not-allowed
-          "
+          className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-medium flex items-center justify-center gap-2 disabled:opacity-60"
         >
           {loading ? "Activating..." : "Activate Card"}
           {!loading && <FiArrowRight />}
-        </motion.button>
+        </button>
 
-        {/* login */}
-        <p className="text-sm text-cyan-600 w-full text-bold text-center mt-6">
-          <Link to={"/login"}>For Card Activation First Login</Link>
-        </p>
-
-        {/* Footer */}
-        <p className="text-xs text-gray-500 text-center mt-6">
-          Secured by Brilson™ · NFC Smart Identity
+        <p className="text-sm text-cyan-600 text-center mt-6">
+          <Link to="/login">For Card Activation First Login</Link>
         </p>
       </motion.div>
     </div>

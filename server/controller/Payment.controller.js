@@ -6,15 +6,10 @@ const distributeMLMCommission = require("../controller/mlmCommission.controller"
 
 const createPaymentOrder = async (req, res) => {
   try {
-
-    const userId = req.user;
     const { orderId } = req.body;
 
     const order = await OrderModel.findById(orderId);
-
-    if (!order) {
-      return res.status(404).json({ error: "Order not found" });
-    }
+    if (!order) return res.status(404).json({ error: "Order not found" });
 
     const razorpayOrder = await razorpay.orders.create({
       amount: order.totalAmount * 100,
@@ -22,52 +17,46 @@ const createPaymentOrder = async (req, res) => {
       receipt: `order_${order._id}`,
     });
 
-    // Save payment record
     await PaymentModel.create({
+      userId: order.userId,
       orderId: order._id,
-      userId,
       razorpayOrderId: razorpayOrder.id,
       amount: razorpayOrder.amount,
       status: "created",
     });
 
-    res.status(200).json({
-      razorpayOrderId: razorpayOrder.id,
-      amount: razorpayOrder.amount,
-      currency: razorpayOrder.currency,
-    });
+    res.json(razorpayOrder);
+
   } catch (err) {
-    console.error("Create Payment Error:", err);
-    res.status(500).json({ error: "Payment order creation failed" });
+    res.status(500).json({ error: "Payment error" });
   }
 };
+
+
 
 // payment success ke baad frontend ish api ko call karega.
 
 const verifyPayment = async (req, res) => {
   try {
-        console.log("VErify Payment Start")
-    const userId = req.user;
-    const { orderId } = req.body;
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-      req.body;
-      
-    const order = await OrderModel.findById(orderId);
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      orderId,
+    } = req.body;
 
-    if (!order) {
-      return res.status(404).json({ error: "Order not found" });
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ error: "Missing payment details" });
     }
 
     // Signature verification
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
-
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_SECRET)
-      .update(body)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
     if (expectedSignature !== razorpay_signature) {
-      return res.status(400).json({ error: "Invalid payment signature" });
+      return res.status(400).json({ error: "Invalid signature" });
     }
 
     // Update payment
@@ -75,41 +64,40 @@ const verifyPayment = async (req, res) => {
       { razorpayOrderId: razorpay_order_id },
       {
         razorpayPaymentId: razorpay_payment_id,
-        razorpaySignature: razorpay_signature,
         status: "paid",
       },
       { new: true }
     );
-    console.log("Mlm start")
-    
-    await distributeMLMCommission({
-      order,
-      buyerId: userId,
-      referralCode: order.referralCode,
-    });
 
     if (!payment) {
       return res.status(404).json({ error: "Payment record not found" });
     }
 
-    // Update order
-    await OrderModel.findByIdAndUpdate(payment.orderId, {
-      paymentStatus: "paid",
-      orderStatus: "processing",
-    });
+    // 🔹 Update order
+    const order = await OrderModel.findByIdAndUpdate(
+      orderId,
+      { status: "paid" },
+      { new: true }
+    );
 
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Payment verified successfully",
     });
 
-        console.log("VErify Payment end")
   } catch (err) {
     console.error("Verify Payment Error:", err);
     res.status(500).json({ error: "Payment verification failed" });
   }
 };
+
+
+
+
 
 const razorpayWebhook = async (req, res) => {
   const { event } = req.body;

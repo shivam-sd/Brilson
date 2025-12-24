@@ -46,9 +46,9 @@ const AdminProducts = () => {
     return minPrice > 0 ? minPrice : "N/A";
   };
 
-  // Get stock status (for demo - you might want to add stock field to your API)
+  // Get stock status 
   const getStockStatus = (product) => {
-    // This is a placeholder - adjust based on your actual data structure
+    // This is a placeholder 
     return {
       count: product.variants?.length || 0,
       status: product.variants?.length > 0 ? "Active" : "Out of Stock"

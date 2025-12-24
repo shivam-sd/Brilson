@@ -42,7 +42,7 @@ const CardProfileSchema = new mongoose.Schema({
     city:String,
     twitter:String,
     instagram:String,
-    linkdien:String,
+    linkedin:String,
     website: String,
   }
 

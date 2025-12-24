@@ -133,6 +133,14 @@ const AdminLayout = () => {
             <FiUsers size={20} /> Customers
           </NavLink>
 
+
+          <NavLink
+            to="manage-cards"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <FiUsers size={20} /> Manage Cards
+          </NavLink>
+
           {/* <NavLink
             to="/settings"
             onClick={() => setOpen(false)}
