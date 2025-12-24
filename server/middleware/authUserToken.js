@@ -28,7 +28,7 @@ const authUser = (req, res, next) => {
     req.user = decoded.userId;
     next();
   } catch (err) {
-    return res.status(401).json({ error: "Invalid token" });
+    return res.status(401).json({ error: "Login Required" });
   }
 };
 
