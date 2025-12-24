@@ -6,6 +6,7 @@ const bulkCreateCards = require("../controller/AdminBulkCardProfile.controller")
 const adminAuth = require("../middleware/authAdminToken");
 const claimCardProfile = require("../controller/ClaimcardProfile.controller");
 const authUserToken = require("../middleware/authUserToken");
+const checkCardStatus = require("../controller/checkCardStatus.controller");
 
 
 
@@ -27,6 +28,8 @@ router.put("/card/:id/edit",authUserToken, EditCardProfile);
 
 router.get("/claim-card-profile", authUserToken, claimCardProfile);
 
+// check card status
+router.get("/check/card/:cardId", checkCardStatus);
 
 
 module.exports = router;

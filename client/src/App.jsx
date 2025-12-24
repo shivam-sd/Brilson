@@ -32,6 +32,8 @@ import EditProfile from './Pages/EditProfile';
 import Checkout from './Component/Checkout';
 import PaymentSuccessPage from './Pages/PaymentSuccessPage';
 import Orders from './Pages/Orders';
+import CheckStatusPage from './Pages/CheckStatusPage';
+import PublicProfilePage from './Pages/PublicProfilePage';
 
 
 function App() {
@@ -56,8 +58,10 @@ function App() {
           <Route path='/orders' element={<Orders />} />
           </Route>
 
+<Route path='/c/card/:cardId' element={<CheckStatusPage />} />
 <Route path='/profile/:slug' element={<ProfilePage />} />
 <Route path='/profile/edit/:id' element={<EditProfile />} />
+<Route path='/public/profile/:slug' element={<PublicProfilePage />} />
 <Route path='/card/activate' element={<ActivateCard />} />
 
           <Route path='/best-seller' element={<BestSeller />} />

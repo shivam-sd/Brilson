@@ -47,7 +47,7 @@ const ActivateCard = () => {
         }
       );
 
-      console.log("ACTIVATE RESPONSE ", res);
+      // console.log("ACTIVATE RESPONSE ", res);
 
       const slug =
         res?.data?.slug ||
@@ -63,7 +63,7 @@ const ActivateCard = () => {
 
       // ensure state settle
       setTimeout(() => {
-        navigate(`/profile/${slug}`);
+        navigate(`/profile/${slug}`, {replace:true});
       }, 300);
     } catch (err) {
       console.error("Activate Card Error:", err);

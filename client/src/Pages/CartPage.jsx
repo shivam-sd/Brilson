@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { FiTrash2, FiShoppingCart, FiPlus, FiMinus, FiChevronRight } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { replace, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
@@ -189,7 +189,7 @@ const CartPage = () => {
           totalAmount: total,
         },
       },
-    });
+    }, {replace:true});
   };
 
   if (loading) {

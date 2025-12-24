@@ -23,6 +23,8 @@ const CardProfileSchema = new mongoose.Schema({
     default: false
   },
 
+  qrCode: String,
+
   activatedAt: Date,
 
   owner: {

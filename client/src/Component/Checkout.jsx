@@ -32,7 +32,7 @@ const Checkout = () => {
 
   /*  LOAD CART  */
   useEffect(() => {
-    if (!token) return navigate("/login");
+    if (!token) return navigate("/login" , {replace:true});
 
     if (location.state?.checkoutData?.items) {
       setOrderItems(location.state.checkoutData.items);
@@ -146,7 +146,7 @@ const Checkout = () => {
         description: "Order Payment",
         handler: async (response) => {
   try {
-    console.log("response", response);
+    // console.log("response", response);
     const verifyRes = await axios.post(
       `${import.meta.env.VITE_BASE_URL}/api/payment/verify`,
       {
@@ -160,7 +160,7 @@ const Checkout = () => {
 
     if (verifyRes.data.success) {
       toast.success("Payment successful 🎉");
-      navigate("/orders");
+      navigate("/orders", {replace:true});
     } else {
       toast.error("Payment verification failed");
     }

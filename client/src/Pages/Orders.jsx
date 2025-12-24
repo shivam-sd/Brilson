@@ -14,7 +14,7 @@ const Orders = () => {
   /*  FETCH ORDERS  */
   useEffect(() => {
     if (!token) {
-      navigate("/login");
+      navigate("/login", {replace:true});
       return;
     }
     fetchOrders();
