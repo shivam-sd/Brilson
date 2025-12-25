@@ -7,6 +7,7 @@ const adminAuth = require("../middleware/authAdminToken");
 const claimCardProfile = require("../controller/ClaimcardProfile.controller");
 const authUserToken = require("../middleware/authUserToken");
 const checkCardStatus = require("../controller/checkCardStatus.controller");
+const markDownloadedOnCard = require("../controller/MarkDownloadedCard.controller");
 
 
 
@@ -30,6 +31,10 @@ router.get("/claim-card-profile", authUserToken, claimCardProfile);
 
 // check card status
 router.get("/check/card/:cardId", checkCardStatus);
+
+
+// mark card downloaded or not
+router.patch("/cards/:id/downloaded", markDownloadedOnCard);
 
 
 module.exports = router;

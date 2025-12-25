@@ -49,6 +49,8 @@ const ProductSchema = new mongoose.Schema(
 
     features: [String],
 
+    metaTags: [String],
+
     variants: [VariantSchema],
 
     //  MLM fields

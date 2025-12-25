@@ -17,7 +17,7 @@ const getCardProfiles = async (req, res) => {
 
 const getAllcardsProfile = async (req, res) => {
   try {
-    const allCards = await CardProfileModel.find();
+    const allCards = await CardProfileModel.find().sort({createdAt: -1});
     // const owner = await CardProfileModel.find().populate("owner");
 
     return res.status(200).json({ 

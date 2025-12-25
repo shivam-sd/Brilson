@@ -25,6 +25,16 @@ const CardProfileSchema = new mongoose.Schema({
 
   qrCode: String,
 
+   isDownloaded: {
+    type: Boolean,
+    default: false
+  },
+
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+
   activatedAt: Date,
 
   owner: {

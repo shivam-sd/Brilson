@@ -15,6 +15,7 @@ const AdminAddProduct = () => {
     badge: "BASIC",
     description: "",
     features: [""],
+    metaTags: [""],
     variants: [{
       name: "",
       price: "",
@@ -83,6 +84,7 @@ const AdminAddProduct = () => {
       features: newFeatures
     }));
   };
+  
 
   // Remove feature
   const removeFeature = (index) => {
@@ -90,6 +92,36 @@ const AdminAddProduct = () => {
     setProductData(prev => ({
       ...prev,
       features: newFeatures
+    }));
+  };
+
+
+  // Add Meta tags
+  const addMetaTags = () => {
+    setProductData(prev => ({
+      ...prev,
+      metaTags: [...prev.metaTags, ""]
+    }));
+  };
+  
+
+  // Update meta tags
+  const updateMetaTags = (index, value) => {
+    const newMetaTags = [...productData.metaTags];
+    newMetaTags[index] = value;
+    setProductData(prev => ({
+      ...prev,
+      metaTags: newMetaTags
+    }));
+  };
+
+
+  // Remove feature
+  const removeMetaTags = (index) => {
+    const newMetaTags = productData.metaTags.filter((_, i) => i !== index);
+    setProductData(prev => ({
+      ...prev,
+      metaTags: newMetaTags
     }));
   };
 
@@ -105,6 +137,7 @@ const AdminAddProduct = () => {
       badge: productData.badge,
       description: productData.description,
       features: productData.features.filter(f => f.trim() !== ""),
+      metaTags: productData.metaTags.filter(m => m.trim() !== ""),
       variants: productData.variants.filter(v => v.name.trim() !== "" && v.price !== "")
     };
 
@@ -264,6 +297,56 @@ const AdminAddProduct = () => {
                 ))}
               </div>
             </div>
+
+
+
+{/* Meta Tags Section */}
+            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-200">Product Meta Tags</h3>
+                <button
+                  type="button"
+                  onClick={addMetaTags}
+                  className="flex items-center gap-2 px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition"
+                >
+                  <FiPlus size={16} /> Add Feature
+                </button>
+              </div>
+              
+              <div className="space-y-3">
+                {productData.metaTags.map((metaTags, index) => (
+                  <div key={index} className="flex gap-3">
+                    <input
+                      type="text"
+                      value={metaTags}
+                      onChange={(e) => updateMetaTags(index, e.target.value)}
+                      placeholder={`Meta Tags ${index + 1} (e.g., #NFC Enabled, #QR Code)`}
+                      className="flex-1 px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none"
+                    />
+                    {productData.metaTags.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeMetaTags(index)}
+                        className="px-4 py-3 bg-red-500/20 text-red-400 rounded-xl hover:bg-red-500/30 transition"
+                        title="Remove feature"
+                      >
+                        <FiTrash2 size={18} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
 
             {/* Variants Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">

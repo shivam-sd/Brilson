@@ -135,6 +135,9 @@ const ChooseYourCard = () => {
               {/* Description */}
               <p className="text-gray-400 text-sm mb-4">{product.description}</p>
 
+              <div className="grid grid-cols-2">
+                <div className="flex flex-col items-center justify-center">
+<p>Features:</p>
               {/* Features */}
               {product.features && product.features.length > 0 && (
                 <ul className="space-y-2 mb-6">
@@ -151,6 +154,30 @@ const ChooseYourCard = () => {
                   )}
                 </ul>
               )}
+              </div>
+
+<div className="flex flex-col items-center justify-center">
+  <p>Meta Tags</p>
+              {/* Meta Tags */}
+              {product.metaTags && product.metaTags.length > 0 && (
+                <ul className="space-y-2 mb-6">
+                  {product.metaTags.slice(0, 3).map((meta, i) => (
+                    <li key={i} className="flex gap-2 items-center text-gray-300 text-sm">
+                      <Check className="text-cyan-400 w-4 h-4" />
+                      {meta}
+                    </li>
+                  ))}
+                  {product.metaTags.length > 3 && (
+                    <li className="text-gray-500 text-xs">
+                      + {product.metaTags.length - 3} more features
+                    </li>
+                  )}
+                </ul>
+              )}
+              </div>
+
+
+              </div>
 
               {/* View Details Button */}
               <Link

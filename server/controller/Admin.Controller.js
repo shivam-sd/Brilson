@@ -50,7 +50,6 @@ const adminLogin = async (req, res) => {
     const token = jwt.sign(
       { id: admin._id, role: "admin" },
       process.env.ADMIN_SECRET_KEY,
-      { expiresIn: "1d" }
     );
 
 
@@ -58,7 +57,6 @@ const adminLogin = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
     return res.status(200).json({

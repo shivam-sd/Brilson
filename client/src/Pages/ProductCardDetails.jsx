@@ -202,6 +202,9 @@ const ProductCardPreference = () => {
             </div>
           )}
 
+<div className="grid grid-cols-3">
+<div>
+
           {/* FEATURES */}
           {product.features?.length > 0 && (
             <div className="pt-6">
@@ -213,6 +216,24 @@ const ProductCardPreference = () => {
               </ul>
             </div>
           )}
+          </div>
+
+<div>
+
+{/* Meta Tags */}
+          {product.metaTags?.length > 0 && (
+            <div className="pt-6">
+              <h3 className="font-semibold mb-3">Meta Tags</h3>
+              <ul className="space-y-2 text-gray-300">
+                {product.metaTags.map((f, i) => (
+                  <li key={i}>• {f}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          </div>
+          </div>
 
           {/* TRUST */}
           <div className="grid grid-cols-3 gap-4 pt-6 text-sm text-gray-300">

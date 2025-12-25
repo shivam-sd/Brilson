@@ -13,6 +13,7 @@ const createProduct = async (req, res) => {
       description,
       stock,
       features,
+      metaTags,
       variants,
     } = req.body;
 
@@ -26,6 +27,14 @@ const createProduct = async (req, res) => {
     if (typeof features === "string") {
       featureList = features.split(",").map((f) => f.trim());
     }
+
+    // metaTags
+    let metaTagList = metaTags;
+    if(typeof metaTags === "string"){
+      metaTagList = metaTags.split(",").map((m) => m.trim());
+    }
+
+
 
     // varients
     let variantData = variants;
@@ -45,6 +54,7 @@ const createProduct = async (req, res) => {
       stock,
       description,
       features: featureList,
+      metaTags: metaTagList,
       variants: variantData,
     });
 
