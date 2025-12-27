@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const morgan = require("morgan");
 const helmet = require("helmet");
+const path = require("path");
 // const rateLimit = require("express-rate-limit");
 const PORT = process.env.PORT || 4000;
 const DBConnection = require("./DB/DB.Connection");
@@ -17,6 +18,10 @@ const OrderRouter = require("./routes/Order.routes");
 const PaymentRouter = require("./routes/payment.routes");
 // card profile
 const getCardProfiles = require("./routes/CardProfile.routes");
+// category
+const categoryRouter = require("./routes/category.routes");
+// badges
+const badgesRouter = require("./routes/badge.routes");
 
 
 DBConnection();
@@ -36,6 +41,9 @@ app.use(cors({
 }));
 
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+
 app.use("/api/users", UserRouter);
 app.use("/api/admin", AdminRouter);
 app.use("/api/cart", CartRouter);
@@ -44,6 +52,8 @@ app.use("/api", OrderRouter);
 app.use("/api/payment", PaymentRouter);
 // card profiles
 app.use("/api", getCardProfiles);
+app.use("/api/category", categoryRouter);
+app.use("/api/badges", badgesRouter);
 
 
 

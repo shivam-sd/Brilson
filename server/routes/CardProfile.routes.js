@@ -12,7 +12,7 @@ const markDownloadedOnCard = require("../controller/MarkDownloadedCard.controlle
 
 
 // admin cretae bulk profile cards
-router.post("/cards/bulk", adminAuth, bulkCreateCards);
+router.post("/cards/bulk",  bulkCreateCards);
 
 
 // POST /api/card/activate

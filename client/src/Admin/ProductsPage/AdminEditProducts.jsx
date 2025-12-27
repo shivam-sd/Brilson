@@ -10,12 +10,14 @@ const AdminEditProduct = () => {
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [Badge, setBadges] = useState([]);
   
   // Product state with initial values
   const [productData, setProductData] = useState({
-    category: "Basic Card",
+    category: "",
     title: "",
-    badge: "BASIC",
+    badge: "",
     description: "",
     features: [""],
     metaTags: [""],
@@ -28,6 +30,38 @@ const AdminEditProduct = () => {
     }]
   });
 
+
+// fetch all category
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/category/active`
+      );
+      // console.log(res);
+      setCategories(res?.data?.categories || []);
+    };
+    fetchCategories();
+  }, []);
+
+
+  // fetch all badges
+  useEffect(() => {
+    const fetchBadges = async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/badges/active`
+      );
+      // console.log(res);
+      setBadges(res?.data?.badges || []);
+    };
+    fetchBadges();
+  }, []);
+
+
+
+
+
+
+
   // Fetch product data for show allready 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -36,14 +70,15 @@ const AdminEditProduct = () => {
           `${import.meta.env.VITE_BASE_URL}/api/admin/find/products/${id}`
         );
         
+        console.log(response)
         if (response.data?.product) {
           const product = response.data.product;
           
           // Transform API data to form state
           setProductData({
-            category: product.category || "Basic Card",
+            category: product.category || "",
             title: product.title || "",
-            badge: product.badge || "BASIC",
+            badge: product.badge || "",
             description: product.description || "",
             features: product.features?.length > 0 ? product.features : [""],
             metaTags: product.metaTags?.length > 0 ? product.metaTags : [""],
@@ -267,10 +302,16 @@ const AdminEditProduct = () => {
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none cursor-pointer"
                   required
                 >
-                  <option value="Basic Card">Basic Card</option>
-                  <option value="Premium Card">Premium Card</option>
-                  <option value="NFC Card">NFC Card</option>
-                  <option value="Metal Card">Metal Card</option>
+         <option value="" >Select Category</option>
+                  {categories.map((c) => {
+                    return (
+                      <>
+                      
+                        <option className="w-full" key={c._id} value={c.name}>{c.name}</option>
+                        
+                      </>
+                    );
+                  })}
                 </select>
               </div>
 
@@ -285,9 +326,16 @@ const AdminEditProduct = () => {
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none cursor-pointer"
                 >
-                  <option value="BASIC">BASIC</option>
-                  <option value="PREMIUM">PREMIUM</option>
-                  <option value="BEST_SELLER">BEST SELLER</option>
+                 <option value="" >Select Badge</option>
+                  {Badge.map((b) => {
+                    return (
+                      <>
+                      
+                        <option className="w-full" key={b._id} value={b.name}>{b.name}</option>
+                        
+                      </>
+                    );
+                  })}
                 </select>
               </div>
 

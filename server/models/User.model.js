@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema(
     myCards: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "CardProfile",
+        ref: "CardProfile", 
       },
     ],
   },

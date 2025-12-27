@@ -149,7 +149,7 @@ const findProductById = async (req,res) => {
 
 const getAllProduct = async (req,res) => {
   try{
-    const allProducts = await ProductModel.find();
+    const allProducts = await ProductModel.find().sort({createdAt:-1});
 
     res.status(200).json({message:"All Products", allProducts});
   }catch(err){

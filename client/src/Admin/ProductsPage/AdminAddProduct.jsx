@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiPlus, FiTrash2, FiSave } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -7,41 +7,69 @@ import { toast } from "react-toastify";
 const AdminAddProduct = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [categories, setCategories] = useState([]);
+  const [badges, setBadges] = useState([]);
   // Product state - only essential fields
   const [productData, setProductData] = useState({
-    category: "Basic Card",
+    category: "",
     title: "",
-    badge: "BASIC",
+    badge: "",
     description: "",
     features: [""],
     metaTags: [""],
-    variants: [{
-      name: "",
-      price: "",
-      oldPrice: "",
-      color: "",
-      discount: ""
-    }]
+    variants: [
+      {
+        name: "",
+        price: "",
+        oldPrice: "",
+        color: "",
+        discount: "",
+      },
+    ],
   });
+
+  // fetch all category
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/category/active`
+      );
+      // console.log(res);
+      setCategories(res?.data?.categories || []);
+    };
+    fetchCategories();
+  }, []);
+
+
+  // fetch all badges
+  useEffect(() => {
+    const fetchBadges = async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/badges/active`
+      );
+      // console.log(res);
+      setBadges(res?.data?.badges || []);
+    };
+    fetchBadges();
+  }, []);
 
   // Handle basic input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProductData(prev => ({
+    setProductData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   // Add new variant
   const addVariant = () => {
-    setProductData(prev => ({
+    setProductData((prev) => ({
       ...prev,
       variants: [
         ...prev.variants,
-        { name: "", price: "", oldPrice: "", color: "", discount: "" }
-      ]
+        { name: "", price: "", oldPrice: "", color: "", discount: "" },
+      ],
     }));
   };
 
@@ -50,9 +78,9 @@ const AdminAddProduct = () => {
     if (productData.variants.length > 1) {
       const newVariants = [...productData.variants];
       newVariants.splice(index, 1);
-      setProductData(prev => ({
+      setProductData((prev) => ({
         ...prev,
-        variants: newVariants
+        variants: newVariants,
       }));
     }
   };
@@ -61,17 +89,17 @@ const AdminAddProduct = () => {
   const updateVariant = (index, field, value) => {
     const newVariants = [...productData.variants];
     newVariants[index] = { ...newVariants[index], [field]: value };
-    setProductData(prev => ({
+    setProductData((prev) => ({
       ...prev,
-      variants: newVariants
+      variants: newVariants,
     }));
   };
 
   // Add feature
   const addFeature = () => {
-    setProductData(prev => ({
+    setProductData((prev) => ({
       ...prev,
-      features: [...prev.features, ""]
+      features: [...prev.features, ""],
     }));
   };
 
@@ -79,49 +107,45 @@ const AdminAddProduct = () => {
   const updateFeature = (index, value) => {
     const newFeatures = [...productData.features];
     newFeatures[index] = value;
-    setProductData(prev => ({
+    setProductData((prev) => ({
       ...prev,
-      features: newFeatures
+      features: newFeatures,
     }));
   };
-  
 
   // Remove feature
   const removeFeature = (index) => {
     const newFeatures = productData.features.filter((_, i) => i !== index);
-    setProductData(prev => ({
+    setProductData((prev) => ({
       ...prev,
-      features: newFeatures
+      features: newFeatures,
     }));
   };
-
 
   // Add Meta tags
   const addMetaTags = () => {
-    setProductData(prev => ({
+    setProductData((prev) => ({
       ...prev,
-      metaTags: [...prev.metaTags, ""]
+      metaTags: [...prev.metaTags, ""],
     }));
   };
-  
 
   // Update meta tags
   const updateMetaTags = (index, value) => {
     const newMetaTags = [...productData.metaTags];
     newMetaTags[index] = value;
-    setProductData(prev => ({
+    setProductData((prev) => ({
       ...prev,
-      metaTags: newMetaTags
+      metaTags: newMetaTags,
     }));
   };
-
 
   // Remove feature
   const removeMetaTags = (index) => {
     const newMetaTags = productData.metaTags.filter((_, i) => i !== index);
-    setProductData(prev => ({
+    setProductData((prev) => ({
       ...prev,
-      metaTags: newMetaTags
+      metaTags: newMetaTags,
     }));
   };
 
@@ -136,21 +160,24 @@ const AdminAddProduct = () => {
       title: productData.title,
       badge: productData.badge,
       description: productData.description,
-      features: productData.features.filter(f => f.trim() !== ""),
-      metaTags: productData.metaTags.filter(m => m.trim() !== ""),
-      variants: productData.variants.filter(v => v.name.trim() !== "" && v.price !== "")
+      features: productData.features.filter((f) => f.trim() !== ""),
+      metaTags: productData.metaTags.filter((m) => m.trim() !== ""),
+      variants: productData.variants.filter(
+        (v) => v.name.trim() !== "" && v.price !== ""
+      ),
     };
 
     try {
       await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/admin/add/products`,
-        submitData, {
-          withCredentials:true
+        submitData,
+        {
+          withCredentials: true,
         }
       );
-      
+
       toast.success("Product added successfully!");
-      navigate('/admindashboard/products/list');
+      navigate("/admindashboard/products/list");
     } catch (error) {
       console.error("Error adding product:", error);
       toast.error(error?.response?.data?.error || "Failed to add product");
@@ -167,13 +194,14 @@ const AdminAddProduct = () => {
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
             Add New Product
           </h1>
-          <p className="text-gray-400 mt-2">Fill in all product details below</p>
+          <p className="text-gray-400 mt-2">
+            Fill in all product details below
+          </p>
         </div>
 
         {/* Form */}
         <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-2xl p-6 md:p-8">
           <form onSubmit={handleSubmit} className="space-y-8">
-            
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Product Title */}
@@ -204,10 +232,16 @@ const AdminAddProduct = () => {
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none cursor-pointer"
                   required
                 >
-                  <option value="Basic Card">Basic Card</option>
-                  <option value="Premium Card">Premium Card</option>
-                  <option value="NFC Card">NFC Card</option>
-                  <option value="Metal Card">Metal Card</option>
+                   <option value="" >Select Category</option>
+                  {categories.map((c) => {
+                    return (
+                      <>
+                      
+                        <option className="w-full" key={c._id} value={c.name}>{c.name}</option>
+                        
+                      </>
+                    );
+                  })}
                 </select>
               </div>
 
@@ -222,9 +256,16 @@ const AdminAddProduct = () => {
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none cursor-pointer"
                 >
-                  <option value="BASIC">BASIC</option>
-                  <option value="PREMIUM">PREMIUM</option>
-                  <option value="BEST_SELLER">BEST SELLER</option>
+                   <option value="" >Select Badge</option>
+                  {
+                    badges.map((b) => {
+                      return(<>
+                      <option key={b.name} value={b.name}>{b.name}</option>
+                     </>)
+                     
+                    })
+                  }
+                  
                 </select>
               </div>
 
@@ -236,7 +277,7 @@ const AdminAddProduct = () => {
                 <input
                   type="number"
                   value={productData.variants[0]?.price || ""}
-                  onChange={(e) => updateVariant(0, 'price', e.target.value)}
+                  onChange={(e) => updateVariant(0, "price", e.target.value)}
                   placeholder="299"
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                   required
@@ -263,7 +304,9 @@ const AdminAddProduct = () => {
             {/* Features Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-200">Product Features</h3>
+                <h3 className="text-lg font-semibold text-gray-200">
+                  Product Features
+                </h3>
                 <button
                   type="button"
                   onClick={addFeature}
@@ -272,7 +315,7 @@ const AdminAddProduct = () => {
                   <FiPlus size={16} /> Add Feature
                 </button>
               </div>
-              
+
               <div className="space-y-3">
                 {productData.features.map((feature, index) => (
                   <div key={index} className="flex gap-3">
@@ -280,7 +323,9 @@ const AdminAddProduct = () => {
                       type="text"
                       value={feature}
                       onChange={(e) => updateFeature(index, e.target.value)}
-                      placeholder={`Feature ${index + 1} (e.g., NFC Enabled, QR Code)`}
+                      placeholder={`Feature ${
+                        index + 1
+                      } (e.g., NFC Enabled, QR Code)`}
                       className="flex-1 px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none"
                     />
                     {productData.features.length > 1 && (
@@ -298,12 +343,12 @@ const AdminAddProduct = () => {
               </div>
             </div>
 
-
-
-{/* Meta Tags Section */}
+            {/* Meta Tags Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-200">Product Meta Tags</h3>
+                <h3 className="text-lg font-semibold text-gray-200">
+                  Product Meta Tags
+                </h3>
                 <button
                   type="button"
                   onClick={addMetaTags}
@@ -312,7 +357,7 @@ const AdminAddProduct = () => {
                   <FiPlus size={16} /> Add Feature
                 </button>
               </div>
-              
+
               <div className="space-y-3">
                 {productData.metaTags.map((metaTags, index) => (
                   <div key={index} className="flex gap-3">
@@ -320,7 +365,9 @@ const AdminAddProduct = () => {
                       type="text"
                       value={metaTags}
                       onChange={(e) => updateMetaTags(index, e.target.value)}
-                      placeholder={`Meta Tags ${index + 1} (e.g., #NFC Enabled, #QR Code)`}
+                      placeholder={`Meta Tags ${
+                        index + 1
+                      } (e.g., #NFC Enabled, #QR Code)`}
                       className="flex-1 px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none"
                     />
                     {productData.metaTags.length > 1 && (
@@ -338,20 +385,12 @@ const AdminAddProduct = () => {
               </div>
             </div>
 
-
-
-
-
-
-
-
-
-
-
             {/* Variants Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-200">Product Variants</h3>
+                <h3 className="text-lg font-semibold text-gray-200">
+                  Product Variants
+                </h3>
                 <button
                   type="button"
                   onClick={addVariant}
@@ -360,10 +399,13 @@ const AdminAddProduct = () => {
                   <FiPlus size={16} /> Add Variant
                 </button>
               </div>
-              
+
               <div className="space-y-6">
                 {productData.variants.map((variant, index) => (
-                  <div key={index} className="bg-gray-900/50 p-6 rounded-xl border border-gray-700">
+                  <div
+                    key={index}
+                    className="bg-gray-900/50 p-6 rounded-xl border border-gray-700"
+                  >
                     <div className="flex justify-between items-center mb-4">
                       <h4 className="text-md font-medium text-gray-300">
                         Variant {index + 1} {index === 0 && "(Primary)"}
@@ -379,7 +421,7 @@ const AdminAddProduct = () => {
                         </button>
                       )}
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm text-gray-400 mb-1">
@@ -388,13 +430,15 @@ const AdminAddProduct = () => {
                         <input
                           type="text"
                           value={variant.name}
-                          onChange={(e) => updateVariant(index, 'name', e.target.value)}
+                          onChange={(e) =>
+                            updateVariant(index, "name", e.target.value)
+                          }
                           placeholder="e.g., White, Gold, Premium"
                           className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
                           required
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm text-gray-400 mb-1">
                           Price (₹) *
@@ -402,13 +446,15 @@ const AdminAddProduct = () => {
                         <input
                           type="number"
                           value={variant.price}
-                          onChange={(e) => updateVariant(index, 'price', e.target.value)}
+                          onChange={(e) =>
+                            updateVariant(index, "price", e.target.value)
+                          }
                           placeholder="299"
                           className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
                           required
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm text-gray-400 mb-1">
                           Old Price (₹)
@@ -416,29 +462,39 @@ const AdminAddProduct = () => {
                         <input
                           type="number"
                           value={variant.oldPrice}
-                          onChange={(e) => updateVariant(index, 'oldPrice', e.target.value)}
+                          onChange={(e) =>
+                            updateVariant(index, "oldPrice", e.target.value)
+                          }
                           placeholder="399"
                           className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
                         />
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm text-gray-400 mb-1">Color</label>
+                        <label className="block text-sm text-gray-400 mb-1">
+                          Color
+                        </label>
                         <input
                           type="text"
                           value={variant.color}
-                          onChange={(e) => updateVariant(index, 'color', e.target.value)}
+                          onChange={(e) =>
+                            updateVariant(index, "color", e.target.value)
+                          }
                           placeholder="e.g., White, Black, Silver"
                           className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
                         />
                       </div>
-                      
+
                       <div className="md:col-span-2">
-                        <label className="block text-sm text-gray-400 mb-1">Discount</label>
+                        <label className="block text-sm text-gray-400 mb-1">
+                          Discount
+                        </label>
                         <input
                           type="text"
                           value={variant.discount}
-                          onChange={(e) => updateVariant(index, 'discount', e.target.value)}
+                          onChange={(e) =>
+                            updateVariant(index, "discount", e.target.value)
+                          }
                           placeholder="e.g., 25% OFF or ₹100 OFF"
                           className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
                         />
@@ -454,12 +510,12 @@ const AdminAddProduct = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <button
                   type="button"
-                  onClick={() => navigate('/admindashboard/products/list')}
+                  onClick={() => navigate("/admindashboard/products/list")}
                   className="px-8 py-3 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-800 transition w-full sm:w-auto cursor-pointer"
                 >
                   Cancel
                 </button>
-                
+
                 <button
                   type="submit"
                   disabled={isSubmitting}

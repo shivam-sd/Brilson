@@ -2,6 +2,7 @@ const UserModel = require("../models/User.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const generateReferralCode = require("../utils/generateReferralCode");
+const CardProfileModel = require("../models/CardProfile");
 
 // Generate Token
 const generateToken = (id) => {
@@ -279,8 +280,35 @@ const findLoggedInUser = (req, res) => {
   }
 };
 
+
+
+const getMyActiveCard = async (req, res) => {
+  const userId = req.user;
+
+  const card = await CardProfileModel.findOne({
+    owner: userId,
+    isActivated: true,
+  }).select("slug cardId");
+
+  if (!card) {
+    return res.json({ hasCard: false });
+  }
+
+  res.json({
+    hasCard: true,
+    slug: card.slug,
+    cardId: card.cardId,
+  });
+};
+
+
+
+
+
+
 module.exports = {
   UserRegister,
   UserLogin,
-  findLoggedInUser
+  findLoggedInUser,
+  getMyActiveCard
 };

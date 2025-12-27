@@ -15,6 +15,7 @@ const ChooseYourCard = () => {
         const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/admin/all/products`
         );
+        console.log(res)
         
         if (res.data?.allProducts) {
           setProducts(res.data.allProducts);

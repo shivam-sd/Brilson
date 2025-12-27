@@ -4,67 +4,78 @@ import { motion } from "framer-motion";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
 import { FaUser } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
+import { IoIosArrowDown } from "react-icons/io";
 import axios from "axios";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [token, setToken] = useState(localStorage.getItem("token"));
+  const [myCardProfile, setMyCardProfile] = useState(null);
 
   const isLoggedIn = !!token;
 
-
-    //  GET CART COUNT
-
+  /* ---------------- CART COUNT ---------------- */
   const getCartCount = async () => {
     try {
       if (isLoggedIn) {
-        //  Logged in 
         const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/cart/user`,
           {
             headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true
+            withCredentials: true,
           }
         );
         setCartCount(res.data.cartItems?.length || 0);
       } else {
-        //  Guest → localStorage
         const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
         setCartCount(localCart.length);
       }
-    } catch (error) {
-      console.error("Cart count error:", error);
+    } catch (err) {
       setCartCount(0);
     }
   };
 
+  /* ---------------- ACTIVE CARD CHECK ---------------- */
+  const fetchMyActiveCard = async () => {
+    try {
+      if (!token) return;
 
-    //  ON LOAD / TOKEN CHANGE
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/users/my-active-card`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
+      // console.log(res)
+      if (res.data?.hasCard) {
+        setMyCardProfile(res.data);
+      } else {
+        setMyCardProfile(null);
+      }
+    } catch (err) {
+      setMyCardProfile(null);
+    }
+  };
+
+  /* ---------------- EFFECTS ---------------- */
   useEffect(() => {
     getCartCount();
+    fetchMyActiveCard();
   }, [token]);
-
-
-    //  LISTEN CART UPDATE
 
   useEffect(() => {
     const handleCartUpdate = () => getCartCount();
-
     window.addEventListener("cartUpdate", handleCartUpdate);
-
-    return () => {
-      window.removeEventListener("cartUpdate", handleCartUpdate);
-    };
+    return () => window.removeEventListener("cartUpdate", handleCartUpdate);
   }, []);
 
-
-    //  LOGOUT
-
+  /* ---------------- LOGOUT ---------------- */
   const handleLogout = () => {
     localStorage.removeItem("token");
     setToken(null);
+    setMyCardProfile(null);
     setCartCount(0);
   };
 
@@ -72,7 +83,7 @@ const Header = () => {
     <header className="fixed top-0 left-0 w-full z-50 bg-[#050505]/70 backdrop-blur-xl border-b border-white/10">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         
-        {/* Logo */}
+        {/* LOGO */}
         <Link to="/">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -86,7 +97,7 @@ const Header = () => {
           </motion.div>
         </Link>
 
-        {/* Desktop Menu */}
+        {/* DESKTOP MENU */}
         <ul className="hidden md:flex gap-10 text-gray-300">
           <Link to="/" className="hover:text-white">Home</Link>
           <Link to="/products" className="hover:text-white">Products</Link>
@@ -94,9 +105,10 @@ const Header = () => {
           <Link to="/pricing" className="hover:text-white">Pricing</Link>
         </ul>
 
-        {/* Desktop Actions */}
+        {/* DESKTOP ACTIONS */}
         <div className="hidden md:flex items-center gap-6">
-          {/* Cart */}
+          
+          {/* CART */}
           <Link to="/your-items" className="relative text-2xl text-gray-300 hover:text-white">
             <LuShoppingCart />
             {cartCount > 0 && (
@@ -106,15 +118,50 @@ const Header = () => {
             )}
           </Link>
 
-          {/* Login / Logout */}
+          {/* AUTH */}
           {!isLoggedIn ? (
-            <Link to="/login" className="flex items-center gap-2 text-gray-300 hover:text-white">
+            <Link
+              to="/login"
+              className="flex items-center gap-2 text-gray-300 hover:text-white border-2 border-white/40 rounded-lg px-4 py-2 relative group"
+            >
               <FaUser /> Login
+               <button
+                    onClick={handleLogout}
+                    className="px-3 py-2 text-left rounded hover:bg-gray-800 text-gray-300 hover:text-white absolute top-10 right-1 border-2 border-white/30 hidden cursor-pointer"
+                  >
+                    Logout
+                  </button>
             </Link>
           ) : (
-            <button onClick={handleLogout} className="flex items-center gap-2 text-gray-300 hover:text-white">
-              <FaUser /> Logout
-            </button>
+            <div className="relative group ">
+              <button className="flex items-center gap-2 text-gray-300 hover:text-white border-2 border-white/30 py-2 px-4 rounded-lg cursor-pointer">
+                <FaUser />
+                <IoIosArrowDown className="group-hover:rotate-180 transition-transform" />
+              </button>
+
+              {/* DROPDOWN */}
+              <div className="absolute top-12 right-0 bg-gray-900 border border-white/20 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all min-w-[160px]">
+                <div className="flex flex-col p-2 gap-1">
+                  
+                  {/* ONLY IF CARD ACTIVE */}
+                  {myCardProfile && (
+                    <Link
+                      to={`/profile/${myCardProfile.slug}`}
+                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
+                    >
+                      My Profile
+                    </Link>
+                  )}
+
+                  <button
+                    onClick={handleLogout}
+                    className="px-3 py-2 text-left rounded hover:bg-gray-800 text-gray-300 hover:text-white cursor-pointer"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
 
           <Link
@@ -125,7 +172,7 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* Mobile */}
+        {/* MOBILE */}
         <div className="md:hidden flex items-center gap-5">
           <Link to="/your-items" className="relative text-2xl text-white">
             <LuShoppingCart />
@@ -142,7 +189,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* MOBILE MENU */}
       {open && (
         <div className="md:hidden bg-[#0c0c0c] border-t border-white/10 px-6 py-4">
           <div className="flex flex-col gap-4 text-gray-300">
@@ -151,17 +198,35 @@ const Header = () => {
             <Link to="/how-it-works" onClick={() => setOpen(false)}>How It Works</Link>
             <Link to="/pricing" onClick={() => setOpen(false)}>Pricing</Link>
 
+ <Link
+                to={`/get-card`}
+                onClick={() => setOpen(false)}
+                className="border border-white/20 bg-blue-600 rounded-lg py-2 text-center"
+              >
+                Get Your Card
+              </Link>
+
+            {isLoggedIn && myCardProfile && (
+              <Link
+                to={`/profile/${myCardProfile.slug}`}
+                onClick={() => setOpen(false)}
+                className="border border-white/20 rounded-lg py-2 text-center"
+              >
+                My Profile
+              </Link>
+            )}
+
             {!isLoggedIn ? (
-              <Link to="/login" className="bg-blue-600 text-center py-2 rounded-lg text-white font-bold">
+              <Link
+                to="/login"
+                className="bg-blue-600 py-2 rounded-lg text-center text-white"
+              >
                 Login
               </Link>
             ) : (
               <button
-                onClick={() => {
-                  handleLogout();
-                  setOpen(false);
-                }}
-                className="bg-red-600 py-2 rounded-lg text-white font-bold"
+                onClick={handleLogout}
+                className="border border-white/20 rounded-lg py-2"
               >
                 Logout
               </button>

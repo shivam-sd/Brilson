@@ -25,6 +25,12 @@ const ProductSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
+      trim:true
+    },
+    
+    badge: {
+      type: String,
+      required: true,
       trim: true,
     },
 
@@ -34,11 +40,6 @@ const ProductSchema = new mongoose.Schema(
       trim: true,
     },
 
-    badge: {
-      type: String,
-      required: true,
-      trim: true,
-    },
 
     description: {
       type: String,

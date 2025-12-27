@@ -101,6 +101,23 @@ const AdminProducts = () => {
             {products.length} product{products.length !== 1 ? 's' : ''} total
           </p>
         </div>
+<div className="grid lg:grid-cols-3 md:grid-cols-3 grid-cols-1 gap-5">
+
+        <Link
+          to="/admin/add/category"
+          className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-5 py-3 rounded-xl shadow-lg transition-all hover:scale-105"
+          >
+          <FiPlus size={20} />
+          Add New Categories
+        </Link>
+
+        <Link
+          to="/admin/add/badges"
+          className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-5 py-3 rounded-xl shadow-lg transition-all hover:scale-105"
+          >
+          <FiPlus size={20} />
+          Add New Badges
+        </Link>
 
         <Link
           to="/admin/add/products"
@@ -109,6 +126,7 @@ const AdminProducts = () => {
           <FiPlus size={20} />
           Add New Product
         </Link>
+          </div>
       </div>
 
       {/* Search Bar */}
