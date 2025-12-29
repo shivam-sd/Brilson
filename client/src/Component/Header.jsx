@@ -99,7 +99,7 @@ const Header = () => {
 
         {/* DESKTOP MENU */}
         <ul className="hidden md:flex gap-10 text-gray-300">
-          <Link to="/" className="hover:text-white">Home</Link>
+          <Link to="/" className="hover:text-white">Homee</Link>
           <Link to="/products" className="hover:text-white">Products</Link>
           <Link to="/how-it-works" className="hover:text-white">How It Works</Link>
           <Link to="/pricing" className="hover:text-white">Pricing</Link>

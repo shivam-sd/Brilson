@@ -58,7 +58,7 @@ app.use("/api/badges", badgesRouter);
 
 
 app.get("/", (req,res) => {
-    res.status(200).json({message:"Welcome"});
+    res.status(200).json({message:"Welcome To Brilson"});
 });
 
 
