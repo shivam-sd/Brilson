@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {Link} from "react-router-dom"
+import CardUI from "./CardUI";
 
 
 const HeroSection = () => {
@@ -37,7 +38,7 @@ const HeroSection = () => {
           <br />
           <span className="text-yellow-400">Elevated</span>
         </motion.h1>
-
+<CardUI />
         {/* Subheading */}
         <motion.p
           initial={{ opacity: 0 }}
