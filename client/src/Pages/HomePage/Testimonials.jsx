@@ -45,7 +45,9 @@ const testimonials = [
 
 const Testimonials = () => {
   return (
-    <div className="bg-[#05070a]">
+    <div className="px-4 py-4 bg-[#05070a]">
+
+    <div className="bg-[#05070a] mt-5">
 
 <h1 className="text-white text-center text-5xl font-bold">Loved by <span className="text-blue-400 font-bold">Professionals</span></h1>
 <p className="text-center text-gray-300 mt-3">Join thousands of happy customers who have transformed their networking.</p>
@@ -86,8 +88,8 @@ const Testimonials = () => {
                 {[...Array(t.stars)].map((_, idx) => (
                   <Star
                   key={idx}
-                    className="text-yellow-400 w-4 h-4 fill-yellow-400"
-                    />
+                  className="text-yellow-400 w-4 h-4 fill-yellow-400"
+                  />
                 ))}
               </div>
 
@@ -108,6 +110,7 @@ const Testimonials = () => {
       </Swiper>
 
     </div>
+        </div>
         </div>
   );
 };
