@@ -32,6 +32,7 @@ const Orders = () => {
     );
 
     const ordersData = res.data.orders || [];
+    // console.log("Fetched Orders:", res);
 
     // LATEST ORDER  
     const sortedOrders = ordersData.sort(
@@ -112,9 +113,9 @@ const Orders = () => {
                       className="flex gap-4 items-center border-b border-white/10 pb-4"
                     >
                       {/* IMAGE PLACEHOLDER */}
-                      <div className="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center text-xs text-gray-400">
-                        Image
-                      </div>
+                      {/* <div className="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center text-xs text-gray-400">
+                        {item.image}
+                      </div> */}
 
                       {/* PRODUCT INFO */}
                       <div className="flex-1">

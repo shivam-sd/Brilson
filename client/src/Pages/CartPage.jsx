@@ -209,9 +209,12 @@ const CartPage = () => {
       <div className="relative overflow-hidden bg-gradient-to-r from-cyan-900/20 via-blue-900/20 to-purple-900/20 py-12 md:py-16 px-4">
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-purple-500/5"></div>
         <div className="relative max-w-6xl mx-auto text-center mt-10">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-            Shopping <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Cart</span>
-          </h1>
+          <h1 className="text-sm lg:text-xl mb-2">
+  Shopping{" "}
+  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
+    Cart
+  </span>
+</h1>
           <p className="text-gray-300 text-sm sm:text-base md:text-lg">
             Review and manage your items before checkout
           </p>

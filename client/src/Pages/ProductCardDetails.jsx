@@ -145,7 +145,7 @@ const ProductCardPreference = () => {
             <img
               src={product.image}
               alt={product.title}
-              className="w-full h-80 object-contain rounded-xl"
+              className="lg:w-full lg:h-96 object-contain rounded-xl hover:scale-110 duration-300 cursor-pointer "
             />
           </div>
         </motion.div>

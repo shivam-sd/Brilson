@@ -153,6 +153,13 @@ const Header = () => {
                     </Link>
                   )}
 
+     <Link
+                      to={`/orders`}
+                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
+                    >
+                      My Orders
+                    </Link>
+
                   <button
                     onClick={handleLogout}
                     className="px-3 py-2 text-left rounded hover:bg-gray-800 text-gray-300 hover:text-white cursor-pointer"

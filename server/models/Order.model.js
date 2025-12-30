@@ -25,6 +25,7 @@ const orderSchema = new mongoose.Schema({
     state: String,
     pincode: Number,
   },
+  image:String,
   totalAmount: Number,
   status: {
     type: String,

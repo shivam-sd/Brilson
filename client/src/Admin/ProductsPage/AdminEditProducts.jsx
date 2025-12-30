@@ -11,14 +11,17 @@ const AdminEditProduct = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [Badge, setBadges] = useState([]);
-  
+  const [badges, setBadges] = useState([]);
+  const [imageFile, setImageFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+
   // Product state with initial values
   const [productData, setProductData] = useState({
     category: "",
     title: "",
     badge: "",
     description: "",
+    image: "",
     features: [""],
     metaTags: [""],
     variants: [{
@@ -30,37 +33,46 @@ const AdminEditProduct = () => {
     }]
   });
 
-
-// fetch all category
+  // fetch all category
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/category/active`
-      );
-      // console.log(res);
-      setCategories(res?.data?.categories || []);
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/category/active`
+        );
+        setCategories(res?.data?.categories || []);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setCategories([]);
+      }
     };
     fetchCategories();
   }, []);
 
-
   // fetch all badges
   useEffect(() => {
     const fetchBadges = async () => {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/badges/active`
-      );
-      // console.log(res);
-      setBadges(res?.data?.badges || []);
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/badges/active`
+        );
+        setBadges(res?.data?.badges || []);
+      } catch (error) {
+        console.error("Error fetching badges:", error);
+        setBadges([]);
+      }
     };
     fetchBadges();
   }, []);
 
-
-
-
-
-
+  // image handle change
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  }
 
   // Fetch product data for show allready 
   useEffect(() => {
@@ -70,7 +82,6 @@ const AdminEditProduct = () => {
           `${import.meta.env.VITE_BASE_URL}/api/admin/find/products/${id}`
         );
         
-        console.log(response)
         if (response.data?.product) {
           const product = response.data.product;
           
@@ -80,6 +91,7 @@ const AdminEditProduct = () => {
             title: product.title || "",
             badge: product.badge || "",
             description: product.description || "",
+            image: product.image || "",
             features: product.features?.length > 0 ? product.features : [""],
             metaTags: product.metaTags?.length > 0 ? product.metaTags : [""],
             variants: product.variants?.length > 0 ? product.variants : [{
@@ -90,6 +102,10 @@ const AdminEditProduct = () => {
               discount: ""
             }]
           });
+
+          if (product.image) {
+            setPreviewImage(product.image);
+          }
         }
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -171,8 +187,6 @@ const AdminEditProduct = () => {
     }));
   };
 
-
-
   // Add meta Tags
   const addMetaTags = () => {
     setProductData(prev => ({
@@ -200,43 +214,63 @@ const AdminEditProduct = () => {
     }));
   };
 
-
-
-
-
-  // Handle form submission
+  // Handle form submission with image upload
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Prepare data for API
-    const submitData = {
-      category: productData.category,
-      title: productData.title,
-      badge: productData.badge,
-      description: productData.description,
-      features: productData.features.filter(f => f.trim() !== ""),
-      metaTags: productData.metaTags.filter(m => m.trim() !== ""),
-      variants: productData.variants.filter(v => v.name.trim() !== "" && v.price !== "")
-    };
-
     try {
-      await axios.put(
+      // Create FormData for multipart/form-data
+      const formData = new FormData();
+      
+      // Add all product data
+      formData.append('category', productData.category);
+      formData.append('title', productData.title);
+      formData.append('badge', productData.badge);
+      formData.append('description', productData.description);
+      
+      // Add features as JSON string
+      const filteredFeatures = productData.features.filter(f => f.trim() !== "");
+      formData.append('features', JSON.stringify(filteredFeatures));
+      
+      // Add metaTags as JSON string
+      const filteredMetaTags = productData.metaTags.filter(m => m.trim() !== "");
+      formData.append('metaTags', JSON.stringify(filteredMetaTags));
+      
+      // Add variants as JSON string
+      const filteredVariants = productData.variants.filter(v => v.name.trim() !== "" && v.price !== "");
+      formData.append('variants', JSON.stringify(filteredVariants));
+      
+      // Add image if new one is selected
+      if (imageFile) {
+        formData.append('image', imageFile);
+      } else if (productData.image) {
+        // If no new image but existing image, keep the existing one
+        formData.append('existingImage', productData.image);
+      }
+
+      // Make API call
+      const response = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/admin/update/products/${id}`,
-        submitData,
+        formData,
         {
-           withCredentials: true,
+          withCredentials: true,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`
+            'Authorization': `Bearer ${localStorage.getItem("adminToken")}`,
           }
-          }
+        }
       );
       
-      toast.success("Product updated successfully!");
-      navigate('/admindashboard/products/list');
+      if (response.data.success) {
+        toast.success("Product updated successfully!");
+        navigate('/admindashboard/products/list');
+      } else {
+        throw new Error(response.data.message || "Update failed");
+      }
+      
     } catch (error) {
       console.error("Error updating product:", error);
-      toast.error(error?.response?.data?.error || "Failed to update product");
+      toast.error(error?.response?.data?.error || error?.response?.data?.message || "Failed to update product");
     } finally {
       setIsSubmitting(false);
     }
@@ -302,16 +336,10 @@ const AdminEditProduct = () => {
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none cursor-pointer"
                   required
                 >
-         <option value="" >Select Category</option>
-                  {categories.map((c) => {
-                    return (
-                      <>
-                      
-                        <option className="w-full" key={c._id} value={c.name}>{c.name}</option>
-                        
-                      </>
-                    );
-                  })}
+                  <option value="">Select Category</option>
+                  {categories.map((c) => (
+                    <option key={c._id} value={c.name}>{c.name}</option>
+                  ))}
                 </select>
               </div>
 
@@ -326,16 +354,10 @@ const AdminEditProduct = () => {
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none cursor-pointer"
                 >
-                 <option value="" >Select Badge</option>
-                  {Badge.map((b) => {
-                    return (
-                      <>
-                      
-                        <option className="w-full" key={b._id} value={b.name}>{b.name}</option>
-                        
-                      </>
-                    );
-                  })}
+                  <option value="">Select Badge</option>
+                  {badges.map((b) => (
+                    <option key={b._id} value={b.name}>{b.name}</option>
+                  ))}
                 </select>
               </div>
 
@@ -370,6 +392,8 @@ const AdminEditProduct = () => {
                 required
               />
             </div>
+
+
 
             {/* Features Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
@@ -411,13 +435,11 @@ const AdminEditProduct = () => {
               </div>
             </div>
 
-
-
-{/* Meta Tags Section */}
+            {/* Meta Tags Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-200">
-                  Product Meta Tagas ({productData.metaTags.length})
+                  Product Meta Tags ({productData.metaTags.length})
                 </h3>
                 <button
                   type="button"
@@ -435,7 +457,7 @@ const AdminEditProduct = () => {
                       type="text"
                       value={meta}
                       onChange={(e) => updateMetaTags(index, e.target.value)}
-                      placeholder={`Feature ${index + 1} (e.g., #NFC Enabled, #QR Code)`}
+                      placeholder={`Meta Tag ${index + 1} (e.g., #NFC Enabled, #QR Code)`}
                       className="flex-1 px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none"
                     />
                     {productData.metaTags.length > 1 && (
@@ -452,8 +474,6 @@ const AdminEditProduct = () => {
                 ))}
               </div>
             </div>
-
-
 
             {/* Variants Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
@@ -562,6 +582,62 @@ const AdminEditProduct = () => {
               </div>
             </div>
 
+            {/* Image Upload Section */}
+            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-200">
+                  Product Image
+                </h3>
+                <span className="text-sm text-gray-400">
+                  {imageFile ? "New image selected" : "Using existing image"}
+                </span>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Image Upload Input */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Upload New Image (Optional)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600"
+                  />
+                  <p className="text-xs text-gray-400 mt-2">
+                    Supported formats: JPEG, PNG, WebP | Max size: 5MB
+                  </p>
+                </div>
+                
+                {/* Image Preview */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Preview
+                  </label>
+                  <div className="relative w-full h-64 bg-gray-900 rounded-xl overflow-hidden border border-gray-600">
+                    {previewImage ? (
+                      <img
+                        src={previewImage}
+                        alt="Product preview"
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-500">
+                        <div className="text-center">
+                          <div className="text-4xl mb-2">📷</div>
+                          <p>No image selected</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                
+                </div>
+              </div>
+            </div>
+
+
+
             {/* Submit Button */}
             <div className="pt-6 border-t border-gray-700">
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -576,7 +652,7 @@ const AdminEditProduct = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex items-center justify-center gap-3 px-12 py-4 cursor-pointer bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-xl hover:from-cyan-600 hover:to-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto cursor-pointer"
+                  className="flex items-center justify-center gap-3 px-12 py-4 cursor-pointer bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-xl hover:from-cyan-600 hover:to-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                 >
                   {isSubmitting ? (
                     <>
@@ -594,11 +670,6 @@ const AdminEditProduct = () => {
             </div>
           </form>
         </div>
-
-        {/* Info Box */}
-        {/* <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl text-sm text-blue-300">
-          <p>💡 <strong>Note:</strong> Make your changes and click "Update Product" to save. All fields marked with * are required.</p>
-        </div> */}
       </div>
     </div>
   );

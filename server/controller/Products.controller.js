@@ -1,4 +1,5 @@
 const ProductModel = require("../models/Product.model");
+const cloudinary = require("cloudinary").v2;
 
 
 
@@ -16,6 +17,9 @@ const createProduct = async (req, res) => {
       metaTags,
       variants,
     } = req.body;
+
+
+    const file = req?.files?.image;
 
     // Validation
     if (!category || !title || !badge || !description) {
@@ -46,6 +50,21 @@ const createProduct = async (req, res) => {
       }
     }
 
+    // image formate
+    let imageUrl = "";
+    if(file){
+          const allowdFormates = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/svg+xml", "image/gif", "image/avif"];
+          if(!allowdFormates.includes(file.mimetype)){
+            return res.status(400).json({error:"Only images are allowed (jpeg, jpg, png, webp, svg, gif, avif)"});
+          }
+
+          const result = await cloudinary.uploader.upload(file.tempFilePath, {
+            folder: "brilson/products"
+          });
+
+          imageUrl = result.secure_url;
+
+    }
     // Create Product
     const product = await ProductModel.create({
       category,
@@ -53,6 +72,7 @@ const createProduct = async (req, res) => {
       badge,
       stock,
       description,
+      image: imageUrl,
       features: featureList,
       metaTags: metaTagList,
       variants: variantData,
@@ -71,38 +91,94 @@ const createProduct = async (req, res) => {
 
 
 const editProduct = async (req, res) => {
-    try {
-        const productId = req.params.id;
-        const updatedData = req.body;
+  try {
+    const productId = req.params.id;
 
-
-        const updatedProduct = await ProductModel.findByIdAndUpdate(
-            productId,
-            updatedData,
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedProduct) {
-            return res.status(404).json({
-                success: false,
-                message: "Product not found"
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "Product updated successfully",
-            data: updatedProduct
-        });
-
-    } catch (err) {
-        console.log("Error in editProduct", err);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error"
-        });
+    // Find existing product
+    const existingProduct = await ProductModel.findById(productId);
+    if (!existingProduct) {
+      return res.status(404).json({ error: "Product not found" });
     }
+
+    // Clone body 
+    const updatedData = { ...req.body };
+
+    /*  IMAGE HANDLING  */
+    const file = req?.files?.image;
+
+    if (file) {
+      const allowedFormats = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+        "image/svg+xml",
+        "image/gif",
+        "image/avif",
+      ];
+
+      if (!allowedFormats.includes(file.mimetype)) {
+        return res.status(400).json({
+          error: "Only image files are allowed",
+        });
+      }
+
+      const result = await cloudinary.uploader.upload(
+        file.tempFilePath,
+        { folder: "brilson/products" }
+      );
+
+      updatedData.image = result.secure_url;
+    } else {
+      //  keep old image
+      updatedData.image = existingProduct.image;
+    }
+
+    /*  SAFE JSON PARSING  */
+    updatedData.features = req.body.features
+      ? JSON.parse(req.body.features)
+      : [];
+
+    updatedData.metaTags = req.body.metaTags
+      ? JSON.parse(req.body.metaTags)
+      : [];
+
+    updatedData.variants = req.body.variants
+      ? JSON.parse(req.body.variants)
+      : [];
+
+    /*  VALIDATIONS  */
+    if (!updatedData.variants.length) {
+      return res.status(400).json({
+        error: "At least one variant is required",
+      });
+    }
+
+    /*  UPDATE PRODUCT  */
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
+      productId,
+      updatedData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      data: updatedProduct,
+    });
+
+  } catch (err) {
+    console.error("Error in editProduct:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
+
 
 
 const deleteProduct = async (req, res) => {

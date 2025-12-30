@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 const CardUI = () => {
   return (
-    <div className="w-full flex items-center justify-center my-10 px-4">
+    <div className="w-full flex items-center justify-center my-10">
 
       <motion.div
         initial={{ opacity: 0 }}
@@ -23,9 +23,9 @@ const CardUI = () => {
           },
         }}
         className="
-          relative w-[22rem] sm:w-[26rem] min-h-[16rem]
+          relative w-[25rem] sm:w-[28rem] min-h-[16rem]
           rounded-3xl p-6
-          bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
+          
           border border-white/30
           shadow-[0_0_40px_rgba(34,211,238,0.35)]
           backdrop-blur-xl
@@ -34,11 +34,11 @@ const CardUI = () => {
       >
 
         {/* Glow */}
-        <div className="absolute inset-0 bg-cyan-400/40 blur-3xl opacity-40"></div>
+        <div className="absolute inset-0 lg:bg-cyan-400/30 bg-cyan-400/80 blur-3xl opacity-40"></div>
 
         {/* Header Icons */}
         <div className="relative flex justify-between items-center">
-          <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 border border-cyan-400 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-2xl bg-cyan-500/40 border border-cyan-400 flex items-center justify-center">
             <img
               src="https://img.freepik.com/premium-vector/smart-card-vector-outline-icon-design-illustration-symbol-white-background-eps-10-file_848977-2875.jpg"
               alt=""

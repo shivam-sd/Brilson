@@ -9,11 +9,14 @@ const AdminAddProduct = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
   const [badges, setBadges] = useState([]);
+    const [imageFile, setImageFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   // Product state - only essential fields
   const [productData, setProductData] = useState({
     category: "",
     title: "",
     badge: "",
+    image:"",
     description: "",
     features: [""],
     metaTags: [""],
@@ -52,6 +55,17 @@ const AdminAddProduct = () => {
     };
     fetchBadges();
   }, []);
+
+
+  // image upload handler
+   const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setImageFile(file);
+    setPreviewImage(URL.createObjectURL(file));
+  };
+
 
   // Handle basic input changes
   const handleInputChange = (e) => {
@@ -149,38 +163,51 @@ const AdminAddProduct = () => {
     }));
   };
 
+
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+        if (!imageFile) {
+      toast.error("Product image is required");
+      return;
+    }
     setIsSubmitting(true);
 
     // Prepare data for API
-    const submitData = {
-      category: productData.category,
-      title: productData.title,
-      badge: productData.badge,
-      description: productData.description,
-      features: productData.features.filter((f) => f.trim() !== ""),
-      metaTags: productData.metaTags.filter((m) => m.trim() !== ""),
-      variants: productData.variants.filter(
-        (v) => v.name.trim() !== "" && v.price !== ""
-      ),
-    };
+        const formData = new FormData();
+    formData.append("title", productData.title);
+    formData.append("category", productData.category);
+    formData.append("badge", productData.badge);
+    formData.append("description", productData.description);
+    formData.append("image", imageFile);
+
+    formData.append(
+      "features",
+      JSON.stringify(productData.features.filter((f) => f.trim()))
+    );
+    formData.append(
+      "metaTags",
+      JSON.stringify(productData.metaTags.filter((m) => m.trim()))
+    );
+    formData.append(
+      "variants",
+      JSON.stringify(
+        productData.variants.filter((v) => v.name && v.price)
+      )
+    );
 
     try {
       await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/admin/add/products`,
-        submitData,
-        {
-          withCredentials: true,
-        }
+        formData,
+        { withCredentials: true }
       );
 
-      toast.success("Product added successfully!");
+      toast.success("Product added successfully 🎉");
       navigate("/admindashboard/products/list");
-    } catch (error) {
-      console.error("Error adding product:", error);
-      toast.error(error?.response?.data?.error || "Failed to add product");
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to add product");
     } finally {
       setIsSubmitting(false);
     }
@@ -505,6 +532,27 @@ const AdminAddProduct = () => {
               </div>
             </div>
 
+
+<div>
+            <label className="block text-sm text-gray-400 mb-2">
+              Product Image *
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg"
+            />
+
+            {previewImage && (
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="mt-4 w-full h-96 rounded-xl border border-gray-600 object-cover"
+              />
+            )}
+          </div>
+
             {/* Submit Button */}
             <div className="pt-6 border-t border-gray-700">
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -529,10 +577,6 @@ const AdminAddProduct = () => {
           </form>
         </div>
 
-        {/* Info Box */}
-        {/* <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl text-sm text-blue-300">
-          <p>💡 <strong>Note:</strong> First variant will be used as the default/primary product option.</p>
-        </div> */}
       </div>
     </div>
   );

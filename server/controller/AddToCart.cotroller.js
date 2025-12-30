@@ -31,6 +31,7 @@ const addToCart = async (req, res) => {
         userId,
         productId,
         variantId,
+        image: product.image,
         variantName: variant.name,
         price: variant.price,
         quantity: quantity || 1,

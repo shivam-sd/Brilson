@@ -38,7 +38,7 @@ const HowItWorks = () => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="text-white text-4xl md:text-5xl font-bold"
+        className="text-white text-4xl md:text-5xl font-bold mt-5"
       >
         How It <span className="text-cyan-400">Works</span>
       </motion.h2>

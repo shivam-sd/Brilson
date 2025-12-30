@@ -56,7 +56,7 @@ const features = [
 
 const PowerFullFeatures = () => {
   return (
-    <section className="relative w-full py-28 bg-[#0b0f12] text-white overflow-hidden">
+    <section className="relative w-full lg:py-16 bg-[#0b0f12] text-white overflow-hidden">
 
       {/* Glow Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#00eaff11,transparent_65%)] opacity-40"></div>

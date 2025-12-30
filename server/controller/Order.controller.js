@@ -26,6 +26,7 @@ const orderCreate = async (req, res) => {
       variantName: item.variantName,
       quantity: item.quantity,
       price: item.price,
+      image: item.image
     }));
 
     const totalAmount = orderItems.reduce(

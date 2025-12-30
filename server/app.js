@@ -22,6 +22,8 @@ const getCardProfiles = require("./routes/CardProfile.routes");
 const categoryRouter = require("./routes/category.routes");
 // badges
 const badgesRouter = require("./routes/badge.routes");
+const cloudinary = require("cloudinary").v2;
+const fileUpload = require("express-fileupload");
 
 
 DBConnection();
@@ -42,6 +44,23 @@ app.use(cors({
 
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+
+// cloudinary config
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+
+// file upload middleware
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/brilson/'
+}))
+
+
 
 
 app.use("/api/users", UserRouter);

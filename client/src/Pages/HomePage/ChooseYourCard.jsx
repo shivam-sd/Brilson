@@ -106,13 +106,12 @@ const ChooseYourCard = () => {
             key={product._id || index}
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.25 }}
-            className="relative rounded-2xl overflow-hidden backdrop-blur-xl border border-white/10 shadow-xl cursor-pointer bg-white/5 hover:bg-white/10 transition"
+            className="relative h-auto rounded-2xl overflow-hidden backdrop-blur-xl border border-white/10 shadow-xl cursor-pointer bg-white/5 hover:bg-white/10 transition"
           >
-            {/* IMAGE SECTION - READY FOR FUTURE */}
-            <div className="h-48 bg-gradient-to-br from-cyan-900/20 to-blue-900/20 flex items-center justify-center border-b border-white/10">
-              <div className="text-center">
-                <div className="text-4xl mb-2">💳</div>
-                <p className="text-sm text-gray-400">Product Image</p>
+            {/* IMAGE SECTION */}
+            <div className="h-80 bg-gradient-to-br from-cyan-900/20 to-blue-900/20 flex items-center justify-center ">
+              <div className="w-full h-72 flex items-center justify-center">
+               <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
               </div>
             </div>
 

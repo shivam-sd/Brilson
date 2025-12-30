@@ -1,12 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FiMail, FiPhone, FiMapPin, FiCheckCircle } from "react-icons/fi";
+import {toast} from "react-toastify";
 
 const ContactSales = () => {
+
+const [result, setResult] = useState(null);
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  setResult("Sending....");
+  const formData = new FormData(e.target);
+  
+  formData.append("access_key", "997fa1ac-8b53-47a0-a76e-aea138e5f89b");
+
+  const response = await fetch("https://api.web3forms.com/submit", {
+    method:"POST",
+    body: formData
+  });
+
+
+  const data = await response.json();
+
+  if(data.success){
+    setResult("Message sent successfully!");
+    toast.success("We Contact You Soon!");
+    e.target.reset();
+  }else {
+      setResult("Error");
+    }
+
+
+  setResult("");
+
+}
+
+
+
   return (
     <div className="bg-[#05070a] text-white min-h-screen pt-24 pb-28">
 
-     
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -23,7 +57,7 @@ const ContactSales = () => {
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-14 px-6">
 
-        {/* --- Left: Contact Form --- */}
+        {/*  Contact Form  */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -32,7 +66,10 @@ const ContactSales = () => {
         >
           <h3 className="text-2xl font-semibold mb-6">Send us a message</h3>
 
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+
+{/* subject */}
+<input type="text" name="subject" className="hidden" value={"New Submittion Form Brilson"} />
 
             {/* Name */}
             <div>
@@ -40,6 +77,7 @@ const ContactSales = () => {
               <input
                 type="text"
                 placeholder="Enter your name"
+                name="Full Name"
                 className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none"
               />
             </div>
@@ -50,6 +88,7 @@ const ContactSales = () => {
               <input
                 type="email"
                 placeholder="Enter your email"
+                name="email"
                 className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none"
               />
             </div>
@@ -60,6 +99,7 @@ const ContactSales = () => {
               <input
                 type="text"
                 placeholder="Enter your phone"
+                name="phone"
                 className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none"
               />
             </div>
@@ -70,10 +110,12 @@ const ContactSales = () => {
               <textarea
                 rows="5"
                 placeholder="Tell us how we can help you..."
+                name="message"
                 className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none"
               ></textarea>
             </div>
 
+            <p>{result}</p>
             {/* Submit Button */}
             <button
               className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl shadow-[0_0_20px_rgba(0,255,255,0.4)] transition duration-300"
@@ -96,7 +138,7 @@ const ContactSales = () => {
               <FiMail size={35} className="text-cyan-400" />
               <div>
                 <h4 className="text-lg font-semibold">Email Us</h4>
-                <p className="text-gray-400">support@yourcompany.com</p>
+                <p className="text-gray-400">hello@brilson.com</p>
               </div>
             </div>
 
