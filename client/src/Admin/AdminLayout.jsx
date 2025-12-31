@@ -69,12 +69,12 @@ const AdminLayout = () => {
             <FiUsers size={20} /> Manage Cards
           </NavLink>
 
-          {/* <NavLink
-            to="settings"
+          <NavLink
+            to="/setting/config"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <FiSettings size={20} /> Settings
-          </NavLink> */}
+          </NavLink>
         </nav>
 
         <div className="mt-auto">

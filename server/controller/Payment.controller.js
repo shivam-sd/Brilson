@@ -1,15 +1,24 @@
-const razorpay = require("../config/razorpay");
+const getRazorpayInstance = require("../config/razorpay");
+const { getConfig } = require("../config/runTimeConfigLoader");
+
 const OrderModel = require("../models/Order.model");
 const PaymentModel = require("../models/Payment.model");
 const crypto = require("crypto");
 const distributeMLMCommission = require("../controller/mlmCommission.controller");
+
+
+//  CREATE PAYMENT ORDER 
 
 const createPaymentOrder = async (req, res) => {
   try {
     const { orderId } = req.body;
 
     const order = await OrderModel.findById(orderId);
-    if (!order) return res.status(404).json({ error: "Order not found" });
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    const razorpay = getRazorpayInstance();
 
     const razorpayOrder = await razorpay.orders.create({
       amount: order.totalAmount * 100,
@@ -26,15 +35,15 @@ const createPaymentOrder = async (req, res) => {
     });
 
     res.json(razorpayOrder);
-
   } catch (err) {
+    console.error("Create Payment Error:", err);
     res.status(500).json({ error: "Payment error" });
   }
 };
 
 
 
-// payment success ke baad frontend ish api ko call karega.
+//  VERIFY PAYMENT 
 
 const verifyPayment = async (req, res) => {
   try {
@@ -49,9 +58,15 @@ const verifyPayment = async (req, res) => {
       return res.status(400).json({ error: "Missing payment details" });
     }
 
-    // Signature verification
+    const config = getConfig();
+
+    if (!config.razorpay) {
+      return res.status(500).json({ error: "Razorpay config not loaded" });
+    }
+
+    //  Signature verification using runtime secret
     const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_SECRET)
+      .createHmac("sha256", config.razorpay.keySecret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
@@ -59,7 +74,7 @@ const verifyPayment = async (req, res) => {
       return res.status(400).json({ error: "Invalid signature" });
     }
 
-    // Update payment
+    // Update payment record
     const payment = await PaymentModel.findOneAndUpdate(
       { razorpayOrderId: razorpay_order_id },
       {
@@ -73,7 +88,7 @@ const verifyPayment = async (req, res) => {
       return res.status(404).json({ error: "Payment record not found" });
     }
 
-    // 🔹 Update order
+    // Update order status
     const order = await OrderModel.findByIdAndUpdate(
       orderId,
       { status: "paid" },
@@ -84,11 +99,13 @@ const verifyPayment = async (req, res) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    return res.status(200).json({
+    // Optional MLM logic
+    // await distributeMLMCommission(order);
+
+    res.status(200).json({
       success: true,
       message: "Payment verified successfully",
     });
-
   } catch (err) {
     console.error("Verify Payment Error:", err);
     res.status(500).json({ error: "Payment verification failed" });
@@ -97,21 +114,26 @@ const verifyPayment = async (req, res) => {
 
 
 
-
+//  WEBHOOK 
 
 const razorpayWebhook = async (req, res) => {
-  const { event } = req.body;
+  try {
+    const { event } = req.body;
 
-  if (event === "payment.failed") {
-    const payment = req.body.payload.payment.entity;
+    if (event === "payment.failed") {
+      const payment = req.body.payload.payment.entity;
 
-    await OrderModel.findOneAndUpdate(
-      { razorpayOrderId: payment.order_id },
-      { paymentStatus: "failed" }
-    );
+      await OrderModel.findOneAndUpdate(
+        { razorpayOrderId: payment.order_id },
+        { paymentStatus: "failed" }
+      );
+    }
+
+    res.json({ status: "ok" });
+  } catch (err) {
+    console.error("Webhook Error:", err);
+    res.status(500).json({ error: "Webhook error" });
   }
-
-  res.json({ status: "ok" });
 };
 
 module.exports = {

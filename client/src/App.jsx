@@ -37,6 +37,7 @@ import PublicProfilePage from "./Pages/PublicProfilePage";
 import AdminCategories from "./Admin/ProductsPage/AdminCategories";
 import AdminBadges from "./Admin/ProductsPage/AdminBadges";
 import GetYourCard from "./Pages/GetYourCard";
+import AdminConfig from "./Admin/AdminConfig"
 
 function App() {
   return (
@@ -72,6 +73,9 @@ function App() {
           <Route path="/business-card" element={<BusinessCard />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+
+
+          <Route path="/setting/config" element={<ProtectedRoute><AdminConfig /></ProtectedRoute>} />
 
           <Route
             path="admindashboard"
