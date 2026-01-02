@@ -10,6 +10,8 @@ import {
   FiMenu,
   FiX,
 } from "react-icons/fi";
+import { MdAnalytics } from "react-icons/md";
+
 
 const AdminLayout = () => {
   const [open, setOpen] = useState(false);
@@ -68,6 +70,14 @@ const AdminLayout = () => {
           >
             <FiUsers size={20} /> Manage Cards
           </NavLink>
+
+          <NavLink
+            to="selling-overview"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <MdAnalytics size={20} /> Selling Overview
+          </NavLink>
+
 
           <NavLink
             to="/setting/config"

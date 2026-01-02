@@ -37,8 +37,8 @@ import PublicProfilePage from "./Pages/PublicProfilePage";
 import AdminCategories from "./Admin/ProductsPage/AdminCategories";
 import AdminBadges from "./Admin/ProductsPage/AdminBadges";
 import GetYourCard from "./Pages/GetYourCard";
-import AdminConfig from "./Admin/AdminConfig"
-
+import AdminConfig from "./Admin/AdminConfig";
+import SellingOverview from "./Admin/SellingOverview";
 function App() {
   return (
     <>
@@ -73,9 +73,6 @@ function App() {
           <Route path="/business-card" element={<BusinessCard />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/admin/login" element={<AdminLogin />} />
-
-
-          <Route path="/setting/config" element={<ProtectedRoute><AdminConfig /></ProtectedRoute>} />
 
           <Route
             path="admindashboard"
@@ -125,6 +122,16 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="selling-overview"
+              element={
+                <ProtectedRoute>
+                  <SellingOverview />
+                </ProtectedRoute>
+              }
+            />
+
             {/* <Route path='settings' element={<Settings />} /> */}
           </Route>
           <Route
@@ -153,6 +160,15 @@ function App() {
             }
           />
 
+          <Route
+            path="setting/config"
+            element={
+              <ProtectedRoute>
+                <AdminConfig />
+              </ProtectedRoute>
+            }
+          />
+
           {/* add dynamic categories */}
           <Route
             path="/admin/add/category"
@@ -162,7 +178,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
 
           {/* add dynamic badegs */}
           <Route

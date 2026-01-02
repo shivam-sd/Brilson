@@ -26,6 +26,7 @@ const getCardProfiles = require("./routes/CardProfile.routes");
 const categoryRouter = require("./routes/category.routes");
 const badgesRouter = require("./routes/badge.routes");
 const ConfigRouter = require("./routes/AdminConfig");
+const adminSalesRouter = require("./routes/adminSales.route");
 
 // Runtime config
 const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
@@ -81,6 +82,9 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   app.use("/api/category", categoryRouter);
   app.use("/api/badges", badgesRouter);
   app.use("/api/config", ConfigRouter);
+  app.use("/api/admin", adminSalesRouter);
+
+
 
   app.get("/", (req, res) => {
     res.status(200).json({ message: "Welcome To Brilson" });

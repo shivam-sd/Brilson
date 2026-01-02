@@ -4,73 +4,68 @@ import { motion } from "framer-motion";
 
 const CardUI = () => {
   return (
-    <div className="w-full flex items-center justify-center my-10">
+    <div className="w-full flex items-center justify-center my-10 px-4">
 
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{
-          opacity: 1,
-          y: [0, -12, 0], 
-        }}
+        animate={{ opacity: 1, y: [0, -8, 0] }}
         transition={{
-          y: {
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-          },
-          opacity: {
-            duration: 0.6,
-          },
+          y: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+          opacity: { duration: 0.6 }
         }}
         className="
-          relative w-[25rem] sm:w-[28rem] min-h-[16rem]
-          rounded-3xl p-6
-          
-          border border-white/30
-          shadow-[0_0_40px_rgba(34,211,238,0.35)]
+          relative
+          w-full max-w-[360px]   
+          h-[210px]             
+          rounded-2xl
+          px-5 py-4
+          border border-white/20
+         bg-transparent
+          shadow-[0_0_35px_rgba(0,255,255,0.35)]
           backdrop-blur-xl
           overflow-hidden
         "
       >
 
         {/* Glow */}
-        <div className="absolute inset-0 lg:bg-cyan-400/30 bg-cyan-400/80 blur-3xl opacity-40"></div>
+        <div className="absolute inset-0 bg-cyan-400/40 blur-3xl opacity-30"></div>
 
-        {/* Header Icons */}
+        {/* Top Icons */}
         <div className="relative flex justify-between items-center">
-          <div className="w-14 h-14 rounded-2xl bg-cyan-500/40 border border-cyan-400 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-cyan-500/50 border border-cyan-300 flex items-center justify-center">
             <img
               src="https://img.freepik.com/premium-vector/smart-card-vector-outline-icon-design-illustration-symbol-white-background-eps-10-file_848977-2875.jpg"
+              className="w-9 h-9 rounded-sm"
               alt=""
-              className="w-10 h-10 object-contain rounded-xl"
             />
           </div>
 
-          <div className="w-14 h-14 rounded-2xl bg-cyan-400 border border-cyan-400 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-cyan-400 border border-cyan-300 flex items-center justify-center">
             <img
               src="https://static.thenounproject.com/png/1119914-200.png"
+              className="w-6 h-6"
               alt=""
-              className="w-8 h-8 object-contain"
             />
           </div>
         </div>
 
-        {/* User Info */}
-        <div className="relative mt-8 text-left px-10">
-          <p className="text-3xl font-bold text-white tracking-wide">
+        {/* Name */}
+        <div className="relative mt-4">
+          <p className="text-xl font-semibold text-white">
             John Deo
           </p>
-          <span className="text-gray-400 text-sm">
+          <p className="text-sm text-gray-300">
             Product Designer
-          </span>
+          </p>
         </div>
 
         {/* Footer */}
-        <div className="relative mt-10 flex justify-between items-center text-sm text-gray-300">
-          <div className="flex items-center gap-2">
-            <RiVerifiedBadgeLine className="text-yellow-400 text-lg" />
+        <div className="absolute bottom-4 left-5 right-5 flex justify-between items-center text-xs text-gray-300">
+          <div className="flex items-center gap-1">
+            <RiVerifiedBadgeLine className="text-yellow-400" />
             NFC Enabled
           </div>
+
           <span className="text-cyan-300 font-medium">
             brilson.me/johndeo
           </span>

@@ -27,6 +27,16 @@ const orderSchema = new mongoose.Schema({
   },
   image:String,
   totalAmount: Number,
+  cost:{
+    type:Number,
+    default:0
+  },
+  profit:{
+    type:Number,
+    default: function(){
+      return this.totalAmount - this.cost;
+    }
+  },
   status: {
     type: String,
     default: "pending",
