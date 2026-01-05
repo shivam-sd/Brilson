@@ -57,7 +57,7 @@ const getSellingOverview = async (req, res) => {
 
     //  AGGREGATION 
     const data = await OrderModel.aggregate([
-      { $match: matchStage, status: "paid" },
+      { $match: matchStage,  },
       {
         $group: {
           ...groupStage,

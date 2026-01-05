@@ -5,6 +5,7 @@ import PowerFullFeature from "./Pages/HomePage/PowerFullFeatures";
 import ChooseYourCard from "./Pages/HomePage/ChooseYourCard";
 import Testimonials from './Pages/HomePage/Testimonials';
 import Networking from './Pages/HomePage/Networking';
+import HowToUse from './Component/HowToUse';
 
 const HomePage = () => {
   return (
@@ -12,6 +13,7 @@ const HomePage = () => {
       <HeroSection />
       {/* <ChooseYourCard /> */}
       <PowerFullFeature />
+      <HowToUse />
       {/* <OurSmartCard /> */}
       <Testimonials />
       <Networking />

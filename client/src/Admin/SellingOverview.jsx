@@ -129,7 +129,7 @@ console.log(res)
           <div className="flex items-center justify-between mb-6">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">  
                   <BarChart3 className="w-6 h-6 text-white" />
                 </div>
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800">

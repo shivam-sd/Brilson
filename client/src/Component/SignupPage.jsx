@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock, User } from "lucide-react";
+import { Mail, Lock, User, Phone } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import {redirect, useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 
 const SignupPage = () => {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone:"",
     password: "",
     confirm: "",
   });
@@ -26,8 +27,12 @@ const SignupPage = () => {
     e.preventDefault();
 
     // validation
-    if (!form.name || !form.email || !form.password || !form.confirm) {
+    if (!form.name || !form.email || !form.phone || !form.password || !form.confirm) {
       return toast.error("All fields are required");
+    }
+
+    if(form.phone.length < 10 || form.phone.length > 10){
+      return toast.error("Phone number must be 10 digits");
     }
 
     if (form.password !== form.confirm) {
@@ -42,6 +47,7 @@ const SignupPage = () => {
         {
           name: form.name,
           email: form.email,
+          phone: form.phone,
           password: form.password,
         },
         { withCredentials: true }
@@ -75,9 +81,9 @@ const SignupPage = () => {
         className="w-full max-w-md bg-[#0f1116]/80 backdrop-blur-md p-10 rounded-3xl shadow-2xl border border-white/10 mt-20"
       >
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white tracking-wide">
+          <h2 className="text-4xl font-bold text-white tracking-wide">
             Create <span className="text-cyan-400">Account</span>
-          </h1>
+          </h2>
           <p className="text-gray-400 text-sm mt-2">
             Join thousands of professionals using our platform
           </p>
@@ -111,6 +117,22 @@ const SignupPage = () => {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="you@example.com"
+                className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
+              />
+            </div>
+          </div>
+
+          {/* phone */}
+          <div>
+            <label className="text-gray-300 text-sm">Phone</label>
+            <div className="mt-2 flex items-center bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus-within:border-cyan-500">
+              <Phone className="w-5 h-5 text-gray-400" />
+              <input
+                type="tel"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                placeholder="1234567890"
                 className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
               />
             </div>
@@ -161,9 +183,9 @@ const SignupPage = () => {
 
         <p className="text-center text-gray-400 text-sm mt-6">
           Already have an account?{" "}
-          <a href="/login" className="text-cyan-400 hover:underline">
+          <Link to="/login" className="text-cyan-400 hover:underline">
             Login
-          </a>
+          </Link>
         </p>
       </motion.div>
     </div>

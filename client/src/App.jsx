@@ -39,6 +39,10 @@ import AdminBadges from "./Admin/ProductsPage/AdminBadges";
 import GetYourCard from "./Pages/GetYourCard";
 import AdminConfig from "./Admin/AdminConfig";
 import SellingOverview from "./Admin/SellingOverview";
+import AdminInvoices from "./Admin/AdminInvoices";
+
+
+
 function App() {
   return (
     <>
@@ -131,6 +135,17 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+
+            <Route
+              path="orders/invoices"
+              element={
+                <ProtectedRoute>
+                  <AdminInvoices />
+                </ProtectedRoute>
+              }
+            />
+
 
             {/* <Route path='settings' element={<Settings />} /> */}
           </Route>

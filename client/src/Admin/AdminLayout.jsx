@@ -11,6 +11,7 @@ import {
   FiX,
 } from "react-icons/fi";
 import { MdAnalytics } from "react-icons/md";
+import { GrDocumentLocked } from "react-icons/gr";
 
 
 const AdminLayout = () => {
@@ -71,11 +72,21 @@ const AdminLayout = () => {
             <FiUsers size={20} /> Manage Cards
           </NavLink>
 
+
+
           <NavLink
             to="selling-overview"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <MdAnalytics size={20} /> Selling Overview
+          </NavLink>
+
+          
+          <NavLink
+            to="orders/invoices"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <GrDocumentLocked size={20} /> Orders invoices
           </NavLink>
 
 
@@ -149,6 +160,14 @@ const AdminLayout = () => {
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <FiUsers size={20} /> Manage Cards
+          </NavLink>
+
+
+           <NavLink
+            to="orders/invoices"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <GrDocumentLocked size={20} /> Orders invoices
           </NavLink>
 
           {/* <NavLink

@@ -15,7 +15,11 @@ import {
   FiUser,
   FiBriefcase,
   FiMessageSquare,
-  FiShare2
+  FiShare2,
+  FiAward,
+  FiBook,
+  FiCalendar,
+  FiFileText
 } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -30,7 +34,6 @@ const ProfilePage = () => {
   const [id, setId] = useState(null);
   const [showEditButton, setShowEditButton] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("about");
 
   const copyText = (text) => {
     if (!text) return;
@@ -100,9 +103,6 @@ const ProfilePage = () => {
     instagram: profile?.instagram || "",
   };
 
-  const hasSocialLinks = profileData.linkedin || profileData.twitter || profileData.instagram;
-  const hasContactInfo = profileData.email || profileData.phone || profileData.website;
-
   const handleWhatsApp = () => {
     if (profileData.phone) {
       const phoneNumber = profileData.phone.replace(/\D/g, '');
@@ -128,40 +128,56 @@ const ProfilePage = () => {
   };
 
   const ContactInfo = ({ icon, text, type = "text" }) => (
-    <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-800/30 transition-colors group">
-      <div className="p-2 bg-gray-800 rounded-lg text-gray-400 group-hover:text-cyan-400 transition-colors">
+    <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-800/30 hover:bg-gray-800/50 transition-colors group">
+      <div className="p-2 bg-gray-800/50 rounded-lg text-gray-400 group-hover:text-cyan-400 transition-colors">
         {icon}
       </div>
       <span className="text-gray-300 flex-1 break-words">{text}</span>
       <button
         onClick={() => copyText(text)}
-        className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+        className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors"
         title="Copy"
       >
-        {copied ? <FiCheck className="text-green-400" /> : <FiCopy className="text-gray-400" />}
+        {copied ? <FiCheck className="text-green-400" /> : <FiCopy className="text-gray-400 hover:text-cyan-400" />}
       </button>
     </div>
   );
 
   const SocialLink = ({ platform, url, icon }) => (
     <motion.a
-      whileHover={{ x: 5 }}
+      whileHover={{ scale: 1.02 }}
       href={url.startsWith('http') ? url : `https://${url}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-between p-4 bg-gray-800/30 rounded-xl border border-gray-700 hover:border-cyan-500/50 transition-all group"
+      className="flex items-center justify-between p-4 bg-gray-800/30 rounded-xl border border-gray-700 hover:border-cyan-500/50 hover:bg-gray-800/50 transition-all group"
     >
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-lg bg-gray-700/50 group-hover:bg-cyan-500/10 transition-colors">
           {icon}
         </div>
-        <div>
+        <div className="text-left">
           <span className="font-medium capitalize">{platform}</span>
           <p className="text-gray-400 text-sm">Visit profile</p>
         </div>
       </div>
       <FiChevronRight className="text-gray-400 group-hover:text-cyan-400 transition-colors" />
     </motion.a>
+  );
+
+  const SectionCard = ({ title, icon, children, className = "" }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 shadow-xl ${className}`}
+    >
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-700/50">
+        <div className="p-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-blue-500/20">
+          {icon}
+        </div>
+        <h2 className="text-2xl font-bold">{title}</h2>
+      </div>
+      {children}
+    </motion.div>
   );
 
   return (
@@ -177,64 +193,66 @@ const ProfilePage = () => {
 
         <div className="relative max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
           {/* Header Actions */}
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
-              <Link to="/" className="text-gray-400 hover:text-white transition-colors">
-                ← Back to Home
+              <Link to="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                <FiChevronRight className="rotate-180" /> Back to Home
               </Link>
             </div>
             <div className="flex gap-3">
               {showEditButton && id && (
                 <Link 
                   to={`/profile/edit/${id}`}
-                  className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-xl transition-colors"
+                  className="flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white px-4 py-3 rounded-xl transition-all shadow-lg"
                 >
                   <FiEdit /> Edit Profile
                 </Link>
               )}
               <button
                 onClick={handleShare}
-                className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 px-4 py-2 rounded-xl transition-colors"
+                className="flex items-center gap-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700/50 px-4 py-3 rounded-xl transition-all"
               >
-                <FiShare2 /> Share
+                <FiShare2 /> Share Profile
               </button>
             </div>
           </div>
 
-          {/* Main Profile Card */}
+          {/* Hero Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-6 md:p-8 mb-8 shadow-2xl"
+            className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-6 md:p-8 mb-8 shadow-2xl overflow-hidden"
           >
-            {/* Profile Header */}
-            <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start mb-8">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
               {/* Avatar */}
               <div className="relative">
-                <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden border-4 border-gray-700">
+                <div className="relative w-32 h-32 md:w-36 md:h-36 rounded-2xl overflow-hidden border-4 border-gray-700 shadow-2xl">
                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-blue-600"></div>
                   <div className="absolute inset-2 bg-gray-900 rounded-xl flex items-center justify-center">
-                    <FiUser className="w-16 h-16 md:w-20 md:h-20 text-cyan-300" />
+                    <FiUser className="w-20 h-20 text-cyan-300" />
                   </div>
                 </div>
-                <div className="absolute -bottom-3 -right-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-xs font-bold px-4 py-2 rounded-full">
+                <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                   PRO
                 </div>
               </div>
 
               {/* Profile Info */}
               <div className="flex-1 text-center md:text-left">
-                <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-4 mb-4">
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                      {profileData.name || "Anonymous"}
-                    </h1>
-                    {profileData.bio && (
-                      <p className="text-gray-300 italic text-lg md:text-xl mb-4">
-                        "{profileData.bio}"
-                      </p>
-                    )}
-                  </div>
+                <div className="mb-6">
+                  <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                    {profileData.name || "Anonymous"}
+                  </h1>
+                  {profileData.bio && (
+                    <p className="text-gray-300 text-lg md:text-xl italic mb-4 max-w-2xl">
+                      "{profileData.bio}"
+                    </p>
+                  )}
+                  {profileData.city && (
+                    <div className="flex items-center justify-center md:justify-start gap-2 text-gray-400">
+                      <FiMapPin /> {profileData.city}
+                    </div>
+                  )}
                 </div>
 
                 {/* Action Buttons */}
@@ -242,7 +260,7 @@ const ProfilePage = () => {
                   {profileData.email && (
                     <a
                       href={`mailto:${profileData.email}`}
-                      className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg transition-colors"
+                      className="flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 px-4 py-2 rounded-lg transition-all shadow-lg"
                     >
                       <FiMail /> Email
                     </a>
@@ -250,168 +268,159 @@ const ProfilePage = () => {
                   {profileData.phone && (
                     <button
                       onClick={handleWhatsApp}
-                      className="flex items-center gap-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors"
+                      className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-4 py-2 rounded-lg transition-all shadow-lg"
                     >
                       <FaWhatsapp /> WhatsApp
                     </button>
                   )}
+                  {profileData.website && (
+                    <a
+                      href={profileData.website.startsWith('http') ? profileData.website : `https://${profileData.website}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 px-4 py-2 rounded-lg transition-all shadow-lg"
+                    >
+                      <FiGlobe /> Website
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            {/* Left Column - About & Contact */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* About Section */}
+              <SectionCard title="About Me" icon={<FiBriefcase className="text-cyan-400" />}>
+                <div className="space-y-4">
+                  <p className="text-gray-300 leading-relaxed whitespace-pre-line">
+                    {profileData.about || "No information provided"}
+                  </p>
+                </div>
+              </SectionCard>
+
+              {/* Contact Information */}
+              <SectionCard title="Contact Information" icon={<FiMail className="text-cyan-400" />}>
+                <div className="space-y-3">
+                  {profileData.email && (
+                    <ContactInfo icon={<FiMail />} text={profileData.email} />
+                  )}
+                  {profileData.phone && (
+                    <ContactInfo icon={<FiSmartphone />} text={profileData.phone} />
+                  )}
+                  {profileData.website && (
+                    <ContactInfo icon={<FiGlobe />} text={profileData.website} />
+                  )}
+                  {profileData.city && (
+                    <ContactInfo icon={<FiMapPin />} text={profileData.city} />
+                  )}
+                </div>
+              </SectionCard>
+
+              {/* Social Links */}
+              <SectionCard title="Connect With Me" icon={<FiUsers className="text-cyan-400" />}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {profileData.linkedin && (
+                    <SocialLink
+                      platform="LinkedIn"
+                      url={profileData.linkedin}
+                      icon={<FiLinkedin className="text-blue-400" />}
+                    />
+                  )}
+                  {profileData.twitter && (
+                    <SocialLink
+                      platform="Twitter"
+                      url={profileData.twitter}
+                      icon={<FiTwitter className="text-sky-400" />}
+                    />
+                  )}
+                  {profileData.instagram && (
+                    <SocialLink
+                      platform="Instagram"
+                      url={profileData.instagram}
+                      icon={<FiInstagram className="text-pink-400" />}
+                    />
+                  )}
+                </div>
+              </SectionCard>
+            </div>
+
+            {/* Right Column - Quick Actions & QR */}
+            <div className="space-y-6">
+              {/* Quick Actions */}
+              <SectionCard title="Quick Actions" icon={<FiAward className="text-cyan-400" />}>
+                <div className="space-y-3">
                   <button
-                    onClick={handleShare}
-                    className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 px-4 py-2 rounded-lg transition-colors"
+                    onClick={() => copyText(profileData.email)}
+                    className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50 transition-all"
                   >
-                    <FiShare2 /> Share
+                    <div className="flex items-center gap-3">
+                      <FiCopy className="text-gray-400" />
+                      <span>Copy Email</span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => copyText(profileData.phone)}
+                    className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FiCopy className="text-gray-400" />
+                      <span>Copy Phone</span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => copyText(window.location.href)}
+                    className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FiShare2 className="text-gray-400" />
+                      <span>Copy Profile Link</span>
+                    </div>
                   </button>
                 </div>
-              </div>
-            </div>
+              </SectionCard>
 
-            {/* Tabs */}
-            <div className="border-b border-gray-700/50 mb-8">
-              <div className="flex space-x-8">
-                <button
-                  onClick={() => setActiveTab("about")}
-                  className={`pb-4 px-1 text-lg font-medium border-b-2 transition-colors ${
-                    activeTab === "about"
-                      ? "border-cyan-400 text-cyan-400"
-                      : "border-transparent text-gray-400 hover:text-gray-300"
-                  }`}
-                >
-                  <FiMessageSquare className="inline mr-2" /> About
-                </button>
-                <button
-                  onClick={() => setActiveTab("contact")}
-                  className={`pb-4 px-1 text-lg font-medium border-b-2 transition-colors ${
-                    activeTab === "contact"
-                      ? "border-cyan-400 text-cyan-400"
-                      : "border-transparent text-gray-400 hover:text-gray-300"
-                  }`}
-                >
-                  <FiUsers className="inline mr-2" /> Contact
-                </button>
-              </div>
-            </div>
-
-            {/* Tab Content */}
-            <div className="min-h-[200px]">
-              {activeTab === "about" && profileData.about && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="prose prose-invert max-w-none"
-                >
-                  <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <FiBriefcase className="text-cyan-400" /> About Me
-                  </h3>
-                  <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-line">
-                    {profileData.about}
-                  </p>
-                </motion.div>
-              )}
-
-              {activeTab === "contact" && (
-                <div className="grid md:grid-cols-2 gap-8">
-                  {/* Contact Information */}
-                  <div>
-                    <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                      <FiMail className="text-cyan-400" /> Contact Information
-                    </h3>
-                    <div className="space-y-3">
-                      {profileData.email && (
-                        <ContactInfo
-                          icon={<FiMail />}
-                          text={profileData.email}
-                        />
-                      )}
-                      {profileData.phone && (
-                        <ContactInfo
-                          icon={<FiSmartphone />}
-                          text={profileData.phone}
-                        />
-                      )}
-                      {profileData.website && (
-                        <ContactInfo
-                          icon={<FiGlobe />}
-                          text={profileData.website}
-                        />
-                      )}
-                      {profileData.city && (
-                        <ContactInfo
-                          icon={<FiMapPin />}
-                          text={profileData.city}
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Social Links */}
-                  <div>
-                    <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                      <FiUsers className="text-cyan-400" /> Social Links
-                    </h3>
-                    <div className="space-y-3">
-                      {!hasSocialLinks ? (
-                        <p className="text-gray-500 text-center py-4">
-                          No social links added
-                        </p>
-                      ) : (
-                        <>
-                          {profileData.linkedin && (
-                            <SocialLink
-                              platform="LinkedIn"
-                              url={profileData.linkedin}
-                              icon={<FiLinkedin className="text-blue-400" />}
-                            />
-                          )}
-                          {profileData.twitter && (
-                            <SocialLink
-                              platform="Twitter"
-                              url={profileData.twitter}
-                              icon={<FiTwitter className="text-sky-400" />}
-                            />
-                          )}
-                          {profileData.instagram && (
-                            <SocialLink
-                              platform="Instagram"
-                              url={profileData.instagram}
-                              icon={<FiInstagram className="text-pink-400" />}
-                            />
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </motion.div>
-
-          {/* QR Code Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-6 text-center"
-          >
-            <h3 className="text-2xl font-bold mb-4">Digital Business Card</h3>
-            <div className="inline-block p-4 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700 mb-4">
-              <div className="w-48 h-48 bg-gradient-to-br from-cyan-900/30 to-blue-900/30 rounded-xl flex items-center justify-center border-2 border-dashed border-cyan-500/30">
+              {/* QR Code */}
+              <SectionCard title="Digital Business Card" icon={<FiFileText className="text-cyan-400" />}>
                 <div className="text-center">
-                  <div className="text-5xl font-bold text-cyan-300">QR</div>
-                  <p className="text-sm text-cyan-200 mt-2">Scan to Connect</p>
+                  <div className="inline-block p-4 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl border border-gray-700/50 mb-4">
+                    <div className="w-48 h-48 bg-gradient-to-br from-cyan-900/20 to-blue-900/20 rounded-xl flex items-center justify-center border-2 border-dashed border-cyan-500/20">
+                      <div className="text-center">
+                        <div className="text-5xl font-bold text-cyan-300">QR</div>
+                        <p className="text-sm text-cyan-200 mt-2">Scan to Connect</p>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    Scan this QR code to save contact
+                  </p>
                 </div>
-              </div>
+              </SectionCard>
+
+              {/* Profile Stats */}
+              {/* <SectionCard title="Profile Stats" icon={<FiCalendar className="text-cyan-400" />}>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 rounded-lg bg-gray-800/30">
+                    <div className="text-2xl font-bold text-cyan-400">24</div>
+                    <div className="text-gray-400 text-sm">Connections</div>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-gray-800/30">
+                    <div className="text-2xl font-bold text-cyan-400">98%</div>
+                    <div className="text-gray-400 text-sm">Response Rate</div>
+                  </div>
+                </div>
+              </SectionCard> */}
             </div>
-            <p className="text-gray-400 text-sm">
-              Scan this QR code to save {profileData.name}'s contact information
-            </p>
-          </motion.div>
+          </div>
 
           {/* Footer */}
           <div className="text-center mt-12 pt-8 border-t border-gray-800/50">
             <p className="text-gray-500">
               Powered by <span className="text-cyan-400 font-semibold">Brilson</span>
             </p>
-            <p className="text-gray-600 text-sm mt-2">© {new Date().getFullYear()} • Digital Business Card</p>
+            <p className="text-gray-600 text-sm mt-2">© {new Date().getFullYear()} • Professional Digital Business Card</p>
           </div>
         </div>
       </div>

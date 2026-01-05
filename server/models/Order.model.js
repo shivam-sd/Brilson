@@ -41,6 +41,15 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: "pending",
   },
+
+invoice:{
+  number:String,
+  pdfPath: String,
+  pdfUrl:String,
+  cloudinaryId:String,
+  generatedAt:Date
+},
+
   orderStatus:{
     type:String,
     enum:["processing","shipped","delivered","cancelled"],

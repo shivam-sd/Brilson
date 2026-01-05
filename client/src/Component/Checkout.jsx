@@ -159,7 +159,7 @@ const Checkout = () => {
     );
 
     if (verifyRes.data.success) {
-      toast.success("Payment successful 🎉");
+      toast.success("Payment successful");
       navigate("/orders", {replace:true});
     } else {
       toast.error("Payment verification failed");

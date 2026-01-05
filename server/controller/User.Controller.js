@@ -150,12 +150,12 @@ const generateToken = (id) => {
 // USER REGISTER
 const UserRegister = async (req, res) => {
   try {
-    const { name, email, password, refcode } = req.body;
+    const { name, email, phone, password, refcode } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !phone || !password) {
       return res.status(400).json({ error: "All fields are required" });
     }
-
+ 
     // Check if user exists
     const ifUserExist = await UserModel.findOne({ email });
     if (ifUserExist) {
@@ -186,6 +186,7 @@ const UserRegister = async (req, res) => {
     const user = await UserModel.create({
       name,
       email,
+      phone,
       password: hashedPass,
       referralCode,
       referredBy,
@@ -218,14 +219,13 @@ const UserRegister = async (req, res) => {
 // USER LOGIN
 const UserLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, phone, password } = req.body;
 
-    if (!email || !password) {
+    if (!email || !phone || !password) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    const user = await UserModel.findOne({ email });
-
+    const user = await UserModel.findOne({email:email, phone:phone});
     if (!user) {
       return res.status(404).json({ error: "Invalid Credentials!" });
     }

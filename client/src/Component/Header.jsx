@@ -15,7 +15,7 @@ const Header = () => {
 
   const isLoggedIn = !!token;
 
-  /* ---------------- CART COUNT ---------------- */
+  /*  CART COUNT  */
   const getCartCount = async () => {
     try {
       if (isLoggedIn) {
@@ -36,7 +36,7 @@ const Header = () => {
     }
   };
 
-  /* ---------------- ACTIVE CARD CHECK ---------------- */
+  /*  ACTIVE CARD CHECK  */
   const fetchMyActiveCard = async () => {
     try {
       if (!token) return;
@@ -59,7 +59,7 @@ const Header = () => {
     }
   };
 
-  /* ---------------- EFFECTS ---------------- */
+  /*  EFFECTS  */
   useEffect(() => {
     getCartCount();
     fetchMyActiveCard();
@@ -71,7 +71,7 @@ const Header = () => {
     return () => window.removeEventListener("cartUpdate", handleCartUpdate);
   }, []);
 
-  /* ---------------- LOGOUT ---------------- */
+  /*  LOGOUT  */
   const handleLogout = () => {
     localStorage.removeItem("token");
     setToken(null);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FiShoppingBag, FiPackage } from "react-icons/fi";
+import { FiShoppingBag, FiPackage, FiDownload } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -10,20 +10,48 @@ const Orders = () => {
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [downloadingId, setDownloadingId] = useState(null);
 
-  /*  FETCH ORDERS  */
+  /*  FETCH ORDERS */
   useEffect(() => {
     if (!token) {
-      navigate("/login", {replace:true});
+      navigate("/login", { replace: true });
       return;
     }
     fetchOrders();
-  }, []);
+  }, [token, navigate]);
 
   const fetchOrders = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/orders`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const ordersData = res.data.orders || [];
+
+      const sortedOrders = [...ordersData].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+
+      setOrders(sortedOrders);
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to load orders");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /*  DOWNLOAD INVOICE */
+const downloadInvoice = async (orderId) => {
   try {
+    setDownloadingId(orderId);
+
     const res = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/api/orders`,
+      `${import.meta.env.VITE_BASE_URL}/api/invoice/download/${orderId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -31,26 +59,23 @@ const Orders = () => {
       }
     );
 
-    const ordersData = res.data.orders || [];
-    // console.log("Fetched Orders:", res);
+    const url = res.data.downloadUrl;
 
-    // LATEST ORDER  
-    const sortedOrders = ordersData.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-
-    setOrders(sortedOrders);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `invoice_${orderId}.pdf`; 
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 
   } catch (err) {
-    console.error(err);
-    toast.error("Unable to load orders");
+    toast.error("Invoice download failed");
   } finally {
-    setLoading(false);
+    setDownloadingId(null);
   }
 };
-
-
-  /*  STATUS COLOR  */
+  /*  STATUS COLOR */
   const statusStyle = (status) => {
     switch (status) {
       case "paid":
@@ -64,14 +89,17 @@ const Orders = () => {
     }
   };
 
-  /*  UI  */
   return (
     <div className="min-h-screen bg-[#03060A] text-white px-5 py-24">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-10 flex items-center gap-3">
+
+<div className="w-full flex justify-center mt-3">
+
+        <h2 className="text-5xl font-bold mb-10 flex items-center gap-3" >
           <FiShoppingBag className="text-cyan-400" />
           My Orders
-        </h1>
+        </h2>
+</div>
 
         {loading ? (
           <p className="text-center text-gray-400">Loading orders...</p>
@@ -84,7 +112,7 @@ const Orders = () => {
                 key={order._id}
                 className="bg-white/5 border border-white/10 rounded-2xl p-6"
               >
-                {/*  ORDER HEADER  */}
+                {/* HEADER */}
                 <div className="flex flex-col md:flex-row justify-between gap-3 mb-5">
                   <div>
                     <p className="text-sm text-gray-400">Order ID</p>
@@ -105,23 +133,15 @@ const Orders = () => {
                   </div>
                 </div>
 
-                {/*  ORDER ITEMS  */}
+                {/* ITEMS */}
                 <div className="space-y-4">
-                  {order.items.map((item, index) => (
+                  {order.items.map((item, idx) => (
                     <div
-                      key={index}
+                      key={idx}
                       className="flex gap-4 items-center border-b border-white/10 pb-4"
                     >
-                      {/* IMAGE PLACEHOLDER */}
-                      {/* <div className="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center text-xs text-gray-400">
-                        {item.image}
-                      </div> */}
-
-                      {/* PRODUCT INFO */}
                       <div className="flex-1">
-                        <p className="font-semibold">
-                          {item.productTitle}
-                        </p>
+                        <p className="font-semibold">{item.productTitle}</p>
                         <p className="text-sm text-gray-400">
                           Variant: {item.variantName}
                         </p>
@@ -129,8 +149,6 @@ const Orders = () => {
                           Qty: {item.quantity}
                         </p>
                       </div>
-
-                      {/* PRICE */}
                       <div className="font-semibold text-cyan-400">
                         ₹{item.price * item.quantity}
                       </div>
@@ -138,7 +156,7 @@ const Orders = () => {
                   ))}
                 </div>
 
-                {/*  FOOTER  */}
+                {/* TOTAL */}
                 <div className="flex justify-between items-center mt-5 pt-4 border-t border-white/10">
                   <span className="flex items-center gap-2 text-gray-400">
                     <FiPackage />
@@ -148,9 +166,22 @@ const Orders = () => {
                     ₹{order.totalAmount}
                   </span>
                 </div>
-                         <div className="flex justify-center gap-2 items-center mt-5 pt-4 border-t border-white/10 text-green-500">
-                <span className="text-lg font-bold text-white">Order Status:</span>{order.orderStatus}
-                </div>
+
+                {/* INVOICE BUTTON */}
+                {order.status === "paid" && order.invoice?.pdfUrl && (
+                  <div className="flex justify-end mt-6">
+                    <button
+                      onClick={() => downloadInvoice(order._id)}
+                      disabled={downloadingId === order._id}
+                      className="flex items-center gap-2 px-5 py-2 rounded-xl bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition disabled:opacity-50"
+                    >
+                      <FiDownload />
+                      {downloadingId === order._id
+                        ? "Preparing..."
+                        : "Download Invoice"}
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

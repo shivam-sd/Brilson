@@ -27,6 +27,8 @@ const categoryRouter = require("./routes/category.routes");
 const badgesRouter = require("./routes/badge.routes");
 const ConfigRouter = require("./routes/AdminConfig");
 const adminSalesRouter = require("./routes/adminSales.route");
+const invoiceRouter = require("./routes/invoice.routes");
+const adminAllInvoicesRouter = require("./routes/adminInvoices.routes");
 
 // Runtime config
 const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
@@ -83,7 +85,8 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   app.use("/api/badges", badgesRouter);
   app.use("/api/config", ConfigRouter);
   app.use("/api/admin", adminSalesRouter);
-
+  app.use("/api/invoice", invoiceRouter);
+  app.use("/api/admin/invoices", adminAllInvoicesRouter);
 
 
   app.get("/", (req, res) => {

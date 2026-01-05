@@ -3,7 +3,7 @@ const { UserRegister, UserLogin, findLoggedInUser, getMyActiveCard } = require("
 const authUser = require("../middleware/authUserToken");
 const router = express.Router();
 
-
+ 
 
 router.post("/register", UserRegister);
 router.post("/login", UserLogin);

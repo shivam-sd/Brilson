@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 const CardUI = () => {
   return (
-    <div className="w-full flex items-center justify-center my-10 px-4">
+    <div className="w-full flex items-center justify-center my-10">
 
       <motion.div
         initial={{ opacity: 0 }}
@@ -20,7 +20,7 @@ const CardUI = () => {
           rounded-2xl
           px-5 py-4
           border border-white/20
-         bg-transparent
+          bg-transparent
           shadow-[0_0_35px_rgba(0,255,255,0.35)]
           backdrop-blur-xl
           overflow-hidden
@@ -52,11 +52,11 @@ const CardUI = () => {
         {/* Name */}
         <div className="relative mt-4">
           <p className="text-xl font-semibold text-white">
-            John Deo
+            Brilson
           </p>
-          <p className="text-sm text-gray-300">
+          {/* <p className="text-sm text-gray-300">
             Product Designer
-          </p>
+          </p> */}
         </div>
 
         {/* Footer */}
@@ -67,7 +67,7 @@ const CardUI = () => {
           </div>
 
           <span className="text-cyan-300 font-medium">
-            brilson.me/johndeo
+            brilson.me/JohnDeo
           </span>
         </div>
 
