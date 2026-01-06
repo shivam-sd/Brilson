@@ -318,14 +318,14 @@ const LoginPage = () => {
           </p>
           
           {/* Forgot Password Link */}
-          <p className="text-center text-gray-400 text-sm">
+          {/* <p className="text-center text-gray-400 text-sm">
             <button
               onClick={() => toast.info("Forgot password functionality coming soon!")}
               className="text-amber-400 hover:underline hover:text-amber-300"
             >
               Forgot Password?
             </button>
-          </p>
+          </p> */}
         </div>
         
         {/* Verification Status */}

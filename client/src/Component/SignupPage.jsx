@@ -316,6 +316,27 @@ const SignupPage = () => {
             Login here
           </Link>
         </p>
+
+{/* Verification Status */}
+        <div className="mt-4 text-center">
+          {isVerified ? (
+            <div className="inline-flex items-center bg-green-900/30 text-green-400 px-3 py-1 rounded-full text-sm">
+              <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+              Phone verified ✓
+            </div>
+          ) : otpSent ? (
+            <div className="inline-flex items-center bg-amber-900/30 text-amber-400 px-3 py-1 rounded-full text-sm">
+              <span className="w-2 h-2 bg-amber-400 rounded-full mr-2 animate-pulse"></span>
+              Verify phone to login
+            </div>
+          ) : (
+            <div className="inline-flex items-center bg-blue-900/30 text-blue-400 px-3 py-1 rounded-full text-sm">
+              <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+              Send OTP to verify phone
+            </div>
+          )}
+        </div>
+
       </motion.div>
     </div>
   );
