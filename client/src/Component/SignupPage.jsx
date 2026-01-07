@@ -4,6 +4,7 @@ import { Mail, Lock, User, Phone } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
+import { VscReferences } from "react-icons/vsc";
 
 const SignupPage = () => {
   const [form, setForm] = useState({
@@ -12,6 +13,7 @@ const SignupPage = () => {
     phone: "",
     password: "",
     confirm: "",
+    referralCode:"",
   });
 
   const [otpSent, setOtpSent] = useState(false);
@@ -129,6 +131,7 @@ const SignupPage = () => {
           phone: form.phone,
           password: form.password,
           isVerified: isVerified, // Send verification status
+          referralCode:form.referralCode
         },
         { withCredentials: true }
       );
@@ -292,6 +295,24 @@ const SignupPage = () => {
                 value={form.confirm}
                 onChange={handleChange}
                 placeholder="Confirm your password"
+                required
+                className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
+              />
+            </div>
+          </div>
+
+
+          {/* Referral code */}
+          <div>
+            <label className="text-gray-300 text-sm">Referral Code (optional)</label>
+            <div className="mt-2 flex items-center bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus-within:border-cyan-500">
+              <VscReferences className="w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                name="referralCode"
+                value={form.referralCode}
+                onChange={handleChange}
+                placeholder="Referral Code"
                 required
                 className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
               />

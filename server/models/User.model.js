@@ -57,11 +57,16 @@ const userSchema = new mongoose.Schema(
       level: Number, // 1 se 7 tak
     },
 
-    // wallet
-    walletBalance: {
-      type: Number,
-      default: 0,
-    },
+    // Balance for rewards
+    rewardBalance: {
+    type: Number,
+    default: 0
+  },
+
+  totalOrders:{
+    type:Number,
+    default:0
+  },
 
     myCards: [
       {

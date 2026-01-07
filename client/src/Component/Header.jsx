@@ -6,12 +6,14 @@ import { FaUser } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
 import { IoIosArrowDown } from "react-icons/io";
 import axios from "axios";
+import { Wallet } from "lucide-react";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [myCardProfile, setMyCardProfile] = useState(null);
+  const [balance, setbalance] = useState(0);
 
   const isLoggedIn = !!token;
 
@@ -79,6 +81,27 @@ const Header = () => {
     setCartCount(0);
   };
 
+  // get balance 
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (isLoggedIn) {
+        try {
+          const res = await axios.get(
+            `${import.meta.env.VITE_BASE_URL}/api/users/balance`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          console.log(res.data)
+          setbalance(res.data.Balance);
+        } catch (err) {
+          setbalance(0);
+        }
+      }
+    };
+    fetchBalance();
+  }, [isLoggedIn, myCardProfile]);
+
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-[#050505]/70 backdrop-blur-xl border-b border-white/10">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -107,6 +130,7 @@ const Header = () => {
 
         {/* DESKTOP ACTIONS */}
         <div className="hidden md:flex items-center gap-6">
+
           
           {/* CART */}
           <Link to="/your-items" className="relative text-2xl text-gray-300 hover:text-white">
@@ -117,6 +141,16 @@ const Header = () => {
               </span>
             )}
           </Link>
+
+            {
+              isLoggedIn ? (<>
+              <div className="bg-gradient-to-r from-slate-700 to-slate-900 px-3 flex items-center gap-2 py-1 rounded-2xl justify-center">
+                <Wallet className="cursor-pointer text-yellow-400" />
+                <span className="text-lg ">₹{balance}</span>
+              </div>
+              </>) : <></>
+            }
+
 
           {/* AUTH */}
           {!isLoggedIn ? (
@@ -189,6 +223,15 @@ const Header = () => {
               </span>
             )}
           </Link>
+{/* // DISPLAY BALANCE IF LOGGED IN */}
+           {
+              isLoggedIn ? (<>
+              <div className="bg-gradient-to-r from-slate-700 to-slate-900 px-3 flex items-center gap-2 py-1 rounded-2xl justify-center">
+                <Wallet className="cursor-pointer text-yellow-400" />
+                <span className="text-lg ">₹{balance}</span>
+              </div>
+              </>) : <></>
+            }
 
           <button onClick={() => setOpen(!open)} className="text-3xl text-white">
             {open ? <HiX /> : <HiMenuAlt3 />}

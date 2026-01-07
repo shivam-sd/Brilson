@@ -1,6 +1,6 @@
 const getRazorpayInstance = require("../config/razorpay");
 const { getConfig } = require("../config/runTimeConfigLoader");
-
+const UserModel = require("../models/User.model");
 const OrderModel = require("../models/Order.model");
 const PaymentModel = require("../models/Payment.model");
 const crypto = require("crypto");
@@ -8,6 +8,7 @@ const distributeMLMCommission = require("../controller/mlmCommission.controller"
 const deleteLocalFile = require("../utils/deleteLocalFile");
 const createInvoicePdf = require("../utils/createInvoicePdf");
 const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
+const distributeReferralReward = require("../utils/distributeReferralReward");
 
 
 //  CREATE PAYMENT ORDER 
@@ -67,7 +68,7 @@ const verifyPayment = async (req, res) => {
       return res.status(500).json({ error: "Razorpay config not loaded" });
     }
 
-    // ✅ VERIFY SIGNATURE
+    //  VERIFY SIGNATURE
     const expectedSignature = crypto
       .createHmac("sha256", config.razorpay.keySecret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -77,7 +78,7 @@ const verifyPayment = async (req, res) => {
       return res.status(400).json({ error: "Invalid signature" });
     }
 
-    // ✅ UPDATE PAYMENT
+    //  UPDATE PAYMENT
     const payment = await PaymentModel.findOneAndUpdate(
       { razorpayOrderId: razorpay_order_id },
       {
@@ -91,7 +92,7 @@ const verifyPayment = async (req, res) => {
       return res.status(404).json({ error: "Payment record not found" });
     }
 
-    // ✅ UPDATE ORDER
+    //  UPDATE ORDER
     const order = await OrderModel.findByIdAndUpdate(
       orderId,
       { status: "paid" },
@@ -102,15 +103,26 @@ const verifyPayment = async (req, res) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    // 🔥 RESPONSE FIRST (FAST UX)
+    
+    // Update user's total orders
+    const user = await UserModel.findById(order.userId);
+    if(user){
+      user.totalOrders += 1;
+      await user.save();
+    }
+    
+    // DISTRIBUTE MLM COMMISSION
+    await distributeReferralReward(order.userId);
+    
+    //  RESPONSE FIRST 
     res.status(200).json({
       success: true,
       message: "Payment verified successfully",
     });
 
-    // =============================
+    
     // BACKGROUND INVOICE GENERATION
-    // =============================
+     
     try {
       const { pdfPath, invoiceNumber } = await createInvoicePdf(order);
 

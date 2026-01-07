@@ -150,7 +150,7 @@ const generateToken = (id) => {
 // USER REGISTER
 const UserRegister = async (req, res) => {
   try {
-    const { name, email, phone, password, refcode } = req.body;
+    const { name, email, phone, password, referralCode } = req.body;
 
     if (!name || !email || !phone || !password) {
       return res.status(400).json({ error: "All fields are required" });
@@ -167,20 +167,18 @@ const UserRegister = async (req, res) => {
     const hashedPass = await bcrypt.hash(password, salt);
 
     // Generate own referral code
-    const referralCode = generateReferralCode(name);
-
+    
     let referredBy = null;
-
-    // SET REFERRED BY 
-    if (refcode) {
-      const refUser = await UserModel.findOne({
-        referralCode: refcode,
-      });
-
-      if (refUser) {
-        referredBy = refUser._id;
+    
+    if(referralCode){
+      referredBy = await UserModel.findOne({referralCode});
+      if(!referredBy){
+        return res.status(400).json({ error: "Invalid referral code" });
       }
     }
+    
+    const referCode = generateReferralCode(name);
+
 
     // Create user 
     const user = await UserModel.create({
@@ -188,8 +186,8 @@ const UserRegister = async (req, res) => {
       email,
       phone,
       password: hashedPass,
-      referralCode,
-      referredBy,
+      referralCode:referCode,
+      referredBy: referredBy ? referredBy._id : null,
     });
 
     // Generate token

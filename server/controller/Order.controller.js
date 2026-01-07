@@ -40,7 +40,7 @@ const orderCreate = async (req, res) => {
       address,
       totalAmount:totalAmount,
       status:"pending"
-    });
+    }); 
 
     await CartModel.deleteMany({ userId });
 
