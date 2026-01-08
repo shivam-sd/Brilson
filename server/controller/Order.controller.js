@@ -29,11 +29,15 @@ const orderCreate = async (req, res) => {
       image: item.image
     }));
 
-    const totalAmount = orderItems.reduce(
+    const subTotal = orderItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
 
+    const tax = Number(subTotal * 0.05).toFixed(2);
+
+    const totalAmount = Number(subTotal) + Number(tax);
+ 
     const order = await OrderModel.create({
       userId,
       items: orderItems,

@@ -24,8 +24,10 @@ const createPaymentOrder = async (req, res) => {
 
     const razorpay = getRazorpayInstance();
 
+    const amountInPaisa = Math.round(order.totalAmount * 100);
+
     const razorpayOrder = await razorpay.orders.create({
-      amount: order.totalAmount * 100,
+      amount: amountInPaisa,
       currency: "INR",
       receipt: `order_${order._id}`,
     });

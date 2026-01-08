@@ -1,91 +1,158 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  Sparkles,
+  Zap,
+  Shield,
+  Globe
+} from "lucide-react";
 import CardUI from "./CardUI";
 
 
 const HeroSection = () => {
+
+
+
   return (
-    <section className="relative w-full h-auto pt-32 pb-24 bg-[#050505] text-white overflow-hidden">
+    <section className="relative w-full min-h-screen pt-28 pb-20 bg-gradient-to-b from-black via-gray-950 to-black text-white overflow-hidden">
 
-      {/* Background Glow */}
-      <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_center,#00eaff33,transparent_70%)]"></div>
+      {/*  BACKGROUND LAYERS  */}
+      <div className="absolute inset-0 pointer-events-none">
 
-      {/* Background Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(#ffffff09_1px,transparent_1px),linear-gradient(90deg,#ffffff06_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+        {/* Floating Orbs */}
+        <motion.div
+          animate={{ x: [0, 120, 0], y: [0, 60, 0] }}
+          transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"
+        />
 
+        <motion.div
+          animate={{ x: [0, -120, 0], y: [0, -60, 0] }}
+          transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl"
+        />
+
+        {/* Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:60px_60px]" />
+
+        {/* Grain */}
+        <div
+          className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg viewBox=%220%200%20200%20200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22 opacity=%220.03%22/%3E%3C/svg%3E')]"
+        />
+      </div>
+
+      {/*  CONTENT  */}
       <div className="relative max-w-6xl mx-auto px-6 text-center">
 
-        {/* Tagline */}
+        {/* Badge */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="inline-block px-4 py-1 rounded-full bg-white/10 text-blue-300 text-sm backdrop-blur-md border border-white/10 mb-6"
+          transition={{ duration: 0.6 }}
+          className="flex justify-center mb-8"
         >
-          ⭐ The Future of Networking
+          <div className="flex items-center gap-3 px-6 py-2 rounded-full bg-cyan-500/10 border border-cyan-400/30 backdrop-blur-xl">
+            <Sparkles className="w-4 h-4 text-cyan-300 animate-pulse" />
+            <span className="text-cyan-200 text-sm tracking-widest font-semibold">
+              FUTURE OF NETWORKING
+            </span>
+          </div>
         </motion.div>
 
         {/* Heading */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="text-4xl md:text-6xl font-bold leading-tight"
+          className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-6"
         >
-          Your Identity,{" "}
-          <span className="text-cyan-400">Digitally</span>
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-white">
+            Your Identity
+          </span>
           <br />
-          <span className="text-yellow-400">Elevated</span>
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+            Digitally Elevated
+          </span>
         </motion.h1>
-<CardUI />
+
         {/* Subheading */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="text-gray-300 mt-6 text-lg max-w-2xl mx-auto"
+          transition={{ delay: 0.3 }}
+          className="text-gray-300 max-w-3xl mx-auto text-lg sm:text-xl mb-12"
         >
-          Transform your networking with smart NFC & QR cards.
-          Unlimited connections. Zero paper waste.
+          Smart NFC & QR cards for modern professionals.  
+          <span className="text-cyan-300 font-semibold"> Tap once. Connect forever.</span>
         </motion.p>
 
-        {/* Buttons */}
+        {/* Card */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-10 flex flex-col md:flex-row items-center justify-center gap-5"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-2xl mx-auto mb-12"
         >
-          <Link to={'/products'} className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-600/40 duration-300">
-            Get Your Card →
+          <div className="relative group cursor-pointer hover:scale-110 duration-500 active:scale-110">
+            <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-xl opacity-70 group-hover:opacity-100 " />
+            
+              <CardUI />
+            
+          </div>
+        </motion.div>
+
+        {/* Features */}
+        <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-12">
+          {[
+            { icon: Shield, title: "Secure", desc: "Encrypted data" },
+            { icon: Zap, title: "Instant", desc: "Tap & share" },
+            { icon: Globe, title: "Global", desc: "Works everywhere" }
+          ].map((f, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/40 transition cursor-pointer hover:scale-105 duration-500"
+            >
+              <f.icon className="text-cyan-400" />
+              <div className="text-left">
+                <div className="font-semibold">{f.title}</div>
+                <div className="text-sm text-gray-400">{f.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
+          <Link
+            to="/products"
+            className="px-10 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl font-semibold shadow-xl hover:scale-105 transition flex items-center justify-center gap-3"
+          >
+            Get Your Card <ArrowRight />
           </Link>
 
-          <Link to={'/how-it-works'} className="px-8 py-3 border border-white/20 hover:bg-white/10 duration-300 rounded-xl">
+          <Link
+            to="/how-it-works"
+            className="px-10 py-4 border border-white/20 rounded-xl hover:bg-white/10 transition"
+          >
             See How It Works
           </Link>
-        </motion.div>
+        </div>
 
         {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
-          className="mt-16 flex flex-wrap justify-center gap-10 text-center"
-        >
-          <div>
-            <h3 className="text-3xl font-semibold">50K+</h3>
-            <p className="text-gray-400">Cards Sold</p>
-          </div>
-          <div>
-            <h3 className="text-3xl font-semibold">1M+</h3>
-            <p className="text-gray-400">Connections Made</p>
-          </div>
-          <div>
-            <h3 className="text-3xl font-semibold">4.9⭐</h3>
-            <p className="text-gray-400">User Rating</p>
-          </div>
-        </motion.div>
+        <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto border-t border-white/10 pt-8">
+          {[
+            ["50K+", "Cards Sold"],
+            ["1M+", "Connections"],
+            ["4.9★", "Rating"]
+          ].map(([v, l]) => (
+            <div key={l}>
+              <div className="text-4xl font-bold text-cyan-400">{v}</div>
+              <div className="text-gray-400 text-sm">{l}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

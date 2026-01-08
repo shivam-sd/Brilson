@@ -12,10 +12,10 @@ const Networking = () => {
         </span>
 
         {/* Heading */}
-        <h1 className="text-white lg:text-5xl text-2xl md:text-5xl font-extrabold leading-tight">
+        <h2 className="text-white lg:text-5xl text-3xl md:text-5xl font-extrabold leading-tight">
           Ready to <span className="text-blue-400">Transform</span> Your <br />
           <span className="inline-block mt-1">Networking?</span>
-        </h1>
+        </h2>
 
         {/* Sub Text */}
         <p className="text-gray-300 text-sm md:text-base leading-relaxed max-w-2xl">

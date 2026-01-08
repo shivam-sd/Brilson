@@ -81,26 +81,26 @@ const Header = () => {
     setCartCount(0);
   };
 
-  // get balance 
-  useEffect(() => {
-    const fetchBalance = async () => {
-      if (isLoggedIn) {
-        try {
-          const res = await axios.get(
-            `${import.meta.env.VITE_BASE_URL}/api/users/balance`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          console.log(res.data)
-          setbalance(res.data.Balance);
-        } catch (err) {
-          setbalance(0);
-        }
-      }
-    };
-    fetchBalance();
-  }, [isLoggedIn, myCardProfile]);
+  // // get balance 
+  // useEffect(() => {
+  //   const fetchBalance = async () => {
+  //     if (isLoggedIn) {
+  //       try {
+  //         const res = await axios.get(
+  //           `${import.meta.env.VITE_BASE_URL}/api/users/balance`,
+  //           {
+  //             headers: { Authorization: `Bearer ${token}` },
+  //           }
+  //         );
+  //         console.log(res.data)
+  //         setbalance(res.data.Balance);
+  //       } catch (err) {
+  //         setbalance(0);
+  //       }
+  //     }
+  //   };
+  //   fetchBalance();
+  // }, [isLoggedIn, myCardProfile]);
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-[#050505]/70 backdrop-blur-xl border-b border-white/10">
@@ -142,14 +142,14 @@ const Header = () => {
             )}
           </Link>
 
-            {
+            {/* {
               isLoggedIn ? (<>
               <div className="bg-gradient-to-r from-slate-700 to-slate-900 px-3 flex items-center gap-2 py-1 rounded-2xl justify-center">
                 <Wallet className="cursor-pointer text-yellow-400" />
                 <span className="text-lg ">₹{balance}</span>
               </div>
               </>) : <></>
-            }
+            } */}
 
 
           {/* AUTH */}
@@ -224,14 +224,14 @@ const Header = () => {
             )}
           </Link>
 {/* // DISPLAY BALANCE IF LOGGED IN */}
-           {
+           {/* {
               isLoggedIn ? (<>
               <div className="bg-gradient-to-r from-slate-700 to-slate-900 px-3 flex items-center gap-2 py-1 rounded-2xl justify-center">
                 <Wallet className="cursor-pointer text-yellow-400" />
                 <span className="text-lg ">₹{balance}</span>
               </div>
               </>) : <></>
-            }
+            } */}
 
           <button onClick={() => setOpen(!open)} className="text-3xl text-white">
             {open ? <HiX /> : <HiMenuAlt3 />}

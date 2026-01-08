@@ -14,18 +14,16 @@ import {
   FiEdit,
   FiUser,
   FiBriefcase,
-  FiMessageSquare,
   FiShare2,
   FiAward,
-  FiBook,
-  FiCalendar,
   FiFileText
 } from "react-icons/fi";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaRegCopy, FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
+import { Wallet } from "lucide-react";
 
 const ProfilePage = () => {
   const { slug } = useParams();
@@ -34,15 +32,31 @@ const ProfilePage = () => {
   const [id, setId] = useState(null);
   const [showEditButton, setShowEditButton] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [balance, setBalance] = useState(0);
+  const [referralCode, setReferralCode] = useState('');
 
-  const copyText = (text) => {
-    if (!text) return;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    toast.success("Copied to clipboard");
-    setTimeout(() => setCopied(false), 2000);
-  };
+  // Get balance and referral code
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/users/balance`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setBalance(res.data.Balance);
+        setReferralCode(res.data.referalCode);
+      } catch (err) {
+        setBalance(0);
+        console.log(err);
+      }
+    };
+    fetchBalance();
+  }, []);
 
+  // Fetch profile data
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -64,6 +78,44 @@ const ProfilePage = () => {
       fetchProfile();
     }
   }, [slug]);
+
+  const copyText = (text) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    toast.success("Copied to clipboard");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCopyReferralCode = () => {
+    if (!referralCode) return;
+    navigator.clipboard.writeText(referralCode);
+    toast.success("Referral code copied!");
+  };
+
+  const handleWhatsApp = () => {
+    if (profileData.phone) {
+      const phoneNumber = profileData.phone.replace(/\D/g, '');
+      window.open(`https://wa.me/${phoneNumber}`, '_blank');
+    }
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${profileData.name}'s Profile`,
+          text: profileData.bio || `Connect with ${profileData.name}`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.log('Sharing cancelled');
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Profile link copied!');
+    }
+  };
 
   if (loading) {
     return (
@@ -101,30 +153,6 @@ const ProfilePage = () => {
     linkedin: profile?.linkedin || "",
     twitter: profile?.twitter || "",
     instagram: profile?.instagram || "",
-  };
-
-  const handleWhatsApp = () => {
-    if (profileData.phone) {
-      const phoneNumber = profileData.phone.replace(/\D/g, '');
-      window.open(`https://wa.me/${phoneNumber}`, '_blank');
-    }
-  };
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${profileData.name}'s Profile`,
-          text: profileData.bio || `Connect with ${profileData.name}`,
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.log('Sharing cancelled');
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success('Profile link copied!');
-    }
   };
 
   const ContactInfo = ({ icon, text, type = "text" }) => (
@@ -194,11 +222,18 @@ const ProfilePage = () => {
         <div className="relative max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-12">
           {/* Header Actions */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-            <div>
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-20">
               <Link to="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
                 <FiChevronRight className="rotate-180" /> Back to Home
               </Link>
+
+              <div className="bg-gradient-to-r from-slate-700 to-slate-900 px-4 flex items-center gap-2 py-2 rounded-2xl">
+                <Wallet className="text-yellow-400" />
+                <span>Balance:</span>
+                <span className="text-lg font-semibold">₹{balance}</span>
+              </div>
             </div>
+
             <div className="flex gap-3">
               {showEditButton && id && (
                 <Link 
@@ -243,6 +278,7 @@ const ProfilePage = () => {
                   <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
                     {profileData.name || "Anonymous"}
                   </h1>
+                
                   {profileData.bio && (
                     <p className="text-gray-300 text-lg md:text-xl italic mb-4 max-w-2xl">
                       "{profileData.bio}"
@@ -344,6 +380,23 @@ const ProfilePage = () => {
                     />
                   )}
                 </div>
+                {/* Referral Code Section */}
+                {referralCode && (
+                  <div className="mt-6 p-4 bg-gradient-to-r from-slate-800/50 to-slate-900/50 border border-white/20 rounded-xl">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                      <div>
+                        <p className="text-gray-300 mb-1">Your Referral Code:</p>
+                        <p className="text-yellow-400 font-mono font-bold">{referralCode}</p>
+                      </div>
+                      <button
+                        onClick={handleCopyReferralCode}
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600/30 to-blue-600/30 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/20 transition-colors"
+                      >
+                        <FaRegCopy /> Copy
+                      </button>
+                    </div>
+                  </div>
+                )}
               </SectionCard>
             </div>
 
@@ -352,24 +405,28 @@ const ProfilePage = () => {
               {/* Quick Actions */}
               <SectionCard title="Quick Actions" icon={<FiAward className="text-cyan-400" />}>
                 <div className="space-y-3">
-                  <button
-                    onClick={() => copyText(profileData.email)}
-                    className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50 transition-all"
-                  >
-                    <div className="flex items-center gap-3">
-                      <FiCopy className="text-gray-400" />
-                      <span>Copy Email</span>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => copyText(profileData.phone)}
-                    className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50 transition-all"
-                  >
-                    <div className="flex items-center gap-3">
-                      <FiCopy className="text-gray-400" />
-                      <span>Copy Phone</span>
-                    </div>
-                  </button>
+                  {profileData.email && (
+                    <button
+                      onClick={() => copyText(profileData.email)}
+                      className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50 transition-all"
+                    >
+                      <div className="flex items-center gap-3">
+                        <FiCopy className="text-gray-400" />
+                        <span>Copy Email</span>
+                      </div>
+                    </button>
+                  )}
+                  {profileData.phone && (
+                    <button
+                      onClick={() => copyText(profileData.phone)}
+                      className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50 transition-all"
+                    >
+                      <div className="flex items-center gap-3">
+                        <FiCopy className="text-gray-400" />
+                        <span>Copy Phone</span>
+                      </div>
+                    </button>
+                  )}
                   <button
                     onClick={() => copyText(window.location.href)}
                     className="w-full flex items-center justify-between p-3 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50 transition-all"
@@ -398,20 +455,6 @@ const ProfilePage = () => {
                   </p>
                 </div>
               </SectionCard>
-
-              {/* Profile Stats */}
-              {/* <SectionCard title="Profile Stats" icon={<FiCalendar className="text-cyan-400" />}>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 rounded-lg bg-gray-800/30">
-                    <div className="text-2xl font-bold text-cyan-400">24</div>
-                    <div className="text-gray-400 text-sm">Connections</div>
-                  </div>
-                  <div className="text-center p-3 rounded-lg bg-gray-800/30">
-                    <div className="text-2xl font-bold text-cyan-400">98%</div>
-                    <div className="text-gray-400 text-sm">Response Rate</div>
-                  </div>
-                </div>
-              </SectionCard> */}
             </div>
           </div>
 
