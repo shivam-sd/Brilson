@@ -24,15 +24,18 @@ const Checkout = () => {
   const [address, setAddress] = useState({
     name: "",
     phone: "",
-    email:"",
+    email: "",
     city: "",
     state: "",
     pincode: "",
   });
 
-  /*  LOAD CART  */
+  /* 🔐 LOAD CART */
   useEffect(() => {
-    if (!token) return navigate("/login" , {replace:true});
+    if (!token) {
+      navigate("/login", { replace: true });
+      return;
+    }
 
     if (location.state?.checkoutData?.items) {
       setOrderItems(location.state.checkoutData.items);
@@ -45,26 +48,28 @@ const Checkout = () => {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/cart/user`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       const items = res.data.cartItems || [];
 
       const mapped = items.map((item) => ({
         productId: item.productId._id,
-        variantId: item.variantId || null,
         productTitle: item.productId.title,
         price: Number(item.price),
         quantity: item.quantity,
       }));
 
       setOrderItems(mapped);
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("Failed to load cart");
     }
   };
 
-  /*  AMOUNT CALC  */
+  /* 💰 AMOUNT CALCULATION */
   const subtotal = useMemo(() => {
     return orderItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -75,7 +80,7 @@ const Checkout = () => {
   const tax = Number((subtotal * 0.05).toFixed(2));
   const payableAmount = subtotal + tax;
 
-  /*  VALIDATION  */
+  /* ✅ ADDRESS VALIDATION */
   const isAddressValid =
     address.name &&
     /^\d{10}$/.test(address.phone) &&
@@ -83,7 +88,7 @@ const Checkout = () => {
     address.state &&
     /^\d{6}$/.test(address.pincode);
 
-  /*  CREATE ORDER  */
+  /* 📦 CREATE ORDER */
   const handleCreateOrder = async () => {
     if (!isAddressValid) {
       toast.error("Please enter valid address");
@@ -98,12 +103,11 @@ const Checkout = () => {
         {
           items: orderItems.map((i) => ({
             productId: i.productId,
-            variantId: i.variantId,
             quantity: i.quantity,
             price: i.price,
           })),
           address,
-          totalAmount:payableAmount, 
+          totalAmount: payableAmount,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -113,14 +117,14 @@ const Checkout = () => {
       setCreatedOrder(res.data.order);
       toast.success("Order created successfully");
     } catch (err) {
-      toast.error(err.response.data.error);
-        console.error(err);
+      console.error(err);
+      toast.error(err?.response?.data?.error || "Order creation failed");
     } finally {
       setLoading(false);
     }
   };
 
-  /*  PAYMENT  */
+  /* 💳 PAYMENT */
   const handlePayment = async () => {
     if (!createdOrder) return;
 
@@ -129,12 +133,10 @@ const Checkout = () => {
         `${import.meta.env.VITE_BASE_URL}/api/payment/create`,
         {
           orderId: createdOrder._id,
-          amount: Math.round(payableAmount * 100), 
+          amount: Math.round(payableAmount * 100),
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      console.log("res", res)
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY,
@@ -142,39 +144,39 @@ const Checkout = () => {
         currency: "INR",
         order_id: res.data.id,
         name: "Brilson",
-        image:"./Brilson.png",
         description: "Order Payment",
         handler: async (response) => {
-  try {
-    // console.log("response", response);
-    const verifyRes = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/api/payment/verify`,
-      {
-      razorpay_order_id: response.razorpay_order_id,
-      razorpay_payment_id: response.razorpay_payment_id,
-      razorpay_signature: response.razorpay_signature,
-        orderId: createdOrder._id,
-      },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+          try {
+            const verifyRes = await axios.post(
+              `${import.meta.env.VITE_BASE_URL}/api/payment/verify`,
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                orderId: createdOrder._id,
+              },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-    if (verifyRes.data.success) {
-      toast.success("Payment successful");
-      navigate("/orders", {replace:true});
-    } else {
-      toast.error("Payment verification failed");
-    }
-
-  } catch (err) {
-    console.error(err);
-    toast.error("Payment verification error");
-  }
-},
+            if (verifyRes.data.success) {
+              toast.success("Payment successful");
+              navigate("/orders", { replace: true });
+            } else {
+              toast.error("Payment verification failed");
+            }
+          } catch (err) {
+            console.error(err);
+            toast.error("Payment verification error");
+          }
+        },
         prefill: {
           name: address.name,
           contact: address.phone,
+          email: address.email,
         },
-        theme: { color: "#22d3ee" },
+        theme: {
+          color: "#22d3ee",
+        },
       };
 
       new Razorpay(options).open();
@@ -184,7 +186,7 @@ const Checkout = () => {
     }
   };
 
-  /*  UI  */
+  /* 🎨 UI */
   return (
     <div className="min-h-screen bg-[#03060A] text-white px-6 py-20">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-10 mt-20">
@@ -205,7 +207,7 @@ const Checkout = () => {
                     setAddress({ ...address, [key]: e.target.value })
                   }
                   placeholder={key.toUpperCase()}
-                  className="w-full px-4 py-3 bg-[#0B1220] border border-white/10 rounded-xl focus:outline-none focus:border-cyan-400"
+                  className="w-full px-4 py-3 bg-[#0B1220] border border-white/10 rounded-xl"
                 />
               ))}
             </div>
@@ -214,7 +216,7 @@ const Checkout = () => {
           <button
             onClick={handleCreateOrder}
             disabled={loading || !isAddressValid || createdOrder}
-            className="w-full flex items-center justify-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold py-3 rounded-xl disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 bg-cyan-500 text-black font-semibold py-3 rounded-xl disabled:opacity-50"
           >
             {loading ? (
               <>

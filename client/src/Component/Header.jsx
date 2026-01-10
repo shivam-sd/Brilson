@@ -178,16 +178,32 @@ const Header = () => {
                 <div className="flex flex-col p-2 gap-1">
                   
                   {/* ONLY IF CARD ACTIVE */}
-                  {myCardProfile && (
+                  {myCardProfile ? <>
+                  
                     <Link
                       to={`/profile/${myCardProfile.slug}`}
                       className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
-                    >
+                      >
                       My Profile
                     </Link>
-                  )}
+                      </> : <>
+                    <Link
+                    onClick={(e) => {
+                      window.location.href = `${import.meta.env.VITE_DOMAIN}/card/activate`
+                    }}
+                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
+                    >
+                      My Profile
+                    </Link>  
+                      </>
+                  }
 
-     <Link
+                    
+
+                  <Link
+
+
+
                       to={`/orders`}
                       className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
                     >

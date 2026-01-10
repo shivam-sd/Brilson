@@ -93,7 +93,7 @@ const PowerFullFeatures = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className="p-6 rounded-2xl bg-[#101418]/70 backdrop-blur-xl 
-              border border-white/10 hover:border-cyan-400/40 
+              border border-white/10 hover:border-orange-500 
               hover:shadow-[0_0_20px_#00eaff33] 
               duration-300 hover:-translate-y-3 group cursor-pointer"
             >

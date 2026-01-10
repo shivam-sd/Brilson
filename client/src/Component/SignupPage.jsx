@@ -313,7 +313,6 @@ const SignupPage = () => {
                 value={form.referralCode}
                 onChange={handleChange}
                 placeholder="Referral Code"
-                required
                 className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
               />
             </div>

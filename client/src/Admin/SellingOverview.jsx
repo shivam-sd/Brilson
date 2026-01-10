@@ -132,9 +132,9 @@ console.log(res)
                 <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">  
                   <BarChart3 className="w-6 h-6 text-white" />
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+                <h2 className="text-2xl md:text-4xl font-bold text-gray-800">
                   Sales Overview
-                </h1>
+                </h2>
               </div>
               <p className="text-gray-600">
                 Monitor your sales performance and revenue insights

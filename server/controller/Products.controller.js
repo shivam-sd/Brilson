@@ -13,80 +13,92 @@ const createProduct = async (req, res) => {
       badge,
       description,
       stock,
+      price,
+      oldPrice,
+      discount,
+      color,
       features,
       metaTags,
-      variants,
     } = req.body;
-
 
     const file = req?.files?.image;
 
-    // Validation
-    if (!category || !title || !badge || !description) {
-      return res.status(400).json({ error: "All fields are required!" });
+    //  Required validations
+    if (!category || !title || !description || !price) {
+      return res.status(400).json({
+        error: "Category, Title, Description and Price are required!",
+      });
     }
 
-    // features
-    let featureList = features;
-    if (typeof features === "string") {
-      featureList = features.split(",").map((f) => f.trim());
+    if (!file) {
+      return res.status(400).json({
+        error: "Product image is required!",
+      });
     }
 
-    // metaTags
-    let metaTagList = metaTags;
-    if(typeof metaTags === "string"){
-      metaTagList = metaTags.split(",").map((m) => m.trim());
+    /* IMAGE VALIDATION */
+    const allowedFormats = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+      "image/svg+xml",
+      "image/gif",
+      "image/avif",
+    ];
+
+    if (!allowedFormats.includes(file.mimetype)) {
+      return res.status(400).json({
+        error: "Only image files are allowed",
+      });
     }
 
+    /* UPLOAD IMAGE */
+    const uploadResult = await cloudinary.uploader.upload(
+      file.tempFilePath,
+      { folder: "brilson/products" }
+    );
 
+    /* SAFE PARSING */
+    const featureList = features
+      ? JSON.parse(features)
+      : [];
 
-    // varients
-    let variantData = variants;
-    if (typeof variants === "string") {
-      try {
-        variantData = JSON.parse(variants);
-      } catch (error) {
-        return res.status(400).json({ error: "Invalid variants format!" });
-      }
-    }
+    const metaTagList = metaTags
+      ? JSON.parse(metaTags)
+      : [];
 
-    // image formate
-    let imageUrl = "";
-    if(file){
-          const allowdFormates = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/svg+xml", "image/gif", "image/avif"];
-          if(!allowdFormates.includes(file.mimetype)){
-            return res.status(400).json({error:"Only images are allowed (jpeg, jpg, png, webp, svg, gif, avif)"});
-          }
-
-          const result = await cloudinary.uploader.upload(file.tempFilePath, {
-            folder: "brilson/products"
-          });
-
-          imageUrl = result.secure_url;
-
-    }
-    // Create Product
+    /* CREATE PRODUCT */
     const product = await ProductModel.create({
       category,
       title,
       badge,
-      stock,
       description,
-      image: imageUrl,
+      image: uploadResult.secure_url,
+      stock: stock || 0,
+      price,
+      oldPrice,
+      discount,
+      color,
       features: featureList,
       metaTags: metaTagList,
-      variants: variantData,
     });
 
-    res.status(201).json({
-      message: "Product Created Successfully",
+    return res.status(201).json({
+      success: true,
+      message: "Product created successfully",
       product,
     });
+
   } catch (err) {
-    console.log("Product Create Error:", err);
-    res.status(500).json({ error: "Internal Server Error", err });
+    console.error("Product Create Error:", err);
+    return res.status(500).json({
+      success: false,
+      error: "Internal Server Error",
+    });
   }
 };
+
 
 
 
@@ -94,16 +106,16 @@ const editProduct = async (req, res) => {
   try {
     const productId = req.params.id;
 
-    // Find existing product
     const existingProduct = await ProductModel.findById(productId);
     if (!existingProduct) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json({
+        error: "Product not found",
+      });
     }
 
-    // Clone body 
     const updatedData = { ...req.body };
 
-    /*  IMAGE HANDLING  */
+    /* IMAGE UPDATE */
     const file = req?.files?.image;
 
     if (file) {
@@ -123,38 +135,26 @@ const editProduct = async (req, res) => {
         });
       }
 
-      const result = await cloudinary.uploader.upload(
+      const uploadResult = await cloudinary.uploader.upload(
         file.tempFilePath,
         { folder: "brilson/products" }
       );
 
-      updatedData.image = result.secure_url;
+      updatedData.image = uploadResult.secure_url;
     } else {
-      //  keep old image
       updatedData.image = existingProduct.image;
     }
 
-    /*  SAFE JSON PARSING  */
+    /* SAFE JSON PARSING */
     updatedData.features = req.body.features
       ? JSON.parse(req.body.features)
-      : [];
+      : existingProduct.features;
 
     updatedData.metaTags = req.body.metaTags
       ? JSON.parse(req.body.metaTags)
-      : [];
+      : existingProduct.metaTags;
 
-    updatedData.variants = req.body.variants
-      ? JSON.parse(req.body.variants)
-      : [];
-
-    /*  VALIDATIONS  */
-    if (!updatedData.variants.length) {
-      return res.status(400).json({
-        error: "At least one variant is required",
-      });
-    }
-
-    /*  UPDATE PRODUCT  */
+    /* UPDATE PRODUCT */
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       productId,
       updatedData,
@@ -167,17 +167,18 @@ const editProduct = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Product updated successfully",
-      data: updatedProduct,
+      product: updatedProduct,
     });
 
   } catch (err) {
-    console.error("Error in editProduct:", err);
+    console.error("Edit Product Error:", err);
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error",
+      error: "Internal Server Error",
     });
   }
 };
+
 
 
 

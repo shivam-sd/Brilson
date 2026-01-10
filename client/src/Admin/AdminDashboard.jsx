@@ -196,9 +196,9 @@ const AdminDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8 md:mb-10"
         >
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">
+          <h2 className="text-4xl sm:text-3xl md:text-5xl font-bold">
             Admin <span className="text-cyan-400">Dashboard</span>
-          </h1>
+          </h2>
           <p className="text-gray-400 text-sm sm:text-base mt-2">
             Overview of your store performance and recent activities
           </p>

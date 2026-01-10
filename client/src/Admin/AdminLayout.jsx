@@ -32,9 +32,9 @@ const AdminLayout = () => {
 
       {/* SIDEBAR FOR DESKTOP */}
       <aside className="w-72 bg-[#151822] border-r border-white/10 px-6 py-10 hidden md:flex flex-col">
-        <h1 className="text-3xl font-extrabold tracking-wide mb-10">
+        <h2 className="text-4xl font-extrabold tracking-wide mb-10">
           Brilson <span className="text-cyan-400">Admin</span>
-        </h1>
+        </h2>
 
         <nav className="flex flex-col gap-6 text-lg">
           <NavLink

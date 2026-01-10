@@ -202,7 +202,7 @@ const ManageCards = () => {
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6">
         <div className="w-full lg:w-auto">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Manage NFC Cards</h1>
+          <h2 className="text-xl sm:text-2xl md:text-4xl font-bold">Manage NFC Cards</h2>
           <p className="text-gray-400 mt-1 text-sm sm:text-base">View, track and manage all NFC card profiles</p>
         </div>
 

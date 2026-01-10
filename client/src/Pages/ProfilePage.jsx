@@ -227,17 +227,67 @@ const ProfilePage = () => {
                 <FiChevronRight className="rotate-180" /> Back to Home
               </Link>
 
-              <div className="bg-gradient-to-r from-slate-700 to-slate-900 px-4 flex items-center gap-2 py-2 rounded-2xl">
+              <div className="lg:flex hidden bg-gradient-to-r from-slate-700 to-slate-900 px-4 flex items-center  justify-center gap-2 py-2 rounded-2xl">
                 <Wallet className="text-yellow-400" />
                 <span>Balance:</span>
                 <span className="text-lg font-semibold">₹{balance}</span>
               </div>
-            </div>
+</div>
+
+{/* Referral Code Section For Desktop */}
+                {referralCode && (
+                  <div className="lg:flex hidden mt-6 p-4 bg-gradient-to-r from-slate-800/50 to-slate-900/50 border border-white/20 rounded-xl">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                      <div>
+                        <p className="text-gray-300 mb-1">Your Referral Code:</p>
+                        <p className="text-yellow-400 font-mono font-bold">{referralCode}</p>
+                      </div>
+                      <button
+                        onClick={handleCopyReferralCode}
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600/30 to-blue-600/30 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/20 transition-colors"
+                      >
+                        <FaRegCopy /> Copy
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+
+                <div className="flex items-center gap-10" >
+ {/* show balance for the user on Mobile */}
+
+ <div className="lg:hidden bg-gradient-to-r from-slate-700 to-slate-900 px-4 flex items-center  justify-center gap-2 py-2 rounded-2xl">
+                <Wallet className="text-yellow-400" />
+                <span>Balance:</span>
+                <span className="text-lg font-semibold">₹{balance}</span>
+              </div>
+
+
+{/* Referral Code Section For Mobile */}
+{referralCode && (
+  <div className="lg:hidden flex mt-6 p-4 bg-gradient-to-r from-slate-800/50 to-slate-900/50 border border-white/20 rounded-xl">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <p className="text-gray-300 mb-1 text-sm">Your Referral Code:</p>
+                      <div className="text-sm flex items-center justify-center flex-col gap-1">
+                        <p className="text-yellow-400 font-mono font-bold text-[15px]">{referralCode}</p>
+                      <button
+                        onClick={handleCopyReferralCode}
+                        className="flex items-center gap-2 px-2 py-1 text-sm bg-gradient-to-r from-cyan-600/30 to-blue-600/30 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/20 transition-colors"
+                        >
+                        <FaRegCopy size={10} /> Copy
+                      </button>
+                        </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+
 
             <div className="flex gap-3">
               {showEditButton && id && (
                 <Link 
-                  to={`/profile/edit/${id}`}
+                to={`/profile/edit/${id}`}
                   className="flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white px-4 py-3 rounded-xl transition-all shadow-lg"
                 >
                   <FiEdit /> Edit Profile
@@ -380,24 +430,7 @@ const ProfilePage = () => {
                     />
                   )}
                 </div>
-                {/* Referral Code Section */}
-                {referralCode && (
-                  <div className="mt-6 p-4 bg-gradient-to-r from-slate-800/50 to-slate-900/50 border border-white/20 rounded-xl">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                      <div>
-                        <p className="text-gray-300 mb-1">Your Referral Code:</p>
-                        <p className="text-yellow-400 font-mono font-bold">{referralCode}</p>
-                      </div>
-                      <button
-                        onClick={handleCopyReferralCode}
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600/30 to-blue-600/30 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/20 transition-colors"
-                      >
-                        <FaRegCopy /> Copy
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </SectionCard>
+                </SectionCard>
             </div>
 
             {/* Right Column - Quick Actions & QR */}

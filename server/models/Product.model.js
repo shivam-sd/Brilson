@@ -1,13 +1,5 @@
 const mongoose = require("mongoose");
 
-const VariantSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  price: { type: Number, required: true },
-  oldPrice: { type: Number },
-  color: { type: String },
-  discount: { type: String },
-});
-
 // MLM Commission per level
 const MLMCommissionSchema = new mongoose.Schema({
   level: {
@@ -25,12 +17,11 @@ const ProductSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      trim:true
+      trim: true,
     },
-    
+
     badge: {
       type: String,
-      required: true,
       trim: true,
     },
 
@@ -40,26 +31,50 @@ const ProductSchema = new mongoose.Schema(
       trim: true,
     },
 
-
     description: {
       type: String,
       required: true,
     },
 
-    image:{
-      type:String,
-      required:true
+    image: {
+      type: String,
+      required: true,
     },
 
-    stock:Number,
+    // ✅ SINGLE PRICE SYSTEM
+    price: {
+      type: Number,
+      required: true,
+    },
 
-    features: [String],
+    oldPrice: {
+      type: Number,
+    },
 
-    metaTags: [String],
+    discount: {
+      type: String,
+    },
 
-    variants: [VariantSchema],
+    color: {
+      type: String,
+    },
 
-    //  MLM fields
+    stock: {
+      type: Number,
+      default: 0,
+    },
+
+    features: {
+      type: [String],
+      default: [],
+    },
+
+    metaTags: {
+      type: [String],
+      default: [],
+    },
+
+    // ✅ MLM CONFIG (unchanged)
     isMLMProduct: {
       type: Boolean,
       default: false,
@@ -74,7 +89,10 @@ const ProductSchema = new mongoose.Schema(
         type: Number,
         default: 7,
       },
-      commission: [MLMCommissionSchema], 
+      commission: {
+        type: [MLMCommissionSchema],
+        default: [],
+      },
     },
   },
   { timestamps: true }

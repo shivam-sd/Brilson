@@ -15,22 +15,19 @@ const AdminEditProduct = () => {
   const [imageFile, setImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
 
-  // Product state with initial values
+  // Product state WITHOUT variants
   const [productData, setProductData] = useState({
     category: "",
     title: "",
     badge: "",
     description: "",
     image: "",
+    price: "",
+    oldPrice: "",
+    color: "",
+    discount: "",
     features: [""],
-    metaTags: [""],
-    variants: [{
-      name: "",
-      price: "",
-      oldPrice: "",
-      color: "",
-      discount: ""
-    }]
+    metaTags: [""]
   });
 
   // fetch all category
@@ -72,9 +69,9 @@ const AdminEditProduct = () => {
       setImageFile(file);
       setPreviewImage(URL.createObjectURL(file));
     }
-  }
+  } 
 
-  // Fetch product data for show allready 
+  // Fetch product data for show already 
   useEffect(() => {
     const fetchProductData = async () => {
       try {
@@ -85,22 +82,39 @@ const AdminEditProduct = () => {
         if (response.data?.product) {
           const product = response.data.product;
           
-          // Transform API data to form state
+          // Handle old variant data - if exists, use first variant for price data
+          let priceData = {};
+          if (product.variants && product.variants.length > 0) {
+            // Take first variant's data
+            priceData = {
+              price: product.variants[0]?.price || "",
+              oldPrice: product.variants[0]?.oldPrice || "",
+              color: product.variants[0]?.color || "",
+              discount: product.variants[0]?.discount || ""
+            };
+          } else {
+            // If no variants, use direct product fields
+            priceData = {
+              price: product.price || "",
+              oldPrice: product.oldPrice || "",
+              color: product.color || "",
+              discount: product.discount || ""
+            };
+          }
+          
+          // Transform API data to form state WITHOUT variants
           setProductData({
             category: product.category || "",
             title: product.title || "",
             badge: product.badge || "",
             description: product.description || "",
             image: product.image || "",
+            price: priceData.price,
+            oldPrice: priceData.oldPrice,
+            color: priceData.color,
+            discount: priceData.discount,
             features: product.features?.length > 0 ? product.features : [""],
-            metaTags: product.metaTags?.length > 0 ? product.metaTags : [""],
-            variants: product.variants?.length > 0 ? product.variants : [{
-              name: "",
-              price: "",
-              oldPrice: "",
-              color: "",
-              discount: ""
-            }]
+            metaTags: product.metaTags?.length > 0 ? product.metaTags : [""]
           });
 
           if (product.image) {
@@ -124,39 +138,6 @@ const AdminEditProduct = () => {
     setProductData(prev => ({
       ...prev,
       [name]: value
-    }));
-  };
-
-  // Add new variant
-  const addVariant = () => {
-    setProductData(prev => ({
-      ...prev,
-      variants: [
-        ...prev.variants,
-        { name: "", price: "", oldPrice: "", color: "", discount: "" }
-      ]
-    }));
-  };
-
-  // Remove variant
-  const removeVariant = (index) => {
-    if (productData.variants.length > 1) {
-      const newVariants = [...productData.variants];
-      newVariants.splice(index, 1);
-      setProductData(prev => ({
-        ...prev,
-        variants: newVariants
-      }));
-    }
-  };
-
-  // Update variant field
-  const updateVariant = (index, field, value) => {
-    const newVariants = [...productData.variants];
-    newVariants[index] = { ...newVariants[index], [field]: value };
-    setProductData(prev => ({
-      ...prev,
-      variants: newVariants
     }));
   };
 
@@ -223,11 +204,15 @@ const AdminEditProduct = () => {
       // Create FormData for multipart/form-data
       const formData = new FormData();
       
-      // Add all product data
+      // Add all product data WITHOUT variants
       formData.append('category', productData.category);
       formData.append('title', productData.title);
       formData.append('badge', productData.badge);
       formData.append('description', productData.description);
+      formData.append('price', productData.price);
+      formData.append('oldPrice', productData.oldPrice);
+      formData.append('color', productData.color);
+      formData.append('discount', productData.discount);
       
       // Add features as JSON string
       const filteredFeatures = productData.features.filter(f => f.trim() !== "");
@@ -236,10 +221,6 @@ const AdminEditProduct = () => {
       // Add metaTags as JSON string
       const filteredMetaTags = productData.metaTags.filter(m => m.trim() !== "");
       formData.append('metaTags', JSON.stringify(filteredMetaTags));
-      
-      // Add variants as JSON string
-      const filteredVariants = productData.variants.filter(v => v.name.trim() !== "" && v.price !== "");
-      formData.append('variants', JSON.stringify(filteredVariants));
       
       // Add image if new one is selected
       if (imageFile) {
@@ -361,18 +342,64 @@ const AdminEditProduct = () => {
                 </select>
               </div>
 
-              {/* Price (from first variant) */}
+              {/* Price */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Starting Price (₹) *
+                  Price (₹) *
                 </label>
                 <input
                   type="number"
-                  value={productData.variants[0]?.price || ""}
-                  onChange={(e) => updateVariant(0, 'price', e.target.value)}
+                  name="price"
+                  value={productData.price}
+                  onChange={handleInputChange}
                   placeholder="299"
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                   required
+                />
+              </div>
+
+              {/* Old Price */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Old Price (₹)
+                </label>
+                <input
+                  type="number"
+                  name="oldPrice"
+                  value={productData.oldPrice}
+                  onChange={handleInputChange}
+                  placeholder="399"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
+                />
+              </div>
+
+              {/* Color */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Color
+                </label>
+                <input
+                  type="text"
+                  name="color"
+                  value={productData.color}
+                  onChange={handleInputChange}
+                  placeholder="e.g., White, Black, Silver"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
+                />
+              </div>
+
+              {/* Discount */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Discount
+                </label>
+                <input
+                  type="text"
+                  name="discount"
+                  value={productData.discount}
+                  onChange={handleInputChange}
+                  placeholder="e.g., 25% OFF or ₹100 OFF"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                 />
               </div>
             </div>
@@ -392,8 +419,6 @@ const AdminEditProduct = () => {
                 required
               />
             </div>
-
-
 
             {/* Features Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
@@ -475,113 +500,6 @@ const AdminEditProduct = () => {
               </div>
             </div>
 
-            {/* Variants Section */}
-            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-200">
-                  Product Variants ({productData.variants.length})
-                </h3>
-                <button
-                  type="button"
-                  onClick={addVariant}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition"
-                >
-                  <FiPlus size={16} /> Add Variant
-                </button>
-              </div>
-              
-              <div className="space-y-6">
-                {productData.variants.map((variant, index) => (
-                  <div key={index} className="bg-gray-900/50 p-6 rounded-xl border border-gray-700">
-                    <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-md font-medium text-gray-300">
-                        Variant {index + 1} {index === 0 && "(Primary)"}
-                      </h4>
-                      {productData.variants.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeVariant(index)}
-                          className="px-3 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition"
-                          title="Remove variant"
-                        >
-                          <FiTrash2 size={16} />
-                        </button>
-                      )}
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm text-gray-400 mb-1">
-                          Variant Name *
-                        </label>
-                        <input
-                          type="text"
-                          value={variant.name}
-                          onChange={(e) => updateVariant(index, 'name', e.target.value)}
-                          placeholder="e.g., White, Gold, Premium"
-                          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
-                          required
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm text-gray-400 mb-1">
-                          Price (₹) *
-                        </label>
-                        <input
-                          type="number"
-                          value={variant.price}
-                          onChange={(e) => updateVariant(index, 'price', e.target.value)}
-                          placeholder="299"
-                          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
-                          required
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm text-gray-400 mb-1">
-                          Old Price (₹)
-                        </label>
-                        <input
-                          type="number"
-                          value={variant.oldPrice || ""}
-                          onChange={(e) => updateVariant(index, 'oldPrice', e.target.value)}
-                          placeholder="399"
-                          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm text-gray-400 mb-1">
-                          Color
-                        </label>
-                        <input
-                          type="text"
-                          value={variant.color || ""}
-                          onChange={(e) => updateVariant(index, 'color', e.target.value)}
-                          placeholder="e.g., White, Black, Silver"
-                          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
-                        />
-                      </div>
-                      
-                      <div className="md:col-span-2">
-                        <label className="block text-sm text-gray-400 mb-1">
-                          Discount
-                        </label>
-                        <input
-                          type="text"
-                          value={variant.discount || ""}
-                          onChange={(e) => updateVariant(index, 'discount', e.target.value)}
-                          placeholder="e.g., 25% OFF or ₹100 OFF"
-                          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Image Upload Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
@@ -631,12 +549,9 @@ const AdminEditProduct = () => {
                       </div>
                     )}
                   </div>
-                
                 </div>
               </div>
             </div>
-
-
 
             {/* Submit Button */}
             <div className="pt-6 border-t border-gray-700">

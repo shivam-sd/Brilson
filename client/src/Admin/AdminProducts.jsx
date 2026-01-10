@@ -1,28 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { FiPlus, FiEdit2, FiTrash2, FiSearch } from "react-icons/fi";
+import React, { useEffect, useState } from "react";
+import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiPackage, FiTag, FiGrid } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const AdminProducts = () => {
-  // State management
   const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
-  // Fetch products from API
+  /* ================= FETCH PRODUCTS ================= */
   useEffect(() => {
     const fetchProducts = async () => {
-      setIsLoading(true);
       try {
-        const response = await axios.get(
+        const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/admin/all/products`
         );
-        
-        if (response.data?.allProducts) {
-          setProducts(response.data.allProducts);
-        }
+
+        setProducts(res.data?.allProducts || []);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Fetch products error:", error);
+        toast.error("Failed to load products");
       } finally {
         setIsLoading(false);
       }
@@ -31,300 +30,350 @@ const AdminProducts = () => {
     fetchProducts();
   }, []);
 
-  // Filter products based on search query
-  const filteredProducts = products.filter(product =>
-    product.title?.toLowerCase().includes(searchQuery.toLowerCase())
+  /* ================= FILTER ================= */
+  const filteredProducts = products.filter((p) =>
+    p.title?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Get lowest price from variants
-  const getLowestPrice = (variants) => {
-    if (!variants || variants.length === 0) return "N/A";
-    
-    const prices = variants.map(v => parseFloat(v.price || 0));
-    const minPrice = Math.min(...prices.filter(p => p > 0));
-    
-    return minPrice > 0 ? minPrice : "N/A";
+  /* ================= PRICE FORMAT ================= */
+  const formatPrice = (price) => {
+    if (!price && price !== 0) return "N/A";
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(price);
   };
 
-  // Get stock status 
-  const getStockStatus = (product) => {
-    // This is a placeholder 
-    return {
-      count: product.variants?.length || 0,
-      status: product.variants?.length > 0 ? "Active" : "Out of Stock"
-    };
-  };
+  /* ================= DELETE ================= */
+  const handleDeleteProduct = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
 
+    setDeletingId(id);
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/api/admin/delete/products/${id}`,
+        { withCredentials: true }
+      );
 
-
-  // Handle product deletion
-  const handleDeleteProduct = async (productId) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        // Add your delete API call here
-        console.log("Deleting product:", productId);
-        await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/admin/delete/products/${productId}`, {
-          withCredentials:true
-        });
-        
-        // Remove from local state
-        setProducts(prev => prev.filter(p => p._id !== productId));
-      } catch (error) {
-        console.error("Error deleting product:", error);
-      }
+      setProducts((prev) => prev.filter((p) => p._id !== id));
+      toast.success("Product deleted successfully");
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete product");
+    } finally {
+      setDeletingId(null);
     }
   };
 
-
-
-  // Loading state
+  /* ================= LOADING ================= */
   if (isLoading) {
     return (
-      <div className="w-full p-4">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
-            <p className="mt-4 text-gray-400">Loading products...</p>
-          </div>
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading products...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full p-4 md:p-6">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Products</h1>
-          <p className="text-gray-400 mt-1">
-            {products.length} product{products.length !== 1 ? 's' : ''} total
-          </p>
-        </div>
-<div className="grid lg:grid-cols-3 md:grid-cols-3 grid-cols-1 gap-5">
-
-        <Link
-          to="/admin/add/category"
-          className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-5 py-3 rounded-xl shadow-lg transition-all hover:scale-105"
-          >
-          <FiPlus size={20} />
-          Add New Categories
-        </Link>
-
-        <Link
-          to="/admin/add/badges"
-          className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-5 py-3 rounded-xl shadow-lg transition-all hover:scale-105"
-          >
-          <FiPlus size={20} />
-          Add New Badges
-        </Link>
-
-        <Link
-          to="/admin/add/products"
-          className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-5 py-3 rounded-xl shadow-lg transition-all hover:scale-105"
-        >
-          <FiPlus size={20} />
-          Add New Product
-        </Link>
+    <div className="w-full p-4 md:p-6 text-white">
+      {/* HEADER WITH STATS */}
+      <div className="mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+              Product Management
+            </h2>
+            <p className="text-gray-400 mt-2">
+              Manage your product catalog efficiently
+            </p>
           </div>
-      </div>
 
-      {/* Search Bar */}
+          {/* ACTION BUTTONS */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Link 
+              to="/admin/add/category" 
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-gray-800 to-gray-900 border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all hover:scale-105 group"
+            >
+              <FiGrid className="text-cyan-400 group-hover:scale-110 transition-transform" />
+              <span>Category</span>
+            </Link>
+            <Link 
+              to="/admin/add/badges" 
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-gray-800 to-gray-900 border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all hover:scale-105 group"
+            >
+              <FiTag className="text-cyan-400 group-hover:scale-110 transition-transform" />
+              <span>Badge</span>
+            </Link>
+            <Link 
+              to="/admin/add/products" 
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-xl hover:from-cyan-700 hover:to-blue-700 transition-all hover:scale-105 group shadow-lg shadow-cyan-500/20"
+            >
+              <FiPlus className="group-hover:rotate-90 transition-transform" />
+              <span>New Product</span>
+            </Link>
+          </div>
+        </div>
+
+        </div>
+
+      {/* SEARCH BAR */}
       <div className="relative mb-8">
         <div className="relative">
-          <FiSearch
-            size={20}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-          />
+          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           <input
-            type="text"
+            className="w-full bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-sm pl-12 py-4 rounded-2xl border border-white/10 focus:border-cyan-500/50 focus:outline-none transition-colors text-lg"
             placeholder="Search products by name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#12141c] border border-white/10 pl-12 pr-4 py-3 rounded-xl text-white placeholder-gray-400 outline-none focus:border-cyan-500/50"
           />
+          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+            <span className="text-gray-400 text-sm">
+              {filteredProducts.length} products found
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Products Table (Desktop) */}
-      <div className="hidden md:block bg-[#151822] border border-white/10 rounded-xl overflow-hidden shadow-xl">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-full">
+      {/* ================= DESKTOP TABLE ================= */}
+      <div className="hidden lg:block">
+        <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
+          <table className="w-full">
             <thead className="bg-white/5">
               <tr>
-                <th className="py-4 px-6 text-left text-gray-300 font-medium">Product</th>
-                <th className="py-4 px-6 text-left text-gray-300 font-medium">Category</th>
-                <th className="py-4 px-6 text-left text-gray-300 font-medium">Price</th>
-                <th className="py-4 px-6 text-left text-gray-300 font-medium">Variants</th>
-                <th className="py-4 px-6 text-left text-gray-300 font-medium">Status</th>
-                <th className="py-4 px-6 text-left text-gray-300 font-medium">Actions</th>
+                <th className="p-6 text-left text-gray-400 font-semibold">Product Details</th>
+                <th className="p-6 text-left text-gray-400 font-semibold">Category</th>
+                <th className="p-6 text-left text-gray-400 font-semibold">Price</th>
+                <th className="p-6 text-left text-gray-400 font-semibold">Badge</th>
+                <th className="p-6 text-left text-gray-400 font-semibold">Actions</th>
               </tr>
             </thead>
 
-            <tbody>
-              {filteredProducts.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="py-12 text-center text-gray-400">
-                    No products found
+            <tbody className="divide-y divide-white/10">
+              {filteredProducts.map((product) => (
+                <tr 
+                  key={product._id} 
+                  className="hover:bg-white/5 transition-colors group"
+                >
+                  {/* Product Details */}
+                  <td className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 flex-shrink-0">
+                        <img
+                          src={product.image}
+                          alt={product.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.innerHTML = `
+                              <div class="w-full h-full flex items-center justify-center">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
+                                  <FiPackage class="text-cyan-400" />
+                                </div>
+                              </div>
+                            `;
+                          }}
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-lg truncate">
+                          {product.title || "Untitled Product"}
+                        </h3>
+                        <p className="text-gray-400 text-sm truncate">
+                          {product.description || "No description"}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Category */}
+                  <td className="p-6">
+                    <span className="px-3 py-1 bg-gray-800/50 text-gray-300 rounded-full text-sm">
+                      {product.category || "Uncategorized"}
+                    </span>
+                  </td>
+
+                  {/* Price */}
+                  <td className="p-6">
+                    <div className="space-y-1">
+                      <div className="text-xl font-bold text-cyan-400">
+                        {formatPrice(product.price)}
+                      </div>
+                      {product.oldPrice && product.oldPrice > product.price && (
+                        <div className="text-sm text-gray-400 line-through">
+                          {formatPrice(product.oldPrice)}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+
+                  {/* Badge */}
+                  <td className="p-6">
+                    {product.badge ? (
+                      <span className="px-3 py-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 rounded-full text-sm font-medium">
+                        {product.badge}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500">-</span>
+                    )}
+                  </td>
+
+                  {/* Actions */}
+                  <td className="p-6">
+                    <div className="flex items-center gap-3">
+                      <Link
+                        to={`/admin/edit/products/${product._id}`}
+                        className="p-2 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 hover:from-cyan-600/30 hover:to-blue-600/30 border border-cyan-500/30 rounded-lg transition-all hover:scale-105 hover:shadow-cyan-500/20 hover:shadow-lg group/edit"
+                        title="Edit Product"
+                      >
+                        <FiEdit2 className="text-cyan-400 group-hover/edit:rotate-12 transition-transform" size={18} />
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteProduct(product._id)}
+                        disabled={deletingId === product._id}
+                        className="p-2 bg-gradient-to-r from-red-600/20 to-red-700/20 hover:from-red-600/30 hover:to-red-700/30 border border-red-500/30 rounded-lg transition-all hover:scale-105 hover:shadow-red-500/20 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed group/delete"
+                        title="Delete Product"
+                      >
+                        {deletingId === product._id ? (
+                          <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <FiTrash2 className="text-red-400 group-hover/delete:scale-110 transition-transform" size={18} />
+                        )}
+                      </button>
+                    </div>
                   </td>
                 </tr>
-              ) : (
-                filteredProducts.map((product) => {
-                  const stockInfo = getStockStatus(product);
-                  const lowestPrice = getLowestPrice(product.variants);
-                  
-                  return (
-                    <tr
-                      key={product._id}
-                      className="border-t border-white/10 hover:bg-white/5 transition-colors"
-                    >
-                      <td className="py-4 px-6">
-                        <div>
-                          <div className="font-medium text-white">{product.title}</div>
-                          <div className="text-gray-400 text-sm mt-1">{product.description}</div>
-                        </div>
-                      </td>
-
-                      <td className="py-4 px-6">
-                        <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">
-                          {product.category || "Uncategorized"}
-                        </span>
-                      </td>
-
-                      <td className="py-4 px-6">
-                        {lowestPrice === "N/A" ? (
-                          <span className="text-gray-400">N/A</span>
-                        ) : (
-                          <div className="font-medium">₹{lowestPrice}</div>
-                        )}
-                      </td>
-
-                      <td className="py-4 px-6">
-                        <span className="text-gray-300">
-                          {product.variants?.length || 0} variant{product.variants?.length !== 1 ? 's' : ''}
-                        </span>
-                      </td>
-
-                      <td className="py-4 px-6">
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${
-                            stockInfo.status === "Active"
-                              ? "bg-green-600/20 text-green-400"
-                              : "bg-red-600/20 text-red-400"
-                          }`}
-                        >
-                          {stockInfo.status}
-                        </span>
-                      </td>
-
-                      <td className="py-4 px-6">
-                        <div className="flex gap-2">
-                          <Link
-                            to={`/admin/edit/products/${product._id}`}
-                            className="bg-blue-500/20 hover:bg-blue-500/40 text-blue-400 p-2 rounded-lg transition-colors"
-                            title="Edit Product"
-                          >
-                            <FiEdit2 size={18} />
-                          </Link>
-
-                          <button
-                            onClick={() => handleDeleteProduct(product._id)}
-                            className="bg-red-500/20 hover:bg-red-500/40 text-red-400 p-2 rounded-lg transition-colors"
-                            title="Delete Product"
-                          >
-                            <FiTrash2 size={18} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
+              ))}
             </tbody>
           </table>
+
+          {/* Empty State */}
+          {filteredProducts.length === 0 && (
+            <div className="py-20 text-center">
+              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 flex items-center justify-center">
+                <FiSearch className="w-12 h-12 text-gray-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-300 mb-2">
+                No products found
+              </h3>
+              <p className="text-gray-500 max-w-md mx-auto">
+                {searchQuery 
+                  ? `No products matching "${searchQuery}"`
+                  : "Start by adding your first product"
+                }
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Mobile Cards View */}
-      <div className="md:hidden space-y-4">
-        {filteredProducts.length === 0 ? (
-          <div className="text-center py-12 text-gray-400 bg-[#151822] rounded-xl">
-            No products found
-          </div>
-        ) : (
-          filteredProducts.map((product) => {
-            const stockInfo = getStockStatus(product);
-            const lowestPrice = getLowestPrice(product.variants);
-            
-            return (
-              <div
-                key={product._id}
-                className="bg-[#151822] border border-white/10 p-5 rounded-xl"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">{product.title}</h3>
-                    <p className="text-gray-400 text-sm mt-1">{product.description}</p>
-                  </div>
-                  <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">
-                    {product.category}
+      {/* ================= MOBILE/TABLET VIEW ================= */}
+      <div className="lg:hidden space-y-4">
+        {filteredProducts.map((product) => (
+          <div 
+            key={product._id} 
+            className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+          >
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-20 h-20 rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 flex-shrink-0">
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentElement.innerHTML = `
+                      <div class="w-full h-full flex items-center justify-center">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
+                          <FiPackage class="text-cyan-400" />
+                        </div>
+                      </div>
+                    `;
+                  }}
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-lg mb-1 truncate">
+                  {product.title || "Untitled Product"}
+                </h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-1 bg-gray-800/50 text-gray-300 rounded-full text-xs">
+                    {product.category || "Uncategorized"}
                   </span>
+                  {product.badge && (
+                    <span className="px-2 py-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 rounded-full text-xs">
+                      {product.badge}
+                    </span>
+                  )}
                 </div>
-
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div>
-                    <p className="text-gray-400 text-sm">Price</p>
-                    <p className="font-medium">
-                      {lowestPrice === "N/A" ? "N/A" : `₹${lowestPrice}`}
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-gray-400 text-sm">Variants</p>
-                    <p className="font-medium">
-                      {product.variants?.length || 0}
-                    </p>
-                  </div>
+                <div className="text-xl font-bold text-cyan-400">
+                  {formatPrice(product.price)}
                 </div>
+              </div>
+            </div>
 
-                <div className="mt-4">
-                  <p className="text-gray-400 text-sm mb-2">Status</p>
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm ${
-                      stockInfo.status === "Active"
-                        ? "bg-green-600/20 text-green-400"
-                        : "bg-red-600/20 text-red-400"
-                    }`}
-                  >
-                    {stockInfo.status}
-                  </span>
+            <div className="pt-4 border-t border-white/10">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-400">
+                  {product.description ? 
+                    `${product.description.substring(0, 60)}${product.description.length > 60 ? '...' : ''}` : 
+                    "No description"
+                  }
                 </div>
-
-                {/* Actions */}
-                <div className="flex gap-3 mt-6">
+                <div className="flex items-center gap-2">
                   <Link
                     to={`/admin/edit/products/${product._id}`}
-                    className="flex-1 bg-blue-500/20 hover:bg-blue-500/40 text-blue-400 px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                    className="px-4 py-2 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 hover:from-cyan-600/30 hover:to-blue-600/30 border border-cyan-500/30 rounded-lg text-cyan-400 transition-all hover:scale-105"
                   >
-                    <FiEdit2 /> Edit
+                    Edit
                   </Link>
-
                   <button
                     onClick={() => handleDeleteProduct(product._id)}
-                    className="flex-1 bg-red-500/20 hover:bg-red-500/40 text-red-400 px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer "
+                    disabled={deletingId === product._id}
+                    className="px-4 py-2 bg-gradient-to-r from-red-600/20 to-red-700/20 hover:from-red-600/30 hover:to-red-700/30 border border-red-500/30 rounded-lg text-red-400 transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <FiTrash2 /> Delete
+                    {deletingId === product._id ? "Deleting..." : "Delete"}
                   </button>
                 </div>
               </div>
-            );
-          })
+            </div>
+          </div>
+        ))}
+
+        {/* Empty State for Mobile */}
+        {filteredProducts.length === 0 && (
+          <div className="py-12 text-center bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-sm border border-white/10 rounded-2xl">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 flex items-center justify-center">
+              <FiSearch className="w-10 h-10 text-gray-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-300 mb-2">
+              No products found
+            </h3>
+            <p className="text-gray-500 text-sm px-4">
+              {searchQuery 
+                ? `No products matching "${searchQuery}"`
+                : "Add your first product to get started"
+              }
+            </p>
+          </div>
         )}
       </div>
 
-      {/* Footer Info */}
-      <div className="mt-8 text-center text-gray-500 text-sm">
-        Showing {filteredProducts.length} of {products.length} products
+      {/* Bottom Info */}
+      <div className="mt-8 pt-6 border-t border-white/10">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+          <div>
+            Showing {filteredProducts.length} of {products.length} products
+          </div>
+          <div className="flex items-center gap-4">
+            <span>🔄 Last updated: Just now</span>
+            <span className="hidden md:inline">•</span>
+            <span>📦 All data is synced</span>
+          </div>
+        </div>
       </div>
     </div>
   );

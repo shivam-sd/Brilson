@@ -53,9 +53,9 @@ const AdminOrders = () => {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6">
+      <h2 className="text-2xl md:text-4xl font-bold mb-6">
         Last 7 Days Orders
-      </h1>
+      </h2>
 
       <div className="bg-[#151822] border border-white/10 rounded-xl overflow-hidden shadow-lg">
 

@@ -9,26 +9,22 @@ const AdminAddProduct = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
   const [badges, setBadges] = useState([]);
-    const [imageFile, setImageFile] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-  // Product state - only essential fields
+  
+  // Product state - WITHOUT variants
   const [productData, setProductData] = useState({
     category: "",
     title: "",
     badge: "",
-    image:"",
+    image: "",
     description: "",
+    price: "",
+    oldPrice: "",
+    color: "",
+    discount: "",
     features: [""],
-    metaTags: [""],
-    variants: [
-      {
-        name: "",
-        price: "",
-        oldPrice: "",
-        color: "",
-        discount: "",
-      },
-    ],
+    metaTags: [""]
   });
 
   // fetch all category
@@ -37,12 +33,10 @@ const AdminAddProduct = () => {
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/category/active`
       );
-      // console.log(res);
       setCategories(res?.data?.categories || []);
     };
     fetchCategories();
   }, []);
-
 
   // fetch all badges
   useEffect(() => {
@@ -50,15 +44,13 @@ const AdminAddProduct = () => {
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/badges/active`
       );
-      // console.log(res);
       setBadges(res?.data?.badges || []);
     };
     fetchBadges();
   }, []);
 
-
   // image upload handler
-   const handleImageChange = (e) => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -66,46 +58,12 @@ const AdminAddProduct = () => {
     setPreviewImage(URL.createObjectURL(file));
   };
 
-
   // Handle basic input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProductData((prev) => ({
       ...prev,
       [name]: value,
-    }));
-  };
-
-  // Add new variant
-  const addVariant = () => {
-    setProductData((prev) => ({
-      ...prev,
-      variants: [
-        ...prev.variants,
-        { name: "", price: "", oldPrice: "", color: "", discount: "" },
-      ],
-    }));
-  };
-
-  // Remove variant
-  const removeVariant = (index) => {
-    if (productData.variants.length > 1) {
-      const newVariants = [...productData.variants];
-      newVariants.splice(index, 1);
-      setProductData((prev) => ({
-        ...prev,
-        variants: newVariants,
-      }));
-    }
-  };
-
-  // Update variant field
-  const updateVariant = (index, field, value) => {
-    const newVariants = [...productData.variants];
-    newVariants[index] = { ...newVariants[index], [field]: value };
-    setProductData((prev) => ({
-      ...prev,
-      variants: newVariants,
     }));
   };
 
@@ -163,23 +121,31 @@ const AdminAddProduct = () => {
     }));
   };
 
-
-
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-        if (!imageFile) {
+    if (!imageFile) {
       toast.error("Product image is required");
       return;
     }
+    
+    if (!productData.price) {
+      toast.error("Product price is required");
+      return;
+    }
+    
     setIsSubmitting(true);
 
     // Prepare data for API
-        const formData = new FormData();
+    const formData = new FormData();
     formData.append("title", productData.title);
     formData.append("category", productData.category);
     formData.append("badge", productData.badge);
     formData.append("description", productData.description);
+    formData.append("price", productData.price);
+    formData.append("oldPrice", productData.oldPrice || "");
+    formData.append("color", productData.color || "");
+    formData.append("discount", productData.discount || "");
     formData.append("image", imageFile);
 
     formData.append(
@@ -190,21 +156,19 @@ const AdminAddProduct = () => {
       "metaTags",
       JSON.stringify(productData.metaTags.filter((m) => m.trim()))
     );
-    formData.append(
-      "variants",
-      JSON.stringify(
-        productData.variants.filter((v) => v.name && v.price)
-      )
-    );
 
     try {
       await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/admin/add/products`,
         formData,
-        { withCredentials: true }
+        { withCredentials: true, 
+          headers:{
+            Authorization: `${localStorage.getItem("token")}`
+          }
+         }
       );
 
-      toast.success("Product added successfully 🎉");
+      toast.success("Product added successfully");
       navigate("/admindashboard/products/list");
     } catch (err) {
       toast.error(err?.response?.data?.error || "Failed to add product");
@@ -259,16 +223,12 @@ const AdminAddProduct = () => {
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none cursor-pointer"
                   required
                 >
-                   <option value="" >Select Category</option>
-                  {categories.map((c) => {
-                    return (
-                      <>
-                      
-                        <option className="w-full" key={c._id} value={c.name}>{c.name}</option>
-                        
-                      </>
-                    );
-                  })}
+                  <option value="">Select Category</option>
+                  {categories.map((c) => (
+                    <option key={c._id} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -283,31 +243,73 @@ const AdminAddProduct = () => {
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none cursor-pointer"
                 >
-                   <option value="" >Select Badge</option>
-                  {
-                    badges.map((b) => {
-                      return(<>
-                      <option key={b.name} value={b.name}>{b.name}</option>
-                     </>)
-                     
-                    })
-                  }
-                  
+                  <option value="">Select Badge</option>
+                  {badges.map((b) => (
+                    <option key={b.name} value={b.name}>
+                      {b.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
-              {/* Price (from first variant) */}
+              {/* Price */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Starting Price (₹) *
+                  Price (₹) *
                 </label>
                 <input
                   type="number"
-                  value={productData.variants[0]?.price || ""}
-                  onChange={(e) => updateVariant(0, "price", e.target.value)}
+                  name="price"
+                  value={productData.price}
+                  onChange={handleInputChange}
                   placeholder="299"
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                   required
+                />
+              </div>
+
+              {/* Old Price */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Old Price (₹)
+                </label>
+                <input
+                  type="number"
+                  name="oldPrice"
+                  value={productData.oldPrice}
+                  onChange={handleInputChange}
+                  placeholder="399"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
+                />
+              </div>
+
+              {/* Color */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Color
+                </label>
+                <input
+                  type="text"
+                  name="color"
+                  value={productData.color}
+                  onChange={handleInputChange}
+                  placeholder="e.g., White, Black, Silver"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
+                />
+              </div>
+
+              {/* Discount */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Discount
+                </label>
+                <input
+                  type="text"
+                  name="discount"
+                  value={productData.discount}
+                  onChange={handleInputChange}
+                  placeholder="e.g., 25% OFF or ₹100 OFF"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                 />
               </div>
             </div>
@@ -332,7 +334,7 @@ const AdminAddProduct = () => {
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-200">
-                  Product Features
+                  Product Features ({productData.features.length})
                 </h3>
                 <button
                   type="button"
@@ -350,9 +352,7 @@ const AdminAddProduct = () => {
                       type="text"
                       value={feature}
                       onChange={(e) => updateFeature(index, e.target.value)}
-                      placeholder={`Feature ${
-                        index + 1
-                      } (e.g., NFC Enabled, QR Code)`}
+                      placeholder={`Feature ${index + 1} (e.g., NFC Enabled, QR Code)`}
                       className="flex-1 px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none"
                     />
                     {productData.features.length > 1 && (
@@ -374,14 +374,14 @@ const AdminAddProduct = () => {
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-200">
-                  Product Meta Tags
+                  Product Meta Tags ({productData.metaTags.length})
                 </h3>
                 <button
                   type="button"
                   onClick={addMetaTags}
                   className="flex items-center gap-2 px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition"
                 >
-                  <FiPlus size={16} /> Add Feature
+                  <FiPlus size={16} /> Add Meta Tags
                 </button>
               </div>
 
@@ -392,9 +392,7 @@ const AdminAddProduct = () => {
                       type="text"
                       value={metaTags}
                       onChange={(e) => updateMetaTags(index, e.target.value)}
-                      placeholder={`Meta Tags ${
-                        index + 1
-                      } (e.g., #NFC Enabled, #QR Code)`}
+                      placeholder={`Meta Tag ${index + 1} (e.g., #NFC Enabled, #QR Code)`}
                       className="flex-1 px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none"
                     />
                     {productData.metaTags.length > 1 && (
@@ -402,7 +400,7 @@ const AdminAddProduct = () => {
                         type="button"
                         onClick={() => removeMetaTags(index)}
                         className="px-4 py-3 bg-red-500/20 text-red-400 rounded-xl hover:bg-red-500/30 transition"
-                        title="Remove feature"
+                        title="Remove meta tag"
                       >
                         <FiTrash2 size={18} />
                       </button>
@@ -412,146 +410,43 @@ const AdminAddProduct = () => {
               </div>
             </div>
 
-            {/* Variants Section */}
+            {/* Image Upload Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-200">
-                  Product Variants
+                  Product Image
                 </h3>
-                <button
-                  type="button"
-                  onClick={addVariant}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition"
-                >
-                  <FiPlus size={16} /> Add Variant
-                </button>
+                <span className="text-sm text-gray-400">
+                  Required • Max size: 5MB
+                </span>
               </div>
+              
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">
+                  Upload Product Image *
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600"
+                  required
+                />
 
-              <div className="space-y-6">
-                {productData.variants.map((variant, index) => (
-                  <div
-                    key={index}
-                    className="bg-gray-900/50 p-6 rounded-xl border border-gray-700"
-                  >
-                    <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-md font-medium text-gray-300">
-                        Variant {index + 1} {index === 0 && "(Primary)"}
-                      </h4>
-                      {productData.variants.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeVariant(index)}
-                          className="px-3 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition"
-                          title="Remove variant"
-                        >
-                          <FiTrash2 size={16} />
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm text-gray-400 mb-1">
-                          Variant Name *
-                        </label>
-                        <input
-                          type="text"
-                          value={variant.name}
-                          onChange={(e) =>
-                            updateVariant(index, "name", e.target.value)
-                          }
-                          placeholder="e.g., White, Gold, Premium"
-                          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm text-gray-400 mb-1">
-                          Price (₹) *
-                        </label>
-                        <input
-                          type="number"
-                          value={variant.price}
-                          onChange={(e) =>
-                            updateVariant(index, "price", e.target.value)
-                          }
-                          placeholder="299"
-                          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm text-gray-400 mb-1">
-                          Old Price (₹)
-                        </label>
-                        <input
-                          type="number"
-                          value={variant.oldPrice}
-                          onChange={(e) =>
-                            updateVariant(index, "oldPrice", e.target.value)
-                          }
-                          placeholder="399"
-                          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm text-gray-400 mb-1">
-                          Color
-                        </label>
-                        <input
-                          type="text"
-                          value={variant.color}
-                          onChange={(e) =>
-                            updateVariant(index, "color", e.target.value)
-                          }
-                          placeholder="e.g., White, Black, Silver"
-                          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
-                        />
-                      </div>
-
-                      <div className="md:col-span-2">
-                        <label className="block text-sm text-gray-400 mb-1">
-                          Discount
-                        </label>
-                        <input
-                          type="text"
-                          value={variant.discount}
-                          onChange={(e) =>
-                            updateVariant(index, "discount", e.target.value)
-                          }
-                          placeholder="e.g., 25% OFF or ₹100 OFF"
-                          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:border-cyan-500 outline-none"
-                        />
-                      </div>
-                    </div>
+                {previewImage && (
+                  <div className="mt-4">
+                    <label className="block text-sm text-gray-400 mb-2">
+                      Preview
+                    </label>
+                    <img
+                      src={previewImage}
+                      alt="Product Preview"
+                      className="w-full h-64 rounded-xl border border-gray-600 object-contain bg-gray-900"
+                    />
                   </div>
-                ))}
+                )}
               </div>
             </div>
-
-
-<div>
-            <label className="block text-sm text-gray-400 mb-2">
-              Product Image *
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg"
-            />
-
-            {previewImage && (
-              <img
-                src={previewImage}
-                alt="Preview"
-                className="mt-4 w-full h-96 rounded-xl border border-gray-600 object-cover"
-              />
-            )}
-          </div>
 
             {/* Submit Button */}
             <div className="pt-6 border-t border-gray-700">
@@ -576,7 +471,6 @@ const AdminAddProduct = () => {
             </div>
           </form>
         </div>
-
       </div>
     </div>
   );

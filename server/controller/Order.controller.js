@@ -4,99 +4,112 @@ const ProductModel = require("../models/Product.model");
 
 
 
+
+  //  CREATE ORDER
+
 const orderCreate = async (req, res) => {
   try {
     const userId = req.user;
-    const { address } = req.body;
+    const { address, totalAmount } = req.body;
 
     if (!address) {
       return res.status(400).json({ error: "Address required" });
     }
 
-    const cartItems = await CartModel.find({ userId }).populate("productId");
+    const cartItems = await CartModel
+      .find({ userId })
+      .populate("productId");
 
     if (!cartItems.length) {
-      return res.status(400).json({ error: "Please add product in cart" });
+      return res.status(400).json({ error: "Cart is empty" });
     }
 
+    /* MAP CART → ORDER ITEMS */
     const orderItems = cartItems.map(item => ({
       productId: item.productId._id,
       productTitle: item.productId.title,
-      variantId: item.variantId,
-      variantName: item.variantName,
       quantity: item.quantity,
       price: item.price,
-      image: item.image
+      image: item.image,
     }));
 
+    /* CALCULATE AMOUNT (SAFETY) */
     const subTotal = orderItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
 
-    const tax = Number(subTotal * 0.05).toFixed(2);
+    const tax = Number((subTotal * 0.05).toFixed(2));
+    const finalAmount = subTotal + tax;
 
-    const totalAmount = Number(subTotal) + Number(tax);
- 
+    /* CREATE ORDER */
     const order = await OrderModel.create({
       userId,
       items: orderItems,
       address,
-      totalAmount:totalAmount,
-      status:"pending"
-    }); 
+      totalAmount: totalAmount || finalAmount,
+      status: "pending",
+    });
 
+    /* CLEAR CART */
     await CartModel.deleteMany({ userId });
 
-    res.status(201).json({ success: true, order });
+    res.status(201).json({
+      success: true,
+      order,
+    });
 
   } catch (err) {
-    console.error(err);
+    console.error("Order Create Error:", err);
     res.status(500).json({ error: "Order create failed" });
   }
 };
 
 
-
-
-
-// order product get with order details
+  //  USER ORDERS
 
 const getOrderProduct = async (req, res) => {
   try {
     const userId = req.user;
 
-    const orders = await OrderModel.find({ userId })
-      .populate("items.productId");
+    const orders = await OrderModel
+      .find({ userId })
+      .populate("items.productId")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
-      orders,
+      success: true,
       totalOrders: orders.length,
+      orders,
     });
   } catch (err) {
+    console.error("Get Orders Error:", err);
     res.status(500).json({ error: "Server Error" });
   }
 };
 
-
-
-
-
-
-
+/* 
+   UPDATE ORDER STATUS (ADMIN)
+ */
 const updateOrderStatus = async (req, res) => {
   try {
-    const { orderId, orderStatus } = req.body;
+    const { orderId, status } = req.body;
 
-    const allowedStatus = ["processing", "shipped", "delivered", "cancelled"];
+    const allowedStatus = [
+      "pending",
+      "processing",
+      "shipped",
+      "delivered",
+      "cancelled",
+    ];
 
-    if (!allowedStatus.includes(orderStatus)) {
+    if (!allowedStatus.includes(status)) {
       return res.status(400).json({ error: "Invalid Order Status" });
     }
 
     const order = await OrderModel.findByIdAndUpdate(
       orderId,
-      { orderStatus },
+      { status },
       { new: true }
     );
 
@@ -105,37 +118,37 @@ const updateOrderStatus = async (req, res) => {
     }
 
     res.status(200).json({
-      message: "Order Status Updated",
+      success: true,
+      message: "Order status updated",
       order,
     });
 
   } catch (err) {
-    console.log("Error in Update Order Status", err);
+    console.error("Update Order Status Error:", err);
     res.status(500).json({ error: "Server Error" });
   }
 };
 
-
-const allOrders = async (req,res) => {
+/* 
+   ALL ORDERS (ADMIN)
+ */
+const allOrders = async (req, res) => {
   try {
     const orders = await OrderModel
-      .find().sort({ createdAt: -1 }); 
+      .find()
+      .populate("items.productId")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
       count: orders.length,
       orders,
     });
-
   } catch (err) {
     console.error("All Orders Error:", err);
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
+    res.status(500).json({ error: "Server Error" });
   }
 };
-
 
 
 module.exports = {

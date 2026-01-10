@@ -2,25 +2,28 @@ const CartModel = require("../models/Cart.model");
 const UserModel = require("../models/User.model");
 const ProductModel = require("../models/Product.model");
 
+
 const addToCart = async (req, res) => {
-   try {
+  try {
     const userId = req.user;
-    const { productId, variantId, quantity } = req.body;
+    const { productId, quantity } = req.body;
+
+    if (!productId) {
+      return res.status(400).json({
+        error: "Product ID is required",
+      });
+    }
 
     const product = await ProductModel.findById(productId);
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    const variant = product.variants.id(variantId);
-    if (!variant) {
-      return res.status(404).json({ message: "Variant not found" });
+      return res.status(404).json({
+        error: "Product not found",
+      });
     }
 
     let cartItem = await CartModel.findOne({
       userId,
       productId,
-      variantId,
     });
 
     if (cartItem) {
@@ -30,24 +33,27 @@ const addToCart = async (req, res) => {
       cartItem = await CartModel.create({
         userId,
         productId,
-        variantId,
         image: product.image,
-        variantName: variant.name,
-        price: variant.price,
+        title: product.title,
+        price: product.price,
         quantity: quantity || 1,
       });
     }
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Added to cart",
       cartItem,
     });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Add to cart failed" });
+    console.error("Add to cart error:", error);
+    res.status(500).json({
+      error: "Add to cart failed",
+    });
   }
 };
+
 
 
 const getUserCart = async (req, res) => {
@@ -57,13 +63,22 @@ const getUserCart = async (req, res) => {
     const cartItems = await CartModel.find({ userId })
       .populate("productId");
 
-      const user = await UserModel.findById(userId);
+    const user = await UserModel.findById(userId);
 
-    res.json({cartItems, user});
+    return res.status(200).json({
+      success: true,
+      cartItems,
+      user,
+    });
+
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch cart",err });
+    console.error("Get cart error:", err);
+    res.status(500).json({
+      error: "Failed to fetch cart",
+    });
   }
 };
+
 
 
 
@@ -73,30 +88,35 @@ const updateCartQty = async (req, res) => {
     const { quantity } = req.body;
 
     if (quantity < 1) {
-      return res.status(400).json({ error: "Quantity must be at least 1" });
+      return res.status(400).json({
+        error: "Quantity must be at least 1",
+      });
     }
 
     const cartItem = await CartModel.findById(cartId);
-
     if (!cartItem) {
-      return res.status(404).json({ error: "Cart item not found" });
+      return res.status(404).json({
+        error: "Cart item not found",
+      });
     }
 
-   
     cartItem.quantity = quantity;
-
     await cartItem.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Quantity updated",
       cartItem,
     });
+
   } catch (err) {
     console.error("Update cart error:", err);
-    res.status(500).json({ error: "Update failed" });
+    res.status(500).json({
+      error: "Update failed",
+    });
   }
 };
+
 
 
 
@@ -107,19 +127,37 @@ const removeFromCart = async (req, res) => {
 
     await CartModel.findByIdAndDelete(cartId);
 
-    res.json({ message: "Item removed from cart" });
+    return res.status(200).json({
+      success: true,
+      message: "Item removed from cart",
+    });
+
   } catch (err) {
-    res.status(500).json({ error: "Delete failed" });
+    console.error("Remove cart error:", err);
+    res.status(500).json({
+      error: "Delete failed",
+    });
   }
 };
 
 
-
-
 const clearCart = async (req, res) => {
-  await CartModel.deleteMany({ userId: req.user });
-  res.json({ message: "Cart cleared" });
+  try {
+    await CartModel.deleteMany({ userId: req.user });
+
+    return res.status(200).json({
+      success: true,
+      message: "Cart cleared",
+    });
+
+  } catch (err) {
+    console.error("Clear cart error:", err);
+    res.status(500).json({
+      error: "Clear cart failed",
+    });
+  }
 };
+
 
 
 
