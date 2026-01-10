@@ -182,8 +182,8 @@ module.exports = (order) => `
   <!-- HEADER -->
   <div class="header">
     <div class="logo">
-      // <img src="https://brilson.in/logo2.png" alt="Logo" />
-      Brilson
+      <img src="https://brilson.in/logo2.png" alt="Logo" />
+      // Brilson
     </div>
     <div class="invoice-title">
       <h1>Invoice</h1>

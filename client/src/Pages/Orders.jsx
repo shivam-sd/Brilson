@@ -30,6 +30,8 @@ const Orders = () => {
         }
       );
 
+      console.log(res)
+
       const sorted = [...(res.data.orders || [])].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
