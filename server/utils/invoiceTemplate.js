@@ -6,100 +6,114 @@ module.exports = (order) => `
 <title>Invoice</title>
 
 <style>
-  body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    background: #f9fafb;
-    padding: 40px;
-    color: #111827;
+  * {
+    box-sizing: border-box;
   }
 
-  .invoice-box {
+  body {
+    margin: 0;
+    padding: 40px;
+    background: #f1f5f9;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #0f172a;
+  }
+
+  .invoice-wrapper {
     max-width: 900px;
     margin: auto;
     background: #ffffff;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.08);
   }
 
+  /* HEADER */
   .header {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    padding: 32px 40px;
+    color: #ffffff;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #e5e7eb;
-    padding-bottom: 20px;
   }
 
-  .logo {
-    font-size: 26px;
-    font-weight: 800;
-    color: #0ea5e9;
-    letter-spacing: 1px;
-  }
-
-  .invoice-title {
-    text-align: right;
+  .logo img {
+    height: 45px;
   }
 
   .invoice-title h1 {
     margin: 0;
-    font-size: 28px;
-    color: #111827;
+    font-size: 32px;
+    font-weight: 700;
   }
 
   .invoice-title span {
     font-size: 13px;
-    color: #6b7280;
+    opacity: 0.9;
+  }
+
+  /* BODY */
+  .content {
+    padding: 40px;
   }
 
   .details {
     display: flex;
     justify-content: space-between;
-    margin-top: 30px;
+    margin-bottom: 40px;
+    gap: 40px;
   }
 
   .details-box {
     font-size: 14px;
-    line-height: 22px;
+    line-height: 1.7;
   }
 
   .details-box strong {
-    color: #111827;
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
+  /* TABLE */
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 35px;
+    margin-top: 20px;
   }
 
-  table thead {
-    background: #f3f4f6;
+  thead {
+    background: #f8fafc;
   }
 
-  table th {
-    padding: 12px;
+  th {
+    padding: 14px;
     text-align: left;
     font-size: 13px;
+    color: #475569;
     text-transform: uppercase;
-    letter-spacing: .5px;
-    color: #374151;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e2e8f0;
   }
 
-  table td {
-    padding: 12px;
+  td {
+    padding: 14px;
     font-size: 14px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e2e8f0;
   }
 
-  table tr:last-child td {
-    border-bottom: none;
-  }
-
-  .right {
+  td.right, th.right {
     text-align: right;
   }
 
+  tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  /* SUMMARY */
   .summary {
     margin-top: 30px;
     display: flex;
@@ -107,176 +121,158 @@ module.exports = (order) => `
   }
 
   .summary-box {
-    width: 300px;
-    font-size: 15px;
+    width: 320px;
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
   }
 
   .summary-row {
     display: flex;
-    gap: 20px;
+    justify-content: space-between;
     padding: 8px 0;
-    justify-content: flex-end;
+    font-size: 14px;
   }
 
   .summary-row.total {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 2px solid #0f172a;
     font-size: 18px;
     font-weight: 700;
-    border-top: 2px solid #111827;
-    padding-top: 12px;
   }
 
+  /* ADDRESS TABLE */
+  .address-table {
+    margin-top: 50px;
+  }
 
-
-  
-table {
-    border-collapse: collapse; 
-    margin: 25px 0;
-    font-size: 0.9em;
-    font-family: sans-serif;
-    min-width: 400px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    width: 100%; 
-}
-
-
-th, td {
-    border: 1px solid #dddddd;
-    padding: 12px 15px; 
-    text-align: left; 
-}
-
-
-thead tr {
-    background-color: #009879;
-    color: #ffffff;
+  .address-table caption {
     text-align: left;
-}
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
 
+  .address-table th {
+    background: #0ea5e9;
+    color: #ffffff;
+  }
 
-tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
-}
+  .address-table td {
+    background: #f8fafc;
+  }
 
-
-
-caption {
-    padding: 10px;
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-
+  /* FOOTER */
   .footer {
     margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
     text-align: center;
     font-size: 13px;
-    color: #6b7280;
-    border-top: 1px solid #e5e7eb;
-    padding-top: 20px;
+    color: #64748b;
   }
-
 </style>
 </head>
 
 <body>
 
-<div class="invoice-box">
+<div class="invoice-wrapper">
 
   <!-- HEADER -->
   <div class="header">
-    <div class="logo">BRILSON</div>
-
+    <div class="logo">
+      <img src="https://brilson.in/logo2.jpeg" alt="Logo" />
+    </div>
     <div class="invoice-title">
       <h1>Invoice</h1>
-      <span>Invoice Number #: ${order.invoice.number}</span><br/>
+      <span>Invoice #: ${order.invoice.number}</span><br/>
       <span>Order ID: ${order._id}</span>
     </div>
   </div>
 
-  <!-- CUSTOMER & DATE -->
-  <div class="details">
-    <div class="details-box">
-      <strong>Billed To:</strong><br/>
-     Name:-  <b>${order.address.name}</b><br/>
-      Email:- <b>${order.address.email}</b>
-    </div>
+  <!-- CONTENT -->
+  <div class="content">
 
-    <div class="details-box">
-      <strong>Invoice Date:</strong><br/>
-      ${new Date(order.createdAt).toLocaleDateString()}<br/>
-      <strong>Payment Status:</strong><br/>
-      Paid
-    </div>
-  </div>
+    <!-- DETAILS -->
+    <div class="details">
+      <div class="details-box">
+        <strong>Billed To</strong>
+        ${order.address.name}<br/>
+        ${order.address.email}
+      </div>
 
-  <!-- ITEMS TABLE -->
-  <table>
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th class="right">Quantity</th>
-        <th class="right">Price</th>
-        <th class="right">Total</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      ${order.items.map(item => `
-        <tr>
-          <td>${item.productTitle}</td>
-          <td class="right">${item.quantity}</td>
-          <td class="right">₹${item.price}</td>
-          <td class="right">₹${item.price * item.quantity}</td>
-        </tr>
-      `).join("")}
-    </tbody>
-  </table>
-
-  <!-- SUMMARY -->
-  <div class="summary">
-    <div class="summary-box">
-      <div class="summary-row total">
-        <span>Total Amount:</span>
-        <span>₹${order.totalAmount}</span>
+      <div class="details-box">
+        <strong>Invoice Details</strong>
+        Date: ${new Date(order.createdAt).toLocaleDateString()}<br/>
+        Status: <b style="color:#16a34a;">Paid</b>
       </div>
     </div>
-  </div>
 
-
-
-<div>
-<table>
-        <caption>Billing Address</caption>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone No</th>
-                <th>City</th>
-                <th>State</th>
-                <th>Zip Code</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>${order.address.name}</td>
-                <td>${order.address.email}</td>
-                <td>${order.address.phone}</td>
-                <td>${order.address.city}</td>
-                <td>${order.address.state}</td>
-                <td>${order.address.pincode}</td>
-            </tr>
-        </tbody>
+    <!-- ITEMS TABLE -->
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th class="right">Qty</th>
+          <th class="right">Price</th>
+          <th class="right">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${order.items.map(item => `
+          <tr>
+            <td>${item.productTitle}</td>
+            <td class="right">${item.quantity}</td>
+            <td class="right">₹${item.price}</td>
+            <td class="right">₹${item.price * item.quantity}</td>
+          </tr>
+        `).join("")}
+      </tbody>
     </table>
-</div>
 
+    <!-- SUMMARY -->
+    <div class="summary">
+      <div class="summary-box">
+        <div class="summary-row total">
+          <span>Total Amount</span>
+          <span>₹${order.totalAmount}</span>
+        </div>
+      </div>
+    </div>
 
-  <!-- FOOTER -->
-  <div class="footer">
-    Thank you for your purchase!<br/>
-    This is a system generated invoice and does not require a signature.
+    <!-- BILLING ADDRESS -->
+    <table class="address-table">
+      <caption>Billing Address</caption>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>City</th>
+          <th>State</th>
+          <th>Zip</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>${order.address.name}</td>
+          <td>${order.address.email}</td>
+          <td>${order.address.phone}</td>
+          <td>${order.address.city}</td>
+          <td>${order.address.state}</td>
+          <td>${order.address.pincode}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      Thank you for your purchase 💙 <br/>
+      This is a system-generated invoice and does not require a signature.
+    </div>
+
   </div>
-
 </div>
 
 </body>

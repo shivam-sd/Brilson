@@ -173,14 +173,17 @@ const ProductCardPreference = () => {
             )}
 
             {/* ACTION */}
+            <div className="flex items-center justify-center">
+
             <button
               onClick={addToCart}
               disabled={addingToCart}
-              className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-bold text-lg disabled:opacity-50"
-            >
+              className="w-72 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-bold text-lg disabled:opacity-50 cursor-pointer hover:scale-105 duration-300 active:scale-95"
+              >
               {addingToCart ? "Adding..." : "Add to Cart"}
             </button>
 
+              </div>
             <div className="flex justify-center gap-6 text-sm text-gray-400 pt-4">
               <span className="flex gap-1"><FiShield /> Secure</span>
               <span className="flex gap-1"><FiGlobe /> Worldwide</span>

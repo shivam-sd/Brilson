@@ -114,7 +114,7 @@ const Header = () => {
             className="flex items-center gap-2 text-white text-2xl font-semibold"
           >
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold">
-              B
+              <img src="logo2.jpeg" alt="" />
             </div>
             Brilson
           </motion.div>
