@@ -45,7 +45,7 @@ const orderSchema = new mongoose.Schema({
 invoice:{
   number:String,
   pdfPath: String,
-  pdfUrl:String,
+  pdfUrl:String, 
   cloudinaryId:String,
   generatedAt:Date
 },

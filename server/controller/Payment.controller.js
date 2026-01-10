@@ -11,6 +11,7 @@ const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
 const distributeReferralReward = require("../utils/distributeReferralReward");
 
 
+
 //  CREATE PAYMENT ORDER 
 
 const createPaymentOrder = async (req, res) => {
@@ -122,6 +123,7 @@ const verifyPayment = async (req, res) => {
       message: "Payment verified successfully",
     });
 
+    getConfig();
     
     // BACKGROUND INVOICE GENERATION
      
