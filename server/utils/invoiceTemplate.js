@@ -37,8 +37,22 @@ module.exports = (order) => `
     align-items: center;
   }
 
-  .logo img {
-    height: 45px;
+  .branding {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-name {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+
+  .brand-tagline {
+    font-size: 14px;
+    opacity: 0.9;
+    font-weight: 400;
   }
 
   .invoice-title h1 {
@@ -172,6 +186,20 @@ module.exports = (order) => `
     font-size: 13px;
     color: #64748b;
   }
+
+  /* BRILSON SPECIFIC STYLING */
+  .brilson-logo {
+    font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+    color: #ffffff;
+  }
+
+  .brilson-highlight {
+    color: #0ea5e9;
+  }
+
+  .brilson-bg {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+  }
 </style>
 </head>
 
@@ -181,13 +209,13 @@ module.exports = (order) => `
 
   <!-- HEADER -->
   <div class="header">
-    <div class="logo">
-      <img src="https://brilson.in/logo2.png" alt="Logo" />
-      // Brilson
+    <div class="branding">
+      <div class="brand-name brilson-logo">Brilson</div>
+      <div class="brand-tagline">Premium Products & Services</div>
     </div>
     <div class="invoice-title">
       <h1>Invoice</h1>
-      <span>Invoice #: ${order.invoice.number}</span><br/>
+      <span>Invoice #: ${order.invoice?.number || `INV-${new Date().getFullYear()}-${order._id.toString().slice(-6)}`}</span><br/>
       <span>Order ID: ${order._id}</span>
     </div>
   </div>
@@ -199,14 +227,14 @@ module.exports = (order) => `
     <div class="details">
       <div class="details-box">
         <strong>Billed To</strong>
-        ${order.address.name}<br/>
-        ${order.address.email}
+        ${order.address?.name || 'Customer Name'}<br/>
+        ${order.address?.email || 'customer@example.com'}
       </div>
 
       <div class="details-box">
         <strong>Invoice Details</strong>
-        Date: ${new Date(order.createdAt).toLocaleDateString()}<br/>
-        Status: <b style="color:#16a34a;">Paid</b>
+        Date: ${new Date(order.createdAt || Date.now()).toLocaleDateString('en-IN')}<br/>
+        Status: <b style="color:#16a34a;">${order.status?.toUpperCase() || 'PAID'}</b>
       </div>
     </div>
 
@@ -221,28 +249,41 @@ module.exports = (order) => `
         </tr>
       </thead>
       <tbody>
-        ${order.items.map(item => `
+        ${order.items?.map(item => `
           <tr>
-            <td>${item.productTitle}</td>
-            <td class="right">${item.quantity}</td>
-            <td class="right">₹${item.price}</td>
-            <td class="right">₹${item.price * item.quantity}</td>
+            <td>${item.productTitle || item.productId?.name || 'Product'}</td>
+            <td class="right">${item.quantity || 1}</td>
+            <td class="right">₹${item.price || 0}</td>
+            <td class="right">₹${(item.price || 0) * (item.quantity || 1)}</td>
           </tr>
-        `).join("")}
+        `).join("") || '<tr><td colspan="4" style="text-align:center;">No items found</td></tr>'}
       </tbody>
     </table>
 
     <!-- SUMMARY -->
     <div class="summary">
       <div class="summary-box">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>₹${order.totalAmount || 0}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span>₹0</span>
+        </div>
+        <div class="summary-row">
+          <span>Tax</span>
+          <span>₹0</span>
+        </div>
         <div class="summary-row total">
           <span>Total Amount</span>
-          <span>₹${order.totalAmount}</span>
+          <span>₹${order.totalAmount || 0}</span>
         </div>
       </div>
     </div>
 
     <!-- BILLING ADDRESS -->
+    ${order.address ? `
     <table class="address-table">
       <caption>Billing Address</caption>
       <thead>
@@ -257,19 +298,25 @@ module.exports = (order) => `
       </thead>
       <tbody>
         <tr>
-          <td>${order.address.name}</td>
-          <td>${order.address.email}</td>
-          <td>${order.address.phone}</td>
-          <td>${order.address.city}</td>
-          <td>${order.address.state}</td>
-          <td>${order.address.pincode}</td>
+          <td>${order.address.name || 'N/A'}</td>
+          <td>${order.address.email || 'N/A'}</td>
+          <td>${order.address.phone || 'N/A'}</td>
+          <td>${order.address.city || 'N/A'}</td>
+          <td>${order.address.state || 'N/A'}</td>
+          <td>${order.address.pincode || 'N/A'}</td>
         </tr>
       </tbody>
     </table>
+    ` : ''}
 
     <!-- FOOTER -->
     <div class="footer">
-      Thank you for your purchase 💙 <br/>
+      <div style="margin-bottom: 15px;">
+        <strong style="color: #0f172a; font-size: 14px;">Brilson Enterprises</strong><br/>
+        <span>contact@brilson.in | +91 12345 67890</span><br/>
+        <span>123 Business Street, City, State - 123456</span>
+      </div>
+      Thank you for choosing Brilson! 💙<br/>
       This is a system-generated invoice and does not require a signature.
     </div>
 

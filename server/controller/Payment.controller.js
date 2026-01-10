@@ -61,12 +61,17 @@ const verifyPayment = async (req, res) => {
       orderId,
     } = req.body;
 
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ error: "Missing payment details" });
+    }
+
     const config = getConfig();
 
     if (!config?.razorpay?.keySecret) {
-      return res.status(500).json({ error: "Razorpay config missing" });
+      return res.status(500).json({ error: "Razorpay config not loaded" });
     }
 
+    //  VERIFY SIGNATURE
     const expectedSignature = crypto
       .createHmac("sha256", config.razorpay.keySecret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -76,6 +81,7 @@ const verifyPayment = async (req, res) => {
       return res.status(400).json({ error: "Invalid signature" });
     }
 
+    //  UPDATE PAYMENT
     const payment = await PaymentModel.findOneAndUpdate(
       { razorpayOrderId: razorpay_order_id },
       {
@@ -86,19 +92,41 @@ const verifyPayment = async (req, res) => {
     );
 
     if (!payment) {
-      return res.status(404).json({ error: "Payment not found" });
+      return res.status(404).json({ error: "Payment record not found" });
     }
 
+    //  UPDATE ORDER
     const order = await OrderModel.findByIdAndUpdate(
       orderId,
       { status: "paid" },
       { new: true }
     );
 
-    // respond fast
-    res.json({ success: true });
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
 
-    // ---------------- BACKGROUND JOB ----------------
+    
+    // Update user's total orders
+    const user = await UserModel.findById(order.userId);
+    if(user){
+      user.totalOrders += 1;
+      await user.save();
+    }
+    
+    // DISTRIBUTE MLM COMMISSION
+    await distributeReferralReward(order.userId);
+    
+    //  RESPONSE FIRST 
+    res.status(200).json({
+      success: true,
+      message: "Payment verified successfully",
+    });
+
+    getConfig();
+    
+    // BACKGROUND INVOICE GENERATION
+     
     try {
       const { pdfPath, invoiceNumber } = await createInvoicePdf(order);
 
@@ -107,19 +135,21 @@ const verifyPayment = async (req, res) => {
         invoiceNumber
       );
 
-      await OrderModel.findByIdAndUpdate(order._id, {
-        invoice: {
-          number: invoiceNumber,
-          pdfUrl: cloudinaryData.pdfUrl,
-          cloudinaryId: cloudinaryData.cloudinaryId,
-          generatedAt: new Date(),
-        },
-      });
+      order.invoice = {
+        number: invoiceNumber,
+        pdfUrl: cloudinaryData.pdfUrl,
+        cloudinaryId: cloudinaryData.cloudinaryId,
+        generatedAt: new Date(),
+      };
 
-      await deleteLocalFile(pdfPath);
-      console.log("✅ Invoice uploaded successfully");
-    } catch (err) {
-      console.error("❌ Invoice error:", err.message);
+      await order.save();
+
+      // delete local file
+      // await deleteLocalFile(pdfPath);
+
+      console.log("Invoice generated & uploaded successfully");
+    } catch (invoiceError) {
+      console.error("Invoice generation failed:", invoiceError);
     }
 
   } catch (err) {
@@ -127,7 +157,6 @@ const verifyPayment = async (req, res) => {
     res.status(500).json({ error: "Payment verification failed" });
   }
 };
-
 
 
 
