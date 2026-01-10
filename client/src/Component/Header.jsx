@@ -113,8 +113,8 @@ const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-2 text-white text-2xl font-semibold"
           >
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold">
-              <img src="logo2.jpeg" alt="" />
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold">
+              <img src="logo2.png" alt="" className="hover:scale-105 duration-300" />
             </div>
             Brilson
           </motion.div>
