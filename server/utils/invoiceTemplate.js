@@ -135,7 +135,7 @@ module.exports = (order) => `
   }
 
   .summary-box {
-    width: 320px;
+    width: 380px;
     background: #f8fafc;
     border-radius: 12px;
     padding: 20px;
@@ -156,25 +156,44 @@ module.exports = (order) => `
     font-weight: 700;
   }
 
-  /* ADDRESS TABLE */
-  .address-table {
-    margin-top: 50px;
-  }
-
-  .address-table caption {
-    text-align: left;
-    font-size: 16px;
+  /* DISCOUNT BADGE */
+  .discount-badge {
+    display: inline-block;
+    background: #10b981;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
     font-weight: 600;
-    margin-bottom: 12px;
+    margin-left: 5px;
   }
 
-  .address-table th {
-    background: #0ea5e9;
-    color: #ffffff;
+  /* GST BADGE */
+  .gst-badge {
+    display: inline-block;
+    background: #3b82f6;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 5px;
   }
 
-  .address-table td {
-    background: #f8fafc;
+  /* STATUS BADGES */
+  .status-paid {
+    color: #16a34a;
+    font-weight: 600;
+  }
+  
+  .status-pending {
+    color: #f59e0b;
+    font-weight: 600;
+  }
+  
+  .status-failed {
+    color: #dc2626;
+    font-weight: 600;
   }
 
   /* FOOTER */
@@ -186,20 +205,6 @@ module.exports = (order) => `
     font-size: 13px;
     color: #64748b;
   }
-
-  /* BRILSON SPECIFIC STYLING */
-  .brilson-logo {
-    font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
-    color: #ffffff;
-  }
-
-  .brilson-highlight {
-    color: #0ea5e9;
-  }
-
-  .brilson-bg {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-  }
 </style>
 </head>
 
@@ -210,7 +215,7 @@ module.exports = (order) => `
   <!-- HEADER -->
   <div class="header">
     <div class="branding">
-      <div class="brand-name brilson-logo">Brilson</div>
+      <div class="brand-name">Brilson</div>
       <div class="brand-tagline">Premium Products & Services</div>
     </div>
     <div class="invoice-title">
@@ -228,13 +233,15 @@ module.exports = (order) => `
       <div class="details-box">
         <strong>Billed To</strong>
         ${order.address?.name || 'Customer Name'}<br/>
-        ${order.address?.email || 'customer@example.com'}
+        ${order.address?.email || 'customer@example.com'}<br/>
+        ${order.address?.phone || ''}
       </div>
 
       <div class="details-box">
         <strong>Invoice Details</strong>
         Date: ${new Date(order.createdAt || Date.now()).toLocaleDateString('en-IN')}<br/>
-        Status: <b style="color:#16a34a;">${order.status?.toUpperCase() || 'PAID'}</b>
+        Status: <span class="${order.status === 'paid' ? 'status-paid' : order.status === 'pending' ? 'status-pending' : 'status-failed'}">${order.status?.toUpperCase() || 'PAID'}</span><br/>
+        Order Status: ${order.orderStatus || 'Processing'}
       </div>
     </div>
 
@@ -245,68 +252,103 @@ module.exports = (order) => `
           <th>Product</th>
           <th class="right">Qty</th>
           <th class="right">Price</th>
-          <th class="right">Total</th>
         </tr>
       </thead>
       <tbody>
-        ${order.items?.map(item => `
+        ${order.items?.map(item => {
+          const itemPrice = item.price || item.amount || 0;
+          const itemQuantity = item.quantity || 1;
+          const itemTotal = itemPrice * itemQuantity;
+          
+          return `
           <tr>
             <td>${item.productTitle || item.productId?.name || 'Product'}</td>
-            <td class="right">${item.quantity || 1}</td>
-            <td class="right">₹${item.price || 0}</td>
-            <td class="right">₹${(item.price || 0) * (item.quantity || 1)}</td>
+            <td class="right">${itemQuantity}</td>
+            <td class="right">₹${itemTotal.toFixed(2)}</td>
           </tr>
-        `).join("") || '<tr><td colspan="4" style="text-align:center;">No items found</td></tr>'}
+        `}).join("") || '<tr><td colspan="4" style="text-align:center;">No items found</td></tr>'}
       </tbody>
     </table>
 
     <!-- SUMMARY -->
     <div class="summary">
       <div class="summary-box">
+        <!-- Items Total -->
         <div class="summary-row">
-          <span>Subtotal</span>
-          <span>₹${order.totalAmount || 0}</span>
+          <span>Items Price</span>
+          <span>₹${order.amount?.toFixed(2) || (order.items?.reduce((sum, item) => sum + ((item.price || item.amount || 0) * (item.quantity || 1)), 0) || 0).toFixed(2)}</span>
         </div>
+        
+        <!-- Discount -->
+        ${order.discountAmount > 0 ? `
         <div class="summary-row">
-          <span>Shipping</span>
-          <span>₹0</span>
+          <span>Discount Applied</span>
+          <span style="color:#10b981; font-weight:600;">-${order.discountAmount.toFixed(2)}%</span>
         </div>
+        ` : ''}
+        
+        <!-- GST -->
+        ${order.gstAmount > 0 ? `
         <div class="summary-row">
-          <span>Tax</span>
-          <span>₹0</span>
+          <span>GST</span>
+          <span style="color:#3b82f6; font-weight:600;">+${order.gstAmount.toFixed(2)}%</span>
         </div>
+        ` : ''}
+        
+        <!-- Shipping Cost -->
+        ${order.cost > 0 ? `
+        <div class="summary-row">
+          <span>Shipping Cost</span>
+          <span>+₹${order.cost.toFixed(2)}</span>
+        </div>
+        ` : `
+        <div class="summary-row">
+          <span>Shipping Cost</span>
+          <span style="color:#10b981;">Free</span>
+        </div>
+        `}
+        
+        <!-- Total Amount -->
         <div class="summary-row total">
           <span>Total Amount</span>
-          <span>₹${order.totalAmount || 0}</span>
+          <span>₹${order.totalAmount?.toFixed(2) || 0}</span>
         </div>
       </div>
     </div>
 
     <!-- BILLING ADDRESS -->
     ${order.address ? `
-    <table class="address-table">
-      <caption>Billing Address</caption>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>City</th>
-          <th>State</th>
-          <th>Zip</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>${order.address.name || 'N/A'}</td>
-          <td>${order.address.email || 'N/A'}</td>
-          <td>${order.address.phone || 'N/A'}</td>
-          <td>${order.address.city || 'N/A'}</td>
-          <td>${order.address.state || 'N/A'}</td>
-          <td>${order.address.pincode || 'N/A'}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div style="margin-top: 50px;">
+      <h3 style="color:#475569; font-size:16px; margin-bottom:12px;">Billing & Shipping Address</h3>
+      <div style="background:#f8fafc; padding:20px; border-radius:8px; border:1px solid #e2e8f0;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div>
+            <strong style="display:block; color:#475569; font-size:13px; margin-bottom:4px;">Name</strong>
+            ${order.address.name || 'N/A'}
+          </div>
+          <div>
+            <strong style="display:block; color:#475569; font-size:13px; margin-bottom:4px;">Email</strong>
+            ${order.address.email || 'N/A'}
+          </div>
+          <div>
+            <strong style="display:block; color:#475569; font-size:13px; margin-bottom:4px;">Phone</strong>
+            ${order.address.phone || 'N/A'}
+          </div>
+          <div>
+            <strong style="display:block; color:#475569; font-size:13px; margin-bottom:4px;">City</strong>
+            ${order.address.city || 'N/A'}
+          </div>
+          <div>
+            <strong style="display:block; color:#475569; font-size:13px; margin-bottom:4px;">State</strong>
+            ${order.address.state || 'N/A'}
+          </div>
+          <div>
+            <strong style="display:block; color:#475569; font-size:13px; margin-bottom:4px;">Pincode</strong>
+            ${order.address.pincode || 'N/A'}
+          </div>
+        </div>
+      </div>
+    </div>
     ` : ''}
 
     <!-- FOOTER -->

@@ -11,6 +11,8 @@ import {
   FiTruck,
   FiLock,
   FiRefreshCw,
+  FiChevronDown,
+  FiChevronUp,
 } from "react-icons/fi";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
@@ -25,8 +27,21 @@ const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState(null);
+  const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  /* FETCH CART */
+  // Check if mobile view
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  /* FETCH CART with product details including GST and Discount */
   useEffect(() => {
     const fetchCart = async () => {
       setLoading(true);
@@ -41,9 +56,43 @@ const CartPage = () => {
           setCartItems(res.data.cartItems || []);
         } else {
           const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
-          setCartItems(localCart);
+          
+          // For local cart, we need to fetch product details to get GST and discount
+          if (localCart.length > 0) {
+            try {
+              const productIds = localCart.map(item => item.productId).filter(Boolean);
+              if (productIds.length > 0) {
+                const productRes = await axios.post(
+                  `${import.meta.env.VITE_BASE_URL}/api/products/details`,
+                  { productIds }
+                );
+                
+                const productsMap = {};
+                productRes.data.products?.forEach(product => {
+                  productsMap[product._id] = product;
+                });
+                
+                // Merge product details with cart items
+                const updatedCart = localCart.map(item => ({
+                  ...item,
+                  productId: productsMap[item.productId] || item.productId,
+                  price: productsMap[item.productId]?.price || item.price
+                }));
+                
+                setCartItems(updatedCart);
+              } else {
+                setCartItems(localCart);
+              }
+            } catch (error) {
+              console.error("Error fetching product details:", error);
+              setCartItems(localCart);
+            }
+          } else {
+            setCartItems(localCart);
+          }
         }
       } catch (err) {
+        console.error("Cart fetch error:", err);
         toast.error("Failed to load cart");
       } finally {
         setLoading(false);
@@ -52,6 +101,58 @@ const CartPage = () => {
 
     fetchCart();
   }, [isLoggedIn, token]);
+
+  /* Calculate item price with GST and Discount */
+  const calculateItemPrice = (item) => {
+    const basePrice = item.price || 0;
+    const quantity = item.quantity || 1;
+    const itemTotal = basePrice * quantity;
+    
+    // Get product GST settings
+    const product = item.productId || {};
+    const gstEnabled = product.gst?.enabled || false;
+    const gstRate = product.gst?.rate || 18;
+    
+    // Get product Discount settings
+    const discountEnabled = product.discount?.enabled || false;
+    const discountType = product.discount?.type || 'percentage';
+    const discountValue = product.discount?.value || 0;
+    
+    // Calculate discount amount
+    let discountAmount = 0;
+    if (discountEnabled) {
+      if (discountType === 'percentage') {
+        discountAmount = (itemTotal * discountValue) / 100;
+      } else {
+        // Fixed discount per item
+        discountAmount = discountValue * quantity;
+      }
+    }
+    
+    // Calculate GST amount (on discounted price)
+    let gstAmount = 0;
+    if (gstEnabled) {
+      const taxableAmount = itemTotal - discountAmount;
+      gstAmount = (taxableAmount * gstRate) / 100;
+    }
+    
+    // Final price after discount and GST
+    const finalPrice = itemTotal - discountAmount + gstAmount;
+    
+    return {
+      basePrice,
+      quantity,
+      itemTotal,
+      discountEnabled,
+      discountType,
+      discountValue,
+      discountAmount,
+      gstEnabled,
+      gstRate,
+      gstAmount,
+      finalPrice
+    };
+  };
 
   /* REMOVE ITEM */
   const handleRemoveItem = async (cartId) => {
@@ -66,7 +167,7 @@ const CartPage = () => {
         );
         setCartItems((prev) => prev.filter((i) => i._id !== cartId));
       } else {
-        const updated = cartItems.filter((i) => i.productId !== cartId);
+        const updated = cartItems.filter((i) => i.productId._id !== cartId);
         localStorage.setItem("cart", JSON.stringify(updated));
         setCartItems(updated);
       }
@@ -100,7 +201,7 @@ const CartPage = () => {
         );
       } else {
         const updated = cartItems.map((i) =>
-          i.productId === cartId ? { ...i, quantity } : i
+          i.productId._id === cartId ? { ...i, quantity } : i
         );
         localStorage.setItem("cart", JSON.stringify(updated));
         setCartItems(updated);
@@ -110,64 +211,80 @@ const CartPage = () => {
     }
   };
 
-  /* TOTALS */
-  const { subtotal, tax, total, totalItems } = useMemo(() => {
-    const subtotal = cartItems.reduce(
-      (sum, i) => sum + i.price * i.quantity,
-      0
-    );
-    const tax = subtotal * 0.05;
-    const totalItems = cartItems.reduce((sum, i) => sum + i.quantity, 0);
-    return { subtotal, tax, total: subtotal + tax, totalItems };
+  /* TOTALS with GST and Discount */
+  const { subtotal, totalDiscount, totalGst, total, totalItems } = useMemo(() => {
+    let subtotal = 0;
+    let totalDiscount = 0;
+    let totalGst = 0;
+    
+    cartItems.forEach(item => {
+      const calc = calculateItemPrice(item);
+      subtotal += calc.itemTotal;
+      totalDiscount += calc.discountAmount;
+      totalGst += calc.gstAmount;
+    });
+    
+    const totalItems = cartItems.reduce((sum, i) => sum + (i.quantity || 1), 0);
+    const total = subtotal - totalDiscount + totalGst;
+    
+    return { subtotal, totalDiscount, totalGst, total, totalItems };
   }, [cartItems]);
 
   /* CHECKOUT */
   const handleCheckout = () => {
     if (!cartItems.length) return toast.error("Cart is empty");
 
+    // Prepare items with calculated prices
+    const checkoutItems = cartItems.map((item) => {
+      const calc = calculateItemPrice(item);
+      
+      // Get product details
+      const product = item.productId || {};
+      
+      return {
+        productId: product._id || item.productId,
+        productTitle: item.productTitle || item.title || product.title,
+        basePrice: item.price,
+        quantity: item.quantity,
+        image: item.image,
+        
+        // Product settings
+        gst: {
+          enabled: product.gst?.enabled || false,
+          rate: product.gst?.rate || 0
+        },
+        discount: {
+          enabled: product.discount?.enabled || false,
+          type: product.discount?.type || 'percentage',
+          value: product.discount?.value || 0
+        },
+        
+        // Calculated prices
+        discountAmount: calc.discountAmount,
+        gstAmount: calc.gstAmount,
+        finalPrice: calc.finalPrice
+      };
+    });
+
     navigate("/checkout", {
       state: {
         checkoutData: {
-          items: cartItems.map((i) => ({
-            productId: i.productId?._id || i.productId,
-            productTitle: i.productTitle || i.title,
-            price: i.price,
-            quantity: i.quantity,
-            image: i.image,
-          })),
+          items: checkoutItems,
+          subtotal,
+          totalDiscount,
+          totalGst,
+          total
         },
       },
     });
   };
 
-  /* CLEAR CART */
-  const handleClearCart = async () => {
-    if (!window.confirm("Are you sure you want to clear your cart?")) return;
-
-    try {
-      if (isLoggedIn) {
-        await axios.delete(
-          `${import.meta.env.VITE_BASE_URL}/api/cart/clear`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-      } else {
-        localStorage.removeItem("cart");
-      }
-      setCartItems([]);
-      toast.success("Cart cleared successfully");
-    } catch {
-      toast.error("Failed to clear cart");
-    }
-  };
-
   /* LOADING STATE */
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#05070a] via-gray-900 to-[#05070a] text-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#05070a] via-gray-900 to-[#05070a] text-white px-4">
         <div className="text-center">
-          <div className="animate-spin w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full mx-auto mb-4"></div>
+          <div className="animate-spin w-12 h-12 sm:w-16 sm:h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full mx-auto mb-4"></div>
           <p className="text-gray-400">Loading your cart...</p>
         </div>
       </div>
@@ -178,41 +295,31 @@ const CartPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#05070a] via-gray-900 to-[#05070a] text-white overflow-hidden">
       {/* Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-500/3 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-64 h-64 sm:w-96 sm:h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-64 h-64 sm:w-96 sm:h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
       </div>
 
       {/* Grid Pattern */}
-      <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20"></div>
+      <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20"></div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 mt-10">
+      <div className="relative max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 mt-10">
         
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
-          <div>
+        {/* Header - Responsive */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 sm:mb-12">
+          <div className="w-full md:w-auto">
             <Link 
               to="/products" 
-              className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
+              className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-3 sm:mb-4 text-sm sm:text-base"
             >
-              <FiArrowLeft /> Continue Shopping
+              <FiArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" /> Continue Shopping
             </Link>
-            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
               Your Shopping Cart
-            </h2>
-            <p className="text-gray-400 mt-2">
+            </h1>
+            <p className="text-gray-400 mt-2 text-sm sm:text-base">
               {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
             </p>
           </div>
-
-          {cartItems.length > 0 && (
-            <button
-              onClick={handleClearCart}
-              className="px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl transition-all hover:scale-105 mt-4 md:mt-0"
-            >
-              Clear Cart
-            </button>
-          )}
         </div>
 
         <AnimatePresence>
@@ -221,260 +328,473 @@ const CartPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="text-center py-20"
+              className="text-center py-12 sm:py-20 px-4"
             >
-              <div className="w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-br from-gray-900/50 to-gray-800/50 border border-white/10 flex items-center justify-center">
-                <FiShoppingCart className="w-16 h-16 text-gray-600" />
+              <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8 rounded-full bg-gradient-to-br from-gray-900/50 to-gray-800/50 border border-white/10 flex items-center justify-center">
+                <FiShoppingCart className="w-12 h-12 sm:w-16 sm:h-16 text-gray-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-300 mb-4">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-300 mb-3 sm:mb-4">
                 Your cart is empty
               </h2>
-              <p className="text-gray-400 mb-8 max-w-md mx-auto">
+              <p className="text-gray-400 mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base">
                 Looks like you haven't added any products to your cart yet.
               </p>
               <Link
                 to="/products"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-cyan-500/30 transition-all hover:scale-105"
+                className="inline-flex items-center gap-2 sm:gap-3 px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-cyan-500/30 transition-all hover:scale-105 text-sm sm:text-base"
               >
-                <FiShoppingCart />
+                <FiShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
                 Browse Products
               </Link>
             </motion.div>
           ) : (
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 sm:gap-8">
               {/* ITEMS LIST */}
               <div className="lg:col-span-2 space-y-6">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl"
+                  className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl"
                 >
-                  <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
-                    <h2 className="text-2xl font-bold flex items-center gap-3">
-                      <FiPackage className="text-cyan-400" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6 pb-4 border-b border-white/10">
+                    <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 sm:gap-3">
+                      <FiPackage className="text-cyan-400 w-5 h-5 sm:w-6 sm:h-6" />
                       Cart Items
                     </h2>
-                    <span className="px-4 py-2 bg-cyan-500/10 text-cyan-400 rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 sm:px-4 sm:py-2 bg-cyan-500/10 text-cyan-400 rounded-full text-xs sm:text-sm font-medium">
                       {totalItems} {totalItems === 1 ? 'item' : 'items'}
                     </span>
                   </div>
 
                   <div className="space-y-4">
                     <AnimatePresence>
-                      {cartItems.map((item, index) => (
-                        <motion.div
-                          key={item._id || item.productId}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 20 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="group relative flex gap-6 p-5 bg-gray-900/30 rounded-2xl border border-white/10 hover:border-cyan-500/30 transition-all duration-300"
-                        >
-                          {/* Product Image */}
-                          <div className="relative">
-                            <div className="w-28 h-28 rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
-                              <img
-                                src={item.image}
-                                alt={item.productTitle || item.title}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                  e.target.parentElement.innerHTML = `
-                                    <div class="w-full h-full flex items-center justify-center">
-                                      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
-                                        <FiPackage class="text-cyan-400" />
+                      {cartItems.map((item, index) => {
+                        const calc = calculateItemPrice(item);
+                        const product = item.productId || {};
+                        
+                        return (
+                          <motion.div
+                            key={item._id || product._id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="group relative flex flex-col sm:flex-row gap-4 sm:justify-between sm:p-5 p-4 bg-gray-900/30 rounded-xl sm:rounded-2xl border border-white/10 hover:border-cyan-500/30 transition-all duration-300"
+                          >
+                            {/* Product Image */}
+                            <div className="flex items-start gap-4 sm:relative">
+                              <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-lg sm:rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 flex-shrink-0">
+                                <img
+                                  src={item.image}
+                                  alt={item.productTitle || item.title || product.title}
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.parentElement.innerHTML = `
+                                      <div class="w-full h-full flex items-center justify-center">
+                                        <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center">
+                                          <svg class="w-4 h-4 sm:w-6 sm:h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                          </svg>
+                                        </div>
                                       </div>
-                                    </div>
-                                  `;
-                                }}
-                              />
-                            </div>
-                            <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center text-xs font-bold shadow-lg">
-                              {item.quantity}
-                            </div>
-                          </div>
-
-                          {/* Product Details */}
-                          <div className="flex-1">
-                            <h3 className="text-lg font-semibold mb-2">
-                              {item.productTitle || item.title}
-                            </h3>
-                            {item.color && (
-                              <div className="flex items-center gap-2 mb-3">
-                                <div 
-                                  className="w-4 h-4 rounded-full border border-white/20"
-                                  style={{ backgroundColor: item.color }}
+                                    `;
+                                  }}
                                 />
-                                <span className="text-sm text-gray-400">{item.color}</span>
+                                <div className="absolute -top-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center text-xs font-bold shadow-lg">
+                                  {item.quantity}
+                                </div>
                               </div>
-                            )}
-                            <p className="text-2xl font-bold text-cyan-400">
-                              ₹{item.price?.toLocaleString()}
-                            </p>
-                            <p className="text-sm text-gray-400">
-                              ₹{item.price} × {item.quantity} = ₹{(item.price * item.quantity).toLocaleString()}
-                            </p>
-                          </div>
 
-                          {/* Quantity Controls */}
-                          <div className="flex flex-col items-end gap-4">
-                            <div className="flex items-center border border-white/20 rounded-xl overflow-hidden">
-                              <button
-                                onClick={() => handleUpdateQuantity(
-                                  item._id || item.productId,
-                                  item.quantity - 1
+                              {/* Product Details */}
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-base sm:text-lg mb-1 sm:mb-2 line-clamp-2">
+                                  {item.productTitle || item.title || product.title}
+                                </h3>
+                                
+                                {/* Discount Badge */}
+                                {calc.discountEnabled && calc.discountAmount > 0 && (
+                                  <div className="inline-flex items-center gap-1 mb-2 sm:mb-3">
+                                    <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded text-xs font-medium">
+                                      {calc.discountType === 'percentage' 
+                                        ? `${calc.discountValue}% OFF` 
+                                        : `₹${calc.discountValue} OFF`}
+                                    </span>
+                                  </div>
                                 )}
-                                className="px-4 py-2 bg-gray-900/50 hover:bg-gray-800/50 transition text-gray-400 hover:text-white disabled:opacity-30"
-                                disabled={item.quantity <= 1}
-                              >
-                                <FiMinus size={16} />
-                              </button>
-                              <span className="px-4 py-2 bg-gray-900/30 text-white font-medium min-w-[40px] text-center">
-                                {item.quantity}
-                              </span>
-                              <button
-                                onClick={() => handleUpdateQuantity(
-                                  item._id || item.productId,
-                                  item.quantity + 1
+                                
+                                {/* Color */}
+                                {item.color && (
+                                  <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                                    <div 
+                                      className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-white/20"
+                                      style={{ backgroundColor: item.color }}
+                                    />
+                                    <span className="text-xs sm:text-sm text-gray-400">{item.color}</span>
+                                  </div>
                                 )}
-                                className="px-4 py-2 bg-gray-900/50 hover:bg-gray-800/50 transition text-gray-400 hover:text-white"
-                              >
-                                <FiPlus size={16} />
-                              </button>
+                                
+                                {/* Price Breakdown - Mobile */}
+                                <div className="block sm:hidden space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-lg font-bold text-cyan-400">
+                                      ₹{calc.finalPrice.toFixed(2)}
+                                    </span>
+                                    {calc.discountAmount > 0 && (
+                                      <span className="text-sm text-gray-400 line-through">
+                                        ₹{calc.itemTotal.toFixed(2)}
+                                      </span>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Price Details */}
+                                  <div className="text-xs text-gray-400">
+                                    <div>Base: ₹{calc.basePrice} × {calc.quantity}</div>
+                                    {calc.discountAmount > 0 && (
+                                      <div>Discount: -₹{calc.discountAmount.toFixed(2)}</div>
+                                    )}
+                                    {calc.gstAmount > 0 && (
+                                      <div>GST ({calc.gstRate}%): +₹{calc.gstAmount.toFixed(2)}</div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
                             </div>
 
-                            {/* Remove Button */}
-                            <button
-                              onClick={() => handleRemoveItem(item._id || item.productId)}
-                              disabled={removingId === (item._id || item.productId)}
-                              className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all hover:scale-105 disabled:opacity-50"
-                            >
-                              {removingId === (item._id || item.productId) ? (
-                                <>
-                                  <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
-                                  Removing...
-                                </>
-                              ) : (
-                                <>
-                                  <FiTrash2 size={16} />
-                                  Remove
-                                </>
-                              )}
-                            </button>
-                          </div>
+                            {/* Desktop Price and Quantity */}
+                            <div className="hidden sm:flex flex-col items-end gap-4">
+                              <div className="text-right space-y-1">
+                                {/* Final Price */}
+                                <div className="flex items-center justify-end gap-2">
+                                  <p className="text-2xl font-bold text-cyan-400">
+                                    ₹{calc.finalPrice.toFixed(2)}
+                                  </p>
+                                  {calc.discountAmount > 0 && (
+                                    <p className="text-lg text-gray-400 line-through">
+                                      ₹{calc.itemTotal.toFixed(2)}
+                                    </p>
+                                  )}
+                                </div>
+                                
+                                {/* Price Breakdown */}
+                                <div className="text-sm text-gray-400 space-y-0.5">
+                                  <div>Base: ₹{calc.basePrice} × {calc.quantity}</div>
+                                  {calc.discountAmount > 0 && (
+                                    <div className="text-green-400">
+                                      Discount: -₹{calc.discountAmount.toFixed(2)}
+                                      {calc.discountType === 'percentage' 
+                                        ? ` (${calc.discountValue}%)`
+                                        : ` (₹${calc.discountValue} per item)`}
+                                    </div>
+                                  )}
+                                  {calc.gstAmount > 0 && (
+                                    <div className="text-blue-400">
+                                      GST: +₹{calc.gstAmount.toFixed(2)}
+                                      {` (${calc.gstRate}% on taxable amount)`}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
 
-                          {/* Hover Glow Effect */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                        </motion.div>
-                      ))}
+                              {/* Quantity Controls */}
+                              <div className="flex flex-col items-end gap-4">
+                                <div className="flex items-center border border-white/20 rounded-xl overflow-hidden">
+                                  <button
+                                    onClick={() => handleUpdateQuantity(
+                                      item._id || product._id,
+                                      item.quantity - 1
+                                    )}
+                                    className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-900/50 hover:bg-gray-800/50 transition text-gray-400 hover:text-white disabled:opacity-30"
+                                    disabled={item.quantity <= 1}
+                                  >
+                                    <FiMinus size={14} className="sm:w-4 sm:h-4" />
+                                  </button>
+                                  <span className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-900/30 text-white font-medium min-w-[36px] sm:min-w-[40px] text-center text-sm sm:text-base">
+                                    {item.quantity}
+                                  </span>
+                                  <button
+                                    onClick={() => handleUpdateQuantity(
+                                      item._id || product._id,
+                                      item.quantity + 1
+                                    )}
+                                    className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-900/50 hover:bg-gray-800/50 transition text-gray-400 hover:text-white"
+                                  >
+                                    <FiPlus size={14} className="sm:w-4 sm:h-4" />
+                                  </button>
+                                </div>
+
+                                {/* Remove Button */}
+                                <button
+                                  onClick={() => handleRemoveItem(item._id || product._id)}
+                                  disabled={removingId === (item._id || product._id)}
+                                  className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all hover:scale-105 disabled:opacity-50 text-sm"
+                                >
+                                  {removingId === (item._id || product._id) ? (
+                                    <>
+                                      <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
+                                      Removing...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <FiTrash2 size={14} className="sm:w-4 sm:h-4" />
+                                      Remove
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Mobile Controls */}
+                            <div className="flex items-center justify-between sm:hidden pt-3 border-t border-white/10">
+                              {/* Quantity Controls */}
+                              <div className="flex items-center border border-white/20 rounded-lg overflow-hidden">
+                                <button
+                                  onClick={() => handleUpdateQuantity(
+                                    item._id || product._id,
+                                    item.quantity - 1
+                                  )}
+                                  className="px-3 py-1.5 bg-gray-900/50 hover:bg-gray-800/50 transition text-gray-400 hover:text-white disabled:opacity-30"
+                                  disabled={item.quantity <= 1}
+                                >
+                                  <FiMinus size={14} />
+                                </button>
+                                <span className="px-3 py-1.5 bg-gray-900/30 text-white font-medium min-w-[32px] text-center">
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  onClick={() => handleUpdateQuantity(
+                                    item._id || product._id,
+                                    item.quantity + 1
+                                  )}
+                                  className="px-3 py-1.5 bg-gray-900/50 hover:bg-gray-800/50 transition text-gray-400 hover:text-white"
+                                >
+                                  <FiPlus size={14} />
+                                </button>
+                              </div>
+
+                              {/* Remove Button */}
+                              <button
+                                onClick={() => handleRemoveItem(item._id || product._id)}
+                                disabled={removingId === (item._id || product._id)}
+                                className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all disabled:opacity-50"
+                              >
+                                {removingId === (item._id || product._id) ? (
+                                  <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
+                                ) : (
+                                  <FiTrash2 size={16} />
+                                )}
+                              </button>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
                     </AnimatePresence>
                   </div>
                 </motion.div>
-
-                {/* Trust Badges */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center hover:border-cyan-500/30 transition-all">
-                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-cyan-500/10 flex items-center justify-center">
-                      <FiShield className="text-cyan-400" size={24} />
-                    </div>
-                    <h4 className="font-semibold mb-2">Secure Payment</h4>
-                    <p className="text-sm text-gray-400">100% safe & secure</p>
-                  </div>
-                  <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center hover:border-cyan-500/30 transition-all">
-                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-cyan-500/10 flex items-center justify-center">
-                      <FiTruck className="text-cyan-400" size={24} />
-                    </div>
-                    <h4 className="font-semibold mb-2">Free Shipping</h4>
-                    <p className="text-sm text-gray-400">On orders over ₹999</p>
-                  </div>
-                  <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center hover:border-cyan-500/30 transition-all">
-                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-cyan-500/10 flex items-center justify-center">
-                      <FiRefreshCw className="text-cyan-400" size={24} />
-                    </div>
-                    <h4 className="font-semibold mb-2">Easy Returns</h4>
-                    <p className="text-sm text-gray-400">30-day return policy</p>
-                  </div>
-                </div>
               </div>
 
               {/* ORDER SUMMARY */}
               <div className="lg:col-span-1">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="sticky top-6 bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl"
-                >
-                  <h2 className="text-2xl font-bold flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
-                    <FiShoppingCart className="text-cyan-400" />
-                    Order Summary
-                  </h2>
-
-                  {/* Summary Items */}
-                  <div className="space-y-4 mb-6">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Subtotal</span>
-                      <span className="text-xl font-bold">₹{subtotal.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Shipping</span>
-                      <span className="text-green-400">Free</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Tax (5%)</span>
-                      <span>₹{tax.toLocaleString()}</span>
-                    </div>
-                    
-                  </div>
-
-                  {/* Total */}
-                  <div className="flex justify-between items-center py-4 border-t border-white/10">
-                    <div>
-                      <span className="text-xl font-bold">Total</span>
-                      <p className="text-sm text-gray-400">Including all taxes</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                        ₹{total.toLocaleString()}
-                      </div>
-                      <p className="text-sm text-gray-400">
-                        {totalItems} {totalItems === 1 ? 'item' : 'items'}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Checkout Button */}
-                  <button
-                    onClick={handleCheckout}
-                    className="group relative w-full mt-6 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg hover:shadow-cyan-500/30 transition-all hover:scale-[1.02] flex items-center justify-center gap-3"
+                {isMobile ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden"
                   >
-                    <FiLock size={20} />
-                    Proceed to Checkout
-                    <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                  </button>
+                    <button
+                      onClick={() => setIsSummaryExpanded(!isSummaryExpanded)}
+                      className="w-full px-4 py-4 flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-3">
+                        <FiShoppingCart className="text-cyan-400" />
+                        <span className="font-bold">Order Summary</span>
+                        <span className="px-2 py-1 bg-cyan-500/10 text-cyan-400 rounded-full text-xs">
+                          ₹{total.toLocaleString()}
+                        </span>
+                      </div>
+                      {isSummaryExpanded ? (
+                        <FiChevronUp className="text-gray-400" />
+                      ) : (
+                        <FiChevronDown className="text-gray-400" />
+                      )}
+                    </button>
 
-                  {/* Security Note */}
-                  <div className="mt-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
-                    <div className="flex items-start gap-3">
-                      <FiShield className="text-green-400 mt-0.5" size={18} />
+                    <AnimatePresence>
+                      {isSummaryExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="px-4 pb-4"
+                        >
+                          <div className="space-y-3 pt-3 border-t border-white/10">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-400">Subtotal</span>
+                              <span className="font-bold">₹{subtotal.toLocaleString()}</span>
+                            </div>
+                            
+                            {totalDiscount > 0 && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-400">Discount</span>
+                                <span className="text-green-400 font-bold">-₹{totalDiscount.toLocaleString()}</span>
+                              </div>
+                            )}
+                            
+                            {totalGst > 0 && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-400">GST</span>
+                                <span className="text-blue-400 font-bold">+₹{totalGst.toLocaleString()}</span>
+                              </div>
+                            )}
+                            
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-400">Shipping</span>
+                              <span className="text-green-400">Free</span>
+                            </div>
+                            
+                            {/* Total */}
+                            <div className="flex justify-between items-center pt-3 border-t border-white/10">
+                              <div>
+                                <span className="font-bold">Total</span>
+                                <p className="text-xs text-gray-400">Final amount after GST & Discount</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                                  ₹{total.toLocaleString()}
+                                </div>
+                                <p className="text-xs text-gray-400">
+                                  {totalItems} {totalItems === 1 ? 'item' : 'items'}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Checkout Button */}
+                            <button
+                              onClick={handleCheckout}
+                              className="w-full mt-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                            >
+                              <FiLock size={18} />
+                              Proceed to Checkout
+                              <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
+                            </button>
+
+                            {/* Security Note */}
+                            <div className="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+                              <div className="flex items-start gap-2">
+                                <FiShield className="text-green-400 mt-0.5 flex-shrink-0" size={16} />
+                                <div>
+                                  <p className="text-xs text-green-400 font-medium">Secure Checkout</p>
+                                  <p className="text-xs text-gray-400 mt-0.5">
+                                    Your payment information is encrypted and secure
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Continue Shopping */}
+                            <Link
+                              to="/products"
+                              className="block w-full mt-3 py-2.5 border border-white/20 hover:border-white/40 text-center rounded-xl hover:bg-white/5 transition-all text-sm"
+                            >
+                              Continue Shopping
+                            </Link>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                ) : (
+                  /* Desktop Sticky Summary */
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="sticky top-6 bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-2xl"
+                  >
+                    <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-white/10">
+                      <FiShoppingCart className="text-cyan-400 w-5 h-5 sm:w-6 sm:h-6" />
+                      Order Summary
+                    </h2>
+
+                    {/* Summary Items */}
+                    <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400 text-sm sm:text-base">Subtotal</span>
+                        <span className="font-bold text-base sm:text-lg">₹{subtotal.toLocaleString()}</span>
+                      </div>
+                      
+                      {totalDiscount > 0 && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400 text-sm sm:text-base">Discount</span>
+                          <span className="text-green-400 font-bold text-sm sm:text-base">
+                            -₹{totalDiscount.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {totalGst > 0 && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400 text-sm sm:text-base">GST</span>
+                          <span className="text-blue-400 font-bold text-sm sm:text-base">
+                            +₹{totalGst.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400 text-sm sm:text-base">Shipping</span>
+                        <span className="text-green-400 text-sm sm:text-base">Free</span>
+                      </div>
+                    </div>
+
+                    {/* Total */}
+                    <div className="flex justify-between items-center py-3 sm:py-4 border-t border-white/10">
                       <div>
-                        <p className="text-sm text-green-400 font-medium">Secure Checkout</p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          Your payment information is encrypted and secure
+                        <span className="font-bold text-base sm:text-lg">Total</span>
+                        <p className="text-gray-400 text-xs sm:text-sm">Final amount after GST & Discount</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                          ₹{total.toLocaleString()}
+                        </div>
+                        <p className="text-gray-400 text-xs sm:text-sm">
+                          {totalItems} {totalItems === 1 ? 'item' : 'items'}
                         </p>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Continue Shopping */}
-                  <Link
-                    to="/products"
-                    className="block w-full mt-4 py-3 border border-white/20 hover:border-white/40 text-center rounded-xl hover:bg-white/5 transition-all"
-                  >
-                    Continue Shopping
-                  </Link>
-                </motion.div>
+                    {/* Checkout Button */}
+                    <button
+                      onClick={handleCheckout}
+                      className="group relative w-full mt-4 sm:mt-6 py-3 sm:py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg hover:shadow-cyan-500/30 transition-all hover:scale-[1.02] flex items-center justify-center gap-2 sm:gap-3"
+                    >
+                      <FiLock size={18} className="sm:w-5 sm:h-5" />
+                      <span className="text-sm sm:text-base">Proceed to Checkout</span>
+                      <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
+                    </button>
+
+                    {/* Security Note */}
+                    <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <FiShield className="text-green-400 mt-0.5 flex-shrink-0" size={16} className="sm:w-5 sm:h-5" />
+                        <div>
+                          <p className="text-green-400 font-medium text-xs sm:text-sm">Secure Checkout</p>
+                          <p className="text-gray-400 text-xs sm:text-sm mt-0.5 sm:mt-1">
+                            You will pay: ₹{total.toLocaleString()} (including all applicable taxes and discounts)
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Continue Shopping */}
+                    <Link
+                      to="/products"
+                      className="block w-full mt-3 sm:mt-4 py-2.5 sm:py-3 border border-white/20 hover:border-white/40 text-center rounded-xl hover:bg-white/5 transition-all text-sm sm:text-base"
+                    >
+                      Continue Shopping
+                    </Link>
+                  </motion.div>
+                )}
               </div>
             </div>
           )}

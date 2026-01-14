@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import {
-  FiShoppingBag,
-  FiCalendar,
-  FiUser,
-  FiDollarSign,
-} from "react-icons/fi";
+import { FiUser, FiCalendar } from "react-icons/fi";
+import { FaDownload } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const AdminOrders = () => {
   const token = localStorage.getItem("token");
 
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+
+
+  const [searchName, setSearchName] = useState("");
+  const [searchDate, setSearchDate] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,23 +30,98 @@ const AdminOrders = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      console.log(res)
 
       const allOrders = res.data?.orders || [];
 
+      // last 7 days filter
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-      setOrders(
-        allOrders.filter(
-          (order) => new Date(order.createdAt) >= sevenDaysAgo
-        )
+      const last7DaysOrders = allOrders.filter(
+        (order) => new Date(order.createdAt) >= sevenDaysAgo
       );
+
+      setOrders(last7DaysOrders);
+      setFilteredOrders(last7DaysOrders);
     } catch (err) {
-      console.error("Orders Fetch Error:", err);
+      console.error(err);
+      toast.error("Orders fetch failed");
     } finally {
       setLoading(false);
     }
   };
+
+  //  SEARCH LOGIC
+  useEffect(() => {
+    let data = Array.isArray(orders) ? [...orders] : [];
+
+    // customer name filter
+    if (searchName.trim()) {
+      data = data.filter((order) =>
+        order.address?.name
+          ?.toLowerCase()
+          .includes(searchName.toLowerCase())
+      );
+    }
+
+    // date filter
+    if (searchDate) {
+      data = data.filter((order) => {
+        const orderDate = new Date(order.createdAt)
+          .toISOString()
+          .split("T")[0]; // YYYY-MM-DD
+        return orderDate === searchDate;
+      });
+    }
+
+    setFilteredOrders(data);
+  }, [searchName, searchDate, orders]);
+
+  const handleInvoice = (url) => {
+    try {
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `INV-${Date.now()}`;
+      link.target = "_blank";
+      link.click();
+    } catch (err) {
+      toast.error("Invoice download failed");
+    }
+  };
+
+
+
+  // function to change the order status 
+  const handleOrderStatu = async (orderId, orderStatus) => {
+      console.log(orderStatus);
+    try{
+      const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/orders/update/orderStatus`, {
+        orderId,
+        orderStatus:orderStatus
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`
+        }
+      });
+
+      // console.log(res)
+      window.location.reload();
+      toast.success(res.data.message || "Order Status Changed");
+
+      setOrders((prev) => {
+        prev.map((order) => {
+          order._id == orderId ? { ...order, orderStatus} : order
+        })
+      })
+
+    }catch(err){
+      console.log("Order Status Error", err);
+      toast.error(err.response.data.error || "Order Status Change Error");
+    }
+  }
+
+
 
   const statusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -68,142 +145,97 @@ const AdminOrders = () => {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full"
-    >
-      <h2 className="text-3xl md:text-4xl font-extrabold mb-8 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-        Last 7 Days Orders
-      </h2>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
+        <h2 className="text-3xl font-bold text-cyan-400">
+          Last 7 Days Orders
+        </h2>
 
-      <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+        {/* SEARCH CONTROLS */}
+        <div className="flex gap-3 flex-wrap">
+          {/* NAME SEARCH */}
+          <div className="relative">
+            <FiUser className="absolute left-3 top-3 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search customer"
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              className="pl-10 pr-3 py-2 rounded-lg bg-white/10 border border-white/20 outline-none"
+            />
+          </div>
 
-        {/* DESKTOP TABLE */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full min-w-[1000px]">
-            <thead className="bg-white/5 text-gray-300 text-sm uppercase">
+          {/* DATE SEARCH */}
+          <div className="relative">
+            <FiCalendar className="absolute left-3 top-3 text-gray-400" />
+            <input
+              type="date"
+              value={searchDate}
+              onChange={(e) => setSearchDate(e.target.value)}
+              className="pl-10 pr-3 py-2 rounded-lg bg-white/10 border border-white/20 outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* TABLE */}
+      <div className="bg-white/5 border border-white/10 rounded-xl overflow-x-auto">
+        <table className="w-full min-w-[1000px]">
+          <thead className="bg-white/10 text-gray-300">
+            <tr>
+              <th className="p-4">Order ID</th>
+              <th className="p-4">Customer</th>
+              <th className="p-4">Amount</th>
+              <th className="p-4">Status</th>
+              <th className="p-4">Date</th>
+              <th className="p-4">Invoice</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {filteredOrders.length === 0 ? (
               <tr>
-                <th className="p-5">Order ID</th>
-                <th className="p-5">Customer</th>
-                <th className="p-5">Products</th>
-                <th className="p-5">Total</th>
-                <th className="p-5">Status</th>
-                <th className="p-5">Date</th>
+                <td colSpan="6" className="p-8 text-center text-gray-400">
+                  No orders found
+                </td>
               </tr>
-            </thead>
-
-            <tbody>
-              {orders.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="p-10 text-center text-gray-400">
-                    No orders in the last 7 days
+            ) : (
+              filteredOrders.map((order) => (
+                <tr
+                  key={order._id}
+                  className="border-t border-white/10 hover:bg-white/5"
+                >
+                  <td className="p-4">{order._id}</td>
+                  <td className="p-4">{order.address?.name}</td>
+                  <td className="p-4 text-cyan-400 font-bold">
+                    ₹{order.totalAmount}
+                  </td>
+                  <td className="p-4">
+                    <select id="order-status" value={order.orderStatus} onChange={(e) => {handleOrderStatu(order._id, e.target.value)}} className="bg-black/60 text-white font-extralight p-2 rounded-lg cursor-pointer hover:scale-105 active:scale-95 duration-300">
+                      <option value="processing" className="cursor-pointer hover:scale-105 active:scale-95 duration-300">processing</option>
+                      <option value="shipped" className="cursor-pointer hover:scale-105 active:scale-95 duration-300">shipped</option>
+                      <option value="delivered" className="cursor-pointer hover:scale-105 active:scale-95 duration-300">delivered</option>
+                    </select>
+                  </td>
+                  <td className="p-4 text-gray-400">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="p-4">
+                    <button
+                      onClick={() =>
+                        handleInvoice(order.invoice?.pdfUrl)
+                      }
+                      className="flex items-center gap-2 bg-blue-600 px-3 py-1 rounded hover:scale-105"
+                    >
+                      Invoice <FaDownload />
+                    </button>
                   </td>
                 </tr>
-              ) : (
-                orders.map((order, i) => (
-                  <motion.tr
-                    key={order._id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.04 }}
-                    className="border-t border-white/5 hover:bg-white/5 transition"
-                  >
-                    <td className="p-5 max-w-[260px]">
-                      <div className="overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-cyan-500">
-                        {order._id}
-                      </div>
-                    </td>
-
-                    <td className="p-5 flex items-center gap-2">
-                      <FiUser className="text-cyan-400" />
-                      {order.address?.name || "Customer"}
-                    </td>
-
-                    <td className="p-5">
-                      {order.items.map((item, i) => (
-                        <div key={i} className="text-sm text-gray-300">
-                          • {item.productTitle} × {item.quantity}
-                        </div>
-                      ))}
-                    </td>
-
-                    <td className="p-5 font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                      ₹{order.totalAmount}
-                    </td>
-
-                    <td className="p-5">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColor(
-                          order.orderStatus
-                        )}`}
-                      >
-                        {order.orderStatus || "Paid"}
-                      </span>
-                    </td>
-
-                    <td className="p-5 text-gray-400">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                  </motion.tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* MOBILE CARDS */}
-        <div className="md:hidden p-4 flex flex-col gap-5">
-          {orders.length === 0 ? (
-            <p className="text-center text-gray-400">
-              No orders in last 7 days
-            </p>
-          ) : (
-            orders.map((order) => (
-              <motion.div
-                key={order._id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/5 border border-white/10 rounded-2xl p-5 shadow-lg"
-              >
-                <div className="text-xs text-gray-400 overflow-x-auto whitespace-nowrap">
-                  {order._id}
-                </div>
-
-                <p className="mt-2 flex items-center gap-2 text-sm">
-                  <FiUser className="text-cyan-400" />
-                  {order.address?.name || "Customer"}
-                </p>
-
-                <div className="mt-3 text-sm text-gray-300">
-                  {order.items.map((item, i) => (
-                    <div key={i}>
-                      • {item.productTitle} × {item.quantity}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex justify-between items-center mt-4">
-                  <span className="font-bold text-cyan-400">
-                    ₹{order.totalAmount}
-                  </span>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs ${statusColor(
-                      order.orderStatus
-                    )}`}
-                  >
-                    {order.orderStatus || "Paid"}
-                  </span>
-                </div>
-
-                <p className="mt-2 text-xs text-gray-400 flex items-center gap-1">
-                  <FiCalendar />
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </p>
-              </motion.div>
-            ))
-          )}
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </motion.div>
   );

@@ -25,7 +25,17 @@ const AdminEditProduct = () => {
     price: "",
     oldPrice: "",
     color: "",
-    discount: "",
+    stock: "",
+    
+    // GST Fields
+    gstEnabled: "false",
+    gstRate: "18",
+    
+    // Discount Fields
+    discountEnabled: "false",
+    discountType: "percentage",
+    discountValue: "",
+    
     features: [""],
     metaTags: [""]
   });
@@ -90,7 +100,7 @@ const AdminEditProduct = () => {
               price: product.variants[0]?.price || "",
               oldPrice: product.variants[0]?.oldPrice || "",
               color: product.variants[0]?.color || "",
-              discount: product.variants[0]?.discount || ""
+              stock: product.variants[0]?.stock || ""
             };
           } else {
             // If no variants, use direct product fields
@@ -98,9 +108,13 @@ const AdminEditProduct = () => {
               price: product.price || "",
               oldPrice: product.oldPrice || "",
               color: product.color || "",
-              discount: product.discount || ""
+              stock: product.stock || ""
             };
           }
+          
+          // GST Data (new fields from backend)
+          const gstData = product.gst || {};
+          const discountData = product.discount || {};
           
           // Transform API data to form state WITHOUT variants
           setProductData({
@@ -112,7 +126,17 @@ const AdminEditProduct = () => {
             price: priceData.price,
             oldPrice: priceData.oldPrice,
             color: priceData.color,
-            discount: priceData.discount,
+            stock: priceData.stock || "",
+            
+            // GST Fields
+            gstEnabled: gstData.enabled?.toString() || "false",
+            gstRate: gstData.rate?.toString() || "18",
+            
+            // Discount Fields
+            discountEnabled: discountData.enabled?.toString() || "false",
+            discountType: discountData.type || "percentage",
+            discountValue: discountData.value?.toString() || "",
+            
             features: product.features?.length > 0 ? product.features : [""],
             metaTags: product.metaTags?.length > 0 ? product.metaTags : [""]
           });
@@ -134,11 +158,19 @@ const AdminEditProduct = () => {
 
   // Handle basic input changes
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProductData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    const { name, value, type, checked } = e.target;
+    
+    if (type === 'checkbox') {
+      setProductData(prev => ({
+        ...prev,
+        [name]: checked.toString(),
+      }));
+    } else {
+      setProductData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   // Add feature
@@ -212,7 +244,16 @@ const AdminEditProduct = () => {
       formData.append('price', productData.price);
       formData.append('oldPrice', productData.oldPrice);
       formData.append('color', productData.color);
-      formData.append('discount', productData.discount);
+      formData.append('stock', productData.stock || "0");
+      
+      // GST Fields
+      formData.append('gstEnabled', productData.gstEnabled);
+      formData.append('gstRate', productData.gstRate);
+      
+      // Discount Fields
+      formData.append('discountEnabled', productData.discountEnabled);
+      formData.append('discountType', productData.discountType);
+      formData.append('discountValue', productData.discountValue || "0");
       
       // Add features as JSON string
       const filteredFeatures = productData.features.filter(f => f.trim() !== "");
@@ -237,7 +278,7 @@ const AdminEditProduct = () => {
         {
           withCredentials: true,
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem("adminToken")}`,
+            'Authorization': `${localStorage.getItem("token")}`,
           }
         }
       );
@@ -373,6 +414,21 @@ const AdminEditProduct = () => {
                 />
               </div>
 
+              {/* Stock */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Stock
+                </label>
+                <input
+                  type="number"
+                  name="stock"
+                  value={productData.stock}
+                  onChange={handleInputChange}
+                  placeholder="100"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
+                />
+              </div>
+
               {/* Color */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -387,21 +443,120 @@ const AdminEditProduct = () => {
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                 />
               </div>
+            </div>
 
-              {/* Discount */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Discount
-                </label>
-                <input
-                  type="text"
-                  name="discount"
-                  value={productData.discount}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 25% OFF or ₹100 OFF"
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
-                />
+            {/* GST Section */}
+            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-200">
+                  GST Configuration
+                </h3>
+                <div className="flex items-center gap-2">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="gstEnabled"
+                      checked={productData.gstEnabled === "true"}
+                      onChange={(e) => handleInputChange({
+                        target: {
+                          name: 'gstEnabled',
+                          type: 'checkbox',
+                          checked: e.target.checked
+                        }
+                      })}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
+                    <span className="ml-3 text-sm font-medium text-gray-300">
+                      {productData.gstEnabled === "true" ? "Enabled" : "Disabled"}
+                    </span>
+                  </label>
+                </div>
               </div>
+
+              {productData.gstEnabled === "true" && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    GST Rate (%)
+                  </label>
+                  <input
+                    type="number"
+                    name="gstRate"
+                    value={productData.gstRate}
+                    onChange={handleInputChange}
+                    placeholder="18"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Discount Section */}
+            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-200">
+                  Discount Configuration
+                </h3>
+                <div className="flex items-center gap-2">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="discountEnabled"
+                      checked={productData.discountEnabled === "true"}
+                      onChange={(e) => handleInputChange({
+                        target: {
+                          name: 'discountEnabled',
+                          type: 'checkbox',
+                          checked: e.target.checked
+                        }
+                      })}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
+                    <span className="ml-3 text-sm font-medium text-gray-300">
+                      {productData.discountEnabled === "true" ? "Enabled" : "Disabled"}
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {productData.discountEnabled === "true" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Discount Type
+                    </label>
+                    <select
+                      name="discountType"
+                      value={productData.discountType}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none cursor-pointer"
+                    >
+                      <option value="percentage">Percentage (%)</option>
+                      <option value="fixed">Fixed Amount (₹)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      {productData.discountType === "percentage" ? "Discount Percentage (%)" : "Discount Amount (₹)"}
+                    </label>
+                    <input
+                      type="number"
+                      name="discountValue"
+                      value={productData.discountValue}
+                      onChange={handleInputChange}
+                      placeholder={productData.discountType === "percentage" ? "10" : "100"}
+                      min="0"
+                      step={productData.discountType === "percentage" ? "0.01" : "1"}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Description */}

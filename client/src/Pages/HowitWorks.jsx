@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { RiVerifiedBadgeLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
+import NfcCardFeatures from "../Pages/NfcCardFeatures";
 
 const steps = [
   {
@@ -52,7 +53,7 @@ const HowItWorks = () => {
     <div className="bg-[#03060A] text-white overflow-hidden">
 
       {/* HERO */}
-      <section className="h-auto mt-30 flex flex-col items-center justify-center px-6 text-center">
+      <section className="h-auto mt-30 flex flex-col items-center justify-center px-6 text-center mb-15">
         <motion.h4
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -145,31 +146,11 @@ const HowItWorks = () => {
            
       </section>
 
-      {/* STEPS */}
-      <section className="py-24 px-6 max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-          Simple Steps to <span className="text-cyan-400">Connect</span>
-        </h2>
+      
+      
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
-          {steps.map((step, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15 }}
-              className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center cursor-pointer hover:scale-110 duration-300"
-            >
-              <div className="w-14 h-14 mx-auto flex items-center justify-center rounded-xl bg-cyan-500/20 text-cyan-400 text-2xl mb-5">
-                {step.icon}
-              </div>
-              <h3 className="text-lg font-semibold">{step.title}</h3>
-              <p className="text-sm text-gray-400 mt-2">{step.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+
+<NfcCardFeatures />
 
       {/* BENEFITS */}
       <section className="py-24 px-6 bg-white/5">

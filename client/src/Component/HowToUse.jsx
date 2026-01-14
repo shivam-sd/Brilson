@@ -2,13 +2,13 @@ import React from "react";
 import { motion } from "framer-motion";
 import Lottie from "lottie-react";
 
-import cardAnim from "../lottie/card.json";
-import loginAnim from "../lottie/login.json";
+import cardAnim from "/getCard.mp4";
+import loginAnim from "/activatecard.mp4";
 import profileAnim from "../lottie/profile.json";
 import qrAnim from "../lottie/qr.json";
 import updateAnim from "../lottie/update.json";
 
-const steps = [
+const stepVideo = [
   {
     title: "Get Your Smart Card",
     desc: "Buy a Brilson Smart Card and get a unique digital identity.",
@@ -19,6 +19,9 @@ const steps = [
     desc: "Login using your account and activate your card securely.",
     animation: loginAnim,
   },
+];
+
+const steps = [
   {
     title: "Create Your Digital Profile",
     desc: "Add your personal or business details to your digital profile.",
@@ -38,13 +41,14 @@ const steps = [
 
 const HowToUse = () => {
   return (
-    <section className="w-full bg-[#0a0a0a] text-white py-24 px-6">
+    <section className="w-full bg-[#0a0a0a] text-white py-24 px-6 overflow-hidden">
       {/* Heading */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="max-w-3xl mx-auto text-center mb-20"
+        viewport={{ once: true }}
+        className="max-w-3xl mx-auto text-center mb-24"
       >
         <h2 className="text-4xl md:text-5xl font-bold mb-4">
           How to Use Smart Card
@@ -54,22 +58,29 @@ const HowToUse = () => {
         </p>
       </motion.div>
 
-      {/* Steps */}
+      {/* VIDEO STEPS */}
       <div className="max-w-6xl mx-auto space-y-24">
-        {steps.map((step, index) => (
+        {stepVideo.map((step, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className={`flex flex-col ${
               index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
             } items-center gap-14`}
           >
-            {/* Lottie Animation */}
+            {/* Video */}
             <div className="w-full md:w-1/2">
-              <Lottie animationData={step.animation} loop={true} />
+              <video
+                src={step.animation}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="rounded-2xl shadow-xl w-72"
+              />
             </div>
 
             {/* Content */}
@@ -88,11 +99,46 @@ const HowToUse = () => {
         ))}
       </div>
 
-      {/* Benefits */}
+      {/* LOTTIE STEPS */}
+      <div className="max-w-6xl mx-auto space-y-24 mt-24">
+        {steps.map((step, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className={`flex flex-col ${
+              index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+            } items-center gap-14`}
+          >
+            {/* Lottie */}
+            <div className="w-full md:w-1/2">
+              <Lottie animationData={step.animation} loop />
+            </div>
+
+            {/* Content */}
+            <div className="w-full md:w-1/2">
+              <span className="text-sm text-indigo-400 font-semibold">
+                STEP {stepVideo.length + index + 1}
+              </span>
+              <h3 className="text-3xl font-bold mt-2 mb-4">
+                {step.title}
+              </h3>
+              <p className="text-gray-400 text-lg">
+                {step.desc}
+              </p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* BENEFITS */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
         className="max-w-6xl mx-auto mt-32 text-center"
       >
         <h3 className="text-3xl font-bold mb-12">

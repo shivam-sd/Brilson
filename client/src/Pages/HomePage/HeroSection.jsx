@@ -103,6 +103,25 @@ const HeroSection = () => {
           </div>
         </motion.div>
 
+
+        {/* CTA */}
+        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
+          <Link
+            to="/products"
+            className="px-10 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl font-semibold shadow-xl hover:scale-105 transition flex items-center justify-center gap-3"
+          >
+            Shop Now <ArrowRight />
+          </Link>
+
+          <Link
+            to="/how-it-works"
+            className="px-10 py-4 border border-white/20 rounded-xl hover:bg-white/10 transition"
+          >
+            See How It Works
+          </Link>
+        </div>
+        
+
         {/* Features */}
         <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-12">
           {[
@@ -123,22 +142,7 @@ const HeroSection = () => {
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-          <Link
-            to="/products"
-            className="px-10 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl font-semibold shadow-xl hover:scale-105 transition flex items-center justify-center gap-3"
-          >
-            Get Your Card <ArrowRight />
-          </Link>
-
-          <Link
-            to="/how-it-works"
-            className="px-10 py-4 border border-white/20 rounded-xl hover:bg-white/10 transition"
-          >
-            See How It Works
-          </Link>
-        </div>
+        
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto border-t border-white/10 pt-8">

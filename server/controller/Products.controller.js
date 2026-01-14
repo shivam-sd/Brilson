@@ -15,15 +15,21 @@ const createProduct = async (req, res) => {
       stock,
       price,
       oldPrice,
-      discount,
       color,
       features,
       metaTags,
+
+      // GST & Discount 
+      gstEnabled,
+      gstRate,
+      discountEnabled,
+      discountType,
+      discountValue
     } = req.body;
 
     const file = req?.files?.image;
 
-    //  Required validations
+    // REQUIRED VALIDATION
     if (!category || !title || !description || !price) {
       return res.status(400).json({
         error: "Category, Title, Description and Price are required!",
@@ -36,7 +42,7 @@ const createProduct = async (req, res) => {
       });
     }
 
-    /* IMAGE VALIDATION */
+    // IMAGE VALIDATION
     const allowedFormats = [
       "image/jpeg",
       "image/jpg",
@@ -53,22 +59,17 @@ const createProduct = async (req, res) => {
       });
     }
 
-    /* UPLOAD IMAGE */
+    // UPLOAD IMAGE
     const uploadResult = await cloudinary.uploader.upload(
       file.tempFilePath,
       { folder: "brilson/products" }
     );
 
-    /* SAFE PARSING */
-    const featureList = features
-      ? JSON.parse(features)
-      : [];
+    // SAFE PARSE
+    const featureList = features ? JSON.parse(features) : [];
+    const metaTagList = metaTags ? JSON.parse(metaTags) : [];
 
-    const metaTagList = metaTags
-      ? JSON.parse(metaTags)
-      : [];
-
-    /* CREATE PRODUCT */
+    // CREATE PRODUCT
     const product = await ProductModel.create({
       category,
       title,
@@ -78,8 +79,21 @@ const createProduct = async (req, res) => {
       stock: stock || 0,
       price,
       oldPrice,
-      discount,
       color,
+
+      // DISCOUNT CONFIG
+      discount: {
+        enabled: discountEnabled === "true",
+        type: discountType || "percentage",
+        value: Number(discountValue) || 0
+      },
+
+      // GST CONFIG
+      gst: {
+        enabled: gstEnabled === "true",
+        rate: Number(gstRate) || 18
+      },
+
       features: featureList,
       metaTags: metaTagList,
     });
@@ -102,6 +116,7 @@ const createProduct = async (req, res) => {
 
 
 
+
 const editProduct = async (req, res) => {
   try {
     const productId = req.params.id;
@@ -113,9 +128,17 @@ const editProduct = async (req, res) => {
       });
     }
 
+    const {
+      gstEnabled,
+      gstRate,
+      discountEnabled,
+      discountType,
+      discountValue
+    } = req.body;
+
     const updatedData = { ...req.body };
 
-    /* IMAGE UPDATE */
+    // IMAGE UPDATE
     const file = req?.files?.image;
 
     if (file) {
@@ -145,7 +168,7 @@ const editProduct = async (req, res) => {
       updatedData.image = existingProduct.image;
     }
 
-    /* SAFE JSON PARSING */
+    // SAFE JSON PARSING
     updatedData.features = req.body.features
       ? JSON.parse(req.body.features)
       : existingProduct.features;
@@ -154,7 +177,20 @@ const editProduct = async (req, res) => {
       ? JSON.parse(req.body.metaTags)
       : existingProduct.metaTags;
 
-    /* UPDATE PRODUCT */
+    // GST UPDATE
+    updatedData.gst = {
+      enabled: gstEnabled === "true",
+      rate: Number(gstRate) || existingProduct.gst.rate
+    };
+
+    // DISCOUNT UPDATE
+    updatedData.discount = {
+      enabled: discountEnabled === "true",
+      type: discountType || existingProduct.discount.type,
+      value: Number(discountValue) || 0
+    };
+
+    // UPDATE PRODUCT
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       productId,
       updatedData,
@@ -178,6 +214,7 @@ const editProduct = async (req, res) => {
     });
   }
 };
+
 
 
 

@@ -111,12 +111,12 @@ const Header = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 text-white text-2xl font-semibold"
+            className="flex items-center gap-1 text-white text-2xl font-semibold"
           >
             <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold">
-              <img src="logo2.png" alt="" className="hover:scale-105 duration-300" />
+              <img src="logo2.png" alt="" className="hover:scale-105 duration-300 w-7" />
             </div>
-            Brilson
+            𝕭𝖗𝖎𝖑𝖘𝖔𝖓
           </motion.div>
         </Link>
 
@@ -125,7 +125,7 @@ const Header = () => {
           <Link to="/" className="hover:text-white">Home</Link>
           <Link to="/products" className="hover:text-white">Products</Link>
           <Link to="/how-it-works" className="hover:text-white">How It Works</Link>
-          <Link to="/pricing" className="hover:text-white">Pricing</Link>
+          {/* <Link to="/pricing" className="hover:text-white">Pricing</Link> */}
         </ul>
 
         {/* DESKTOP ACTIONS */}
@@ -201,9 +201,6 @@ const Header = () => {
                     
 
                   <Link
-
-
-
                       to={`/orders`}
                       className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
                     >
@@ -262,7 +259,45 @@ const Header = () => {
             <Link to="/" onClick={() => setOpen(false)}>Home</Link>
             <Link to="/products" onClick={() => setOpen(false)}>Products</Link>
             <Link to="/how-it-works" onClick={() => setOpen(false)}>How It Works</Link>
-            <Link to="/pricing" onClick={() => setOpen(false)}>Pricing</Link>
+            {/* <Link to="/pricing" onClick={() => setOpen(false)}>Pricing</Link> */}
+
+
+{
+  isLoggedIn ? <>
+  
+{/* ONLY IF CARD ACTIVE */}
+                  {myCardProfile ? <>
+                  
+                    <Link
+                      to={`/profile/${myCardProfile.slug}`}
+                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
+                      >
+                      My Profile
+                    </Link>
+                      </> : <>
+                    <Link
+                    onClick={(e) => {
+                      window.location.href = `${import.meta.env.VITE_DOMAIN}/card/activate`
+                    }}
+                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
+                    >
+                      My Profile
+                    </Link>  
+                      </>
+                  }
+
+                  <Link
+                      to={`/orders`}
+                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
+                    >
+                      My Orders
+                    </Link>
+
+
+  </>: <></>
+}
+            
+
 
  <Link
                 to={`/get-card`}
@@ -272,15 +307,6 @@ const Header = () => {
                 Get Your Card
               </Link>
 
-            {isLoggedIn && myCardProfile && (
-              <Link
-                to={`/profile/${myCardProfile.slug}`}
-                onClick={() => setOpen(false)}
-                className="border border-white/20 rounded-lg py-2 text-center"
-              >
-                My Profile
-              </Link>
-            )}
 
             {!isLoggedIn ? (
               <Link

@@ -26,6 +26,7 @@ const orderSchema = new mongoose.Schema({
     pincode: Number,
   },
   image:String,
+  amount:Number,
   totalAmount: Number,
   cost:{
     type:Number,
@@ -54,7 +55,19 @@ invoice:{
     type:String,
     enum:["processing","shipped","delivered","cancelled"],
     default:"processing"
-  }
+  },
+
+
+       discountAmount:{
+        type:Number,
+        default:0
+      },
+
+      gstAmount:{
+        type:Number,
+        default:18
+      }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("Order", orderSchema);

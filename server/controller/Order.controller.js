@@ -10,7 +10,7 @@ const ProductModel = require("../models/Product.model");
 const orderCreate = async (req, res) => {
   try {
     const userId = req.user;
-    const { address, totalAmount } = req.body;
+    const { address } = req.body;
 
     if (!address) {
       return res.status(400).json({ error: "Address required" });
@@ -24,34 +24,68 @@ const orderCreate = async (req, res) => {
       return res.status(400).json({ error: "Cart is empty" });
     }
 
-    /* MAP CART → ORDER ITEMS */
-    const orderItems = cartItems.map(item => ({
-      productId: item.productId._id,
-      productTitle: item.productId.title,
-      quantity: item.quantity,
-      price: item.price,
-      image: item.image,
-    }));
+    let subTotal = 0;
+    let amount = 0;
+    let gstAmount = 0;
+    let discountAmount = 0;
 
-    /* CALCULATE AMOUNT (SAFETY) */
-    const subTotal = orderItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
+    const orderItems = cartItems.map((item) => {
+      const product = item.productId;
 
-    const tax = Number((subTotal * 0.05).toFixed(2));
-    const finalAmount = subTotal + tax;
+      let basePrice = product.price;
+      let finalPrice = basePrice;
+      amount = basePrice;
 
-    /* CREATE ORDER */
+      /*  DISCOUNT  */
+      if (product.discount?.enabled) {
+        if (product.discount.type === "percentage") {
+          finalPrice -= (basePrice * product.discount.value) / 100;
+        } else if (product.discount.type === "flat") {
+          finalPrice -= product.discount.value;
+          discountAmount = product.discount.value
+        }
+      }
+      discountAmount = product.discount.value
+      
+      /*  GST  */
+      if (product.gst?.enabled) {
+        finalPrice += (finalPrice * product.gst.rate) / 100;
+        gstAmount = product.gst.rate
+      }
+
+      finalPrice = Number(finalPrice.toFixed(2));
+
+      subTotal += finalPrice * item.quantity;
+
+      return {
+        productId: product._id,
+        productTitle: product.title,
+        quantity: item.quantity,
+        price: finalPrice, 
+        image: product.image,
+
+        // Optional (future invoice use)
+        priceBreakup: {
+          basePrice,
+          discountApplied: product.discount?.enabled || false,
+          gstApplied: product.gst?.enabled || false,
+        },
+      };
+    });
+
+    /*  CREATE ORDER  */
     const order = await OrderModel.create({
       userId,
       items: orderItems,
       address,
-      totalAmount: totalAmount || finalAmount,
+      totalAmount: Number(subTotal.toFixed(2)),
       status: "pending",
+      amount:amount,
+      gstAmount:gstAmount,
+      discountAmount:discountAmount
     });
 
-    /* CLEAR CART */
+    /*  CLEAR CART  */
     await CartModel.deleteMany({ userId });
 
     res.status(201).json({
@@ -64,6 +98,7 @@ const orderCreate = async (req, res) => {
     res.status(500).json({ error: "Order create failed" });
   }
 };
+
 
 
   //  USER ORDERS
@@ -93,23 +128,23 @@ const getOrderProduct = async (req, res) => {
  */
 const updateOrderStatus = async (req, res) => {
   try {
-    const { orderId, status } = req.body;
+    const { orderId, orderStatus } = req.body;
 
     const allowedStatus = [
       "pending",
-      "processing",
+      "processing", 
       "shipped",
       "delivered",
       "cancelled",
     ];
 
-    if (!allowedStatus.includes(status)) {
+    if (!allowedStatus.includes(orderStatus)) {
       return res.status(400).json({ error: "Invalid Order Status" });
     }
 
     const order = await OrderModel.findByIdAndUpdate(
       orderId,
-      { status },
+      { orderStatus },
       { new: true }
     );
 
