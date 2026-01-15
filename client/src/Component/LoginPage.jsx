@@ -9,7 +9,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    email: "",
+    // email: "",
     phone: "",
     password: "",
   });
@@ -25,15 +25,15 @@ const LoginPage = () => {
     e.preventDefault();
     
     // Validation - Email OR Phone + Password required
-    if (!form.email || !form.phone || !form.password) {
-      return toast.error("Email, phone and password are required");
+    if ( !form.phone || !form.password) {
+      return toast.error(" phone and password are required");
     }
     
     // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
-      return toast.error("Please enter a valid email address");
-    }
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailRegex.test(form.email)) {
+    //   return toast.error("Please enter a valid email address");
+    // }
     
     // Phone validation
     const phoneRegex = /^\d{10}$/;
@@ -51,7 +51,7 @@ const LoginPage = () => {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/users/login`,
         {
-          email: form.email,
+          // email: form.email,
           phone: form.phone,
           password: form.password,
         },
@@ -98,7 +98,7 @@ const LoginPage = () => {
         {/* FORM */}
         <form className="space-y-6" onSubmit={handleLogin}>
           {/* Email */}
-          <div>
+          {/* <div>
             <label className="text-gray-300 text-sm">Email *</label>
             <div className="mt-2 flex items-center bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus-within:border-cyan-500">
               <Mail className="w-5 h-5 text-gray-400" />
@@ -112,7 +112,7 @@ const LoginPage = () => {
                 className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Phone - WITHOUT OTP */}
           <div>

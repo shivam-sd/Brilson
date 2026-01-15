@@ -9,7 +9,7 @@ import { VscReferences } from "react-icons/vsc";
 const SignupPage = () => {
   const [form, setForm] = useState({
     name: "",
-    email: "",
+    // email: "",
     phone: "",
     password: "",
     confirm: "",
@@ -46,9 +46,11 @@ const SignupPage = () => {
         { phone: form.phone }
       );
       
+
       setOtpSent(true);
       toast.success("OTP sent successfully to your phone");
     } catch (err) {
+      console.log(err)
       toast.error(err.response?.data?.message || "Failed to send OTP");
     } finally {
       setOtpLoading(false);
@@ -91,15 +93,15 @@ const SignupPage = () => {
     e.preventDefault();
 
     // Validation
-    if (!form.name || !form.email || !form.phone || !form.password || !form.confirm) {
+    if (!form.name || !form.phone || !form.password || !form.confirm) {
       return toast.error("All fields are required");
     }
 
     // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
-      return toast.error("Please enter a valid email address");
-    }
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailRegex.test(form.email)) {
+    //   return toast.error("Please enter a valid email address");
+    // }
 
     // Phone validation
     const phoneRegex = /^\d{10}$/;
@@ -127,7 +129,7 @@ const SignupPage = () => {
         `${import.meta.env.VITE_BASE_URL}/api/users/register`,
         {
           name: form.name,
-          email: form.email,
+          // email: form.email,
           phone: form.phone,
           password: form.password,
           isVerified: isVerified, // Send verification status
@@ -190,7 +192,7 @@ const SignupPage = () => {
           </div>
 
           {/* Email */}
-          <div>
+          {/* <div>
             <label className="text-gray-300 text-sm">Email *</label>
             <div className="mt-2 flex items-center bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus-within:border-cyan-500">
               <Mail className="w-5 h-5 text-gray-400" />
@@ -204,7 +206,7 @@ const SignupPage = () => {
                 className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Phone */}
           <div>

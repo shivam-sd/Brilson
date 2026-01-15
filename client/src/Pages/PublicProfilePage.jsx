@@ -284,9 +284,9 @@ const PublicProfilePage = () => {
                       {/* Profile Details */}
                       <div className="flex-1">
                         <div className="mb-6">
-                          <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent mb-3">
+                          <h2 className="text-4xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent mb-3">
                             {profileData.name}
-                          </h1>
+                          </h2>
                           
                           {profileData.bio && (
                             <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -537,7 +537,8 @@ const PublicProfilePage = () => {
                   </div>
                   <div>
                     <p className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                      𝕭𝖗𝖎𝖑𝖘𝖔𝖓
+                      {/* 𝕭𝖗𝖎𝖑𝖘𝖔𝖓 */}
+                      Brilson
                     </p>
                     {/* <p className="text-gray-400 text-sm">Premium Digital Solutions</p> */}
                   </div>

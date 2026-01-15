@@ -15,98 +15,60 @@ const generateToken = (id) => {
 // USER REGISTER
 const UserRegister = async (req, res) => {
   try {
-    const { name, email, phone, password, referralCode } = req.body;
+    const { name, phone, password, referralCode } = req.body;
 
-    if (!name || !email || !phone || !password) {
+    if (!name || !phone || !password) {
       return res.status(400).json({ error: "All fields are required" });
     }
- 
-    // Check if user exists
-    const ifUserExist = await UserModel.findOne({ email });
-    if (ifUserExist) {
-      return res.status(400).json({ error: "User already registered" });
+
+    //  User must exist
+    const user = await UserModel.findOne({ phone });
+
+    if (!user) {
+      return res.status(404).json({
+        error: "OTP not verified. Please verify OTP first."
+      });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(password, salt);
+    if (!user.isVerified) {
+      return res.status(400).json({
+        error: "Phone number not verified"
+      });
+    }
 
-    // Generate own referral code
-    
+    //  Hash password
+    const hashedPass = await bcrypt.hash(password, 10);
+
+    //  Referral logic
     let referredBy = null;
-    
-    if(referralCode){
-      referredBy = await UserModel.findOne({referralCode});
-      if(!referredBy){
+    if (referralCode) {
+      const refUser = await UserModel.findOne({ referralCode });
+      if (!refUser) {
         return res.status(400).json({ error: "Invalid referral code" });
       }
+      referredBy = refUser._id;
     }
-    
+
+    //  Generate own referral code
     const referCode = generateReferralCode(name);
 
+    //  Update same OTP user
+    user.name = name;
+    user.password = hashedPass;
+    user.referralCode = referCode;
+    user.referredBy = referredBy;
 
-    // Create user 
-    const user = await UserModel.create({
-      name,
-      email,
-      phone,
-      password: hashedPass,
-      referralCode:referCode,
-      referredBy: referredBy ? referredBy._id : null,
-    });
+    // clear otp fields
+    user.otp = null;
+    user.otpExpiry = null;
 
-    // Generate token
+    await user.save();
+
+    //  Token
     const token = generateToken(user._id);
 
-    // Fix cookie settings for both localhost and HTTPS
     const isProduction = process.env.NODE_ENV === "production";
-    
-    res.cookie("token", token, {
-           httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
 
-    return res.status(201).json({
-      message: "User registered successfully",
-      token,
-      user,
-    });
-  } catch (err) {
-    console.log("Register Error:", err);
-    return res.status(500).json({ error: "Server Error" });
-  }
-};
-
-
-// USER LOGIN
-// USER LOGIN
-const UserLogin = async (req, res) => {
-  try {
-    const { email, phone, password } = req.body;
-
-    if (!email || !phone || !password) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
-
-    const user = await UserModel.findOne({email: email, phone: phone});
-    // console.log(user);
-    if (!user) {
-      return res.status(404).json({ error: "Invalid Credentials!" });
-    }
-
-    const matchPassword = await bcrypt.compare(password, user.password);
-
-    if (!matchPassword) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
-    const token = generateToken(user._id);
-
-    // Fix cookie settings for both localhost and HTTPS
-    const isProduction = process.env.NODE_ENV === "production";
-    
     res.cookie("token", token, {
       httpOnly: true,
       secure: isProduction,
@@ -114,16 +76,56 @@ const UserLogin = async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({
-      message: "Login successful",
+    res.status(201).json({
+      message: "Account created successfully",
       token,
       user,
     });
+
   } catch (err) {
-    console.log("Login Error:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.log("Register Error:", err);
+    res.status(500).json({ error: "Server Error" });
   }
 };
+
+
+
+// USER LOGIN
+const UserLogin = async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+
+    if (!phone || !password) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const user = await UserModel.findOne({ phone });
+    if (!user) {
+      return res.status(404).json({ error: "Invalid credentials" });
+    }
+
+    const matchPassword = await bcrypt.compare(password, user.password);
+    if (!matchPassword) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const token = generateToken(user._id);
+    const isProduction = process.env.NODE_ENV === "production";
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({ message: "Login successful", token, user });
+  } catch (err) {
+    console.log("Login Error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 
 
 const findLoggedInUser = (req, res) => {

@@ -116,7 +116,8 @@ const Header = () => {
             <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold">
               <img src="logo2.png" alt="" className="hover:scale-105 duration-300 w-7" />
             </div>
-            𝕭𝖗𝖎𝖑𝖘𝖔𝖓
+            Brilson
+            {/* 𝕭𝖗𝖎𝖑𝖘𝖔𝖓 */}
           </motion.div>
         </Link>
 
@@ -311,6 +312,7 @@ const Header = () => {
             {!isLoggedIn ? (
               <Link
                 to="/login"
+                 onClick={() => setOpen(false)}
                 className="bg-blue-600 py-2 rounded-lg text-center text-white"
               >
                 Login
