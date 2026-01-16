@@ -67,6 +67,7 @@ const LoginPage = () => {
       setTimeout(() => navigate("/"), 700);
       setTimeout(() => window.location.reload(), 900);
     } catch (err) {
+      console.log(err)
       toast.error(
         err.response?.data?.error || 
         err.response?.data?.message || 

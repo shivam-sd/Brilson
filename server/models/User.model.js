@@ -8,15 +8,20 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+   activeToken: {
+  type: String,
+  default: null
+},
+
     // email: {
     //   type: String,
     //   // required: true,
     //   lowercase: true,
     //   trim: true,
     // },
-    
-    phone:{
-      type:String,
+
+    phone: {
+      type: String,
     },
 
     otp: String,
@@ -38,7 +43,7 @@ const userSchema = new mongoose.Schema(
     referralCode: {
       type: String,
       unique: true,
-      sparse:true
+      sparse: true,
     },
 
     referredBy: {
@@ -59,22 +64,23 @@ const userSchema = new mongoose.Schema(
 
     // Balance for rewards
     rewardBalance: {
-    type: Number,
-    default: 0
-  },
+      type: Number,
+      default: 0,
+    },
 
-  totalOrders:{
-    type:Number,
-    default:0
-  },
+    totalOrders: {
+      type: Number,
+      default: 0,
+    },
 
     myCards: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "CardProfile", 
+        ref: "CardProfile",
       },
     ],
   },
+
   { timestamps: true }
 );
 

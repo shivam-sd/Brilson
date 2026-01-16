@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { HiMenuAlt3, HiX } from "react-icons/hi";
 import { FaUser } from "react-icons/fa";
+import { FaRegUserCircle } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
 import { IoIosArrowDown } from "react-icons/io";
 import axios from "axios";
-import { Wallet } from "lucide-react";
 
 const Header = () => {
-  const [open, setOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [myCardProfile, setMyCardProfile] = useState(null);
-  const [balance, setbalance] = useState(0);
+  const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
 
   const isLoggedIn = !!token;
 
-  /*  CART COUNT  */
+  /* CART COUNT */
   const getCartCount = async () => {
     try {
       if (isLoggedIn) {
@@ -33,35 +31,27 @@ const Header = () => {
         const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
         setCartCount(localCart.length);
       }
-    } catch (err) {
+    } catch {
       setCartCount(0);
     }
   };
 
-  /*  ACTIVE CARD CHECK  */
+  /* ACTIVE CARD */
   const fetchMyActiveCard = async () => {
     try {
       if (!token) return;
-
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/users/my-active-card`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      // console.log(res)
-      if (res.data?.hasCard) {
-        setMyCardProfile(res.data);
-      } else {
-        setMyCardProfile(null);
-      }
-    } catch (err) {
+      setMyCardProfile(res.data?.hasCard ? res.data : null);
+    } catch {
       setMyCardProfile(null);
     }
   };
 
-  /*  EFFECTS  */
   useEffect(() => {
     getCartCount();
     fetchMyActiveCard();
@@ -73,51 +63,46 @@ const Header = () => {
     return () => window.removeEventListener("cartUpdate", handleCartUpdate);
   }, []);
 
-  /*  LOGOUT  */
-  const handleLogout = () => {
+  /* LOGOUT */
+    const handleLogout = async () => {
+  try {
+    if (token) {
+      await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/users/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+    }
+  } catch (err) {
+    console.log("Logout API error:", err);
+  } finally {
+    // Frontend cleanup 
     localStorage.removeItem("token");
     setToken(null);
     setMyCardProfile(null);
     setCartCount(0);
-  };
-
-  // // get balance 
-  // useEffect(() => {
-  //   const fetchBalance = async () => {
-  //     if (isLoggedIn) {
-  //       try {
-  //         const res = await axios.get(
-  //           `${import.meta.env.VITE_BASE_URL}/api/users/balance`,
-  //           {
-  //             headers: { Authorization: `Bearer ${token}` },
-  //           }
-  //         );
-  //         console.log(res.data)
-  //         setbalance(res.data.Balance);
-  //       } catch (err) {
-  //         setbalance(0);
-  //       }
-  //     }
-  //   };
-  //   fetchBalance();
-  // }, [isLoggedIn, myCardProfile]);
+    setMobileProfileOpen(false);
+  }
+};
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-[#050505]/70 backdrop-blur-xl border-b border-white/10">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        
+
         {/* LOGO */}
         <Link to="/">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-1 text-white text-2xl font-semibold"
+            className="flex items-center gap-2 text-white text-2xl font-semibold"
           >
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold">
-              <img src="logo2.png" alt="" className="hover:scale-105 duration-300 w-7" />
-            </div>
+            <img src="/logo2.png" alt="logo" className="w-7" />
             Brilson
-            {/* 𝕭𝖗𝖎𝖑𝖘𝖔𝖓 */}
           </motion.div>
         </Link>
 
@@ -126,13 +111,11 @@ const Header = () => {
           <Link to="/" className="hover:text-white">Home</Link>
           <Link to="/products" className="hover:text-white">Products</Link>
           <Link to="/how-it-works" className="hover:text-white">How It Works</Link>
-          {/* <Link to="/pricing" className="hover:text-white">Pricing</Link> */}
         </ul>
 
         {/* DESKTOP ACTIONS */}
         <div className="hidden md:flex items-center gap-6">
 
-          
           {/* CART */}
           <Link to="/your-items" className="relative text-2xl text-gray-300 hover:text-white">
             <LuShoppingCart />
@@ -143,92 +126,67 @@ const Header = () => {
             )}
           </Link>
 
-            {/* {
-              isLoggedIn ? (<>
-              <div className="bg-gradient-to-r from-slate-700 to-slate-900 px-3 flex items-center gap-2 py-1 rounded-2xl justify-center">
-                <Wallet className="cursor-pointer text-yellow-400" />
-                <span className="text-lg ">₹{balance}</span>
-              </div>
-              </>) : <></>
-            } */}
-
-
-          {/* AUTH */}
           {!isLoggedIn ? (
             <Link
               to="/login"
-              className="flex items-center gap-2 text-gray-300 hover:text-white border-2 border-white/40 rounded-lg px-4 py-2 relative group"
+              className="flex items-center gap-2 border border-white/30 px-4 py-2 rounded-lg text-gray-300 hover:text-white"
             >
               <FaUser /> Login
-               <button
-                    onClick={handleLogout}
-                    className="px-3 py-2 text-left rounded hover:bg-gray-800 text-gray-300 hover:text-white absolute top-10 right-1 border-2 border-white/30 hidden cursor-pointer"
-                  >
-                    Logout
-                  </button>
             </Link>
           ) : (
-            <div className="relative group ">
-              <button className="flex items-center gap-2 text-gray-300 hover:text-white border-2 border-white/30 py-2 px-4 rounded-lg cursor-pointer">
+            <div className="relative group">
+              <button className="flex items-center gap-2 border border-white/30 px-4 py-2 rounded-lg text-gray-300 hover:text-white">
                 <FaUser />
-                <IoIosArrowDown className="group-hover:rotate-180 transition-transform" />
+                <IoIosArrowDown />
               </button>
 
-              {/* DROPDOWN */}
+              {/* DESKTOP DROPDOWN */}
               <div className="absolute top-12 right-0 bg-gray-900 border border-white/20 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all min-w-[160px]">
                 <div className="flex flex-col p-2 gap-1">
-                  
-                  {/* ONLY IF CARD ACTIVE */}
-                  {myCardProfile ? <>
-                  
+
+                  {myCardProfile ? (
                     <Link
                       to={`/profile/${myCardProfile.slug}`}
-                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
-                      >
-                      My Profile
-                    </Link>
-                      </> : <>
-                    <Link
-                    onClick={(e) => {
-                      window.location.href = `${import.meta.env.VITE_DOMAIN}/card/activate`
-                    }}
-                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
+                      className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
                     >
                       My Profile
-                    </Link>  
-                      </>
-                  }
-
-                    
-
-                  <Link
-                      to={`/orders`}
-                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
-                    >
-                      My Orders
                     </Link>
+                  ) : (
+                    <button
+                      onClick={() =>
+                        window.location.href = `${import.meta.env.VITE_DOMAIN}/card/activate`
+                      }
+                      className="px-3 py-2 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white"
+                    >
+                      My Profile
+                    </button>
+                  )}
+
+                  <Link to="/orders" className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white">
+                    My Orders
+                  </Link>
 
                   <button
                     onClick={handleLogout}
-                    className="px-3 py-2 text-left rounded hover:bg-gray-800 text-gray-300 hover:text-white cursor-pointer"
+                    className="px-3 py-2 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white"
                   >
                     Logout
                   </button>
+
                 </div>
               </div>
             </div>
           )}
 
-          <Link
-            to="/get-card"
-            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium"
-          >
+          <Link to="/get-card" className="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white">
             Get Your Card
           </Link>
         </div>
 
-        {/* MOBILE */}
+        {/* MOBILE ACTIONS */}
         <div className="md:hidden flex items-center gap-5">
+
+          {/* CART */}
           <Link to="/your-items" className="relative text-2xl text-white">
             <LuShoppingCart />
             {cartCount > 0 && (
@@ -237,97 +195,68 @@ const Header = () => {
               </span>
             )}
           </Link>
-{/* // DISPLAY BALANCE IF LOGGED IN */}
-           {/* {
-              isLoggedIn ? (<>
-              <div className="bg-gradient-to-r from-slate-700 to-slate-900 px-3 flex items-center gap-2 py-1 rounded-2xl justify-center">
-                <Wallet className="cursor-pointer text-yellow-400" />
-                <span className="text-lg ">₹{balance}</span>
-              </div>
-              </>) : <></>
-            } */}
 
-          <button onClick={() => setOpen(!open)} className="text-3xl text-white">
-            {open ? <HiX /> : <HiMenuAlt3 />}
-          </button>
-        </div>
-      </div>
+          {/* PROFILE */}
+          {!isLoggedIn ? (
+            <Link to="/login">
+              <FaUser className="text-2xl text-white cursor-pointer" />
+            </Link>
+          ) : (
+            <div className="relative">
+              <div className="p-2 rounded-full border-2 border-white/20 flex items-center justify-center">
+              <FaRegUserCircle
+                className="text-2xl text-white cursor-pointer"
+                onClick={() => setMobileProfileOpen(!mobileProfileOpen)}
+                />
+                </div>
 
-      {/* MOBILE MENU */}
-      {open && (
-        <div className="md:hidden bg-[#0c0c0c] border-t border-white/10 px-6 py-4">
-          <div className="flex flex-col gap-4 text-gray-300">
-            <Link to="/" onClick={() => setOpen(false)}>Home</Link>
-            <Link to="/products" onClick={() => setOpen(false)}>Products</Link>
-            <Link to="/how-it-works" onClick={() => setOpen(false)}>How It Works</Link>
-            {/* <Link to="/pricing" onClick={() => setOpen(false)}>Pricing</Link> */}
+              {mobileProfileOpen && (
+                <div className="absolute right-0 top-10 bg-gray-900 border border-white/20 rounded-lg shadow-xl min-w-[160px] z-50">
+                  <div className="flex flex-col p-2 gap-1">
 
-
-{
-  isLoggedIn ? <>
-  
-{/* ONLY IF CARD ACTIVE */}
-                  {myCardProfile ? <>
-                  
-                    <Link
-                      to={`/profile/${myCardProfile.slug}`}
-                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
+                    {myCardProfile ? (
+                      <Link
+                        to={`/profile/${myCardProfile.slug}`}
+                        onClick={() => setMobileProfileOpen(false)}
+                        className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
                       >
-                      My Profile
-                    </Link>
-                      </> : <>
-                    <Link
-                    onClick={(e) => {
-                      window.location.href = `${import.meta.env.VITE_DOMAIN}/card/activate`
-                    }}
-                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
-                    >
-                      My Profile
-                    </Link>  
-                      </>
-                  }
+                        My Profile
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setMobileProfileOpen(false);
+                          window.location.href = `${import.meta.env.VITE_DOMAIN}/card/activate`;
+                        }}
+                        className="px-3 py-2 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white"
+                      >
+                        My Profile
+                      </button>
+                    )}
 
-                  <Link
-                      to={`/orders`}
-                      className="px-3 py-2 rounded hover:bg-gray-800 text-gray-300 hover:text-white"
+                    <Link
+                      to="/orders"
+                      onClick={() => setMobileProfileOpen(false)}
+                      className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
                     >
                       My Orders
                     </Link>
 
+                    <button
+                      onClick={handleLogout}
+                      className="px-3 py-2 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white"
+                    >
+                      Logout
+                    </button>
 
-  </>: <></>
-}
-            
-
-
- <Link
-                to={`/get-card`}
-                onClick={() => setOpen(false)}
-                className="border border-white/20 bg-blue-600 rounded-lg py-2 text-center"
-              >
-                Get Your Card
-              </Link>
-
-
-            {!isLoggedIn ? (
-              <Link
-                to="/login"
-                 onClick={() => setOpen(false)}
-                className="bg-blue-600 py-2 rounded-lg text-center text-white"
-              >
-                Login
-              </Link>
-            ) : (
-              <button
-                onClick={handleLogout}
-                className="border border-white/20 rounded-lg py-2"
-              >
-                Logout
-              </button>
-            )}
-          </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      )}
+
+      </div>
     </header>
   );
 };

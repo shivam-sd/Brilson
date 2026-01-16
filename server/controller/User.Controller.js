@@ -69,6 +69,9 @@ const UserRegister = async (req, res) => {
 
     const isProduction = process.env.NODE_ENV === "production";
 
+    user.activeToken = token;
+    await user.save();
+
     res.cookie("token", token, {
       httpOnly: true,
       secure: isProduction,
@@ -104,12 +107,22 @@ const UserLogin = async (req, res) => {
       return res.status(404).json({ error: "Invalid credentials" });
     }
 
+      if (user.activeToken) {
+      return res.status(403).json({
+        message: "Your account is already logged in on another device"
+      });
+    }
+
     const matchPassword = await bcrypt.compare(password, user.password);
     if (!matchPassword) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
     const token = generateToken(user._id);
+
+    user.activeToken = token;
+    await user.save();
+
     const isProduction = process.env.NODE_ENV === "production";
 
     res.cookie("token", token, {
@@ -170,6 +183,34 @@ const getMyActiveCard = async (req, res) => {
 };
 
 
+const userlogout = async (req, res) => {
+  try {
+    const userId = req.user;
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.activeToken = null;
+    await user.save();
+
+    const isProduction = process.env.NODE_ENV === "production";
+
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+    });
+
+    res.status(200).json({ message: "Logged out successfully" });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Logout error" });
+  }
+};
+
 
 
 
@@ -178,5 +219,6 @@ module.exports = {
   UserRegister,
   UserLogin,
   findLoggedInUser,
-  getMyActiveCard
+  getMyActiveCard,
+  userlogout
 };
