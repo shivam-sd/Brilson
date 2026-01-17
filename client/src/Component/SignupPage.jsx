@@ -5,6 +5,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { VscReferences } from "react-icons/vsc";
+import { FiEyeOff } from "react-icons/fi";
+import { FiEye } from "react-icons/fi";
 
 const SignupPage = () => {
   const [form, setForm] = useState({
@@ -22,6 +24,8 @@ const SignupPage = () => {
   const [loading, setLoading] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
+    const [seePassword, setSeePassword] = useState(false);
+    const [seePassword1, setSeePassword1] = useState(false);
 
   const navigate = useNavigate();
 
@@ -144,7 +148,8 @@ const SignupPage = () => {
       }
 
       toast.success("Account registered successfully!");
-      navigate("/");
+      setTimeout(() => navigate("/"), 500);
+      setTimeout(() => window.location.reload(), 700);
     } catch (err) {
       toast.error(
         err.response?.data?.error || 
@@ -155,6 +160,17 @@ const SignupPage = () => {
       setLoading(false);
     }
   };
+
+
+  // handle See Password
+
+  const handleSeePassword = () => {
+    setSeePassword(!seePassword);
+  }
+
+  const handleSeePassword1 = () => {
+    setSeePassword1(!seePassword1);
+  }
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#050505] via-[#0b0c10] to-[#050505] px-4 py-10">
@@ -274,7 +290,7 @@ const SignupPage = () => {
             <div className="mt-2 flex items-center bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus-within:border-cyan-500">
               <Lock className="w-5 h-5 text-gray-400" />
               <input
-                type="password"
+                type={seePassword ? "text" : "password"}
                 name="password"
                 value={form.password}
                 onChange={handleChange}
@@ -283,6 +299,11 @@ const SignupPage = () => {
                 minLength="6"
                 className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
               />
+              <div className="cursor-pointer" onClick={handleSeePassword}>
+                {
+                  seePassword ? <> <FiEye /> </> : <> <FiEyeOff /> </>
+                }
+              </div>
             </div>
           </div>
 
@@ -292,7 +313,7 @@ const SignupPage = () => {
             <div className="mt-2 flex items-center bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus-within:border-cyan-500">
               <Lock className="w-5 h-5 text-gray-400" />
               <input
-                type="password"
+                type={seePassword1 ? "text" : "password"}
                 name="confirm"
                 value={form.confirm}
                 onChange={handleChange}
@@ -300,7 +321,12 @@ const SignupPage = () => {
                 required
                 className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
               />
+            <div className="cursor-pointer" onClick={handleSeePassword1}>
+              {
+                seePassword1 ? <> <FiEye /> </> : <> <FiEyeOff /> </>
+              }
             </div>
+              </div>
           </div>
 
 

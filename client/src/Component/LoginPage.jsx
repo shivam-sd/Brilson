@@ -4,10 +4,13 @@ import { Mail, Lock, Phone } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { FiEyeOff } from "react-icons/fi";
+import { FiEye } from "react-icons/fi";
 
 const LoginPage = () => {
   const navigate = useNavigate();
 
+  const [seePassword, setSeePassword] = useState(false);
   const [form, setForm] = useState({
     // email: "",
     phone: "",
@@ -64,8 +67,8 @@ const LoginPage = () => {
       
       toast.success("Login successful");
       
-      setTimeout(() => navigate("/"), 700);
-      setTimeout(() => window.location.reload(), 900);
+      setTimeout(() => navigate("/"), 500);
+      setTimeout(() => window.location.reload(), 700);
     } catch (err) {
       console.log(err)
       toast.error(
@@ -77,6 +80,14 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
+
+  // handleSeePassword
+
+  const handleSeePassword = () => {
+    setSeePassword(!seePassword);
+    // console.log(seePassword)
+  }
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#050505] via-[#0b0c10] to-[#050505] px-4 py-10">
@@ -139,7 +150,7 @@ const LoginPage = () => {
             <div className="mt-2 flex items-center bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus-within:border-cyan-500">
               <Lock className="w-5 h-5 text-gray-400" />
               <input
-                type="password"
+                type={seePassword ? "text" : "password"}
                 name="password"
                 value={form.password}
                 onChange={handleChange}
@@ -148,6 +159,11 @@ const LoginPage = () => {
                 minLength="6"
                 className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
               />
+              <div className="cursor-pointer" onClick={handleSeePassword}>
+              {
+                seePassword ? <> <FiEye /> </> : <> <FiEyeOff /> </>
+              }
+              </div>
             </div>
           </div>
 
