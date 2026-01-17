@@ -30,7 +30,7 @@ router.put("/card/:id/edit",authUserToken, EditCardProfile);
 router.get("/claim-card-profile", authUserToken, claimCardProfile);
 
 // check card status
-router.get("/check/card/:cardId", checkCardStatus);
+router.get("/check/card/:activationCode", checkCardStatus);
 
 
 // mark card downloaded or not
