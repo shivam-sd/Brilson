@@ -9,7 +9,7 @@ const getCardProfiles = async (req, res) => {
     if (!card) return res.status(404).json({ error: "Invalid card" });
 // console.log(card.profile);
     res.json({profile:card.profile, card:card});
-  }catch(err){
+  }catch(err){ 
     res.status(500).json({ error: "Internal Server error", err });
   }
 };

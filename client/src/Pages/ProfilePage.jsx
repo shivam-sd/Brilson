@@ -147,17 +147,17 @@ const ProfilePage = () => {
 
   // Prepare profile data with fallbacks
   const profileData = {
-    name: profile?.name || "Aarav Mehta",
-    email: profile?.email || "aarav@brilson.com",
+    name: profile?.name || "Full Name",
+    email: profile?.email || "name@gmail.com",
     phone: profile?.phone || "+91 98765 43210",
-    bio: profile?.bio || "Founder, Brilson",
+    bio: profile?.bio || "Founder, Google",
     about: profile?.about || "Passionate about crafting timeless fashion and smart tech solutions that make everyday life better.",
     city: profile?.city || "Mumbai, India",
     website: profile?.website || "www.brilson.com",
     linkedin: profile?.linkedin || "linkedin.com/in/aaravmehta",
-    twitter: profile?.twitter || "twitter.com/aaravmehta",
-    instagram: profile?.instagram || "instagram.com/aarav.mehta",
-    facebook: profile?.facebook || "facebook.com/aarav.mehta",
+    twitter: profile?.twitter || "twitter.com/your-name",
+    instagram: profile?.instagram || "instagram.com/your-name",
+    facebook: profile?.facebook || "facebook.com/your-name",
   };
 
   const ContactCard = ({ icon, text, type = "text" }) => (

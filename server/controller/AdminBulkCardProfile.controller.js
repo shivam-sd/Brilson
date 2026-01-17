@@ -13,13 +13,14 @@ const bulkCreateCards = async (req, res) => {
     const cards = [];
 
     for (let i = 0; i < count; i++) {
-      const cardId =
-        "CARD_" + crypto.randomInt(1_000_000_000, 9_999_999_999);
+      const activationCode = generateActivationCode();
 
       cards.push({
-        cardId,
-        activationCode: generateActivationCode(),
-        qrUrl: `${process.env.BASE_URL1}/c/card/${cardId}`,
+        activationCode,
+        isActivated: false,
+
+        // QR me sirf activationCode
+        qrUrl: `${process.env.BASE_URL1}/c/card/${activationCode}`,
       });
     }
 
@@ -28,12 +29,15 @@ const bulkCreateCards = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Cards created successfully",
+      total: cards.length,
       cards,
     });
+
   } catch (err) {
-    console.error(err);
+    console.error("Bulk Create Error:", err);
     res.status(500).json({ error: "Bulk create failed" });
   }
 };
+
 
 module.exports = bulkCreateCards;

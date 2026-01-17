@@ -7,7 +7,7 @@ const claimCardProfile = async (req, res) => {
 
     const card = await CardProfileModel.findOne({ slug, tempSessionId });
 
-    if (!card) {
+    if (!card) { 
       return res.status(403).json({ error: "Unauthorized" });
     }
 

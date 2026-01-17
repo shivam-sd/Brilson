@@ -8,16 +8,16 @@ const UserModel = require("../models/User.model");
 const ActivateCardAPi = async (req, res) => {
   try {
     const userId = req.user; 
-    const { cardId, activationCode } = req.body;
+    const { activationCode } = req.body;
 
-    if (!cardId || !activationCode) {
+    if (!activationCode) {
       return res.status(400).json({
-        error: "Card ID and activation code required",
+        error: "activation code required",
       });
     }
 
     /*  FIND CARD */
-    const card = await CardProfileModel.findOne({ cardId, activationCode });
+    const card = await CardProfileModel.findOne({ activationCode });
 
     if (!card) {
       return res.status(400).json({
@@ -45,10 +45,10 @@ const ActivateCardAPi = async (req, res) => {
     card.isActivated = true;
     card.owner = userId;
     card.activatedAt = new Date();
-    card.tempSessionId = generateSlug(cardId + Date.now());
+    card.tempSessionId = generateSlug(activationCode + Date.now());
 
     /*  GENERATE UNIQUE SLUG */
-    card.slug = generateSlug(`${user.name}-${cardId}`);
+    card.slug = activationCode;
 
     await card.save();
 
@@ -62,7 +62,7 @@ const ActivateCardAPi = async (req, res) => {
     /*  FINAL RESPONSE */
     return res.status(200).json({
       message: "Card activated successfully",
-      cardId: card.cardId,
+      activationCode: card.activationCode,
       slug: card.slug,
     });
 

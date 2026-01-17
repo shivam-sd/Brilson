@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import QRCodeStyling from "qr-code-styling";
 
-/*  SIR STYLE QR  */
+/* QR CREATOR */
 const createQR = (url) =>
   new QRCodeStyling({
     width: 300,
@@ -44,8 +44,10 @@ const ManageCards = () => {
     inactive: 0
   });
   const [qrImages, setQrImages] = useState({});
+  
+  const BASE_PUBLIC_URL = `${import.meta.env.VITE_DOMAIN}/c/card`;
 
-  /*  FETCH  */
+  /* FETCH CARDS */
   useEffect(() => {
     const fetchCards = async () => {
       try {
@@ -67,26 +69,24 @@ const ManageCards = () => {
         
         setStats({ total, activated, inactive });
 
-        // Generate QR images for all cards
+        // Generate QR images for all cards using activation code
         const qrPromises = allCards.map(async (card) => {
-          if (card.qrUrl) {
-            try {
-              const qr = createQR(card.qrUrl);
-              const blob = await qr.getRawData("png");
-              const imageUrl = URL.createObjectURL(blob);
-              return { cardId: card._id, imageUrl };
-            } catch (err) {
-              console.error(`Error generating QR for ${card.cardId}:`, err);
-              return { cardId: card._id, imageUrl: null };
-            }
+          try {
+            const qrUrl = `${BASE_PUBLIC_URL}/${card.activationCode}`;
+            const qr = createQR(qrUrl);
+            const blob = await qr.getRawData("png");
+            const imageUrl = URL.createObjectURL(blob);
+            return { activationCode: card.activationCode, imageUrl };
+          } catch (err) {
+            console.error(`Error generating QR for ${card.activationCode}:`, err);
+            return { activationCode: card.activationCode, imageUrl: null };
           }
-          return { cardId: card._id, imageUrl: null };
         });
 
         const qrResults = await Promise.all(qrPromises);
         const qrMap = {};
         qrResults.forEach(result => {
-          qrMap[result.cardId] = result.imageUrl;
+          qrMap[result.activationCode] = result.imageUrl;
         });
         setQrImages(qrMap);
 
@@ -101,7 +101,7 @@ const ManageCards = () => {
     fetchCards();
   }, []);
 
-  /*  GROUP BY DATE  */
+  /* GROUP BY DATE */
   const groupedCards = cards.reduce((acc, card) => {
     const date = new Date(card.createdAt).toISOString().split("T")[0];
     if (!acc[date]) acc[date] = [];
@@ -113,13 +113,15 @@ const ManageCards = () => {
     ([date]) => !selectedDate || date === selectedDate
   );
 
-  /*  PREVIEW  */
-  const previewQR = async (url) => {
-    if (!url) {
-      alert("No QR URL available for this card");
+  /* PREVIEW QR */
+  const previewQR = async (activationCode) => {
+    if (!activationCode) {
+      alert("Activation code is required");
       return;
     }
-    const qr = createQR(url);
+    
+    const qrUrl = `${BASE_PUBLIC_URL}/${activationCode}`;
+    const qr = createQR(qrUrl);
     const blob = await qr.getRawData("png");
     const imgUrl = URL.createObjectURL(blob);
 
@@ -131,16 +133,23 @@ const ManageCards = () => {
     `);
   };
 
-  /*  DOWNLOAD  */
+  /* DOWNLOAD QR */
   const downloadQR = async (card) => {
-    if (!card.qrUrl) {
-      alert("No QR URL available for download");
+    if (!card.activationCode) {
+      alert("Activation code is required");
       return;
     }
     
-    const qr = createQR(card.qrUrl);
-    qr.download({ name: `card-${card.cardId}`, extension: "png" });
+    const qrUrl = `${BASE_PUBLIC_URL}/${card.activationCode}`;
+    const qr = createQR(qrUrl);
+    
+    // Download with activation code as filename
+    qr.download({ 
+      name: `card-${card.activationCode}`, 
+      extension: "png" 
+    });
 
+    // Track download status
     if (!card.isDownloaded) {
       try {
         await axios.patch(
@@ -164,7 +173,7 @@ const ManageCards = () => {
     }
   };
 
-  /*  LOADING  */
+  /* LOADING */
   if (loading) {
     return (
       <div className="min-h-[60vh] flex justify-center items-center">
@@ -173,7 +182,7 @@ const ManageCards = () => {
     );
   }
 
-  /*  ERROR  */
+  /* ERROR */
   if (error) {
     return (
       <div className="text-center text-red-400 p-8">
@@ -183,7 +192,7 @@ const ManageCards = () => {
     );
   }
 
-  /*  STATUS BADGE  */
+  /* STATUS BADGE */
   const StatusBadge = ({ active }) => (
     <span
       className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
@@ -196,7 +205,7 @@ const ManageCards = () => {
     </span>
   );
 
-  /*  UI  */
+  /* UI */
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-[100vw] overflow-x-hidden">
       {/* HEADER */}
@@ -207,7 +216,7 @@ const ManageCards = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-center">
-          {/* Sleek Date Picker */}
+          {/* Date Picker */}
           <div className="relative w-full sm:w-56">
             <input
               type="date"
@@ -234,7 +243,7 @@ const ManageCards = () => {
             </div>
           </div>
 
-          {/* Elegant Create Button */}
+          {/* Create Button */}
           <Link
             to="/api/cards/bulk"
             className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-5 py-3 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 w-full sm:w-auto group"
@@ -295,16 +304,15 @@ const ManageCards = () => {
         </div>
       </div>
 
-      {/* DESKTOP TABLE - LARGE SCREENS (1024px and above) */}
+      {/* DESKTOP TABLE - LARGE SCREENS */}
       <div className="hidden lg:block overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
         <table className="w-full min-w-full">
           <thead className="bg-gray-800/50 border-b border-gray-700/50">
             <tr>
               <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
-              <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Card ID</th>
+              <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation Code</th>
               <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
               <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
-              <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation</th>
               <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Created</th>
               <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">QR</th>
               <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Preview</th>
@@ -317,10 +325,13 @@ const ManageCards = () => {
             {filteredGroupedCards.map(([date, list]) => (
               <React.Fragment key={date}>
                 <tr className="bg-gray-800/30">
-                  <td colSpan="10" className="p-3 font-medium text-gray-300 text-sm">
+                  <td colSpan="9" className="p-3 font-medium text-gray-300 text-sm">
                     <div className="flex items-center gap-2">
                       <span>📅</span>
                       <span>{new Date(date).toLocaleDateString("en-GB")}</span>
+                      <span className="ml-auto text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded">
+                        {list.length} cards
+                      </span>
                     </div>
                   </td>
                 </tr>
@@ -339,8 +350,8 @@ const ManageCards = () => {
                       />
                     </td>
                     <td className="p-3">
-                      <div className="font-mono text-xs max-w-[120px] truncate" title={card.cardId}>
-                        {card.cardId}
+                      <div className="font-mono text-xs text-indigo-400" title={card.activationCode}>
+                        {card.activationCode}
                       </div>
                     </td>
                     <td className="p-3">
@@ -351,19 +362,14 @@ const ManageCards = () => {
                         {card.profile?.name || "—"}
                       </span>
                     </td>
-                    <td className="p-3">
-                      <div className="font-mono text-xs text-indigo-400 max-w-[80px] truncate" title={card.activationCode}>
-                        {card.activationCode}
-                      </div>
-                    </td>
                     <td className="p-3 text-gray-400 text-xs">
                       {new Date(card.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-3 text-center">
                       <div className="w-12 h-12 bg-white p-1.5 rounded-lg flex items-center justify-center mx-auto">
-                        {qrImages[card._id] ? (
+                        {qrImages[card.activationCode] ? (
                           <img
-                            src={qrImages[card._id]}
+                            src={qrImages[card.activationCode]}
                             alt="QR Code"
                             className="w-10 h-10"
                             onError={(e) => {
@@ -382,12 +388,9 @@ const ManageCards = () => {
                     </td>
                     <td className="p-3 text-center">
                       <button
-                        onClick={() => previewQR(card.qrUrl)}
-                        className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 mx-auto ${
-                          !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                        title={card.qrUrl ? "Preview QR" : "No QR available"}
-                        disabled={!card.qrUrl}
+                        onClick={() => previewQR(card.activationCode)}
+                        className="text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 mx-auto"
+                        title="Preview QR"
                       >
                         <FaEye className="w-4 h-4" />
                       </button>
@@ -395,23 +398,25 @@ const ManageCards = () => {
                     <td className="p-3 text-center">
                       <button
                         onClick={() => downloadQR(card)}
-                        className={`bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition mx-auto ${
-                          !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                        title={card.qrUrl ? "Download QR" : "No QR available"}
-                        disabled={!card.qrUrl}
+                        className="bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition mx-auto"
+                        title="Download QR"
                       >
                         <FaDownload className="w-4 h-4" />
                       </button>
                     </td>
                     <td className="p-3 text-center">
-                      <Link 
-                        to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
-                        className="text-indigo-400 hover:text-indigo-300 transition text-xs inline-block"
-                        target="_blank"
-                      >
-                        View
-                      </Link>
+                      {card.slug ? (
+                        <a
+                          href={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-400 hover:text-indigo-300 transition text-xs underline"
+                        >
+                          View
+                        </a>
+                      ) : (
+                        <span className="text-gray-500 text-xs">—</span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -421,16 +426,16 @@ const ManageCards = () => {
         </table>
       </div>
 
-      {/* TABLET VIEW - MEDIUM SCREENS (768px to 1023px) */}
+      {/* TABLET VIEW - MEDIUM SCREENS */}
       <div className="hidden md:block lg:hidden overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
         <table className="w-full min-w-full">
           <thead className="bg-gray-800/50 border-b border-gray-700/50">
             <tr>
               <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
-              <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Card ID</th>
+              <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation Code</th>
               <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
               <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
-              <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation</th>
+              <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Created</th>
               <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Actions</th>
             </tr>
           </thead>
@@ -443,6 +448,9 @@ const ManageCards = () => {
                     <div className="flex items-center gap-2">
                       <span>📅</span>
                       <span>{new Date(date).toLocaleDateString("en-GB")}</span>
+                      <span className="ml-auto text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded">
+                        {list.length} cards
+                      </span>
                     </div>
                   </td>
                 </tr>
@@ -461,8 +469,8 @@ const ManageCards = () => {
                       />
                     </td>
                     <td className="p-3">
-                      <div className="font-mono text-xs max-w-[100px] truncate" title={card.cardId}>
-                        {card.cardId}
+                      <div className="font-mono text-xs text-indigo-400 truncate max-w-[120px]" title={card.activationCode}>
+                        {card.activationCode}
                       </div>
                     </td>
                     <td className="p-3">
@@ -473,17 +481,15 @@ const ManageCards = () => {
                         {card.profile?.name || "—"}
                       </span>
                     </td>
-                    <td className="p-3">
-                      <div className="font-mono text-xs text-indigo-400 truncate" title={card.activationCode}>
-                        {card.activationCode}
-                      </div>
+                    <td className="p-3 text-gray-400 text-xs">
+                      {new Date(card.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-3">
                       <div className="flex items-center justify-center gap-2">
                         <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mr-2">
-                          {qrImages[card._id] ? (
+                          {qrImages[card.activationCode] ? (
                             <img
-                              src={qrImages[card._id]}
+                              src={qrImages[card.activationCode]}
                               alt="QR Code"
                               className="w-8 h-8"
                               onError={(e) => {
@@ -500,32 +506,29 @@ const ManageCards = () => {
                           )}
                         </div>
                         <button
-                          onClick={() => previewQR(card.qrUrl)}
-                          className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 ${
-                            !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                          }`}
-                          title={card.qrUrl ? "Preview QR" : "No QR available"}
-                          disabled={!card.qrUrl}
+                          onClick={() => previewQR(card.activationCode)}
+                          className="text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50"
+                          title="Preview QR"
                         >
                           <FaEye className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => downloadQR(card)}
-                          className={`bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition ${
-                            !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                          }`}
-                          title={card.qrUrl ? "Download QR" : "No QR available"}
-                          disabled={!card.qrUrl}
+                          className="bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition"
+                          title="Download QR"
                         >
                           <FaDownload className="w-4 h-4" />
                         </button>
-                        <Link 
-                          to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
-                          className="text-indigo-400 hover:text-indigo-300 transition text-xs px-2 py-1 border border-indigo-500/50 rounded"
-                          target="_blank"
-                        >
-                          Profile
-                        </Link>
+                        {card.slug && (
+                          <a
+                            href={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-indigo-400 hover:text-indigo-300 transition text-xs px-2 py-1 border border-indigo-500/50 rounded"
+                          >
+                            Profile
+                          </a>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -536,12 +539,12 @@ const ManageCards = () => {
         </table>
       </div>
 
-      {/* MOBILE TABLE VIEW (Below 768px) - Horizontal Scrollable Table */}
+      {/* MOBILE VIEW */}
       <div className="block md:hidden">
         {filteredGroupedCards.map(([date, list]) => (
           <div key={date} className="mb-6">
             {/* Date Header */}
-            <div className="mb-3 p-3 bg-gray-800/30 rounded-lg sticky top-0 z-10">
+            <div className="mb-3 p-3 bg-gray-800/30 rounded-lg">
               <div className="flex items-center gap-2">
                 <span className="text-lg">📅</span>
                 <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
@@ -551,124 +554,95 @@ const ManageCards = () => {
               </div>
             </div>
 
-            {/* Horizontal Scrollable Table */}
-            <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
-              <table className="min-w-[700px] w-full">
-                <thead className="bg-gray-800/50 border-b border-gray-700/50">
-                  <tr>
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[40px]">✓</th>
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[120px]">Card ID</th>
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Status</th>
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Owner</th>
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[100px]">Activation</th>
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Created</th>
-                    <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap min-w-[70px]">QR</th>
-                    <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap min-w-[100px]">Actions</th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-gray-700/30">
-                  {list.map((card) => (
-                    <tr 
-                      key={card._id} 
-                      className="hover:bg-gray-800/20 transition-colors"
-                    >
-                      <td className="p-2">
-                        <input
-                          checked={card.isDownloaded}
-                          readOnly
-                          type="checkbox"
-                          className="w-4 h-4 rounded"
-                        />
-                      </td>
-                      <td className="p-2">
-                        <div className="font-mono text-xs max-w-[110px] truncate" title={card.cardId}>
-                          {card.cardId}
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <StatusBadge active={card.isActivated} />
-                      </td>
-                      <td className="p-2">
-                        <span className={`text-xs ${card.profile?.name ? "text-gray-200" : "text-gray-500"}`}>
-                          {card.profile?.name || "—"}
-                        </span>
-                      </td>
-                      <td className="p-2">
-                        <div className="font-mono text-xs text-indigo-400 truncate max-w-[90px]" title={card.activationCode}>
+            {/* Cards List */}
+            <div className="space-y-4">
+              {list.map((card) => (
+                <div 
+                  key={card._id} 
+                  className="bg-gray-900/20 border border-gray-700/50 rounded-xl p-4"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <input
+                        checked={card.isDownloaded}
+                        readOnly
+                        type="checkbox"
+                        className="w-4 h-4 rounded"
+                      />
+                      <div>
+                        <div className="font-mono text-sm text-indigo-400">
                           {card.activationCode}
                         </div>
-                      </td>
-                      <td className="p-2 text-gray-400 text-xs">
+                        <StatusBadge active={card.isActivated} />
+                      </div>
+                    </div>
+                    
+                    <div className="text-right">
+                      <div className="text-xs text-gray-400">
                         {new Date(card.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="p-2 text-center">
-                        <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mx-auto">
-                          {qrImages[card._id] ? (
-                            <img
-                              src={qrImages[card._id]}
-                              alt="QR Code"
-                              className="w-8 h-8"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "/qr.png";
-                              }}
-                            />
-                          ) : (
-                            <img
-                              src="/qr.png"
-                              alt="Demo QR"
-                              className="w-8 h-8"
-                            />
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <div className="flex flex-col gap-1.5">
-                          <div className="flex gap-1.5 justify-center">
-                            <button
-                              onClick={() => previewQR(card.qrUrl)}
-                              className={`flex-1 text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 min-w-[32px] ${
-                                !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                              }`}
-                              title={card.qrUrl ? "Preview QR" : "No QR available"}
-                              disabled={!card.qrUrl}
-                            >
-                              <FaEye className="w-3.5 h-3.5 mx-auto" />
-                            </button>
-                            <button
-                              onClick={() => downloadQR(card)}
-                              className={`flex-1 bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition min-w-[32px] ${
-                                !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                              }`}
-                              title={card.qrUrl ? "Download QR" : "No QR available"}
-                              disabled={!card.qrUrl}
-                            >
-                              <FaDownload className="w-3.5 h-3.5 mx-auto" />
-                            </button>
-                          </div>
-                          {card.slug && (
-                            <Link 
-                              to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
-                              className="text-xs text-center text-indigo-400 hover:text-indigo-300 transition py-1 border border-indigo-500/50 rounded"
-                              target="_blank"
-                            >
-                              Profile
-                            </Link>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-            {/* Mobile Scroll Hint */}
-            <div className="mt-2 text-center">
-              <p className="text-xs text-gray-500 animate-pulse">
-                ← Scroll horizontally to view all columns →
-              </p>
+                      </div>
+                      <div className="text-xs text-gray-300">
+                        {card.profile?.name || "No owner"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    {/* QR Preview */}
+                    <div className="w-16 h-16 bg-white p-1.5 rounded-lg flex items-center justify-center">
+                      {qrImages[card.activationCode] ? (
+                        <img
+                          src={qrImages[card.activationCode]}
+                          alt="QR Code"
+                          className="w-14 h-14"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/qr.png";
+                          }}
+                        />
+                      ) : (
+                        <img
+                          src="/qr.png"
+                          alt="Demo QR"
+                          className="w-14 h-14"
+                        />
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => previewQR(card.activationCode)}
+                        className="text-gray-400 hover:text-white transition p-2 rounded-lg hover:bg-gray-800/50 flex items-center gap-1"
+                        title="Preview QR"
+                      >
+                        <FaEye className="w-4 h-4" />
+                        <span className="text-xs">Preview</span>
+                      </button>
+                      
+                      <button
+                        onClick={() => downloadQR(card)}
+                        className="bg-cyan-500 hover:bg-cyan-600 p-2 rounded-lg text-black transition flex items-center gap-1"
+                        title="Download QR"
+                      >
+                        <FaDownload className="w-4 h-4" />
+                        <span className="text-xs">Download</span>
+                      </button>
+                      
+                      {card.slug && (
+                        <a
+                          href={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-400 hover:text-indigo-300 transition text-xs p-2 border border-indigo-500/50 rounded text-center"
+                        >
+                          View Profile
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         ))}

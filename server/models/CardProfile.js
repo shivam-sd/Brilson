@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const CardProfileSchema = new mongoose.Schema(
   {
-    cardId: {
-      type: String,
-      unique: true,
-      required: true,
-    },
+    // cardId: {
+    //   type: String,
+    //   unique: true,
+    //   required: true,
+    // },
 
     activationCode: {
       type: String,

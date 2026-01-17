@@ -3,9 +3,9 @@ const cardProfileModel = require("../models/CardProfile");
 
 const checkCardStatus = async(req,res) => {
     try{
-        const {cardId} = req.params;
+        const {activationCode} = req.params;
 
-        const card = await cardProfileModel.findOne({cardId});
+        const card = await cardProfileModel.findOne({activationCode});
 
         if(!card){
             return res.status(404).json({error:"Invalid Card"});

@@ -66,7 +66,7 @@ function App() {
             <Route path="/get-card" element={<GetYourCard />} />
           </Route>
 
-          <Route path="/c/card/:cardId" element={<CheckStatusPage />} />
+          <Route path="/c/card/:activationCode" element={<CheckStatusPage />} />
           <Route path="/profile/:slug" element={<ProfilePage />} />
           <Route path="/profile/edit/:id" element={<EditProfile />} />
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />

@@ -4,14 +4,14 @@ import { motion } from "framer-motion";
 import axios from "axios";
 
 const CheckStatusPage = () => {
-  const { cardId } = useParams();
+  const { activationCode } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     const CheckStatus = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/check/card/${cardId}`
+          `${import.meta.env.VITE_BASE_URL}/api/check/card/${activationCode}`
         );
 // console.log(res);
         if (res.data?.isActivated) {
@@ -25,7 +25,7 @@ const CheckStatusPage = () => {
     };
 
     CheckStatus();
-  }, [cardId, navigate]);
+  }, [activationCode, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#05070D] via-[#070B16] to-[#05070D] flex items-center justify-center px-4">

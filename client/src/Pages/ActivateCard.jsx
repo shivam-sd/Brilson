@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { FiCreditCard, FiArrowRight } from "react-icons/fi";
 import axios from "axios";
@@ -10,141 +10,109 @@ const ActivateCard = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
-  const [scanner, setScanner] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const scannerRef = useRef(null);
+
+  const [form, setForm] = useState({
+    activationCode: "",
+  });
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    setIsLoggedIn(!!storedToken);
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
   }, []);
 
+  /* QR SCANNER - Fixed with useRef */
   useEffect(() => {
-    // Load QR scanner only when showScanner is true
-    if (showScanner) {
-      const loadScanner = async () => {
-        try {
-          const { Html5QrcodeScanner } = await import("html5-qrcode");
-          
-          const qrScanner = new Html5QrcodeScanner(
-            "reader",
-            {
-              fps: 10,
-              qrbox: { width: 250, height: 250 },
-              supportedScanTypes: []
-            },
-            false
-          );
+    if (!showScanner) return;
 
-          setScanner(qrScanner);
+    const loadScanner = async () => {
+      try {
+        const { Html5QrcodeScanner } = await import("html5-qrcode");
 
-          qrScanner.render(
-            (decodedText) => {
-              console.log("QR decoded text:", decodedText);
-              
-              // Parse card ID and activation code from QR
-              try {
-                // Assuming QR contains JSON like {"cardId":"123","activationCode":"456"}
-                const qrData = JSON.parse(decodedText);
-                if (qrData.cardId && qrData.activationCode) {
-                  setForm({
-                    cardId: qrData.cardId,
-                    activationCode: qrData.activationCode
-                  });
-                  toast.success("QR scanned successfully!");
-                } else {
-                  // Or if it's in format "cardId:activationCode"
-                  const parts = decodedText.split(':');
-                  if (parts.length === 2) {
-                    setForm({
-                      cardId: parts[0].trim(),
-                      activationCode: parts[1].trim()
-                    });
-                    toast.success("QR scanned successfully!");
-                  }
-                }
-              } catch (error) {
-                // If not JSON, treat as raw data
-                toast.info("QR scanned. Please check if data is correct.");
-              }
-              
-              setShowScanner(false);
-              if (scanner) {
-                scanner.clear();
-              }
-            },
-            (error) => {
-              console.log("QR Scan Error:", error);
-            }
-          );
-        } catch (error) {
-          console.error("Failed to load QR scanner:", error);
-          toast.error("Failed to load QR scanner");
-        }
-      };
+        scannerRef.current = new Html5QrcodeScanner(
+          "reader",
+          { 
+            fps: 10, 
+            qrbox: 250,
+            rememberLastUsedCamera: true,
+            showTorchButtonIfSupported: true,
+            showZoomSliderIfSupported: true
+          },
+          false
+        );
 
-      loadScanner();
-    }
+        scannerRef.current.render(
+          (decodedText) => {
+            setForm({ activationCode: decodedText.trim() });
+            toast.success("Activation code scanned!");
+            setShowScanner(false);
+            scannerRef.current?.clear();
+            scannerRef.current = null;
+          },
+          (error) => {
+            // Optional: Handle scanning errors quietly
+            console.log("QR scanning error:", error);
+          }
+        );
+      } catch (err) {
+        console.error("Failed to load QR scanner:", err);
+        toast.error("QR scanner failed to load");
+        setShowScanner(false);
+      }
+    };
 
-    // Cleanup scanner when component unmounts or scanner closes
+    loadScanner();
+
     return () => {
-      if (scanner) {
-        scanner.clear();
+      if (scannerRef.current) {
+        try {
+          scannerRef.current.clear();
+        } catch (e) {
+          console.log("Error clearing scanner:", e);
+        }
+        scannerRef.current = null;
       }
     };
   }, [showScanner]);
 
-  const [form, setForm] = useState({
-    cardId: "",
-    activationCode: "",
-  });
-
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (e) => {
-    setForm((prev) => ({
+  /* Form Input Handler - Now trims only on submit */
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setForm(prev => ({
       ...prev,
-      [e.target.name]: e.target.value.trim(),
+      [name]: value
     }));
   };
 
+  /* ACTIVATE */
   const handleActivate = async () => {
-    if (!form.cardId || !form.activationCode) {
-      toast.error("Card ID and Activation Code are required");
+    const trimmedCode = form.activationCode.trim();
+    
+    if (!trimmedCode) {
+      toast.error("Activation Code is required");
       return;
     }
 
     if (!isLoggedIn) {
-      toast.error("Please login first to activate card");
+      toast.error("Please login first");
       navigate("/login");
       return;
     }
-
-    if (loading) return;
 
     try {
       setLoading(true);
 
       const token = localStorage.getItem("token");
-      if (!token) {
-        toast.error("Session expired. Please login again.");
-        navigate("/login");
-        return;
-      }
 
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/card/activate`,
+        { activationCode: trimmedCode },
         {
-          cardId: form.cardId,
-          activationCode: form.activationCode,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         }
       );
-
-      console.log("ACTIVATE RESPONSE ", res);
 
       const slug =
         res?.data?.slug ||
@@ -152,115 +120,92 @@ const ActivateCard = () => {
         res?.data?.data?.slug;
 
       if (!slug) {
-        toast.error("Profile slug not found. Please try again.");
+        toast.error("Profile not found");
         return;
       }
 
       toast.success("Card activated successfully");
-
-      setTimeout(() => {
-        navigate(`/profile/${slug}`);
-      }, 300);
+      navigate(`/profile/${slug}`);
     } catch (err) {
-      console.error("Activate Card Error:", err);
+      console.error("Activation error:", err);
 
       if (err.response?.status === 401) {
-        toast.error("Session expired. Please login again.");
         localStorage.removeItem("token");
+        toast.error("Session expired. Please login again.");
         navigate("/login");
         return;
       }
 
       toast.error(
-        err?.response?.data?.error ||
         err?.response?.data?.message ||
-        "Unable to activate card. Please check details."
+        "Invalid activation code"
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleScanner = () => {
-    if (!showScanner) {
-      setShowScanner(true);
-    } else {
-      setShowScanner(false);
-      if (scanner) {
-        scanner.clear();
-      }
+  /* Enter key support */
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !loading && isLoggedIn && form.activationCode.trim()) {
+      handleActivate();
     }
   };
 
+  /* Check if activation button should be enabled */
+  const isActivateButtonEnabled =  form.activationCode.trim().length > 0 && !loading;
+
   return (
-    <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center px-4">
       <motion.div
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="w-full max-w-md bg-[#111827] border border-gray-800 rounded-3xl p-8 shadow-2xl"
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md bg-[#111827] border border-gray-800 rounded-3xl p-8"
       >
-        {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-indigo-600/20 flex items-center justify-center text-indigo-400">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-indigo-600/20 flex items-center justify-center text-indigo-400">
             <FiCreditCard size={26} />
           </div>
-
-          <h2 className="text-3xl font-semibold text-white">
+          <h2 className="text-2xl text-white font-semibold">
             Activate Your Card
           </h2>
-
-          <p className="text-sm text-gray-400 mt-2">
-            Unlock your Brilson digital profile
+          <p className="text-sm text-gray-400 mt-1">
+            Enter your activation code
           </p>
         </div>
 
-        {/* Card ID */}
-        <div className="mb-5">
-          <label className="text-sm text-gray-400 mb-2 block">
-            Card ID
-          </label>
-          <input
-            type="text"
-            name="cardId"
-            placeholder="Enter Card ID"
-            value={form.cardId}
-            onChange={handleChange}
-            className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none transition-colors"
-          />
-        </div>
+        {/* Activation Code Input */}
+        <input
+          type="text"
+          name="activationCode"
+          value={form.activationCode}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Enter activation code"
+          className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+          autoComplete="off"
+          autoFocus
+        />
 
-        {/* Activation Code */}
-        <div className="mb-6">
-          <label className="text-sm text-gray-400 mb-2 block">
-            Activation Code
-          </label>
-          <input
-            type="text"
-            name="activationCode"
-            placeholder="Enter Activation Code"
-            value={form.activationCode}
-            onChange={handleChange}
-            className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none transition-colors"
-          />
-        </div>
-
-        {/* Activate Button */}
+        {/* Activate Button - Now properly enabled/disabled */}
         <button
           onClick={handleActivate}
-          disabled={loading || !isLoggedIn}
-          className={`w-full py-3 rounded-xl text-white font-medium flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-90 duration-300 ${isLoggedIn
-            ? 'bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600'
-            : 'bg-gray-700 cursor-not-allowed'
-            }`}
+          disabled={!isActivateButtonEnabled}
+          className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${
+            isActivateButtonEnabled
+              ? "bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600 transform hover:-translate-y-0.5 active:translate-y-0"
+              : "bg-gray-700 cursor-not-allowed opacity-60"
+          }`}
         >
           {loading ? (
             <>
-              <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
               Activating...
             </>
-          ) : !isLoggedIn ? (
-            "Login Required"
           ) : (
             <>
               Activate Card
@@ -269,43 +214,77 @@ const ActivateCard = () => {
           )}
         </button>
 
-        {/* QR Scanner Section */}
-        <div className="mt-6 lg:hidden flex">
+        {/* QR SCAN Section - Improved */}
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-700"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-[#111827] text-gray-400">Or scan QR code</span>
+            </div>
+          </div>
+
           <button
-            onClick={toggleScanner}
-            className="text-lg flex items-center justify-center w-full px-4 py-3 gap-3 bg-gradient-to-r from-slate-800 to-slate-900 border-2 border-white/40 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-slate-700 hover:to-slate-800 active:scale-95 duration-300 transition-all"
+            onClick={() => setShowScanner(!showScanner)}
+            className="w-full mt-4 py-3 border border-gray-700 rounded-xl flex items-center justify-center gap-2 text-white hover:bg-gray-800/50 transition-all"
           >
-            <MdQrCodeScanner />
-            {showScanner ? "Close Scanner" : "Scan Your Card QR"}
+            <MdQrCodeScanner className="text-lg" />
+            {showScanner ? "Hide QR Scanner" : "Scan QR Code"}
           </button>
 
           {showScanner && (
-            <div className="mt-4 flex justify-center">
-              <div id="reader" className="w-full max-w-xs bg-white p-2 rounded-lg" />
-            </div>
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-4 overflow-hidden"
+            >
+              <div className="text-center text-sm text-gray-400 mb-2">
+                Point your camera at the QR code
+              </div>
+              <div 
+                id="reader" 
+                className="bg-white rounded-xl overflow-hidden p-2 border-2 border-indigo-500/30"
+                style={{ minHeight: "250px" }}
+              ></div>
+              
+              <button
+                onClick={() => {
+                  setShowScanner(false);
+                  if (scannerRef.current) {
+                    scannerRef.current.clear();
+                    scannerRef.current = null;
+                  }
+                }}
+                className="w-full mt-3 py-2 text-sm text-red-400 hover:text-red-300 transition-colors"
+              >
+                Cancel Scanning
+              </button>
+            </motion.div>
           )}
         </div>
 
         {/* Login Prompt */}
-        {isLoggedIn ? <>
-        <div className="text-center mt-2">
-          <p className="text-sm text-gray-400 mb-2">
-              You need to login to activate your card
+        {!isLoggedIn && (
+          <div className="text-center mt-6">
+            <p className="text-sm text-gray-400 mb-2">
+              You need to login first to activate a card
             </p>
-        </div>
-            </>:
-            <>
-            <div className="text-center mt-2">
-
-            <Link
-              to="/login"
-              className="text-cyan-400 hover:text-cyan-300 underline text-sm font-medium"
-              >
+            <Link 
+              to="/login" 
+              className="inline-flex items-center text-cyan-400 hover:text-cyan-300 underline text-sm transition-colors"
+            >
               Click here to login
             </Link>
-                </div>
-                </>
-        }
+          </div>
+        )}
+
+        {/* Debug info (optional - remove in production) */}
+        {/* <div className="mt-4 text-xs text-gray-500">
+          <div>Activation Code Length: {form.activationCode.trim().length}</div>
+          <div>Button Enabled: {isActivateButtonEnabled ? "Yes" : "No"}</div>
+        </div> */}
       </motion.div>
     </div>
   );
