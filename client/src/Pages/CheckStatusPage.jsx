@@ -6,6 +6,7 @@ import axios from "axios";
 const CheckStatusPage = () => {
   const { activationCode } = useParams();
   const navigate = useNavigate();
+          console.log("activation code" , activationCode)
 
   useEffect(() => {
     const CheckStatus = async () => {

@@ -120,7 +120,7 @@ const ManageCards = () => {
       return;
     }
     
-    const qrUrl = `${BASE_PUBLIC_URL}/${activationCode}`;
+    const qrUrl = `${import.meta.env.VITE_DOMAIN}/${activationCode}`;
     const qr = createQR(qrUrl);
     const blob = await qr.getRawData("png");
     const imgUrl = URL.createObjectURL(blob);
