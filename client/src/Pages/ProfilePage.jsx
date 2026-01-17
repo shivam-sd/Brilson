@@ -20,14 +20,15 @@ import {
   FiFacebook,
   FiUsers,
   FiAward,
-  FiZap
+  FiZap,
+  FiGift
 } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
-import { Wallet, QrCode, Sparkles, Crown, Award, Zap, Briefcase, Star, Shield, Clock, Globe, Users, TrendingUp } from "lucide-react";
+import { Wallet, QrCode, Sparkles, Crown, Award, Zap, Briefcase, Star, Shield, Clock, Globe, Users, TrendingUp, Gift } from "lucide-react";
 
 const ProfilePage = () => {
   const { slug } = useParams();
@@ -38,6 +39,7 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [balance, setBalance] = useState(0);
   const [referralCode, setReferralCode] = useState('');
+  const [showReferralTooltip, setShowReferralTooltip] = useState(false);
 
   // Get balance and referral code
   useEffect(() => {
@@ -95,6 +97,7 @@ const ProfilePage = () => {
     if (!referralCode) return;
     navigator.clipboard.writeText(referralCode);
     toast.success("Referral code copied!");
+    setShowReferralTooltip(false);
   };
 
   const handleWhatsApp = () => {
@@ -222,20 +225,6 @@ const ProfilePage = () => {
     </motion.button>
   );
 
-  const StatCard = ({ icon, value, label, color }) => (
-    <div className="p-6 rounded-2xl bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10">
-      <div className="flex items-center gap-4">
-        <div className={`p-3 rounded-xl ${color}`}>
-          {icon}
-        </div>
-        <div>
-          <p className="text-2xl font-bold text-white">{value}</p>
-          <p className="text-sm text-gray-400 mt-1">{label}</p>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <>
       <Toaster 
@@ -273,64 +262,155 @@ const ProfilePage = () => {
                     <div className="w-12 h-12">
                       <img src="/logo2.png" alt="" className="w-10" />
                     </div>
-                    {/* <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full flex items-center justify-center">
-                      <Crown size={10} className="text-black" />
-                    </div> */}
                   </motion.div>
                   
                   <div>
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">Brilson</h2>
-                    {/* <p className="text-xs text-gray-400">Digital Business Solutions</p> */}
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-4">
-                  {showEditButton && id && (
-                    <Link 
-                      to={`/profile/edit/${id}`}
-                      className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all text-sm font-medium cursor-pointer"
-                    >
-                      <FiEdit size={16} /> Edit Profile
-                    </Link>
-                  )}
-                  
-                  <motion.div 
-                    whileHover={{ scale: 1.05 }}
-                    className="relative group"
-                  >
-                    <button className="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-cyan-900/30 to-blue-900/30 border border-cyan-500/30 rounded-lg hover:border-cyan-400/50 transition-all cursor-pointer">
-                      <Wallet className="text-cyan-400" size={18} />
-                      <div className="text-left">
-                        <p className="text-xs text-gray-400">Balance</p>
-                        <p className="font-bold text-lg text-cyan-300">₹{balance}</p>
-                      </div>
-                    </button>
-                    
-                    {referralCode && (
-                      <div className="absolute hidden group-hover:block right-0 top-full mt-2 w-72 p-4 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl border border-white/10 z-50">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Zap className="text-yellow-400" size={16} />
-                          <p className="text-sm font-medium text-white">Referral Program</p>
-                        </div>
-                        <p className="text-xs text-gray-400 mb-2">Share this code to earn rewards</p>
-                        <div className="flex items-center justify-between gap-2">
-                          <code className="flex-1 font-mono font-bold text-cyan-300 bg-white/5 px-3 py-2 rounded-lg">
-                            {referralCode}
-                          </code>
-                          <button
-                            onClick={handleCopyReferralCode}
-                            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/10 transition-colors"
-                          >
-                            <FiCopy size={14} /> Copy
-                          </button>
-                        </div>
-                      </div>
+                  {/* Desktop View Balance */}
+                  <div className="hidden md:flex items-center gap-4">
+                    {showEditButton && id && (
+                      <Link 
+                        to={`/profile/edit/${id}`}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all text-sm font-medium cursor-pointer"
+                      >
+                        <FiEdit size={16} /> Edit Profile
+                      </Link>
                     )}
-                  </motion.div>
+                    
+                    <motion.div 
+                      whileHover={{ scale: 1.05 }}
+                      className="relative group"
+                    >
+                      <button className="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-cyan-900/30 to-blue-900/30 border border-cyan-500/30 rounded-lg hover:border-cyan-400/50 transition-all cursor-pointer">
+                        <Wallet className="text-cyan-400" size={18} />
+                        <div className="text-left">
+                          <p className="text-xs text-gray-400">Balance</p>
+                          <p className="font-bold text-lg text-cyan-300">₹{balance}</p>
+                        </div>
+                      </button>
+                      
+                      {referralCode && (
+                        <div className="absolute hidden group-hover:block right-0 top-full mt-2 w-72 p-4 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl border border-white/10 z-50">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Zap className="text-yellow-400" size={16} />
+                            <p className="text-sm font-medium text-white">Referral Program</p>
+                          </div>
+                          <p className="text-xs text-gray-400 mb-2">Share this code to earn rewards</p>
+                          <div className="flex items-center justify-between gap-2">
+                            <code className="flex-1 font-mono font-bold text-cyan-300 bg-white/5 px-3 py-2 rounded-lg">
+                              {referralCode}
+                            </code>
+                            <button
+                              onClick={handleCopyReferralCode}
+                              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/10 transition-colors"
+                            >
+                              <FiCopy size={14} /> Copy
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  </div>
+                  
+                  {/* Mobile View Balance & Referral */}
+                  <div className="md:hidden flex items-center gap-3">
+                    {showEditButton && id && (
+                      <Link 
+                        to={`/profile/edit/${id}`}
+                        className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all"
+                        title="Edit Profile"
+                      >
+                        <FiEdit size={18} />
+                      </Link>
+                    )}
+                    
+                    <motion.div 
+                      whileHover={{ scale: 1.05 }}
+                      className="relative"
+                    >
+                      <button 
+                        onClick={() => setShowReferralTooltip(!showReferralTooltip)}
+                        className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-cyan-900/30 to-blue-900/30 border border-cyan-500/30 rounded-lg transition-all"
+                      >
+                        <Wallet className="text-cyan-400" size={16} />
+                        <span className="font-bold text-cyan-300 text-sm">₹{balance}</span>
+                      </button>
+                      
+                      {/* Mobile Referral Tooltip */}
+                      {showReferralTooltip && referralCode && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="absolute right-0 top-full mt-2 w-64 p-4 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl border border-white/10 z-50"
+                        >
+                          <div className="flex items-center gap-2 mb-3">
+                            <Zap className="text-yellow-400" size={16} />
+                            <p className="text-sm font-medium text-white">Referral Code</p>
+                            <button
+                              onClick={() => setShowReferralTooltip(false)}
+                              className="ml-auto text-gray-400 hover:text-white"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-400 mb-2">Share to earn rewards</p>
+                          <div className="flex items-center justify-between gap-2">
+                            <code className="flex-1 font-mono font-bold text-cyan-300 bg-white/5 px-3 py-2 rounded-lg text-sm">
+                              {referralCode}
+                            </code>
+                            <button
+                              onClick={handleCopyReferralCode}
+                              className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/10 transition-colors text-sm"
+                            >
+                              <FiCopy size={12} /> Copy
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Referral Code Banner for Mobile */}
+          {referralCode && (
+            <div className="md:hidden mx-4 mt-4">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-r from-yellow-500/10 via-amber-500/10 to-yellow-500/10 border border-yellow-500/30 rounded-2xl p-4 backdrop-blur-sm"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 rounded-lg">
+                      <Gift className="text-yellow-400" size={20} />
+                    </div>
+                    <div>
+                      <p className="font-medium text-white text-sm">Referral Code</p>
+                      <p className="text-xs text-gray-300">Share to earn rewards</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <code className="font-mono font-bold text-yellow-300 bg-white/5 px-3 py-1 rounded-lg text-sm">
+                      {referralCode}
+                    </code>
+                    <button
+                      onClick={handleCopyReferralCode}
+                      className="p-2 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 rounded-lg hover:bg-yellow-500/10 transition-colors"
+                    >
+                      <FiCopy className="text-yellow-400" size={14} />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Main Profile Section */}
@@ -344,6 +424,7 @@ const ProfilePage = () => {
                 >
                   {/* Profile Header */}
                   <div className="relative p-8">
+                    
                     <div className="flex flex-col md:flex-row gap-8 lg:items-start md:items-start items-center">
                       {/* Profile Avatar */}
                       <div className="relative">
@@ -428,6 +509,47 @@ const ProfilePage = () => {
 
               {/* Right Column - Actions */}
               <div className="space-y-8">
+                {/* Referral Code Section - Visible on Desktop and Mobile */}
+                {referralCode && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="hidden bg-gradient-to-br from-yellow-500/10 via-amber-500/10 to-yellow-500/10 backdrop-blur-xl border border-yellow-500/30 rounded-3xl p-6 shadow-2xl"
+                  >
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="p-3 rounded-xl bg-gradient-to-r from-yellow-500/20 to-amber-500/20">
+                        <Gift className="text-yellow-400" size={24} />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-bold text-white">Refer & Earn</h2>
+                        <p className="text-amber-200/80 text-sm">Share your code to earn rewards</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="p-4 bg-gradient-to-r from-yellow-500/5 to-amber-500/5 border border-yellow-500/20 rounded-xl">
+                        <p className="text-sm text-gray-300 mb-2">Your Referral Code</p>
+                        <div className="flex items-center justify-between">
+                          <code className="font-mono font-bold text-2xl text-yellow-300 tracking-wider">
+                            {referralCode}
+                          </code>
+                          <button
+                            onClick={handleCopyReferralCode}
+                            className="p-3 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 rounded-xl hover:bg-yellow-500/10 transition-colors"
+                            title="Copy Code"
+                          >
+                            <FiCopy className="text-yellow-400" size={20} />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <p className="text-sm text-amber-200/70 text-center">
+                        Share this code with friends to earn exclusive rewards!
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* Quick Actions */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -603,10 +725,8 @@ const ProfilePage = () => {
                   </div>
                   <div>
                     <p className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                      {/* 𝕭𝖗𝖎𝖑𝖘𝖔𝖓 */}
                       Brilson
                     </p>
-                    {/* <p className="text-gray-400 text-sm">Premium Digital Solutions</p> */}
                   </div>
                 </div>
                 
