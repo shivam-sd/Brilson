@@ -427,7 +427,7 @@ const ManageCards = () => {
           <thead className="bg-gray-800/50 border-b border-gray-700/50">
             <tr>
               <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
-              <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Card ID</th>
+              {/* <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Card ID</th> */}
               <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
               <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
               <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation</th>
@@ -557,7 +557,7 @@ const ManageCards = () => {
                 <thead className="bg-gray-800/50 border-b border-gray-700/50">
                   <tr>
                     <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[40px]">✓</th>
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[120px]">Card ID</th>
+                    {/* <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[120px]">Card ID</th> */}
                     <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Status</th>
                     <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Owner</th>
                     <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[100px]">Activation</th>

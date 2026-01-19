@@ -100,6 +100,8 @@ const ActivateCard = () => {
       return;
     }
 
+    // console.log(trimmedCode)
+
     try {
       setLoading(true);
 
@@ -137,7 +139,7 @@ const ActivateCard = () => {
       }
 
       toast.error(
-        err?.response?.data?.message ||
+        err?.response?.data?.error ||
         "Invalid activation code"
       );
     } finally {
