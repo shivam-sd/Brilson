@@ -29,6 +29,8 @@ const ConfigRouter = require("./routes/AdminConfig");
 const adminSalesRouter = require("./routes/adminSales.route");
 const invoiceRouter = require("./routes/invoice.routes");
 const adminAllInvoicesRouter = require("./routes/adminInvoices.routes");
+const HomepageContentRouter = require("./routes/LandingPage/HomeContent.routes");
+const PowerfulFeaturesRouter = require("./routes/LandingPage/PowerfullFeatures.routes");
 
 // Runtime config
 const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
@@ -87,7 +89,9 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   app.use("/api/admin", adminSalesRouter);
   app.use("/api/invoice", invoiceRouter);
   app.use("/api/admin/invoices", adminAllInvoicesRouter);
-
+  app.use("/api/admin", HomepageContentRouter);
+  app.use("/api/admin", PowerfulFeaturesRouter);
+  
 
   app.get("/", (req, res) => {
     res.status(200).json({ message: "Welcome To Brilson" });

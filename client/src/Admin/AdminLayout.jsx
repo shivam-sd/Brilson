@@ -89,6 +89,12 @@ const AdminLayout = () => {
             <GrDocumentLocked size={20} /> Orders invoices
           </NavLink>
 
+          <NavLink
+            to="/landing/page/content"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <FiSettings size={20} /> Landing Page Content
+          </NavLink>
 
           <NavLink
             to="/setting/config"

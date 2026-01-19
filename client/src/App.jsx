@@ -40,6 +40,9 @@ import GetYourCard from "./Pages/GetYourCard";
 import AdminConfig from "./Admin/AdminConfig";
 import SellingOverview from "./Admin/SellingOverview";
 import AdminInvoices from "./Admin/AdminInvoices";
+import LandingPageContent from "./Admin/LandingPageContent";
+import HomePageContent from "./Admin/LandingPage/HomePageContent";
+import PowerFullFeatures from "./Admin/LandingPage/PowerfullFeatures";
 
 
 
@@ -175,6 +178,10 @@ function App() {
             }
           />
 
+          <Route path="landing/page/content" 
+          element={<ProtectedRoute><LandingPageContent /></ProtectedRoute>}
+          />
+
           <Route
             path="setting/config"
             element={
@@ -203,6 +210,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+{/* landing Page */}
+
+<Route path="/admin/landing/hero" 
+element={<ProtectedRoute><HomePageContent /></ProtectedRoute>}
+ />
+<Route path="/admin/landing/features" 
+element={<ProtectedRoute><PowerFullFeatures /></ProtectedRoute>}
+ />
+
 
           {/* error Page */}
           <Route path="*" element={<ErrorPage />} />

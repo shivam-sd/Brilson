@@ -10,6 +10,34 @@ import {
   FiBarChart2,
   FiLayout,
 } from "react-icons/fi";
+import { useState } from "react";
+import { useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+
+
+
+const PowerFullFeatures = () => {
+
+const [feature, setFeature] = useState([]);
+const [subHeading, SetsubHeading] = useState('');
+
+useEffect(() => {
+  const fetchPowerFullFeatureData = async () => {
+    try{
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/powerfull/features`);
+      const data = res.data.data;
+      SetsubHeading(data.subHeading);
+      setFeature(data.features);
+      console.log(res.data.data);
+    }catch(err){
+      toast.error(err.response?.data.error || "Internal Issue Fetch PowerFull Data!")
+    }
+  }
+  fetchPowerFullFeatureData();
+},[]);
+
 
 const features = [
   {
@@ -54,7 +82,6 @@ const features = [
   },
 ];
 
-const PowerFullFeatures = () => {
   return (
     <section className="relative w-full lg:py-16 bg-[#0b0f12] text-white overflow-hidden">
 
@@ -68,7 +95,7 @@ const PowerFullFeatures = () => {
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center text-4xl md:text-5xl font-extrabold"
+          className="text-center text-4xl md:text-5xl font-extrabold mt-6"
         >
           Powerful <span className="text-yellow-400">Features</span>
         </motion.h2>
@@ -80,13 +107,14 @@ const PowerFullFeatures = () => {
           transition={{ delay: 0.2 }}
           className="text-center text-gray-400 mt-4 max-w-2xl mx-auto"
         >
-          Everything you need to make lasting impressions and grow your network effortlessly.
+          {subHeading}
+          {/* Everything you need to make lasting impressions and grow your network effortlessly. */}
         </motion.p>
 
         {/* Features Grid */}
         <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 
-          {features.map((item, index) => (
+          {feature.map((item, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 10 }}
@@ -98,7 +126,7 @@ const PowerFullFeatures = () => {
               duration-300 hover:-translate-y-3 group cursor-pointer"
             >
               {/* Icon */}
-              <div className="mb-5">{item.icon}</div>
+              <img src={item.image} alt="" className="mb-5 w-10" />
 
               {/* Title */}
               <h3 className="text-xl font-semibold group-hover:text-cyan-400 duration-300">
@@ -107,7 +135,7 @@ const PowerFullFeatures = () => {
 
               {/* Description */}
               <p className="text-gray-400 text-sm mt-3 leading-relaxed">
-                {item.desc}
+                {item.description}
               </p>
             </motion.div>
           ))}

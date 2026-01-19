@@ -9,10 +9,35 @@ import {
   Globe
 } from "lucide-react";
 import CardUI from "./CardUI";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 
 const HeroSection = () => {
 
+  const [homePageContent, setHomePageContentData] = useState('');
+  const [heroSectionFeatures, setHeroSectionFeatures] = useState([]);
+
+
+useEffect(() => {
+  const fetchHomePageContent = async () => {
+    try{
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/home/content`);
+
+      const data = res.data.data;
+      console.log(data)
+      setHomePageContentData(data.heroSection);
+      setHeroSectionFeatures(data.features.items);
+
+    }catch(err){
+      toast.error(err.response?.data?.error || "Home Page Data fetching Error");
+    }
+  }
+
+  fetchHomePageContent();
+
+},[]);
 
 
   return (
@@ -56,10 +81,11 @@ const HeroSection = () => {
           <div className="flex items-center gap-3 px-6 py-2 rounded-full bg-cyan-500/10 border border-cyan-400/30 backdrop-blur-xl">
             <Sparkles className="w-4 h-4 text-cyan-300 animate-pulse" />
             <span className="text-cyan-200 text-sm tracking-widest font-semibold">
-              FUTURE OF NETWORKING
+              {homePageContent.badgeText}
             </span>
           </div>
         </motion.div>
+        {/* FUTURE OF NETWORKING */}
 
         {/* Heading */}
         <motion.h1
@@ -69,11 +95,13 @@ const HeroSection = () => {
           className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-6"
         >
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-white">
-            Your Identity
+            {homePageContent.headingAccent}
+            {/* Your Identity */}
           </span>
           <br />
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
-            Digitally Elevated
+            {homePageContent.headingPrimary}
+            {/* Digitally Elevated */}
           </span>
         </motion.h1>
 
@@ -84,8 +112,14 @@ const HeroSection = () => {
           transition={{ delay: 0.3 }}
           className="text-gray-300 max-w-3xl mx-auto text-lg sm:text-xl mb-12"
         >
-          Smart NFC & QR cards for modern professionals.  
-          <span className="text-cyan-300 font-semibold"> Tap once. Connect forever.</span>
+          {homePageContent.subHeading
+}
+          {/* Smart NFC & QR cards for modern professionals.   */}
+          <span className="text-cyan-300 font-semibold"> 
+            {homePageContent.Highlight
+}
+            {/* Tap once. Connect forever. */}
+            </span>
         </motion.p>
 
         {/* Card */}
@@ -124,22 +158,20 @@ const HeroSection = () => {
 
         {/* Features */}
         <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-12">
-          {[
-            { icon: Shield, title: "Secure", desc: "Encrypted data" },
-            { icon: Zap, title: "Instant", desc: "Tap & share" },
-            { icon: Globe, title: "Global", desc: "Works everywhere" }
-          ].map((f, i) => (
+          {
+            heroSectionFeatures.map((f, i) => (
             <div
               key={i}
               className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/40 transition cursor-pointer hover:scale-105 duration-500"
             >
-              <f.icon className="text-cyan-400" />
+              <img src={f.image} alt="" className="w-10" />
               <div className="text-left">
                 <div className="font-semibold">{f.title}</div>
-                <div className="text-sm text-gray-400">{f.desc}</div>
+                <div className="text-sm text-gray-400">{f.description}</div>
               </div>
             </div>
-          ))}
+          ))
+          }
         </div>
 
         
