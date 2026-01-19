@@ -71,9 +71,7 @@ const createPowerfulFeatures = async (req, res) => {
 const updatePowerfulFeatures = async (req, res) => {
   try {
     const { subHeading, features } = req.body;
-
     let parsedFeatures = JSON.parse(features || "[]");
-    const images = req.files?.images || [];
 
     const allowedFormats = [
       "image/jpeg",
@@ -85,17 +83,19 @@ const updatePowerfulFeatures = async (req, res) => {
       "image/avif",
     ];
 
-    parsedFeatures = await Promise.all(
+    const updatedFeatures = await Promise.all(
       parsedFeatures.map(async (item, index) => {
         let imageUrl = item.image;
 
-        if (images[index]) {
-          if (!allowedFormats.includes(images[index].mimetype)) {
-            throw new Error("Only image files are allowed");
+        const file = req.files?.[`images[${index}]`];
+
+        if (file) {
+          if (!allowedFormats.includes(file.mimetype)) {
+            throw new Error("Invalid image format");
           }
 
           const upload = await cloudinary.uploader.upload(
-            images[index].tempFilePath,
+            file.tempFilePath || file.path,
             { folder: "brilson/powerful-features" }
           );
 
@@ -112,19 +112,9 @@ const updatePowerfulFeatures = async (req, res) => {
 
     const updated = await PowerfulFeatures.findOneAndUpdate(
       {},
-      {
-        subHeading,
-        features: parsedFeatures,
-      },
-      { new: true }
+      { subHeading, features: updatedFeatures },
+      { new: true, upsert: true }
     );
-
-    if (!updated) {
-      return res.status(404).json({
-        success: false,
-        message: "Powerful features not found",
-      });
-    }
 
     res.json({
       success: true,
@@ -132,13 +122,15 @@ const updatePowerfulFeatures = async (req, res) => {
       data: updated,
     });
   } catch (error) {
-    console.log("Update Powerful Features Error:", error);
+    console.error("Update Error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
+
 
 
    //GET POWERFUL FEATURES
