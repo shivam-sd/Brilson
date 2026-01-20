@@ -43,6 +43,7 @@ import AdminInvoices from "./Admin/AdminInvoices";
 import LandingPageContent from "./Admin/LandingPageContent";
 import HomePageContent from "./Admin/LandingPage/HomePageContent";
 import PowerFullFeatures from "./Admin/LandingPage/PowerfullFeatures";
+import HowToUseAdmin from "./Admin/LandingPage/HowToUseAdmin";
 
 
 
@@ -218,6 +219,9 @@ element={<ProtectedRoute><HomePageContent /></ProtectedRoute>}
  />
 <Route path="/admin/landing/features" 
 element={<ProtectedRoute><PowerFullFeatures /></ProtectedRoute>}
+ />
+<Route path="/admin/landing/howtouse" 
+element={<ProtectedRoute><HowToUseAdmin /></ProtectedRoute>}
  />
 
 

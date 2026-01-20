@@ -31,6 +31,8 @@ const invoiceRouter = require("./routes/invoice.routes");
 const adminAllInvoicesRouter = require("./routes/adminInvoices.routes");
 const HomepageContentRouter = require("./routes/LandingPage/HomeContent.routes");
 const PowerfulFeaturesRouter = require("./routes/LandingPage/PowerfullFeatures.routes");
+const HowToUseRouter = require("./routes/LandingPage/HowtoUse.routes");
+const TestimonialsRouter = require("./routes/LandingPage/Testimonilas.routes");
 
 // Runtime config
 const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
@@ -91,6 +93,8 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   app.use("/api/admin/invoices", adminAllInvoicesRouter);
   app.use("/api/admin", HomepageContentRouter);
   app.use("/api/admin", PowerfulFeaturesRouter);
+  app.use("/api/admin", HowToUseRouter);
+  app.use("/api/admin",  TestimonialsRouter);
   
 
   app.get("/", (req, res) => {

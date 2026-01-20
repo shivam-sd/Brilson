@@ -104,7 +104,7 @@ const PowerfulFeatures = () => {
 
       toast.success("Features updated successfully!");
       setTimeout(() => {
-        navigate("/admin/landing/page/content");
+        navigate("landing/page/content");
       }, 1500);
     } catch (err) {
       console.error(err);

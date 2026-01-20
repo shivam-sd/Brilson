@@ -33,7 +33,7 @@ const sections = [
     title: "How to Use Section",
     description: "Numbers & achievements",
     icon: FaUserCog,
-    route: "/admin/landing/stats",
+    route: "/admin/landing/howtouse",
     gradient: "from-green-500/20 to-teal-500/20"
   },
   {
