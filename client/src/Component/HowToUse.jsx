@@ -41,7 +41,7 @@ const HowToUse = () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/howtouse`);
         const data = res.data.data;
-        console.log("How To Use Data:", data);
+        // console.log("How To Use Data:", data);
         
         setInfo({
           heading: data.heading || "How to Use Smart Card",

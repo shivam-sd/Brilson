@@ -44,6 +44,9 @@ import LandingPageContent from "./Admin/LandingPageContent";
 import HomePageContent from "./Admin/LandingPage/HomePageContent";
 import PowerFullFeatures from "./Admin/LandingPage/PowerfullFeatures";
 import HowToUseAdmin from "./Admin/LandingPage/HowToUseAdmin";
+import Testimonials from "./Admin/LandingPage/Testimonials.Content";
+import TransformNetworkAdmin from "./Admin/LandingPage/TransformNetworkAdmin";
+import FooterAdmin from "./Admin/LandingPage/FooterAdmin";
 
 
 
@@ -222,6 +225,15 @@ element={<ProtectedRoute><PowerFullFeatures /></ProtectedRoute>}
  />
 <Route path="/admin/landing/howtouse" 
 element={<ProtectedRoute><HowToUseAdmin /></ProtectedRoute>}
+ />
+<Route path="/admin/landing/testimonials" 
+element={<ProtectedRoute><Testimonials /></ProtectedRoute>}
+ />
+<Route path="/admin/landing/transform/network" 
+element={<ProtectedRoute><TransformNetworkAdmin /></ProtectedRoute>}
+ />
+<Route path="/admin/landing/footer" 
+element={<ProtectedRoute><FooterAdmin /></ProtectedRoute>}
  />
 
 

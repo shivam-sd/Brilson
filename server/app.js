@@ -33,6 +33,10 @@ const HomepageContentRouter = require("./routes/LandingPage/HomeContent.routes")
 const PowerfulFeaturesRouter = require("./routes/LandingPage/PowerfullFeatures.routes");
 const HowToUseRouter = require("./routes/LandingPage/HowtoUse.routes");
 const TestimonialsRouter = require("./routes/LandingPage/Testimonilas.routes");
+const TransformNetwork = require("./routes/LandingPage/TransformNetwork.route");
+const FooterRouter = require("./routes/LandingPage/Footer.route");
+
+
 
 // Runtime config
 const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
@@ -95,6 +99,9 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   app.use("/api/admin", PowerfulFeaturesRouter);
   app.use("/api/admin", HowToUseRouter);
   app.use("/api/admin",  TestimonialsRouter);
+  app.use("/api/admin", TransformNetwork);
+  app.use("/api/admin", FooterRouter);
+
   
 
   app.get("/", (req, res) => {

@@ -47,14 +47,14 @@ const sections = [
     title: "Ready To Transform Your Network Section",
     description: "Plans & pricing details",
     icon: GiTransform,
-    route: "/admin/landing/pricing",
+    route: "/admin/landing/transform/network",
     gradient: "from-indigo-500/20 to-purple-500/20"
   },
   {
     title: "Footer",
     description: "Frequently asked questions",
     icon: LuPanelsRightBottom,
-    route: "/admin/landing/faq",
+    route: "/admin/landing/footer",
     gradient: "from-rose-500/20 to-pink-500/20"
   }
 ];

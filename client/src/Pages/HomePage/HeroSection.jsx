@@ -26,7 +26,7 @@ useEffect(() => {
       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/home/content`);
 
       const data = res.data.data;
-      console.log(data)
+      // console.log(data)
       setHomePageContentData(data.heroSection);
       setHeroSectionFeatures(data.features.items);
 

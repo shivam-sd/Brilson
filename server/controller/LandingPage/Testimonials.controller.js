@@ -1,97 +1,132 @@
 const TestimonialsModel = require("../../models/LandingPage/Testimonials");
 const cloudinary = require("cloudinary").v2;
 
+/*  CREATE  */
+const createTestimonials = async (req, res) => {
+  try {
+    const { name, rating, review } = req.body;
 
-
-const createTestimonials = async (req,res) => {
-    try{
-        const {name, rating, review} = req.body;
-
-let imgUrl = '';
-const allowedFormats = ["image/jpg", "image/jpeg", "image/png"];
-
-const file = req.files?.image;
-if(file){
-    if(!allowedFormats.includes(file.mimetype)){
-        return res.status(500).json({error:"Only JPG, PNG, JPEG Are alloed"});
+    if (!name || !review) {
+      return res.status(400).json({ message: "Name & Review required" });
     }
-}
 
-const result = await cloudinary.uploader.upload(file.tempFilePath, {
-    folder: "/brilson/testimonials"
-});
+    let imgUrl = "";
 
-imgUrl = result.secure_url;
+    const file = req.files?.image;
+    const allowedFormats = ["image/jpg", "image/jpeg", "image/png", "image/webp"];
 
-const testimonials = await TestimonialsModel.create({
-    name,
-    review,
-    rating,
-    image:imgUrl
-});
+    if (file) {
+      if (!allowedFormats.includes(file.mimetype)) {
+        return res.status(400).json({
+          message: "Only JPG, JPEG, PNG, WEBP allowed",
+        });
+      }
 
+      const upload = await cloudinary.uploader.upload(
+        file.tempFilePath,
+        { folder: "brilson/testimonials" }
+      );
 
-res.status(201).json({message:"Seccess",  testimonials});
-
-    }catch(err){
-        res.status(500).json({error:"Internal Server Error"});
+      imgUrl = upload.secure_url;
     }
-}
 
+    const testimonial = await TestimonialsModel.create({
+      name,
+      review,
+      rating: rating || 5,
+      image: imgUrl,
+    });
 
+    res.status(201).json({
+      success: true,
+      testimonial,
+    });
+  } catch (err) {
+    console.error("Create Testimonial Error:", err);
+    res.status(500).json({ success: false });
+  }
+};
 
-const updateTestimonials = async (req,res) => {
-    try{
-        const {name, rating, review} = req.body;
+/*  UPDATE  */
+const updateTestimonials = async (req, res) => {
+  try {
+    const parsed = JSON.parse(req.body.testimonials || "[]");
 
-let imgUrl = '';
-const allowedFormats = ["image/jpg", "image/jpeg", "image/png"];
+    const allowedFormats = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
-const file = req.files?.image;
-if(file){
-    if(!allowedFormats.includes(file.mimetype)){
-        return res.status(500).json({error:"Only JPG, PNG, JPEG Are alloed"});
-    }
-}
+    const updatedTestimonials = await Promise.all(
+      parsed.map(async (item, index) => {
+        let imageUrl = item.image || "";
 
-const result = await cloudinary.uploader.upload(file.tempFilePath, {
-    folder: "/brilson/testimonials"
-});
+        const file = req.files?.[`image[${index}]`];
 
-imgUrl = result.secure_url;
+        if (file) {
+          if (!allowedFormats.includes(file.mimetype)) {
+            throw new Error("Invalid image format");
+          }
 
-const testimonials = await TestimonialsModel.findOneAndUpdate({},{
-    name,
-    review,
-    rating,
-    image:imgUrl
-}, {new:true});
+          const upload = await cloudinary.uploader.upload(
+            file.tempFilePath,
+            { folder: "brilson/testimonials" }
+          );
 
+          imageUrl = upload.secure_url;
+        }
 
-res.status(200).json({message:"Update Seccess",  testimonials});
+      
+        if (item._id) {
+          return TestimonialsModel.findByIdAndUpdate(
+            item._id,
+            {
+              name: item.name,
+              review: item.review,
+              rating: item.rating,
+              image: imageUrl,
+            },
+            { new: true }
+          );
+        }
 
-    }catch(err){
-        res.status(500).json({error:"Internal Server Error"});
-    }
-}
+        return TestimonialsModel.create({
+          name: item.name,
+          review: item.review,
+          rating: item.rating || 5,
+          image: imageUrl,
+        });
+      })
+    );
 
+    res.status(200).json({
+      success: true,
+      testimonials: updatedTestimonials,
+    });
+  } catch (error) {
+    console.error("Update Testimonials Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
+/*  GET  */
+const getTestimonials = async (req, res) => {
+  try {
+    const testimonials = await TestimonialsModel.find().sort({
+      createdAt: -1,
+    });
 
-const getTestimonials = async (req,res) => {
-    try{
-        const testimonials = await TestimonialsModel.find();
-
-        res.status(200).json({message:"Success", testimonials});
-
-    }catch(err){
-        res.status(500).json({error:"Internal Server error"}); 
-    }
-}
-
-
+    res.status(200).json({
+      success: true,
+      testimonials,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false });
+  }
+};
 
 module.exports = {
-    createTestimonials,
-    updateTestimonials,
-    getTestimonials
-}
+  createTestimonials,
+  updateTestimonials,
+  getTestimonials,
+};
