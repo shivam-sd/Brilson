@@ -22,7 +22,7 @@ const EditProfile = () => {
     city: "",
     website: "",
     linkedin: "",
-    twitter: "",
+    twitter: "" ,
     instagram: "",
   });
 

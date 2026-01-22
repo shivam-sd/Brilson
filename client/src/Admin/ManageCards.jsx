@@ -7,7 +7,7 @@ import QRCodeStyling from "qr-code-styling";
 
 /*  SIR STYLE QR  */
 const createQR = (url) =>
-  new QRCodeStyling({
+  new QRCodeStyling({ 
     width: 300,
     height: 300,
     data: url,
@@ -59,6 +59,7 @@ const ManageCards = () => {
         );
         const allCards = res.data.allCards || [];
         setCards(allCards);
+        console.log(res.data);
         
         // Calculate stats
         const total = allCards.length;
@@ -346,9 +347,10 @@ const ManageCards = () => {
                     <td className="p-3">
                       <StatusBadge active={card.isActivated} />
                     </td>
+
                     <td className="p-3">
-                      <span className={`text-xs ${card.profile?.name ? "text-gray-200" : "text-gray-500"}`}>
-                        {card.profile?.name || "—"}
+                      <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
+                        {card.owner?.name || "—"}
                       </span>
                     </td>
                     <td className="p-3">
@@ -357,7 +359,7 @@ const ManageCards = () => {
                       </div>
                     </td>
                     <td className="p-3 text-gray-400 text-xs">
-                      {new Date(card.createdAt).toLocaleDateString()}
+                      {new Date(card.activatedAt).toLocaleDateString()}
                     </td>
                     <td className="p-3 text-center">
                       <div className="w-12 h-12 bg-white p-1.5 rounded-lg flex items-center justify-center mx-auto">
@@ -469,8 +471,8 @@ const ManageCards = () => {
                       <StatusBadge active={card.isActivated} />
                     </td>
                     <td className="p-3">
-                      <span className={`text-xs ${card.profile?.name ? "text-gray-200" : "text-gray-500"}`}>
-                        {card.profile?.name || "—"}
+                      <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
+                        {card.owner?.name || "—"}
                       </span>
                     </td>
                     <td className="p-3">
@@ -590,8 +592,8 @@ const ManageCards = () => {
                         <StatusBadge active={card.isActivated} />
                       </td>
                       <td className="p-2">
-                        <span className={`text-xs ${card.profile?.name ? "text-gray-200" : "text-gray-500"}`}>
-                          {card.profile?.name || "—"}
+                        <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
+                          {card.owner?.name || "—"}
                         </span>
                       </td>
                       <td className="p-2">
@@ -600,7 +602,7 @@ const ManageCards = () => {
                         </div>
                       </td>
                       <td className="p-2 text-gray-400 text-xs">
-                        {new Date(card.createdAt).toLocaleDateString()}
+                        {new Date(card.activatedAt).toLocaleDateString()}
                       </td>
                       <td className="p-2 text-center">
                         <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mx-auto">

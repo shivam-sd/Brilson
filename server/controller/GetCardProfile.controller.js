@@ -17,13 +17,22 @@ const getCardProfiles = async (req, res) => {
 
 const getAllcardsProfile = async (req, res) => {
   try {
-    const allCards = await CardProfileModel.find().sort({createdAt: -1});
+    const allCards = await CardProfileModel.find().sort({createdAt: -1}).populate({
+       path: "owner",
+        select: "name"
+    });
+
+    // const Owners = await CardProfileModel.find().sort({createdAt: -1})
+
+    // console.log("Owners",Owners);
+
     // const owner = await CardProfileModel.find().populate("owner");
 
     return res.status(200).json({ 
       message: allCards.length > 0 ? "Cards retrieved successfully" : "No cards found",
-      count: allCards.length,
-      allCards
+      count: allCards.length, 
+      allCards,
+      // Owners
       // owner
     });
 

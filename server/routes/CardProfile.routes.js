@@ -9,6 +9,13 @@ const authUserToken = require("../middleware/authUserToken");
 const checkCardStatus = require("../controller/checkCardStatus.controller");
 const markDownloadedOnCard = require("../controller/MarkDownloadedCard.controller");
 
+// ek user ne jitne card activate kiye hai use nikal rhe hai
+
+const {getLoggedInUserCards, getAllUsersWithTheirCards} = require("../controller/GetSingleUserMultipleCard")
+
+
+const authUser = require("../middleware/authUserToken");
+
 
 
 // admin cretae bulk profile cards
@@ -35,6 +42,13 @@ router.get("/check/card/:activationCode", checkCardStatus);
 
 // mark card downloaded or not
 router.patch("/cards/:id/downloaded", markDownloadedOnCard);
+
+
+
+// ek user jitne card activate kiye hai use nikal rhe hai.
+// router.get("/cards/user",authUser, getAllcardsProfile);
+router.get("/cards", getAllUsersWithTheirCards);
+router.get("/cards/user/:userId",authUser, getAllUsersWithTheirCards);
 
 
 module.exports = router;

@@ -11,7 +11,7 @@ const getWalletBalance = async (req, res) => {
         }
 
         return res.status(200).json({
-            Balance: user.rewardBalance || 0, name:user.name, referalCode:user.referralCode
+            Balance: user.rewardBalance || 0, name:user.name, referalCode:user.referralCode, userId
         });
 
     }catch(err){

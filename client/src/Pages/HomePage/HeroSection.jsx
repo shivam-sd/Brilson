@@ -78,12 +78,12 @@ useEffect(() => {
           transition={{ duration: 0.6 }}
           className="flex justify-center mb-8"
         >
-          <div className="flex items-center gap-3 px-6 py-2 rounded-full bg-cyan-500/10 border border-cyan-400/30 backdrop-blur-xl">
+          {/* <div className="flex items-center gap-3 px-6 py-2 rounded-full bg-cyan-500/10 border border-cyan-400/30 backdrop-blur-xl">
             <Sparkles className="w-4 h-4 text-cyan-300 animate-pulse" />
             <span className="text-cyan-200 text-sm tracking-widest font-semibold">
               {homePageContent.badgeText}
             </span>
-          </div>
+          </div> */}
         </motion.div>
         {/* FUTURE OF NETWORKING */}
 

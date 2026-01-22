@@ -43,7 +43,7 @@ const ActivateCardAPi = async (req, res) => {
 
     /*  ACTIVATE CARD */
     card.isActivated = true;
-    card.owner = userId;
+    card.owner = userId; 
     card.activatedAt = new Date();
     card.tempSessionId = generateSlug(activationCode + Date.now());
 
