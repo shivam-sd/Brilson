@@ -164,7 +164,7 @@ useEffect(() => {
               key={i}
               className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/40 transition cursor-pointer hover:scale-105 duration-500"
             >
-              <img src={f.image} alt="" className="w-10" />
+              <img src={f.image} alt="" className="w-10"loading="lazy" />
               <div className="text-left">
                 <div className="font-semibold">{f.title}</div>
                 <div className="text-sm text-gray-400">{f.description}</div>

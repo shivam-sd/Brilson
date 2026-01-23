@@ -195,6 +195,7 @@ const Testimonials = () => {
                             <img
                               src={testimonial.img}
                               alt={testimonial.name}
+                              loading="lazy"
                               className="relative w-14 h-14 rounded-full border-2 border-white/20 object-cover"
                               onError={(e) => {
                                 e.target.onerror = null;

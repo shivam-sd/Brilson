@@ -136,6 +136,7 @@ const HowToUse = () => {
                       src={step.guide}
                       alt={step.title}
                       className="w-full h-auto"
+                      loading="lazy"
                     />
                     <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
                       IMAGE

@@ -92,7 +92,7 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-[#050505]/70 backdrop-blur-xl border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 lg:p-4 md:p-4 p-2 pt-3 flex items-center justify-between">
 
         {/* LOGO */}
         <Link to="/">
@@ -101,7 +101,7 @@ const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-1 text-white text-2xl font-semibold"
           >
-            <img src="/logo2.png" alt="logo" className="w-7" />
+            <img src="/logo2.png" alt="logo" className="w-7" loading="lazy" />
             <span className="text-2xl">RILSON</span>
           </motion.div>
         </Link>

@@ -14,7 +14,7 @@ useEffect(() => {
       const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/transform`);
 
       const data = res.data.data;
-      console.log(res.data.data);
+      // console.log(res.data.data);
       setData(data);
       const features = res.data.data.features;
       setFeatures(features);
@@ -75,7 +75,7 @@ useEffect(() => {
         {
           feature.map((it, i) => {
             return(<>
-        <p className="text-gray-400 text-xs md:text-sm mt-2">
+        <p key={i} className="text-gray-400 text-xs md:text-sm mt-2">
           {
             it
           }

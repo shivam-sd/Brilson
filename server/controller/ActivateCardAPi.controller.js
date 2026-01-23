@@ -25,7 +25,7 @@ const ActivateCardAPi = async (req, res) => {
       });
     }
 
-    /* ALREADY ACTIVATED (BLOCK DUPLICATE) */
+    /* ALREADY ACTIVATED  */
     if (card.isActivated) {
       return res.status(403).json({
         error: "This card is already activated",

@@ -361,7 +361,7 @@ useEffect(() => {
           <div className="sticky top-0 z-50 bg-gradient-to-b from-black/80 via-gray-900/80 to-transparent backdrop-blur-xl border-b border-white/10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 cursor-pointer">
+                <div className="flex items-center gap-1 cursor-pointer px-10">
                   <motion.div 
                     whileHover={{ scale: 1.05 }}
                     className="relative"

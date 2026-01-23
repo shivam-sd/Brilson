@@ -126,7 +126,7 @@ const features = [
               duration-300 hover:-translate-y-3 group cursor-pointer"
             >
               {/* Icon */}
-              <img src={item.image} alt="" className="mb-5 w-10" />
+              <img src={item.image} alt="" className="mb-5 w-10" loading="lazy" />
 
               {/* Title */}
               <h3 className="text-xl font-semibold group-hover:text-cyan-400 duration-300">

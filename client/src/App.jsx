@@ -1,6 +1,6 @@
-import react from "react";
+import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import HomePage from "./HomePage";
+const HomePage = React.lazy(() => import("./HomePage"));
 import HowitWorks from "./Pages/HowitWorks";
 import BestSeller from "./Component/BestSeller";
 import PersonalCard from "./Component/PersonalCards";
@@ -47,6 +47,7 @@ import HowToUseAdmin from "./Admin/LandingPage/HowToUseAdmin";
 import Testimonials from "./Admin/LandingPage/Testimonials.Content";
 import TransformNetworkAdmin from "./Admin/LandingPage/TransformNetworkAdmin";
 import FooterAdmin from "./Admin/LandingPage/FooterAdmin";
+import ReactLenis from "lenis/react";
 
 
 
@@ -54,9 +55,25 @@ function App() {
   return (
     <>
       <div>
-        <Routes>
+          <ReactLenis 
+          root
+          options={{
+            lerp:0.1,
+            duration:1.2,
+            orientation:"vertical",
+            gestureOrientation:"vertical",
+            smoothWheel:true,
+            wheelMultiplier:1,
+            smoothTouch: true,
+            touchMultiplier:2
+          }}
+          >
+            <Routes>
+
           <Route path="/" element={<Master />}>
-            <Route path="/" element={<HomePage />} />
+         
+            <Route path="/" element={ <Suspense fallback={<div className="app-loader"></div>}><HomePage /></Suspense>} />
+            
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/how-it-works" element={<HowitWorks />} />
@@ -100,7 +117,7 @@ function App() {
                   <AdminDashboard />{" "}
                 </ProtectedRoute>
               }
-            />
+              />
             <Route
               path="products/list"
               element={
@@ -116,7 +133,7 @@ function App() {
                   <AdminCustomers />
                 </ProtectedRoute>
               }
-            />
+              />
             <Route
               path="orders/list"
               element={
@@ -124,7 +141,7 @@ function App() {
                   <AdminOrders />
                 </ProtectedRoute>
               }
-            />
+              />
             <Route
               path="manage-cards"
               element={
@@ -132,7 +149,7 @@ function App() {
                   <ManageCards />
                 </ProtectedRoute>
               }
-            />
+              />
 
             <Route
               path="selling-overview"
@@ -141,7 +158,7 @@ function App() {
                   <SellingOverview />
                 </ProtectedRoute>
               }
-            />
+              />
 
 
             <Route
@@ -151,7 +168,7 @@ function App() {
                   <AdminInvoices />
                 </ProtectedRoute>
               }
-            />
+              />
 
 
             {/* <Route path='settings' element={<Settings />} /> */}
@@ -163,7 +180,7 @@ function App() {
                 <BulkCreateCardsModal />
               </ProtectedRoute>
             }
-          />
+            />
           {/* Products Route */}
           <Route
             path="/admin/add/products"
@@ -172,7 +189,7 @@ function App() {
                 <AdminAddProduct />
               </ProtectedRoute>
             }
-          />
+            />
           <Route
             path="/admin/edit/products/:id"
             element={
@@ -180,7 +197,7 @@ function App() {
                 <AdminEditProduct />
               </ProtectedRoute>
             }
-          />
+            />
 
           <Route path="landing/page/content" 
           element={<ProtectedRoute><LandingPageContent /></ProtectedRoute>}
@@ -203,7 +220,7 @@ function App() {
                 <AdminCategories />
               </ProtectedRoute>
             }
-          />
+            />
 
           {/* add dynamic badegs */}
           <Route
@@ -213,33 +230,34 @@ function App() {
                 <AdminBadges />
               </ProtectedRoute>
             }
-          />
+            />
 
 {/* landing Page */}
 
 <Route path="/admin/landing/hero" 
 element={<ProtectedRoute><HomePageContent /></ProtectedRoute>}
- />
+/>
 <Route path="/admin/landing/features" 
 element={<ProtectedRoute><PowerFullFeatures /></ProtectedRoute>}
- />
+/>
 <Route path="/admin/landing/howtouse" 
 element={<ProtectedRoute><HowToUseAdmin /></ProtectedRoute>}
- />
+/>
 <Route path="/admin/landing/testimonials" 
 element={<ProtectedRoute><Testimonials /></ProtectedRoute>}
- />
+/>
 <Route path="/admin/landing/transform/network" 
 element={<ProtectedRoute><TransformNetworkAdmin /></ProtectedRoute>}
- />
+/>
 <Route path="/admin/landing/footer" 
 element={<ProtectedRoute><FooterAdmin /></ProtectedRoute>}
- />
+/>
 
 
           {/* error Page */}
           <Route path="*" element={<ErrorPage />} />
         </Routes>
+</ReactLenis>
       </div>
     </>
   );

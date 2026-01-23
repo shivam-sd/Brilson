@@ -69,8 +69,8 @@ const UserRegister = async (req, res) => {
 
     const isProduction = process.env.NODE_ENV === "production";
 
-    user.activeToken = token;
-    await user.save();
+    // user.activeToken = token;
+    // await user.save();
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -107,11 +107,11 @@ const UserLogin = async (req, res) => {
       return res.status(404).json({ error: "Invalid credentials" });
     }
 
-      if (user.activeToken) {
-      return res.status(403).json({
-        message: "Your account is already logged in on another device"
-      });
-    }
+    //   if (user.activeToken) {
+    //   return res.status(403).json({
+    //     message: "Your account is already logged in on another device"
+    //   });
+    // }
 
     const matchPassword = await bcrypt.compare(password, user.password);
     if (!matchPassword) {
@@ -120,7 +120,7 @@ const UserLogin = async (req, res) => {
 
     const token = generateToken(user._id);
 
-    user.activeToken = token;
+    // user.activeToken = token;
     await user.save();
 
     const isProduction = process.env.NODE_ENV === "production";
@@ -192,8 +192,8 @@ const userlogout = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.activeToken = null;
-    await user.save();
+    // user.activeToken = null;
+    // await user.save();
 
     const isProduction = process.env.NODE_ENV === "production";
 

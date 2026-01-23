@@ -19,3 +19,15 @@
   }
 }
 
+
+
+  * {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+
+.app-loader {
+  min-height: 100%;
+  -webkit-overflow-scrolling:touch;
+}
