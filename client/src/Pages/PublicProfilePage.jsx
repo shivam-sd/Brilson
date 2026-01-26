@@ -277,8 +277,8 @@ const PublicProfilePage = () => {
                       className="relative"
                     >
                       <div className="w-12 h-12 flex items-center justify-center">
-                        <img src="/logo2.png" alt="" className="w-8" />
-                        <h2 className="text-2xl">RILSON</h2>
+                        <img src="/logo2.png" alt="" className="w-7" />
+                        <h2 className="text-3xl">RILSON</h2>
                       </div>
                     </motion.div>
 

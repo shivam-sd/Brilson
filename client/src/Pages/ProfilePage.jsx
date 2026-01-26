@@ -367,9 +367,9 @@ useEffect(() => {
                     className="relative"
                   >
                     <div className="w-10 h-10 flex items-center justify-center">
-                      <img src="/logo2.png" alt="" className="w-8" />
+                      <img src="/logo2.png" alt="" className="w-6" />
                   
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">RILSON</h2>
+                    <h2 className="text-3xl font-bold">RILSON</h2>
                     </div>
                 
                   </motion.div>
