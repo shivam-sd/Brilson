@@ -124,7 +124,7 @@ const HowToUse = () => {
                       loop
                       muted
                       playsInline
-                      className="w-full h-auto"
+                      className="w-full h-1/2 lg:h-1/2"
                     />
                     <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
                       VIDEO
@@ -135,7 +135,7 @@ const HowToUse = () => {
                     <img
                       src={step.guide}
                       alt={step.title}
-                      className="w-full h-auto"
+                      className="w-full h-1/2"
                       loading="lazy"
                     />
                     <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/70 text-white text-xs rounded">

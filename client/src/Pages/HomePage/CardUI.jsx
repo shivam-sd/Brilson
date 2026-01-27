@@ -57,19 +57,21 @@ const CardShowcase = () => {
       h-[215px] md:h-[260px]
       rounded-3xl
       overflow-hidden
-      shadow-[0_25px_70px_rgba(255,190,80,0.45)]
+      flex items-center justify-center
     ">
       {/* Image that completely covers the card */}
       <img
         src={cards[index]}
         alt="Brilson NFC Card"
         className="
-          w-full
+          lg:w-[800px]
           h-full
           object-cover
           object-center
-          scale-110
-        "
+          lg:scale-150
+          md:scale-150
+          scale-150
+          "
       />
       
       

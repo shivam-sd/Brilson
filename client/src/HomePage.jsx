@@ -11,10 +11,8 @@ const HomePage = () => {
   return (
     <div>
       <HeroSection />
-      {/* <ChooseYourCard /> */}
       <PowerFullFeature />
       <HowToUse />
-      {/* <OurSmartCard /> */}
       <Testimonials />
       <Networking />
     </div>

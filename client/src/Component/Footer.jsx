@@ -39,15 +39,15 @@ setDescription(res.data.data.description);
 
 
   return (
-    <footer className="w-full  bg-transparent shadow-2xl border-t border-white/8 text-gray-300 px-6 md:px-12 py-14">
+    <footer className="w-full bg-black shadow-2xl border-t border-white/8 text-gray-300 px-6 md:px-12 py-14">
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-10 ">
 
         {/* Brand Section */}
         <div className="md:col-span-2 flex flex-col gap-4">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center">
             
-              <img src="./logo2.png" alt="" className="w-7" loading="lazy" />
-            <h2 className="text-2xl font-semibold text-white">RILSON</h2>
+              <img src="./logo2.png" alt="" className="w-6" loading="lazy" />
+            <h2 className="text-3xl font-semibold text-white">RILSON</h2>
           </div>
 
           <p className="text-gray-400 text-sm leading-relaxed">

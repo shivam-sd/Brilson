@@ -99,10 +99,10 @@ const Header = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-1 text-white text-2xl font-semibold"
+            className="flex items-center text-white text-2xl font-semibold"
           >
-            <img src="/logo2.png" alt="logo" className="w-7" loading="lazy" />
-            <span className="text-2xl">RILSON</span>
+            <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" />
+            <span className="text-3xl">RILSON</span>
           </motion.div>
         </Link>
 

@@ -29,7 +29,7 @@ useEffect(() => {
 
 
   return (
-    <div className="w-full bg-black flex justify-center px-5 py-16">
+    <div className="w-full min-h-screen bg-black flex justify-center px-5 py-16">
       <div className="max-w-4xl flex flex-col items-center text-center gap-6">
 
         {/* Offer SIGN */}
