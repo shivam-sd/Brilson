@@ -145,9 +145,8 @@ const PublicProfilePage = () => {
         flex items-center justify-between lg:gap-1 md:gap-1 gap-6
         px-4 py-2
         rounded-xl
-        bg-gradient-to-br from-gray-900/60 to-gray-800/60
         backdrop-blur-xl
-        border border-white/10
+       bg-transparent border-2 border-[#E1C48A]
         hover:border-cyan-400/40
         transition-all duration-300
         "
@@ -310,59 +309,51 @@ const PublicProfilePage = () => {
           </div>
 
 <div className="flex justify-center w-full">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gradient-to-r from-[#111111] to-[#0D0D0D]">
             {/* Main Profile Section */}
-            <div className="grid grid-cols-1 gap-8">
+            <div className="grid grid-cols-1 gap-8 ">
               {/* Left Column - Profile Info */}
-              <div className="lg:col-span-2">
+              <div className="lg:col-span-2 ">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
+                  className="bg-gradient-to-r from-[#111111] to-[#0D0D0D]backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
                 >
                   {/* Profile Header */}
                   <div className="relative p-8">
                     <div className="flex flex-col md:flex-row gap-8 lg:items-start md:items-start items-center">
                       {/* Profile Avatar */}
                       <div className="relative">
-                        <div className="relative w-36 h-36 rounded-2xl overflow-hidden border-4 border-gray-800 shadow-2xl">
-                          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-600"></div>
-                          <div className="absolute inset-3 bg-gray-900 rounded-xl flex items-center justify-center">
+                      
+                        <div className="relative w-36 h-36 rounded-full overflow-hidden border-4 border-[#E1C48A] shadow-2xl">
+                            
                             <div className="text-center">
-                              <img
-                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKaiKiPcLJj7ufrj6M2KaPwyCT4lDSFA5oog&s"
-                                className="rounded-lg"
-                                alt=""
-                              />
+                              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKaiKiPcLJj7ufrj6M2KaPwyCT4lDSFA5oog&s" className="overflow-hidden rounded-lg" alt="" />
                             </div>
                           </div>
-                        </div>
+                      
                       </div>
+
 
                       {/* Profile Details */}
                       <div className="flex-1">
                         <div className="mb-6">
-                          <h2 className="text-4xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent mb-3">
+                          <h2 className="text-4xl font-bold text-[#C9A86A] mb-3">
                             {profileData.name}
                           </h2>
 
                           {profileData.bio && (
                             <div className="flex flex-wrap items-center gap-3 mb-4">
-                              <div className="px-4 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-full">
+                              <div className="px-4 py-2 border border-cyan-500/30 rounded-full">
                                 <p className="text-cyan-300 font-medium">
                                   {profileData.bio}
                                 </p>
                               </div>
-                              {profileData.city && (
-                                <div className="flex items-center gap-2 text-gray-400">
-                                  <FiMapPin size={16} />
-                                  <span>{profileData.city}</span>
-                                </div>
-                              )}
+                              
                             </div>
                           )}
 
-                          <p className="text-gray-300 leading-relaxed text-lg">
+                          <p className="text-[#E5E5E5] leading-relaxed text-lg">
                             {profileData.about}
                           </p>
                         </div>
@@ -375,7 +366,7 @@ const PublicProfilePage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-lg p-4 shadow-2xl mb-4"
+                    className="backdrop-blur-xl rounded-lg p-4 shadow-2xl mb-4"
                   >
                     {/* <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
     <div className="p-2 rounded-lg bg-gradient-to-r from-amber-500/20 to-yellow-500/20">
@@ -390,7 +381,7 @@ const PublicProfilePage = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => copyText(profileData.phone)}
-                        className="flex items-center justify-center gap-2 lg:p-3 md:p-3 cursor-pointer bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-cyan-500/30"
+                        className="flex items-center justify-center gap-2 lg:p-3 md:p-3 cursor-pointer hover:from-cyan-700 hover:to-blue-700 text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-cyan-500/30 bg-transparent border-2 border-[#E1C48A]"
                       >
                         <FiSmartphone size={22} />
                         <span className="text-sm font-medium">Call Now</span>
@@ -401,7 +392,7 @@ const PublicProfilePage = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={handleWhatsApp}
-                        className="flex items-center justify-center gap-2 lg:p-3 md:p-3 p-2 cursor-pointer bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-green-500/30"
+                        className="flex items-center justify-center gap-2 lg:p-3 md:p-3 p-2 cursor-pointer hover:from-green-700 hover:to-emerald-700 text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-green-500/30 bg-transparent border-2 border-[#E1C48A]"
                       >
                         <FaWhatsapp size={22} />
                         <span className="text-sm font-medium">WhatsApp</span>
@@ -412,7 +403,7 @@ const PublicProfilePage = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => copyText(profileData.email)}
-                        className="flex items-center justify-center gap-2 lg:p-3 md:p-3 p-2 cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-blue-500/30 "
+                        className="flex items-center justify-center gap-2 lg:p-3 md:p-3 p-2 cursor-pointer hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-blue-500/30 bg-transparent border-2 border-[#E1C48A]"
                       >
                         <FiMail size={22} />
                         <span className="text-sm font-medium">Email</span>
@@ -425,10 +416,9 @@ const PublicProfilePage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl 
-                    border border-white/10 rounded-3xl p-5 shadow-2xl mb-5"
+                    className="backdrop-blur-xl rounded-3xl p-5 shadow-2xl mb-5"
                   >
-                    <h2 className="text-lg sm:text-xl font-bold mb-6 flex items-center gap-3">
+                    <h2 className="text-lg sm:text-xl font-bold mb-6 flex items-center gap-3 text-[#C9A86A]">
                       <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20">
                         <Globe className="text-purple-400" size={18} />
                       </div>
@@ -442,7 +432,7 @@ const PublicProfilePage = () => {
                         label="LinkedIn"
                         url={profileData.linkedin}
                         icon={<FiLinkedin />}
-                        gradient="from-blue-700 to-blue-900"
+                        gradient="bg-transparent border-2 border-[#E1C48A]"
                         />
                       )}
 
@@ -451,7 +441,7 @@ const PublicProfilePage = () => {
                           label="Twitter"
                           url={profileData.twitter}
                           icon={<FiTwitter />}
-                          gradient="from-sky-600 to-blue-800"
+                          gradient="bg-transparent border-2 border-[#E1C48A]"
                           />
                       )}
 
@@ -460,7 +450,7 @@ const PublicProfilePage = () => {
                         label="Instagram"
                         url={profileData.instagram}
                         icon={<FiInstagram />}
-                        gradient="from-purple-600 via-pink-600 to-red-500"
+                        gradient="bg-transparent border-2 border-[#E1C48A]"
                         />
                       )}
 
@@ -469,16 +459,16 @@ const PublicProfilePage = () => {
                         label="Website"
                         url={profileData.website}
                         icon={<CgWebsite />}
-                        gradient="from-blue-800 to-blue-900"
+                        gradient="bg-transparent border-2 border-[#E1C48A]"
                         />
                       )}
                     </div>
                   </motion.div>
 
                 {/* Contact Information */}
-                                  <div className="p-8 pt-0">
+                                  <div className="p-5 pt-0">
                                     <div className="mb-8">
-                                      <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                                      <h2 className="text-lg sm:text-xl font-bold mb-6 flex items-center gap-3 text-[#C9A86A]">
                                         <div className="p-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-blue-500/20">
                                           <FiUser className="text-cyan-400" size={20} />
                                         </div>
@@ -513,12 +503,12 @@ const PublicProfilePage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="mt-8 flex items-center justify-center bg-gradient-to-br from-cyan-900/10 via-blue-900/10 to-purple-900/10 backdrop-blur-xl rounded-3xl overflow-hidden"
+              className="mt-4 flex items-center justify-center backdrop-blur-xl rounded-3xl overflow-hidden"
               >
 
 
                   <div className="relative">
-                    <div className="w-64 h-64 p-6 bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl rounded-2xl border-2 border-cyan-500/30 flex items-center justify-center shadow-2xl">
+                    <div className="lg:w-40 lg:h-40 w-20 h-20 bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl rounded-2xl border-2 border-cyan-500/30 flex items-center justify-center shadow-2xl">
                     <QrCode className="text-cyan-400" size={240} />
                       
                     </div>

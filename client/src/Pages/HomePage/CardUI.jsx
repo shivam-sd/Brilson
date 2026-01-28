@@ -63,6 +63,7 @@ const CardShowcase = () => {
       <img
         src={cards[index]}
         alt="Brilson NFC Card"
+        loading="lazy"
         className="
           lg:w-[800px]
           h-full

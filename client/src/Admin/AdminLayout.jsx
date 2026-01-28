@@ -31,7 +31,7 @@ const AdminLayout = () => {
       </div>
 
       {/* SIDEBAR FOR DESKTOP */}
-      <aside className="w-72 bg-[#151822] border-r border-white/10 px-6 py-10 hidden md:flex flex-col">
+      <aside className="relative z-50 w-72 bg-[#151822] border-r border-white/10 px-6 py-10 hidden md:flex flex-col">
         <h2 className="text-4xl font-extrabold tracking-wide mb-10">
           Brilson <span className="text-cyan-400">Admin</span>
         </h2>
@@ -90,14 +90,14 @@ const AdminLayout = () => {
           </NavLink>
 
           <NavLink
-            to="/landing/page/content"
+            to="landing/page/content"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <FiSettings size={20} /> Landing Page Content
           </NavLink>
 
           <NavLink
-            to="/setting/config"
+            to="setting/config"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <FiSettings size={20} /> Settings
