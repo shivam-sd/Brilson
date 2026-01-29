@@ -178,7 +178,7 @@ const getMyActiveCard = async (req, res) => {
   res.json({
     hasCard: true,
     slug: card.slug,
-    cardId: card.cardId,
+    userId: userId,
   });
 };
 

@@ -1,19 +1,87 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { FaUser } from "react-icons/fa";
 import { FaRegUserCircle } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown, IoMdArrowDropdownCircle, IoMdArrowDroprightCircle } from "react-icons/io";
 import axios from "axios";
+import { Briefcase, ChevronDown, ChevronUp, Eye, Pencil } from "lucide-react"
+import { IoArrowForwardCircle } from "react-icons/io5";
+
+import UserAllCards from "./UserAllCards";
 
 const Header = () => {
   const [cartCount, setCartCount] = useState(0);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [myCardProfile, setMyCardProfile] = useState(null);
   const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
+    const [userId, setUserId] = useState(null);
+  const [cards, setCards] = useState([]);
+  const [showAllCards, setShowAllCards] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const isLoggedIn = !!token;
+
+
+
+  // all cards user ka 
+
+useEffect(() => {
+  if (!userId) return;
+
+  const UserAllCards = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/cards/user/${userId}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const data = res.data?.data || [];
+
+      console.log("ALL DATA:", data);
+
+      // filter cards of single user
+      const singleUser = data.filter((it) => {
+        return it.userId === userId;
+      });
+
+      console.log("single USer", singleUser)
+
+      const UserCardObj = singleUser[0];
+  
+      console.log("User OBj",UserCardObj);
+
+      if (UserCardObj?.cards?.length > 0) {
+        setCards(UserCardObj.cards);
+        console.log("cards",UserCardObj.cards);
+      } else {
+        setCards([]);
+      }
+
+    } catch (err) {
+      console.error(err);
+      setCards([]);
+    }
+  };
+
+  UserAllCards();
+}, [userId]); 
+
+
+
+
+
+
+
+
+
+
 
   /* CART COUNT */
   const getCartCount = async () => {
@@ -47,6 +115,8 @@ const Header = () => {
         }
       );
       setMyCardProfile(res.data?.hasCard ? res.data : null);
+      setUserId(res.data.userId);
+      // console.log(res)
     } catch {
       setMyCardProfile(null);
     }
@@ -142,15 +212,49 @@ const Header = () => {
 
               {/* DESKTOP DROPDOWN */}
               <div className="absolute top-12 right-0 bg-gray-900 border border-white/20 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all min-w-[160px]">
-                <div className="flex flex-col p-2 gap-1">
+                <div className="flex flex-col p-2 gap-1 relative">
 
                   {myCardProfile ? (
-                    <Link
-                      to={`/profile/${myCardProfile.slug}`}
-                      className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
-                    >
-                      My Profile
-                    </Link>
+                    // <Link
+                    //   to={`/profile/${myCardProfile.slug}`}
+                    //   className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
+                    // >
+                    //   My Profile
+                    // </Link>
+                    <>
+                    <button
+    onClick={() => setOpen(prev => !prev)}
+    className="w-full flex items-center justify-between px-4 py-3 
+               rounded-xl bg-gray-900/70 border border-white/10 
+               text-gray-300 hover:text-white transition-all cursor-pointer"
+  >
+    <span className="font-medium">My Profiles</span>
+    {open ? (
+      <IoArrowForwardCircle size={20} />
+    ) : (
+      <IoMdArrowDropdownCircle size={20} />
+    )}
+  </button>
+
+  {/* Dropdown (Mobile) */}
+  <AnimatePresence>
+    {open && (
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: "auto" }}
+        exit={{ opacity: 0, height: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mt-3 w-48"
+      >
+        <UserAllCards
+          cards={cards}
+          showAllCards={showAllCards}
+          setShowAllCards={setShowAllCards}
+        />
+      </motion.div>
+    )}
+  </AnimatePresence>
+</>
                   ) : (
                     <button
                       onClick={() =>
@@ -162,15 +266,15 @@ const Header = () => {
                     </button>
                   )}
 
-                  <Link to="/orders" className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white">
-                    My Orders
+                  <Link to="/orders" className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white flex items-center ">
+                    <span>My Orders</span>
                   </Link>
 
                   <button
                     onClick={handleLogout}
-                    className="px-3 py-2 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white"
+                    className="px-3 py-1 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white flex items-center"
                   >
-                    Logout
+                    <span>Logout</span>
                   </button>
 
                 </div>
@@ -215,13 +319,51 @@ const Header = () => {
                   <div className="flex flex-col p-2 gap-1">
 
                     {myCardProfile ? (
-                      <Link
-                        to={`/profile/${myCardProfile.slug}`}
-                        onClick={() => setMobileProfileOpen(false)}
-                        className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
-                      >
-                        My Profile
-                      </Link>
+                      // <Link
+                      //   to={`/profile/${myCardProfile.slug}`}
+                      //   onClick={() => setMobileProfileOpen(false)}
+                      //   className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
+                      // >
+                      //   My Profile
+                      // </Link>
+
+<>
+                      <button
+    onClick={() => setOpen(prev => !prev)}
+    className="w-full flex items-center justify-between px-4 py-3 
+               rounded-xl bg-gray-900/70 border border-white/10 
+               text-gray-300 hover:text-white transition-all"
+  >
+    <span className="font-medium">My Profiles</span>
+    {open ? (
+      <IoArrowForwardCircle size={20} />
+    ) : (
+      <IoMdArrowDropdownCircle size={20} />
+    )}
+  </button>
+
+  {/* Dropdown (Mobile) */}
+  <AnimatePresence>
+    {open && (
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: "auto"}}
+        exit={{ opacity: 0, height: 0 }}
+        transition={{ duration: 0.3 }}
+        className="mt-3 w-48"
+      >
+        <UserAllCards
+          cards={cards}
+          showAllCards={showAllCards}
+          setShowAllCards={setShowAllCards}
+        />
+      </motion.div>
+    )}
+  </AnimatePresence>
+</>
+
+
+
                     ) : (
                       <button
                         onClick={() => {

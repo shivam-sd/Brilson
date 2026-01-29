@@ -218,7 +218,7 @@ useEffect(() => {
   const profileData = {
     name: profile?.name || "Full Name",
     email: profile?.email || "name@gmail.com",
-    phone: profile?.phone || "+91 98765 43210",
+    phone: profile?.phone || "",
     bio: profile?.bio || "Founder, Google",
     about: profile?.about || "Passionate about crafting timeless fashion and smart tech solutions that make everyday life better.",
     city: profile?.city || "Mumbai, India",
@@ -447,18 +447,18 @@ useEffect(() => {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button 
-                    onClick={() => window.open(`/card/${card.slug || card._id}`, '_blank')}
+                  <Link 
+                    to={`/profile/${card.activationCode}`}
                     className="p-2 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 transition-colors"
                     >
                     <Eye className="text-blue-400" size={16} />
-                  </button>
-                  <button 
-                    onClick={() => window.open(`/edit/${card._id}`, '_blank')}
+                  </Link>
+                  <Link
+                  to={`/profile/edit/${card.activationCode}`}
                     className="p-2 rounded-lg bg-yellow-500/20 hover:bg-yellow-500/40 transition-colors"
                     >
                     <Pencil className="text-yellow-400" size={16} />
-                  </button>
+                  </Link>
                 </div>
               </div>
             </motion.div>

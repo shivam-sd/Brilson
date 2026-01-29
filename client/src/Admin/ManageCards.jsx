@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FiPlus, FiAlertCircle } from "react-icons/fi";
+import { FiPlus, FiAlertCircle, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiSearch } from "react-icons/fi";
 import { FaDownload, FaEye } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -44,63 +44,125 @@ const ManageCards = () => {
     inactive: 0
   });
   const [qrImages, setQrImages] = useState({});
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCards, setTotalCards] = useState(0);
+  const [limit] = useState(40); // Items per page
+  
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
-  /*  FETCH  */
+  /*  FETCH WITH PAGINATION & SEARCH  */
+  const fetchCards = async (page = 1, search = "") => {
+    try {
+      setLoading(true);
+      setIsSearching(!!search);
+      
+      const url = `${import.meta.env.VITE_BASE_URL}/api/all/cards?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+      
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+        },
+      });
+      
+      const allCards = res.data.allCards || [];
+      setCards(allCards);
+      
+      // Set pagination data
+      setTotalCards(res.data.totalCards || 0);
+      setTotalPages(res.data.totalPages || 1);
+      setCurrentPage(res.data.page || 1);
+      
+      // Calculate stats
+      const total = res.data.totalCards || 0;
+      const activated = allCards.filter(card => card.isActivated).length;
+      const inactive = allCards.length - activated;
+      
+      setStats({ total, activated, inactive });
+
+      // Generate QR images for all cards
+      const qrPromises = allCards.map(async (card) => {
+        if (card.qrUrl) {
+          try {
+            const qr = createQR(card.qrUrl);
+            const blob = await qr.getRawData("png");
+            const imageUrl = URL.createObjectURL(blob);
+            return { activationCode: card.activationCode, imageUrl };
+          } catch (err) {
+            console.error(`Error generating QR for ${card.cardId}:`, err);
+            return { activationCode: card.activationCode, imageUrl: null };
+          }
+        }
+        return { activationCode: card.activationCode, imageUrl: null };
+      });
+
+      const qrResults = await Promise.all(qrPromises);
+      const qrMap = {};
+      qrResults.forEach(result => {
+        qrMap[result.activationCode] = result.imageUrl;
+      });
+      setQrImages(qrMap);
+
+    } catch (err) {
+      console.error(err);
+      setError("Unable to fetch cards");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial fetch
   useEffect(() => {
-    const fetchCards = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/all/cards`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-            },
-          }
-        );
-        const allCards = res.data.allCards || [];
-        setCards(allCards);
-        console.log(res.data);
-        
-        // Calculate stats
-        const total = allCards.length;
-        const activated = allCards.filter(card => card.isActivated).length;
-        const inactive = total - activated;
-        
-        setStats({ total, activated, inactive });
-
-        // Generate QR images for all cards
-        const qrPromises = allCards.map(async (card) => {
-          if (card.qrUrl) {
-            try {
-              const qr = createQR(card.qrUrl);
-              const blob = await qr.getRawData("png");
-              const imageUrl = URL.createObjectURL(blob);
-              return { activationCode: card.activationCode, imageUrl };
-            } catch (err) {
-              console.error(`Error generating QR for ${card.cardId}:`, err);
-              return { activationCode: card.activationCode, imageUrl: null };
-            }
-          }
-          return { activationCode: card.activationCode, imageUrl: null };
-        });
-
-        const qrResults = await Promise.all(qrPromises);
-        const qrMap = {};
-        qrResults.forEach(result => {
-          qrMap[result.activationCode] = result.imageUrl;
-        });
-        setQrImages(qrMap);
-
-      } catch (err) {
-        console.error(err);
-        setError("Unable to fetch cards");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCards();
+    fetchCards(currentPage, searchQuery);
   }, []);
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      fetchCards(page, searchQuery);
+    }
+  };
+
+  // Handle search
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    fetchCards(1, searchQuery);
+  };
+
+  // Clear search
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+    fetchCards(1, "");
+  };
+
+  // Generate page numbers
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+    
+    if (totalPages <= maxPagesToShow) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        pageNumbers.push(1, 2, 3, 4, '...', totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pageNumbers.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pageNumbers.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+      }
+    }
+    
+    return pageNumbers;
+  };
 
   /*  GROUP BY DATE  */
   const groupedCards = cards.reduce((acc, card) => {
@@ -197,6 +259,99 @@ const ManageCards = () => {
     </span>
   );
 
+  /*  PAGINATION COMPONENT  */
+  const Pagination = () => (
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-2 py-4 bg-gray-800/30 rounded-lg">
+      <div className="text-sm text-gray-400">
+        Page <span className="font-medium text-gray-300">{currentPage}</span> of{" "}
+        <span className="font-medium text-gray-300">{totalPages}</span> • 
+        Showing <span className="font-medium text-gray-300">{(currentPage - 1) * limit + 1}</span> to{" "}
+        <span className="font-medium text-gray-300">
+          {Math.min(currentPage * limit, totalCards)}
+        </span> of{" "}
+        <span className="font-medium text-gray-300">{totalCards}</span> cards
+        {isSearching && (
+          <span className="ml-2 text-indigo-400">
+            (Search results)
+          </span>
+        )}
+      </div>
+      
+      <div className="flex items-center gap-1">
+        {/* First Page */}
+        <button
+          onClick={() => handlePageChange(1)}
+          disabled={currentPage === 1}
+          className={`p-2 rounded-lg ${currentPage === 1 
+            ? 'text-gray-600 cursor-not-allowed' 
+            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+          }`}
+        >
+          <FiChevronsLeft size={18} />
+        </button>
+        
+        {/* Previous Page */}
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`p-2 rounded-lg ${currentPage === 1 
+            ? 'text-gray-600 cursor-not-allowed' 
+            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+          }`}
+        >
+          <FiChevronLeft size={18} />
+        </button>
+        
+        {/* Page Numbers */}
+        {getPageNumbers().map((pageNum, index) => (
+          <button
+            key={index}
+            onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
+            className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg text-sm font-medium ${
+              currentPage === pageNum
+                ? 'bg-indigo-500 text-white shadow-lg'
+                : pageNum === '...'
+                ? 'text-gray-400 cursor-default'
+                : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+            }`}
+            disabled={pageNum === '...'}
+          >
+            {pageNum}
+          </button>
+        ))}
+        
+        {/* Next Page */}
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`p-2 rounded-lg ${currentPage === totalPages 
+            ? 'text-gray-600 cursor-not-allowed' 
+            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+          }`}
+        >
+          <FiChevronRight size={18} />
+        </button>
+        
+        {/* Last Page */}
+        <button
+          onClick={() => handlePageChange(totalPages)}
+          disabled={currentPage === totalPages}
+          className={`p-2 rounded-lg ${currentPage === totalPages 
+            ? 'text-gray-600 cursor-not-allowed' 
+            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+          }`}
+        >
+          <FiChevronsRight size={18} />
+        </button>
+      </div>
+      
+      <div className="flex items-center gap-2 text-sm">
+        <span className="text-gray-400">Cards per page:</span>
+        <span className="font-medium text-gray-300">{limit}</span>
+      </div>
+    </div>
+  );
+
   /*  UI  */
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-[100vw] overflow-x-hidden">
@@ -204,10 +359,43 @@ const ManageCards = () => {
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6">
         <div className="w-full lg:w-auto">
           <h2 className="text-xl sm:text-2xl md:text-4xl font-bold">Manage NFC Cards</h2>
-          <p className="text-gray-400 mt-1 text-sm sm:text-base">View, track and manage all NFC card profiles</p>
+          <p className="text-gray-400 mt-1 text-sm sm:text-base">
+            View, track and manage all NFC card profiles
+            <span className="ml-2 text-indigo-400 font-medium">
+              (Page {currentPage} of {totalPages})
+            </span>
+          </p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-center">
+          {/* SEARCH BAR */}
+          <form onSubmit={handleSearch} className="relative w-full sm:w-56">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by owner or activation code..."
+                className="bg-gray-900/60 backdrop-blur border-0 pl-10 pr-10 py-3 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white border-b-2 border-transparent focus:border-indigo-400"
+              />
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                <FiSearch className="text-gray-400" size={18} />
+              </div>
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1"
+                  title="Clear search"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              )}
+            </div>
+          </form>
+
           {/* Sleek Date Picker */}
           <div className="relative w-full sm:w-56">
             <input
@@ -257,6 +445,8 @@ const ManageCards = () => {
         </div>
       </div>
 
+      
+
       {/* STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 md:mb-8">
         <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50">
@@ -297,383 +487,467 @@ const ManageCards = () => {
       </div>
 
       {/* DESKTOP TABLE - LARGE SCREENS (1024px and above) */}
-      <div className="hidden lg:block overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
-        <table className="w-full min-w-full">
-          <thead className="bg-gray-800/50 border-b border-gray-700/50">
-            <tr>
-              <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
-              {/* <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Card ID</th> */}
-              <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
-              <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
-              <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation</th>
-              <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Created</th>
-              <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">QR</th>
-              <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Preview</th>
-              <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Download</th>
-              <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Profile</th>
-            </tr>
-          </thead>
+      <div className="hidden lg:block">
+        <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
+          <table className="w-full min-w-full">
+            <thead className="bg-gray-800/50 border-b border-gray-700/50">
+              <tr>
+                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
+                {/* <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Card ID</th> */}
+                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
+                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
+                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation</th>
+                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Created</th>
+                <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">QR</th>
+                <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Preview</th>
+                <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Download</th>
+                <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Profile</th>
+              </tr>
+            </thead>
 
-          <tbody className="divide-y divide-gray-700/30">
-            {filteredGroupedCards.map(([date, list]) => (
-              <React.Fragment key={date}>
-                <tr className="bg-gray-800/30">
-                  <td colSpan="10" className="p-3 font-medium text-gray-300 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span>📅</span>
-                      <span>{new Date(date).toLocaleDateString("en-GB")}</span>
+            <tbody className="divide-y divide-gray-700/30">
+              {filteredGroupedCards.length > 0 ? (
+                filteredGroupedCards.map(([date, list]) => (
+                  <React.Fragment key={date}>
+                    <tr className="bg-gray-800/30">
+                      <td colSpan="10" className="p-3 font-medium text-gray-300 text-sm">
+                        <div className="flex items-center gap-2">
+                          <span>📅</span>
+                          <span>{new Date(date).toLocaleDateString("en-GB")}</span>
+                        </div>
+                      </td>
+                    </tr>
+
+                    {list.map((card) => (
+                      <tr 
+                        key={card._id} 
+                        className="hover:bg-gray-800/20 transition-colors"
+                      >
+                        <td className="p-3">
+                          <input
+                            checked={card.isDownloaded}
+                            readOnly
+                            type="checkbox"
+                            className="w-4 h-4 rounded"
+                          />
+                        </td>
+                        {/* <td className="p-3">
+                          <div className="font-mono text-xs max-w-[120px] truncate" title={card.cardId}>
+                            {card.cardId}
+                          </div>
+                        </td> */}
+                        <td className="p-3">
+                          <StatusBadge active={card.isActivated} />
+                        </td>
+
+                        <td className="p-3">
+                          <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
+                            {card.owner?.name || "—"}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <div className="font-mono text-xs text-indigo-400 max-w-[80px] truncate" title={card.activationCode}>
+                            {card.activationCode}
+                          </div>
+                        </td>
+                        <td className="p-3 text-gray-400 text-xs">
+                          {new Date(card.activatedAt).toLocaleDateString()}
+                        </td>
+                        <td className="p-3 text-center">
+                          <div className="w-12 h-12 bg-white p-1.5 rounded-lg flex items-center justify-center mx-auto">
+                            {qrImages[card._id] ? (
+                              <img
+                                src={qrImages[card._id]}
+                                alt="QR Code"
+                                className="w-10 h-10"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = "/qr.png";
+                                }}
+                              />
+                            ) : (
+                              <img
+                                src="/qr.png"
+                                alt="Demo QR"
+                                className="w-10 h-10"
+                              />
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-3 text-center">
+                          <button
+                            onClick={() => previewQR(card.qrUrl)}
+                            className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 mx-auto ${
+                              !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                            title={card.qrUrl ? "Preview QR" : "No QR available"}
+                            disabled={!card.qrUrl}
+                          >
+                            <FaEye className="w-4 h-4" />
+                          </button>
+                        </td>
+                        <td className="p-3 text-center">
+                          <button
+                            onClick={() => downloadQR(card)}
+                            className={`bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition mx-auto ${
+                              !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                            title={card.qrUrl ? "Download QR" : "No QR available"}
+                            disabled={!card.qrUrl}
+                          >
+                            <FaDownload className="w-4 h-4" />
+                          </button>
+                        </td>
+                        <td className="p-3 text-center">
+                          <Link 
+                            to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
+                            className="text-indigo-400 hover:text-indigo-300 transition text-xs inline-block"
+                            target="_blank"
+                          >
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </React.Fragment>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="10" className="p-6 text-center">
+                    <div className="text-gray-400">
+                      {searchQuery ? (
+                        <>
+                          <FiSearch className="w-12 h-12 mx-auto mb-3 text-gray-500" />
+                          <p className="text-lg">No cards found for "{searchQuery}"</p>
+                          <p className="text-sm mt-2">Try a different search term</p>
+                          <button
+                            onClick={handleClearSearch}
+                            className="mt-4 text-indigo-400 hover:text-indigo-300 transition-colors"
+                          >
+                            Clear search and show all cards
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
+                          <p className="text-lg">No cards available</p>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
-
-                {list.map((card) => (
-                  <tr 
-                    key={card._id} 
-                    className="hover:bg-gray-800/20 transition-colors"
-                  >
-                    <td className="p-3">
-                      <input
-                        checked={card.isDownloaded}
-                        readOnly
-                        type="checkbox"
-                        className="w-4 h-4 rounded"
-                      />
-                    </td>
-                    {/* <td className="p-3">
-                      <div className="font-mono text-xs max-w-[120px] truncate" title={card.cardId}>
-                        {card.cardId}
-                      </div>
-                    </td> */}
-                    <td className="p-3">
-                      <StatusBadge active={card.isActivated} />
-                    </td>
-
-                    <td className="p-3">
-                      <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
-                        {card.owner?.name || "—"}
-                      </span>
-                    </td>
-                    <td className="p-3">
-                      <div className="font-mono text-xs text-indigo-400 max-w-[80px] truncate" title={card.activationCode}>
-                        {card.activationCode}
-                      </div>
-                    </td>
-                    <td className="p-3 text-gray-400 text-xs">
-                      {new Date(card.activatedAt).toLocaleDateString()}
-                    </td>
-                    <td className="p-3 text-center">
-                      <div className="w-12 h-12 bg-white p-1.5 rounded-lg flex items-center justify-center mx-auto">
-                        {qrImages[card._id] ? (
-                          <img
-                            src={qrImages[card._id]}
-                            alt="QR Code"
-                            className="w-10 h-10"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = "/qr.png";
-                            }}
-                          />
-                        ) : (
-                          <img
-                            src="/qr.png"
-                            alt="Demo QR"
-                            className="w-10 h-10"
-                          />
-                        )}
-                      </div>
-                    </td>
-                    <td className="p-3 text-center">
-                      <button
-                        onClick={() => previewQR(card.qrUrl)}
-                        className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 mx-auto ${
-                          !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                        title={card.qrUrl ? "Preview QR" : "No QR available"}
-                        disabled={!card.qrUrl}
-                      >
-                        <FaEye className="w-4 h-4" />
-                      </button>
-                    </td>
-                    <td className="p-3 text-center">
-                      <button
-                        onClick={() => downloadQR(card)}
-                        className={`bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition mx-auto ${
-                          !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                        title={card.qrUrl ? "Download QR" : "No QR available"}
-                        disabled={!card.qrUrl}
-                      >
-                        <FaDownload className="w-4 h-4" />
-                      </button>
-                    </td>
-                    <td className="p-3 text-center">
-                      <Link 
-                        to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
-                        className="text-indigo-400 hover:text-indigo-300 transition text-xs inline-block"
-                        target="_blank"
-                      >
-                        View
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
+        
+        {/* Pagination for Desktop - ALWAYS SHOW IF totalPages > 1 */}
+        {totalPages > 1 && <Pagination />}
       </div>
 
       {/* TABLET VIEW - MEDIUM SCREENS (768px to 1023px) */}
-      <div className="hidden md:block lg:hidden overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
-        <table className="w-full min-w-full">
-          <thead className="bg-gray-800/50 border-b border-gray-700/50">
-            <tr>
-              <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
-              {/* <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Card ID</th> */}
-              <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
-              <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
-              <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation</th>
-              <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Actions</th>
-            </tr>
-          </thead>
+      <div className="hidden md:block lg:hidden">
+        <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
+          <table className="w-full min-w-full">
+            <thead className="bg-gray-800/50 border-b border-gray-700/50">
+              <tr>
+                <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
+                {/* <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Card ID</th> */}
+                <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
+                <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
+                <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation</th>
+                <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Actions</th>
+              </tr>
+            </thead>
 
-          <tbody className="divide-y divide-gray-700/30">
-            {filteredGroupedCards.map(([date, list]) => (
-              <React.Fragment key={date}>
-                <tr className="bg-gray-800/30">
-                  <td colSpan="6" className="p-3 font-medium text-gray-300 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span>📅</span>
-                      <span>{new Date(date).toLocaleDateString("en-GB")}</span>
-                    </div>
-                  </td>
-                </tr>
-
-                {list.map((card) => (
-                  <tr 
-                    key={card._id} 
-                    className="hover:bg-gray-800/20 transition-colors"
-                  >
-                    <td className="p-3">
-                      <input
-                        checked={card.isDownloaded}
-                        readOnly
-                        type="checkbox"
-                        className="w-4 h-4 rounded"
-                      />
-                    </td>
-                    {/* <td className="p-3">
-                      <div className="font-mono text-xs max-w-[100px] truncate" title={card.cardId}>
-                        {card.cardId}
-                      </div>
-                    </td> */}
-                    <td className="p-3">
-                      <StatusBadge active={card.isActivated} />
-                    </td>
-                    <td className="p-3">
-                      <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
-                        {card.owner?.name || "—"}
-                      </span>
-                    </td>
-                    <td className="p-3">
-                      <div className="font-mono text-xs text-indigo-400 truncate" title={card.activationCode}>
-                        {card.activationCode}
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mr-2">
-                          {qrImages[card._id] ? (
-                            <img
-                              src={qrImages[card._id]}
-                              alt="QR Code"
-                              className="w-8 h-8"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "/qr.png";
-                              }}
-                            />
-                          ) : (
-                            <img
-                              src="/qr.png"
-                              alt="Demo QR"
-                              className="w-8 h-8"
-                            />
-                          )}
-                        </div>
-                        <button
-                          onClick={() => previewQR(card.qrUrl)}
-                          className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 ${
-                            !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                          }`}
-                          title={card.qrUrl ? "Preview QR" : "No QR available"}
-                          disabled={!card.qrUrl}
-                        >
-                          <FaEye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => downloadQR(card)}
-                          className={`bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition ${
-                            !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                          }`}
-                          title={card.qrUrl ? "Download QR" : "No QR available"}
-                          disabled={!card.qrUrl}
-                        >
-                          <FaDownload className="w-4 h-4" />
-                        </button>
-                        <Link 
-                          to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
-                          className="text-indigo-400 hover:text-indigo-300 transition text-xs px-2 py-1 border border-indigo-500/50 rounded"
-                          target="_blank"
-                        >
-                          Profile
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* MOBILE TABLE VIEW (Below 768px) - Horizontal Scrollable Table */}
-      <div className="block md:hidden">
-        {filteredGroupedCards.map(([date, list]) => (
-          <div key={date} className="mb-6">
-            {/* Date Header */}
-            <div className="mb-3 p-3 bg-gray-800/30 rounded-lg sticky top-0 z-10">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">📅</span>
-                <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
-                <span className="ml-auto text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded">
-                  {list.length} cards
-                </span>
-              </div>
-            </div>
-
-            {/* Horizontal Scrollable Table */}
-            <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
-              <table className="min-w-[700px] w-full">
-                <thead className="bg-gray-800/50 border-b border-gray-700/50">
-                  <tr>
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[40px]">✓</th>
-                    {/* <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[120px]">Card ID</th> */}
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Status</th>
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Owner</th>
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[100px]">Activation</th>
-                    <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Created</th>
-                    <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap min-w-[70px]">QR</th>
-                    <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap min-w-[100px]">Actions</th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-gray-700/30">
-                  {list.map((card) => (
-                    <tr 
-                      key={card._id} 
-                      className="hover:bg-gray-800/20 transition-colors"
-                    >
-                      <td className="p-2">
-                        <input
-                          checked={card.isDownloaded}
-                          readOnly
-                          type="checkbox"
-                          className="w-4 h-4 rounded"
-                        />
-                      </td>
-                      {/* <td className="p-2">
-                        <div className="font-mono text-xs max-w-[110px] truncate" title={card.cardId}>
-                          {card.cardId}
-                        </div>
-                      </td> */}
-                      <td className="p-2">
-                        <StatusBadge active={card.isActivated} />
-                      </td>
-                      <td className="p-2">
-                        <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
-                          {card.owner?.name || "—"}
-                        </span>
-                      </td>
-                      <td className="p-2">
-                        <div className="font-mono text-xs text-indigo-400 truncate max-w-[90px]" title={card.activationCode}>
-                          {card.activationCode}
+            <tbody className="divide-y divide-gray-700/30">
+              {filteredGroupedCards.length > 0 ? (
+                filteredGroupedCards.map(([date, list]) => (
+                  <React.Fragment key={date}>
+                    <tr className="bg-gray-800/30">
+                      <td colSpan="6" className="p-3 font-medium text-gray-300 text-sm">
+                        <div className="flex items-center gap-2">
+                          <span>📅</span>
+                          <span>{new Date(date).toLocaleDateString("en-GB")}</span>
                         </div>
                       </td>
-                      <td className="p-2 text-gray-400 text-xs">
-                        {new Date(card.activatedAt).toLocaleDateString()}
-                      </td>
-                      <td className="p-2 text-center">
-                        <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mx-auto">
-                          {qrImages[card._id] ? (
-                            <img
-                              src={qrImages[card._id]}
-                              alt="QR Code"
-                              className="w-8 h-8"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "/qr.png";
-                              }}
-                            />
-                          ) : (
-                            <img
-                              src="/qr.png"
-                              alt="Demo QR"
-                              className="w-8 h-8"
-                            />
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <div className="flex flex-col gap-1.5">
-                          <div className="flex gap-1.5 justify-center">
+                    </tr>
+
+                    {list.map((card) => (
+                      <tr 
+                        key={card._id} 
+                        className="hover:bg-gray-800/20 transition-colors"
+                      >
+                        <td className="p-3">
+                          <input
+                            checked={card.isDownloaded}
+                            readOnly
+                            type="checkbox"
+                            className="w-4 h-4 rounded"
+                          />
+                        </td>
+                        {/* <td className="p-3">
+                          <div className="font-mono text-xs max-w-[100px] truncate" title={card.cardId}>
+                            {card.cardId}
+                          </div>
+                        </td> */}
+                        <td className="p-3">
+                          <StatusBadge active={card.isActivated} />
+                        </td>
+                        <td className="p-3">
+                          <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
+                            {card.owner?.name || "—"}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <div className="font-mono text-xs text-indigo-400 truncate" title={card.activationCode}>
+                            {card.activationCode}
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <div className="flex items-center justify-center gap-2">
+                            <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mr-2">
+                              {qrImages[card._id] ? (
+                                <img
+                                  src={qrImages[card._id]}
+                                  alt="QR Code"
+                                  className="w-8 h-8"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "/qr.png";
+                                  }}
+                                />
+                              ) : (
+                                <img
+                                  src="/qr.png"
+                                  alt="Demo QR"
+                                  className="w-8 h-8"
+                                />
+                              )}
+                            </div>
                             <button
                               onClick={() => previewQR(card.qrUrl)}
-                              className={`flex-1 text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 min-w-[32px] ${
+                              className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 ${
                                 !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                               }`}
                               title={card.qrUrl ? "Preview QR" : "No QR available"}
                               disabled={!card.qrUrl}
                             >
-                              <FaEye className="w-3.5 h-3.5 mx-auto" />
+                              <FaEye className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => downloadQR(card)}
-                              className={`flex-1 bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition min-w-[32px] ${
+                              className={`bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition ${
                                 !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                               }`}
                               title={card.qrUrl ? "Download QR" : "No QR available"}
                               disabled={!card.qrUrl}
                             >
-                              <FaDownload className="w-3.5 h-3.5 mx-auto" />
+                              <FaDownload className="w-4 h-4" />
                             </button>
-                          </div>
-                          {card.slug && (
                             <Link 
                               to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
-                              className="text-xs text-center text-indigo-400 hover:text-indigo-300 transition py-1 border border-indigo-500/50 rounded"
+                              className="text-indigo-400 hover:text-indigo-300 transition text-xs px-2 py-1 border border-indigo-500/50 rounded"
                               target="_blank"
                             >
                               Profile
                             </Link>
-                          )}
-                        </div>
-                      </td>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </React.Fragment>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="p-6 text-center">
+                    <div className="text-gray-400">
+                      {searchQuery ? (
+                        <>
+                          <FiSearch className="w-12 h-12 mx-auto mb-3 text-gray-500" />
+                          <p className="text-lg">No cards found for "{searchQuery}"</p>
+                        </>
+                      ) : (
+                        <>
+                          <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
+                          <p className="text-lg">No cards available</p>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        
+        {/* Pagination for Tablet - ALWAYS SHOW IF totalPages > 1 */}
+        {totalPages > 1 && <Pagination />}
+      </div>
+
+      {/* MOBILE TABLE VIEW (Below 768px) - Horizontal Scrollable Table */}
+      <div className="block md:hidden">
+        {filteredGroupedCards.length > 0 ? (
+          filteredGroupedCards.map(([date, list]) => (
+            <div key={date} className="mb-6">
+              {/* Date Header */}
+              <div className="mb-3 p-3 bg-gray-800/30 rounded-lg sticky top-0 z-10">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">📅</span>
+                  <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
+                  <span className="ml-auto text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded">
+                    {list.length} cards
+                  </span>
+                </div>
+              </div>
+
+              {/* Horizontal Scrollable Table */}
+              <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
+                <table className="min-w-[700px] w-full">
+                  <thead className="bg-gray-800/50 border-b border-gray-700/50">
+                    <tr>
+                      <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[40px]">✓</th>
+                      {/* <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[120px]">Card ID</th> */}
+                      <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Status</th>
+                      <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Owner</th>
+                      <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[100px]">Activation</th>
+                      <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Created</th>
+                      <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap min-w-[70px]">QR</th>
+                      <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap min-w-[100px]">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+
+                  <tbody className="divide-y divide-gray-700/30">
+                    {list.map((card) => (
+                      <tr 
+                        key={card._id} 
+                        className="hover:bg-gray-800/20 transition-colors"
+                      >
+                        <td className="p-2">
+                          <input
+                            checked={card.isDownloaded}
+                            readOnly
+                            type="checkbox"
+                            className="w-4 h-4 rounded"
+                          />
+                        </td>
+                        {/* <td className="p-2">
+                          <div className="font-mono text-xs max-w-[110px] truncate" title={card.cardId}>
+                            {card.cardId}
+                          </div>
+                        </td> */}
+                        <td className="p-2">
+                          <StatusBadge active={card.isActivated} />
+                        </td>
+                        <td className="p-2">
+                          <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
+                            {card.owner?.name || "—"}
+                          </span>
+                        </td>
+                        <td className="p-2">
+                          <div className="font-mono text-xs text-indigo-400 truncate max-w-[90px]" title={card.activationCode}>
+                            {card.activationCode}
+                          </div>
+                        </td>
+                        <td className="p-2 text-gray-400 text-xs">
+                          {new Date(card.activatedAt).toLocaleDateString()}
+                        </td>
+                        <td className="p-2 text-center">
+                          <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mx-auto">
+                            {qrImages[card._id] ? (
+                              <img
+                                src={qrImages[card._id]}
+                                alt="QR Code"
+                                className="w-8 h-8"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = "/qr.png";
+                                }}
+                              />
+                            ) : (
+                              <img
+                                src="/qr.png"
+                                alt="Demo QR"
+                                className="w-8 h-8"
+                              />
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-2">
+                          <div className="flex flex-col gap-1.5">
+                            <div className="flex gap-1.5 justify-center">
+                              <button
+                                onClick={() => previewQR(card.qrUrl)}
+                                className={`flex-1 text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 min-w-[32px] ${
+                                  !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                                title={card.qrUrl ? "Preview QR" : "No QR available"}
+                                disabled={!card.qrUrl}
+                              >
+                                <FaEye className="w-3.5 h-3.5 mx-auto" />
+                              </button>
+                              <button
+                                onClick={() => downloadQR(card)}
+                                className={`flex-1 bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition min-w-[32px] ${
+                                  !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                                title={card.qrUrl ? "Download QR" : "No QR available"}
+                                disabled={!card.qrUrl}
+                              >
+                                <FaDownload className="w-3.5 h-3.5 mx-auto" />
+                              </button>
+                            </div>
+                            {card.slug && (
+                              <Link 
+                                to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
+                                className="text-xs text-center text-indigo-400 hover:text-indigo-300 transition py-1 border border-indigo-500/50 rounded"
+                                target="_blank"
+                              >
+                                Profile
+                              </Link>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Mobile Scroll Hint */}
+              <div className="mt-2 text-center">
+                <p className="text-xs text-gray-500 animate-pulse">
+                  ← Scroll horizontally to view all columns →
+                </p>
+              </div>
             </div>
-            
-            {/* Mobile Scroll Hint */}
-            <div className="mt-2 text-center">
-              <p className="text-xs text-gray-500 animate-pulse">
-                ← Scroll horizontally to view all columns →
-              </p>
+          ))
+        ) : (
+          <div className="p-6 text-center">
+            <div className="text-gray-400">
+              {searchQuery ? (
+                <>
+                  <FiSearch className="w-16 h-16 mx-auto mb-3 text-gray-500" />
+                  <p className="text-lg">No cards found for "{searchQuery}"</p>
+                  <button
+                    onClick={handleClearSearch}
+                    className="mt-4 px-4 py-2 bg-indigo-500/20 text-indigo-400 rounded-lg hover:bg-indigo-500/30 transition-colors"
+                  >
+                    Clear search
+                  </button>
+                </>
+              ) : (
+                <>
+                  <FiAlertCircle className="w-16 h-16 mx-auto mb-3 text-gray-500" />
+                  <p className="text-lg">No cards available</p>
+                </>
+              )}
             </div>
           </div>
-        ))}
+        )}
+        
+        {/* Pagination for Mobile - ALWAYS SHOW IF totalPages > 1 */}
+        {totalPages > 1 && <Pagination />}
       </div>
     </div>
   );

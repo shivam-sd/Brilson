@@ -60,20 +60,22 @@ const CardShowcase = () => {
       flex items-center justify-center
     ">
       {/* Image that completely covers the card */}
-      <img
-        src={cards[index]}
-        alt="Brilson NFC Card"
-        loading="lazy"
-        className="
-          lg:w-[800px]
-          h-full
-          object-cover
-          object-center
-          lg:scale-150
+    <motion.img
+  src={cards[index]}
+  alt="Brilson NFC Card"
+  className="
+    absolute inset-0
+    w-full h-full
+    object-cover object-center
+    lg:scale-160
           md:scale-150
           scale-150
-          "
-      />
+  "
+  initial={{ scale: 1.05 }}
+  animate={{ scale: 1 }}
+  transition={{ duration: 0.9, ease: "easeOut" }}
+/>
+
       
       
       <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
