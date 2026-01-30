@@ -17,17 +17,18 @@ const footerSchema = new mongoose.Schema(
       instagram: { type: String, trim: true },
       linkedin: { type: String, trim: true },
     },
-
+    
     products: [LinkSchema],
     company: [LinkSchema],
-    support: [LinkSchema],
+    // support: [LinkSchema],
     bottomLinks: [LinkSchema],
-
-
+    
+    
     contact: {
       email: String,
       phone: String,
       address: String, 
+      Link:String
     },
   },
   { timestamps: true }

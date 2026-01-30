@@ -56,7 +56,7 @@ const FooterAdmin = () => {
       await axios.put(`${BASE_URL}/api/admin/footer/update`, footer);
       toast.success("Footer updated successfully");
       setTimeout(() => {
-        navigate("/landing/page/content");
+        navigate("/admindashboard/landing/page/content");
       }, 1500);
     } catch {
       toast.error(" Update failed");
@@ -224,6 +224,12 @@ const FooterAdmin = () => {
                   onChange={(v) => updateContact("address", v)} 
                   placeholder="Address" 
                 />
+                <Input 
+                  icon={<MapPin className="text-rose-400" size={18} />} 
+                  value={footer.contact?.Link || ""} 
+                  onChange={(v) => updateContact("Link", v)} 
+                  placeholder="Text" 
+                />
               </div>
             </div>
           </div>
@@ -250,7 +256,7 @@ const FooterAdmin = () => {
               onChange={(i, f, v) => updateItem("company", i, f, v)} 
             />
             
-            <ArrayEditor 
+            {/* <ArrayEditor 
               title="Support" 
               icon={<Headphones className="text-emerald-400" size={20} />}
               color="from-emerald-500/10 to-green-500/10"
@@ -258,7 +264,7 @@ const FooterAdmin = () => {
               onAdd={() => addItem("support")} 
               onRemove={(i) => removeItem("support", i)} 
               onChange={(i, f, v) => updateItem("support", i, f, v)} 
-            />
+            /> */}
             
             <ArrayEditor 
               title="Bottom Links" 
@@ -302,7 +308,7 @@ const FooterAdmin = () => {
   );
 };
 
-/* ================= SMALL COMPONENTS ================= */
+/*  SMALL COMPONENTS  */
 
 const Input = ({ icon, value, onChange, placeholder }) => (
   <div className="group">

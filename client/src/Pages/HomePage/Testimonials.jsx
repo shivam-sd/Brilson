@@ -86,7 +86,7 @@ const Testimonials = () => {
   }
 
   return (
-    <section className="relative w-full min-h-screen py-28 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
+    <section className="relative w-full py-28 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
       
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">

@@ -41,7 +41,7 @@ useEffect(() => {
 
 
   return (
-    <section className="relative w-full min-h-screen pt-28 pb-20 bg-gradient-to-b from-black via-gray-950 to-black text-white overflow-hidden">
+    <section className="relative w-full pt-28 pb-20 bg-gradient-to-b from-black via-gray-950 to-black text-white overflow-hidden py-12">
 
       {/*  BACKGROUND LAYERS  */}
       <div className="absolute inset-0 pointer-events-none">
@@ -129,8 +129,8 @@ useEffect(() => {
           transition={{ duration: 0.8 }}
           className="max-w-2xl mx-auto mb-12"
         >
-          <div className="relative group cursor-pointer hover:scale-110 duration-500 active:scale-110">
-            <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-xl opacity-70 group-hover:opacity-100 " />
+          <div className="relative group cursor-pointer lg:scale-120 md:scale-120 scale-110 hover:scale-140 duration-500 active:scale-110">
+            <div className="absolute -inset-4 group-hover:opacity-100 " />
             
               <CardUI />
             

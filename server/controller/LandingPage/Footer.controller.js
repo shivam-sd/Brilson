@@ -33,7 +33,7 @@ const updateFooter = async (req, res) => {
     );
 
     res.status(200).json({
-      success: true,
+      success: true, 
       message: "Footer updated successfully",
       data: updated,
     });

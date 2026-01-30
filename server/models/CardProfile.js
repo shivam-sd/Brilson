@@ -53,10 +53,13 @@ const CardProfileSchema = new mongoose.Schema(
       bio: String,
       about: String,
       city: String,
+      company:String,
       twitter: String,
       instagram: String,
       linkedin: String,
       website: String,
+      youtube: String,
+      facebook:String
     },
   },
   { timestamps: true }

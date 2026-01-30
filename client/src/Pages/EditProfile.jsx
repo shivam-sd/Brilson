@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, replace } from "react-router-dom";
 
 
 
@@ -20,10 +20,13 @@ const EditProfile = () => {
     bio: "",
     about: "",
     city: "",
+    company:"",
     website: "",
     linkedin: "",
     twitter: "" ,
     instagram: "",
+    youtube:"",
+    facebook:"",
   });
 
 
@@ -47,10 +50,13 @@ setForm({
     bio: profile?.bio || "",
     about: profile?.about || "",
     city: profile?.city || "",
+    company: profile?.company || "",
     website: profile?.website || "",
     linkedin: profile?.linkedin || "",
     twitter: profile?.twitter || "",
     instagram: profile?.instagram || "",
+    youtube: profile?.youtube || "",
+    facebook: profile?.facebook || "",
 });
 
 } catch (err) {
@@ -97,7 +103,8 @@ const handleSubmit = async (e) => {
       toast.success("Profile updated successfully");
 
       setTimeout(() => {
-        navigate(`/profile/${id}`)
+        // navigate(`/profile/${id}`)
+        navigate(`/admin/passTo/Profile`)
       },800)
 
     } catch (err) {
@@ -120,19 +127,22 @@ const handleSubmit = async (e) => {
           transition={{ duration: 0.5 }}
           className="w-full max-w-4xl bg-[#111827] border border-gray-800 rounded-3xl p-8 md:p-10 shadow-2xl"
         >
-          <h1 className="text-3xl font-bold text-white text-center">
+          <h2 className="text-3xl font-bold text-white text-center">
             Edit Your Profile
-          </h1>
+          </h2>
 
           <div className="grid md:grid-cols-2 gap-6 mt-8">
             <Input label="Full Name" name="name" value={form.name} onChange={handleChange} />
             <Input label="Email" name="email" value={form.email} onChange={handleChange} />
             <Input label="Phone" name="phone" value={form.phone} onChange={handleChange} />
             <Input label="City" name="city" value={form.city} onChange={handleChange} />
+            <Input label="Company" name="company" value={form.company} onChange={handleChange} />
             <Input label="Website" name="website" value={form.website} onChange={handleChange} />
             <Input label="LinkedIn" name="linkedin" value={form.linkedin} onChange={handleChange} />
             <Input label="Twitter" name="twitter" value={form.twitter} onChange={handleChange} />
             <Input label="Instagram" name="instagram" value={form.instagram} onChange={handleChange} />
+            <Input label="Youtube" name="youtube" value={form.youtube} onChange={handleChange} />
+            <Input label="Facebook" name="facebook" value={form.facebook} onChange={handleChange} />
           </div>
 
           <div className="mt-6">
@@ -158,9 +168,9 @@ const handleSubmit = async (e) => {
   );
 };
 
-/* ================================
-   🔹 REUSABLE COMPONENTS
-================================= */
+/* 
+    REUSABLE COMPONENTS
+ */
 const Input = ({ label, ...props }) => (
   <div>
     <label className="text-sm text-gray-400 mb-2 block">{label}</label>

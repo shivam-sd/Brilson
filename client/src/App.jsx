@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 const HomePage = React.lazy(() => import("./HomePage"));
+import ReactLenis from "lenis/react";
 import HowitWorks from "./Pages/HowitWorks";
 import BestSeller from "./Component/BestSeller";
 import PersonalCard from "./Component/PersonalCards";
@@ -47,7 +48,9 @@ import HowToUseAdmin from "./Admin/LandingPage/HowToUseAdmin";
 import Testimonials from "./Admin/LandingPage/Testimonials.Content";
 import TransformNetworkAdmin from "./Admin/LandingPage/TransformNetworkAdmin";
 import FooterAdmin from "./Admin/LandingPage/FooterAdmin";
-import ReactLenis from "lenis/react";
+import AdminPassToProfile from "./utils/AdminPassToProfile";
+
+
 
 function App() {
   return (
@@ -100,6 +103,7 @@ function App() {
           </Route>
 
           <Route path="/c/card/:activationCode" element={<CheckStatusPage />} />
+          <Route path="/admin/passTo/Profile" element={<AdminPassToProfile />} />
           <Route path="/profile/:slug" element={<ProfilePage />} />
           <Route path="/profile/edit/:id" element={<EditProfile />} />
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
