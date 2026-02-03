@@ -1,5 +1,5 @@
 import axios from "axios";
-import { icons } from "lucide-react";
+import { icons, LucideBadgeHelp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { MdEmail, MdLocationOn, MdPhone } from "react-icons/md";
@@ -115,6 +115,9 @@ const Footer = () => {
             </li>
             <li className="flex items-center gap-3 hover:text-blue-400 cursor-pointer duration-200">
               <MdLocationOn className="text-lg" /> {Contact.address}
+            </li>
+            <li className="flex items-center gap-3 hover:text-blue-400 cursor-pointer duration-200">
+              <LucideBadgeHelp className="text-lg" /> {Contact.Link}
             </li>
           </ul>
         </div>
