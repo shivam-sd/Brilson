@@ -10,6 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Toaster, toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Header from "../Component/Header";
+import Footer from "../Component/Footer";
 
 const AdminPassToProfile = () => {
    const [referralCode, setReferralCode] = useState('');
@@ -120,16 +122,18 @@ const AdminPassToProfile = () => {
       ? cards.filter(card => card.isActivated)
       : cards.filter(card => !card.isActivated);
 
-  const CardItem = ({ card, index }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      whileHover={{ y: -8, scale: 1.02 }}
-      className={`relative group cursor-pointer ${
-        viewMode === "grid" ? "col-span-1" : "col-span-2"
-      }`}
-    >
+      const CardItem = ({ card, index }) => (
+        <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.1 }}
+        whileHover={{ y: -8, scale: 1.02 }}
+        className={`relative group cursor-pointer ${
+          viewMode === "grid" ? "col-span-1" : "col-span-2"
+          }`}
+          >
+        
+
       {/* Glow Effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500 rounded-3xl" />
       
@@ -219,7 +223,9 @@ const AdminPassToProfile = () => {
         }}
       />
 
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] text-white overflow-hidden">
+      <Header />
+
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] text-white overflow-hidden py-20">
         {/* Animated Background */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           {/* Gradient Orbs */}
@@ -445,6 +451,7 @@ const AdminPassToProfile = () => {
           </motion.div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

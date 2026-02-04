@@ -232,7 +232,10 @@ const PublicProfilePage = () => {
                   whileHover={{ scale: 1.05 }}
                   className="flex items-center gap-3"
                 >
-                  <h2 className="text-2xl font-bold text-[#E1C48A]">BRILSON</h2>
+                  {/* <h2 className="text-2xl font-bold text-[#E1C48A]">BRILSON</h2> */}
+                     <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+                Brilson
+              </div>
               
                 </motion.div>
               </div>

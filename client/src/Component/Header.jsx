@@ -6,6 +6,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
 import { IoIosArrowDown, IoMdArrowDropdownCircle, IoMdArrowDroprightCircle } from "react-icons/io";
 import axios from "axios";
+import LogoSection from "./LogoSection";
 
 
 // import UserAllCards from "./UserAllCards";
@@ -122,8 +123,10 @@ const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center text-white text-2xl font-semibold"
           >
-            <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" />
-            <span className="text-3xl">RILSON</span>
+            {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
+                         <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+                Brilson
+              </div>
           </motion.div>
         </Link>
 

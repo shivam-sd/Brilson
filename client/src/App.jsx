@@ -49,6 +49,11 @@ import Testimonials from "./Admin/LandingPage/Testimonials.Content";
 import TransformNetworkAdmin from "./Admin/LandingPage/TransformNetworkAdmin";
 import FooterAdmin from "./Admin/LandingPage/FooterAdmin";
 import AdminPassToProfile from "./utils/AdminPassToProfile";
+import PrivacyPolicy from "./Pages/PrivacyPolicy";
+import TermsConditionsPage from "./Pages/Terms&Condition";
+import RefundPolicyPage from "./Pages/RefundPolicy";
+import AboutUsPage from "./Pages/AboutUsPage";
+import CareersPage from "./Pages/CareersPage";
 
 
 
@@ -100,6 +105,11 @@ function App() {
             <Route path="/paymentsucess" element={<PaymentSuccessPage />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/get-card" element={<GetYourCard />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+            <Route path="/refund-policy" element={<RefundPolicyPage />} />
+            <Route path="/about-us" element={<AboutUsPage />} />
+            <Route path="/careers" element={<CareersPage />} />
           </Route>
 
           <Route path="/c/card/:activationCode" element={<CheckStatusPage />} />

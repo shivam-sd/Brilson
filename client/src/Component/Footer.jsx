@@ -42,8 +42,11 @@ const Footer = () => {
         {/* Brand Section */}
         <div className="md:col-span-2 flex flex-col gap-4">
           <div className="flex items-center">
-            <img src="./logo2.png" alt="" className="w-6" loading="lazy" />
-            <h2 className="text-3xl font-semibold text-white">RILSON</h2>
+            {/* <img src="./logo2.png" alt="" className="w-6" loading="lazy" />
+            <h2 className="text-3xl font-semibold text-white">RILSON</h2> */}
+               <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+                Brilson
+              </div>
           </div>
 
           <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
