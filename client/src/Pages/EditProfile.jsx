@@ -39,7 +39,7 @@ const EditProfile = () => {
           `${import.meta.env.VITE_BASE_URL}/api/card/${id}`,
           { withCredentials: true }
         );
-// console.log(res.data.card._id)
+console.log(res.data.card._id)
 setId(res.data.card._id);
 const profile = res.data.card.profile;
 

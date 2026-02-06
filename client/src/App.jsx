@@ -54,6 +54,13 @@ import TermsConditionsPage from "./Pages/Terms&Condition";
 import RefundPolicyPage from "./Pages/RefundPolicy";
 import AboutUsPage from "./Pages/AboutUsPage";
 import CareersPage from "./Pages/CareersPage";
+import Layout from "./Pages/ProfileComp/EditProfileComp/Layout";
+import PortfolioEditProfile from "./Pages/ProfileComp/EditProfileComp/PortfolioEditProfile";
+import GalleryEditProfile from "./Pages/ProfileComp/EditProfileComp/GalleryEditProfile";
+import ProductsEditProfile from "./Pages/ProfileComp/EditProfileComp/ProductsEditProfile";
+import ServicesEditProfile from "./Pages/ProfileComp/EditProfileComp/ServicesEditProfile";
+import AddProduct from "./Pages/ProfileComp/EditProfileComp/ProfilePrdoct/AddProducts";
+import UpdateProduct from "./Pages/ProfileComp/EditProfileComp/ProfilePrdoct/UpdateProduct";
 
 
 
@@ -115,9 +122,22 @@ function App() {
           <Route path="/c/card/:activationCode" element={<CheckStatusPage />} />
           <Route path="/admin/passTo/Profile" element={<AdminPassToProfile />} />
           <Route path="/profile/:slug" element={<ProfilePage />} />
-          <Route path="/profile/edit/:id" element={<EditProfile />} />
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
           <Route path="/card/activate" element={<ActivateCard />} />
+
+
+          <Route path="/profile/edit/:id" element={<Layout />}>
+  <Route index element={<EditProfile />} />
+  <Route path="portfolio" element={<PortfolioEditProfile />} />
+  <Route path="services" element={<ServicesEditProfile />} />
+  <Route path="products" element={<ProductsEditProfile />} />
+  <Route path="gallery" element={<GalleryEditProfile />} />
+</Route>
+
+  <Route path="/profile/products/add/:id" element={<AddProduct />} />
+  <Route path="/profile/products/update/:id" element={<UpdateProduct />} />
+
+
 
           <Route path="/best-seller" element={<BestSeller />} />
           <Route path="/personal-card" element={<PersonalCard />} />

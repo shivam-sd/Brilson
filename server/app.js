@@ -35,6 +35,8 @@ const HowToUseRouter = require("./routes/LandingPage/HowtoUse.routes");
 const TestimonialsRouter = require("./routes/LandingPage/Testimonilas.routes");
 const TransformNetwork = require("./routes/LandingPage/TransformNetwork.route");
 const FooterRouter = require("./routes/LandingPage/Footer.route");
+const ProfileProductRouter = require("./routes/ProfileRoutes/ProfileProducts");
+const ProfilePortfolioRouter = require("./routes/ProfileRoutes/ProfilePortfolio");
 
 
 
@@ -101,6 +103,8 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   app.use("/api/admin",  TestimonialsRouter);
   app.use("/api/admin", TransformNetwork);
   app.use("/api/admin", FooterRouter);
+  app.use("/api/profile-products", ProfileProductRouter);
+  app.use("/api/profile-portfolio", ProfilePortfolioRouter);
 
   
 

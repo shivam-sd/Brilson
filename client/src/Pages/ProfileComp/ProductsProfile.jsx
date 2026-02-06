@@ -1,39 +1,48 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ShoppingBag, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import axios from "axios";
+import { useEffect } from "react";
 
-const ProductsProfile = () => {
-  // All products data inside component
-  const products = [
-    {
-      id: 1,
-      title: "E-commerce Platform",
-      description: "Complete online store solution with payment gateway integration",
-      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop",
-      price: "$299",
-      category: "Web Development"
-    },
-    {
-      id: 2,
-      title: "Mobile App UI Kit",
-      description: "Modern UI components for React Native applications",
-      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop",
-      price: "$149",
-      category: "Mobile Design"
-    },
-    {
-      id: 3,
-      title: "AI Chatbot Solution",
-      description: "Custom AI chatbot for customer support automation",
-      image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=600&fit=crop",
-      price: "$499",
-      category: "AI Services"
-    },
-  ];
+const ProductsProfile = ({activationCode}) => {
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
+
+const [products, setProducts] = useState([]);
+
+const id = activationCode;
+
+// Fetch products
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/profile-products/all/get/${id}`,
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        const productsData = res.data.data || [];
+        setProducts(productsData);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to load products");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [id]);
+
 
   return (
     <div className="mb-16" id="products">
-      {/* Products Grid - 3 columns on desktop, 2 on tablet, 1 on mobile */}
+      {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product, index) => (
           <motion.div
@@ -42,7 +51,7 @@ const ProductsProfile = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
-            className="group bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-2xl overflow-hidden hover:border-[#E1C48A]/30 transition-all duration-300 hover:translate-y-[-4px]"
+            className="group bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-2xl overflow-hidden hover:border-[#E1C48A]/30 transition-all duration-300 hover:translate-y-[-4px] cursor-pointer"
           >
             {/* Product Image */}
             <div className="h-48 overflow-hidden">

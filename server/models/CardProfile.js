@@ -61,7 +61,7 @@ const CardProfileSchema = new mongoose.Schema(
       youtube: String,
       facebook:String
     },
-  },
+  }, 
   { timestamps: true }
 );
 
