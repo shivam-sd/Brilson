@@ -61,6 +61,8 @@ import ProductsEditProfile from "./Pages/ProfileComp/EditProfileComp/ProductsEdi
 import ServicesEditProfile from "./Pages/ProfileComp/EditProfileComp/ServicesEditProfile";
 import AddProduct from "./Pages/ProfileComp/EditProfileComp/ProfilePrdoct/AddProducts";
 import UpdateProduct from "./Pages/ProfileComp/EditProfileComp/ProfilePrdoct/UpdateProduct";
+import AddPortfolio from "./Pages/ProfileComp/EditProfileComp/ProfilePortfolio/AddPortfolio";
+import UpdatePortfolio from "./Pages/ProfileComp/EditProfileComp/ProfilePortfolio/UpdatePortfolio";
 
 
 
@@ -136,6 +138,8 @@ function App() {
 
   <Route path="/profile/products/add/:id" element={<AddProduct />} />
   <Route path="/profile/products/update/:id" element={<UpdateProduct />} />
+  <Route path="/profile/portfolio/add/:id" element={<AddPortfolio />} />
+  <Route path="/profile/portfolio/update/:id" element={<UpdatePortfolio />} />
 
 
 

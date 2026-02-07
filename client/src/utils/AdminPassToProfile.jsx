@@ -316,7 +316,7 @@ const AdminPassToProfile = () => {
             </div>
           </motion.div>
 
-          {/* Cards Dropdown Section */}
+          {/* Cards Dropdown Section
           {cards.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -407,7 +407,7 @@ const AdminPassToProfile = () => {
                 )}
               </AnimatePresence>
             </motion.div>
-          )}
+          )} */}
 
           {/* Cards Grid Section */}
           <motion.div

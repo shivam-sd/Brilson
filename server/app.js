@@ -37,6 +37,7 @@ const TransformNetwork = require("./routes/LandingPage/TransformNetwork.route");
 const FooterRouter = require("./routes/LandingPage/Footer.route");
 const ProfileProductRouter = require("./routes/ProfileRoutes/ProfileProducts");
 const ProfilePortfolioRouter = require("./routes/ProfileRoutes/ProfilePortfolio");
+const ProfileServicesRouter = require("./routes/ProfileRoutes/ProfileServices");
 
 
 
@@ -105,6 +106,7 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   app.use("/api/admin", FooterRouter);
   app.use("/api/profile-products", ProfileProductRouter);
   app.use("/api/profile-portfolio", ProfilePortfolioRouter);
+  app.use("/api/profile-services", ProfileServicesRouter);
 
   
 

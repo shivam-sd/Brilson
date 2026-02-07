@@ -539,7 +539,7 @@ const ProfilePage = () => {
 {/* Portfolio */}
 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                 <h3 className="text-2xl font-bold mb-3 text-gray-300">Portfolio:</h3>
-                  <PortfolioProfile />
+                  <PortfolioProfile activationCode={slug} />
                 </div>
 
 

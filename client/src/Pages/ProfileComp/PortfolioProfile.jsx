@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { 
   Briefcase, ExternalLink, Eye, Github, Globe, 
@@ -6,32 +6,43 @@ import {
   Code2, Smartphone, ShoppingCart, GraduationCap,
   Award, Zap, Clock, DollarSign
 } from "lucide-react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
-const PortfolioProfile = () => {
-  // All data inside component
-  const [portfolio] = useState([
-    {
-      id: 1,
-      title: "Fintech Dashboard",
-      description: "Financial analytics dashboard for banking clients with real-time analytics, interactive charts, and comprehensive reporting features.",
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
-      duration: "3 months"
-    },
-    {
-      id: 2,
-      title: "Healthcare Mobile App",
-      description: "Patient management system for hospitals with appointment scheduling, electronic medical records, and real-time notifications.",
-      image: "https://images.unsplash.com/photo-1516549655669-df6654e435de?w=800&h=600&fit=crop",
-      duration: "4 months"
-    },
-    {
-      id: 3,
-      title: "E-learning Platform",
-      description: "Online course platform with video streaming, interactive quizzes, progress tracking, and certification system.",
-      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop",
-      duration: "6 months"
-    }
-  ]);
+const PortfolioProfile = ({activationCode}) => {
+
+const [portfolio, setPortfolio] = useState([]);
+const [loading, setLoading] = useState(true);
+
+const token = localStorage.getItem("token");
+
+const id = activationCode;
+
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/profile-portfolio/all/get/${id}`,
+          {
+            withCredentials: true,
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        const portfolioData = res.data.data || [];
+        setPortfolio(portfolioData);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to load portfolio");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPortfolio();
+  }, [id]);
+
 
   return (
     <div className="mb-16" id="portfolio">
