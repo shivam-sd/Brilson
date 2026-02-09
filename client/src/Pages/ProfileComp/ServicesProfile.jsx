@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { 
   Server, Code, Brush, Smartphone, 
@@ -8,35 +8,36 @@ import {
   BarChart, Globe, Lock, Cpu,
   Filter, Clock, DollarSign, Star
 } from "lucide-react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-const ServicesProfile = () => {
-  // All data inside component
-  const [services] = useState([
-    {
-      id: 1,
-      title: "Web Development",
-      description: "Custom websites and web applications with modern technologies and best practices.",
-      icon: "code",
-      features: ["Responsive Design", "SEO Optimization", "Fast Loading", "Cross-browser Compatibility", "Progressive Web Apps"],
-      price: "$999"
-    },
-    {
-      id: 2,
-      title: "UI/UX Design",
-      description: "User-centered design solutions that enhance user experience and drive engagement.",
-      icon: "brush",
-      features: ["Wireframing", "Prototyping", "Design Systems", "User Testing", "Design Audit"],
-      price: "$799",
-    },
-    {
-      id: 3,
-      title: "Mobile Apps",
-      description: "Native and cross-platform mobile applications for iOS and Android.",
-      icon: "smartphone",
-      features: ["Native Development", "Cross Platform", "App Store Deployment", "Push Notifications", "Offline Support"],
-      price: "$1,499",
-    },
-  ]);
+
+const ServicesProfile = ({ activationCode}) => {
+
+  const id = activationCode;
+  const token = localStorage.getItem("token");
+  
+  const [services, setServices] = useState([]);
+
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try{
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/profile-services/all/get/${id}`,
+          {
+            withCredentials: true,
+            headers: {Authorization: `Bearer ${token}`},
+          }
+        );
+        setServices(res.data.data);
+      }catch(err){
+        toast.error("Failed to load services");
+      }
+    }
+    fetchServices();
+  },[id]);
+
 
   return (
     <div className="mb-16">

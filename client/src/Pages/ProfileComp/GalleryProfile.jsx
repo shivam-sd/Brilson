@@ -16,7 +16,6 @@ const GalleryProfile = ({ isActive = false, sectionId, refProp }) => {
       category: "Design",
       description: "Latest design project presentation",
       date: "Jan 2024",
-      likes: 42,
       tags: ["Design", "UI/UX", "Presentation"]
     },
     {
@@ -95,10 +94,6 @@ const GalleryProfile = ({ isActive = false, sectionId, refProp }) => {
                 <p className="text-gray-300 text-xs mb-2">{item.description}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400 text-xs">{item.date}</span>
-                  <div className="flex items-center gap-1">
-                    <Heart size={12} className="text-red-400" />
-                    <span className="text-xs text-gray-300">{item.likes}</span>
-                  </div>
                 </div>
               </div>
             </div>
