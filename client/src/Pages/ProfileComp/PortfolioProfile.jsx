@@ -34,7 +34,7 @@ const id = activationCode;
         setPortfolio(portfolioData);
       } catch (err) {
         console.error(err);
-        toast.error("Failed to load portfolio");
+        // toast.error("Failed to load portfolio");
       } finally {
         setLoading(false);
       }

@@ -1,44 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   CameraIcon, X, ChevronLeft, ChevronRight, 
   Maximize2, Download, Share2, Heart
 } from "lucide-react";
+import axios from "axios";
 
-const GalleryProfile = ({ isActive = false, sectionId, refProp }) => {
-  // Gallery data 
-  const galleryData = [
-    {
-      id: 1,
-      image: "https://images.unsplash.com/photo-1558655146-364adaf1fcc9?w=800&h=800&fit=crop",
-      thumbnail: "https://images.unsplash.com/photo-1558655146-364adaf1fcc9?w=400&h=400&fit=crop",
-      title: "Project Showcase",
-      category: "Design",
-      description: "Latest design project presentation",
-      date: "Jan 2024",
-      tags: ["Design", "UI/UX", "Presentation"]
-    },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=800&h=800&fit=crop",
-      thumbnail: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=400&h=400&fit=crop",
-      title: "Team Collaboration",
-    },
-    {
-      id: 3,
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=800&fit=crop",
-      thumbnail: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=400&fit=crop",
-      title: "Product Launch",
-    },
-    {
-      id: 4,
-      image: "https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?w=800&h=800&fit=crop",
-      thumbnail: "https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?w=400&h=400&fit=crop",
-      title: "Client Meeting",
+const GalleryProfile = ({activationCode}) => {
+  
+  const [gallery, setGallery] = useState([]);
 
-    },
-  ];
 
+  const id = activationCode;
+const token = localStorage.getItem('token');
+
+
+  useEffect(() => {
+    const fetchGalleryData = async () => {
+       const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/profile-gallery/all/get/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+        );
+
+        const galleryData = res.data.data;
+        setGallery(galleryData);
+    }
+    fetchGalleryData();
+  },[id]);
 
 
   // Handle image click
@@ -57,12 +48,12 @@ const GalleryProfile = ({ isActive = false, sectionId, refProp }) => {
   };
 
   return (
-    <div className="mb-16" id={sectionId} ref={refProp}>
+    <div className="mb-16">
      
      
      {/* Gallery Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {galleryData.map((item, index) => (
+        {gallery.map((item, index) => (
           <motion.div
             key={item.id}
             initial={{ opacity: 0, scale: 0.9 }}
@@ -74,7 +65,7 @@ const GalleryProfile = ({ isActive = false, sectionId, refProp }) => {
           >
             {/* Image */}
             <img
-              src={item.thumbnail}
+              src={item.image}
               alt={item.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
@@ -93,7 +84,7 @@ const GalleryProfile = ({ isActive = false, sectionId, refProp }) => {
                 <h4 className="text-white font-bold text-sm mb-1">{item.title}</h4>
                 <p className="text-gray-300 text-xs mb-2">{item.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-xs">{item.date}</span>
+                  <span className="text-gray-400 text-xs">{new Date(item.date).toLocaleString()}</span>
                 </div>
               </div>
             </div>

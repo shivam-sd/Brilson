@@ -33,6 +33,29 @@ const PublicProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isPublicView, setIsPublicView] = useState(true);
+  const [logo, setLogo] = useState();
+
+
+
+
+  // fetch profile logo
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/profile-logo/get/${slug}`
+        );
+
+        setLogo(res.data.profileLogo.image);
+      } catch (err) {
+        // toast.error("Failed to load logo");
+      }
+    };
+
+    fetchLogo();
+  }, [slug]);
+
+
 
   // Fetch profile data for public view
   useEffect(() => {
@@ -263,7 +286,7 @@ const PublicProfilePage = () => {
                 <div className="relative mb-2">
                   <div className="relative w-36 h-36 rounded-full overflow-hidden border-4 border-[#E1C48A] shadow-xl">
                     <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKaiKiPcLJj7ufrj6M2KaPwyCT4lDSFA5oog&s"
+                      src={`${logo}`}
                       alt={profileData.name}
                       className="w-full h-full object-cover"
                     />
@@ -413,25 +436,25 @@ const PublicProfilePage = () => {
                 {/* Portfolio */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold mb-3 text-gray-300">Portfolio:</h3>
-                  <PortfolioProfile />
+                  <PortfolioProfile activationCode={slug} />
                 </div>
 
                 {/* Product */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold mb-3 text-gray-300">Products:</h3>
-                  <ProductsProfile />
+                  <ProductsProfile activationCode={slug} />
                 </div>
 
                 {/* Services */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold mb-3 text-gray-300">Services:</h3>
-                  <ServicesProfile />
+                  <ServicesProfile activationCode={slug} />
                 </div>
 
                 {/* Gallery */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold mb-3 text-gray-300">Gallery:</h3>
-                  <GalleryProfile />
+                  <GalleryProfile activationCode={slug} />
                 </div>
 
                 {/* QR Code Section */}

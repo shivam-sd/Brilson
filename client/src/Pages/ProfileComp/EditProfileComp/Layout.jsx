@@ -14,7 +14,8 @@ import {
   Palette,
   Shield,
   Bell,
-  Search
+  Search,
+  Edit2
 } from 'lucide-react';
 
 const Layout = () => {
@@ -34,6 +35,13 @@ const Layout = () => {
       id: 'profile',
       path: '',
       label: 'Edit Profile',
+      icon: <Edit2 size={20} />,
+      badge: null
+    },
+    {
+      id: 'profile',
+      path: 'Profile-logo',
+      label: 'Profile',
       icon: <User size={20} />,
       badge: null
     },

@@ -37,12 +37,35 @@ const ProfilePage = () => {
   const [referralCode, setReferralCode] = useState('');
   const [showReferralTooltip, setShowReferralTooltip] = useState(false);
   const [userId, setUserId] = useState(null);
-  
+  const [logo, setLogo] = useState();
+
+
   // Refs for section observation
   const aboutRef = useRef(null);
   const connectRef = useRef(null);
   
   const [activeSection, setActiveSection] = useState("about");
+
+
+
+  // GET PROFILE LOGO
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/profile-logo/get/${slug}`
+        );
+
+        setLogo(res.data.profileLogo.image);
+      } catch (err) {
+        // toast.error("Failed to load logo");
+      }
+    };
+
+    fetchLogo();
+  }, [slug]);
+
+
 
 
   // Get balance and referral code
@@ -379,7 +402,7 @@ const ProfilePage = () => {
                 <div className="relative mb-2">
                   <div className="relative w-36 h-36 rounded-full overflow-hidden border-4 border-[#E1C48A] shadow-xl">
                     <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKaiKiPcLJj7ufrj6M2KaPwyCT4lDSFA5oog&s"
+                      src={`${logo}`}
                       alt={profileData.name}
                       className="w-full h-full object-cover"
                     />
@@ -562,7 +585,7 @@ const ProfilePage = () => {
 {/* Gallery */}
 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                 <h3 className="text-2xl font-bold mb-3 text-gray-300">Gallery:</h3>
-                  <GalleryProfile />
+                  <GalleryProfile activationCode={slug} />
                 </div>
 
 

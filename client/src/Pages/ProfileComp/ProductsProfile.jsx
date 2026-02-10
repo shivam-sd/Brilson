@@ -30,7 +30,7 @@ const id = activationCode;
         setProducts(productsData);
       } catch (err) {
         console.error(err);
-        toast.error("Failed to load products");
+        // toast.error("Failed to load products");
       } finally {
         setLoading(false);
       }

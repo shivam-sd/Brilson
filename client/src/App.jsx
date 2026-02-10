@@ -65,6 +65,9 @@ import AddPortfolio from "./Pages/ProfileComp/EditProfileComp/ProfilePortfolio/A
 import UpdatePortfolio from "./Pages/ProfileComp/EditProfileComp/ProfilePortfolio/UpdatePortfolio";
 import AddServices from "./Pages/ProfileComp/EditProfileComp/ProfileServices/AddServices";
 import UpdateServices from "./Pages/ProfileComp/EditProfileComp/ProfileServices/UpdateServices";
+import AddGallery from "./Pages/ProfileComp/EditProfileComp/ProfileGallery/AddGallery";
+import UpdateGallery from "./Pages/ProfileComp/EditProfileComp/ProfileGallery/UpdateGallery";
+import ProfileLogoEdit from "./Pages/ProfileComp/EditProfileComp/ProfileLogoEdit";
 
 
 
@@ -132,6 +135,7 @@ function App() {
 
           <Route path="/profile/edit/:id" element={<Layout />}>
   <Route index element={<EditProfile />} />
+  <Route path="Profile-logo" element={<ProfileLogoEdit />} />
   <Route path="portfolio" element={<PortfolioEditProfile />} />
   <Route path="services" element={<ServicesEditProfile />} />
   <Route path="products" element={<ProductsEditProfile />} />
@@ -144,6 +148,8 @@ function App() {
   <Route path="/profile/portfolio/update/:id" element={<UpdatePortfolio />} />
   <Route path="/profile/services/add/:id" element={<AddServices />} />
   <Route path="/profile/services/update/:id" element={<UpdateServices />} />
+  <Route path="/profile/gallery/add/:id" element={<AddGallery />} />
+  <Route path="/profile/gallery/update/:id" element={<UpdateGallery />} />
 
 
 

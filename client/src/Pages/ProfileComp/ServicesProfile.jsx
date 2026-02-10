@@ -32,7 +32,7 @@ const ServicesProfile = ({ activationCode}) => {
         );
         setServices(res.data.data);
       }catch(err){
-        toast.error("Failed to load services");
+        // toast.error("Failed to load services");
       }
     }
     fetchServices();
