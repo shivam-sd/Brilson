@@ -68,6 +68,7 @@ import UpdateServices from "./Pages/ProfileComp/EditProfileComp/ProfileServices/
 import AddGallery from "./Pages/ProfileComp/EditProfileComp/ProfileGallery/AddGallery";
 import UpdateGallery from "./Pages/ProfileComp/EditProfileComp/ProfileGallery/UpdateGallery";
 import ProfileLogoEdit from "./Pages/ProfileComp/EditProfileComp/ProfileLogoEdit";
+import UpdatePaymentQR from "./Admin/ProfilePaymentQr/UpdateProfilePaymentQr";
 
 
 
@@ -232,6 +233,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SellingOverview />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="profile-payment-qr"
+              element={
+                <ProtectedRoute>
+                  <UpdatePaymentQR />
                 </ProtectedRoute>
               }
             />

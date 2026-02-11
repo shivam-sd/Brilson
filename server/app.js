@@ -40,6 +40,7 @@ const ProfilePortfolioRouter = require("./routes/ProfileRoutes/ProfilePortfolio"
 const ProfileServicesRouter = require("./routes/ProfileRoutes/ProfileServices");
 const ProfileGalleryRouter = require("./routes/ProfileRoutes/ProfileGallery");
 const ProfileLogoRouter = require("./routes/ProfileRoutes/ProfileLogo");
+const PaymentQRRouter = require("./routes/ProfileRoutes/PaymentQR.route");
 
 
 
@@ -111,6 +112,7 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   app.use("/api/profile-services", ProfileServicesRouter);
   app.use("/api/profile-gallery", ProfileGalleryRouter);
   app.use("/api/profile-logo", ProfileLogoRouter);
+  app.use("/api/profile-paymentQr", PaymentQRRouter);
 
   
 

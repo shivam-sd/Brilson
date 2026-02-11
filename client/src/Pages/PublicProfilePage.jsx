@@ -34,6 +34,25 @@ const PublicProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [isPublicView, setIsPublicView] = useState(true);
   const [logo, setLogo] = useState();
+  const [preview, setPreview] = useState(null);
+
+
+  // fetch paymetn qr
+  useEffect(() => {
+    const fetchqr = async () => {
+        try{
+            const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/profile-paymentQr/get`);
+
+            // console.log(res)
+            setPreview(res.data.paymentqr.image);
+
+        }catch(err){
+            console.log(err);
+        }
+    }
+    fetchqr();
+  },[]);
+
 
 
 
@@ -110,6 +129,18 @@ const PublicProfilePage = () => {
       toast.success('Profile link copied!');
     }
   };
+
+
+    const handleDownloadQr = (url) => {
+  if (!url) return;
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "payment-qr.png";
+  link.target = "_blank"
+  link.click();
+};
+
 
   if (loading) {
     return (
@@ -461,8 +492,8 @@ const PublicProfilePage = () => {
                 <div className="mt-16 p-8 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-2xl text-center">
                   <div className="max-w-md mx-auto">
                     <h3 className="text-xl font-bold text-[#E1C48A] mb-6">Digital Business Card</h3>
-                    <div className="w-32 h-32 bg-white rounded-2xl mx-auto mb-6 flex items-center justify-center">
-                      <QrCode size={50} className="text-black" />
+                                        <div className="w-32 h-32  bg-white rounded-2xl mx-auto mb-6">
+                      <img src={preview} alt="" className="w-ful h-full object-cover" />
                     </div>
                     <p className="text-gray-400 text-md mb-8">
                       Scan to save contact or visit profile instantly
@@ -474,9 +505,12 @@ const PublicProfilePage = () => {
                       >
                         Share Profile
                       </button>
-                      <button className="px-8 py-3 bg-gradient-to-r from-white/10 to-transparent border border-white/10 rounded-xl text-white hover:border-[#E1C48A]/40 transition-colors">
-                        Download QR
-                      </button>
+                                           <button
+  onClick={() => handleDownloadQr(preview)}
+  className="px-8 py-3 bg-gradient-to-r from-white/10 to-transparent border border-white/10 rounded-xl text-white hover:border-[#E1C48A]/40 transition-colors cursor-pointer"
+>
+  Download QR
+</button>
                     </div>
                   </div>
                 </div>

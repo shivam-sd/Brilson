@@ -10,7 +10,7 @@ const AdminProducts = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
 
-  /* ================= FETCH PRODUCTS ================= */
+  /*  FETCH PRODUCTS  */
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -30,12 +30,12 @@ const AdminProducts = () => {
     fetchProducts();
   }, []);
 
-  /* ================= FILTER ================= */
+  /*  FILTER  */
   const filteredProducts = products.filter((p) =>
     p.title?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  /* ================= PRICE FORMAT ================= */
+  /*  PRICE FORMAT  */
   const formatPrice = (price) => {
     if (!price && price !== 0) return "N/A";
     return new Intl.NumberFormat('en-IN', {
@@ -45,7 +45,7 @@ const AdminProducts = () => {
     }).format(price);
   };
 
-  /* ================= DELETE ================= */
+  /*  DELETE  */
   const handleDeleteProduct = async (id) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 

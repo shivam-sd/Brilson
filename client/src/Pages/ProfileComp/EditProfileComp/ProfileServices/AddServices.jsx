@@ -67,7 +67,7 @@ const AddServices = () => {
       );
 
       toast.success("Service Added");
-      navigate(`/profile/edit/${id}`);
+      navigate(`/profile/edit/${id}`, {replace:true});
 
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");

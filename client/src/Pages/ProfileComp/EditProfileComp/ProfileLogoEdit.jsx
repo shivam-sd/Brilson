@@ -14,6 +14,9 @@ const ProfileLogoEdit = () => {
   const [loading, setLoading] = useState(false);
   const [showUpdateBtn, setShowUpdateBtn] = useState(false); 
 
+
+  // console.log("activation code", id);
+
   // GET PROFILE LOGO
   useEffect(() => {
     const fetchLogo = async () => {
@@ -69,7 +72,7 @@ const ProfileLogoEdit = () => {
 
       setShowUpdateBtn(false); 
       setPreview(null);
-      navigate(`/profile/edit/${id}`);
+      navigate(`/profile/edit/${id}`, {replace:true});
     } catch (err) {
       toast.error("Upload failed");
     } finally {

@@ -84,7 +84,7 @@ const UpdateGallery = () => {
 
       setForm({ title: "", description: "", duration: "", category: "", image: null,  });
       setPreview(null);
-      navigate(`/profile/edit/${res.data.data.activationCode}`);
+      navigate(`/profile/edit/${res.data.data.activationCode}`, {replace:true});
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
       console.log(err);

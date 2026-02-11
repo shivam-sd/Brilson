@@ -57,7 +57,7 @@ const AddGallery = () => {
 
       setForm({ title: "", description: "", duration: "", category: "", image: null,  });
       setPreview(null);
-      navigate(`/profile/edit/${id}`);
+      navigate(`/profile/edit/${id}`, {replace:true});
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
       console.log(err);

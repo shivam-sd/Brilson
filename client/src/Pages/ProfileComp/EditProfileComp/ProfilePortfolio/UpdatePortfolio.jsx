@@ -89,7 +89,7 @@ useEffect(() => {
 
       setForm({ title: "", description: "", duration: "", image: null,  });
       setPreview(null);
-      navigate(`/profile/edit/${activationCode}`);
+      navigate(`/profile/edit/${activationCode}`, {replace:true});
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
       console.log(err);
