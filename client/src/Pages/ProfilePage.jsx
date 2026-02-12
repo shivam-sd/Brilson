@@ -171,9 +171,9 @@ const ProfilePage = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${profileData.name}'s Profile`,
-          text: profileData.bio || `Connect with ${profileData.name}`,
-          url: window.location.href,
+          // title: `${profileData.name}'s Profile`,
+          // text: profileData.bio || `Connect with ${profileData.name}`,
+          url: `https://brilson.in/public/profile/${slug}`,
         });
       } catch (error) {
         console.log('Sharing cancelled');
@@ -378,9 +378,16 @@ const ProfilePage = () => {
                   className="flex items-center"
                 >
                   {/* <h2 className="text-2xl font-bold text-[#E1C48A]">BRILSON</h2> */}
-                     <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+                     {/* <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
                 Brilson
-              </div>
+              </div> */}
+              <button
+                        onClick={handleShare}
+                        className="px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
+                      >
+                        Share Profile
+                      </button>
+
                 </motion.div>
               </div>
               
@@ -632,14 +639,7 @@ const ProfilePage = () => {
                     <p className="text-gray-400 text-md mb-8">
                       Scan to save contact or visit profile instantly
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <button
-                        onClick={handleShare}
-                        className="px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity"
-                      >
-                        Share Profile
-                      </button>
-                      <button
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">                      <button
   onClick={() => handleDownloadQr(preview)}
   className="px-8 py-3 bg-gradient-to-r from-white/10 to-transparent border border-white/10 rounded-xl text-white hover:border-[#E1C48A]/40 transition-colors cursor-pointer"
 >

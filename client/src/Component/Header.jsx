@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FaUser } from "react-icons/fa";
 import { FaRegUserCircle } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
-import { IoIosArrowDown, IoMdArrowDropdownCircle, IoMdArrowDroprightCircle } from "react-icons/io";
+import { IoIosArrowDown, IoMdArrowDropdownCircle, IoMdArrowDroprightCircle, IoMdMenu } from "react-icons/io";
 import axios from "axios";
 import LogoSection from "./LogoSection";
 
@@ -121,7 +121,7 @@ const Header = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center text-white text-2xl font-semibold"
+            className="lg:flex hidden flex items-center text-white text-2xl font-semibold"
           >
             {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
                          <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
@@ -244,17 +244,8 @@ const Header = () => {
         {/* MOBILE ACTIONS */}
         <div className="md:hidden flex items-center gap-5">
 
-          {/* CART */}
-          <Link to="/your-items" className="relative text-2xl text-white">
-            <LuShoppingCart />
-            {cartCount > 0 && (
-              <span className="absolute -top-3 -right-3 w-6 h-6 bg-cyan-500 text-white rounded-full text-sm flex items-center justify-center font-bold">
-                {cartCount}
-              </span>
-            )}
-          </Link>
 
-          {/* PROFILE */}
+{/* PROFILE */}
           {!isLoggedIn ? (
             <Link to="/login">
               <FaUser className="text-2xl text-white cursor-pointer" />
@@ -262,14 +253,14 @@ const Header = () => {
           ) : (
             <div className="relative">
               <div className="p-2 rounded-full border-2 border-white/20 flex items-center justify-center">
-              <FaRegUserCircle
+              <IoMdMenu
                 className="text-2xl text-white cursor-pointer"
                 onClick={() => setMobileProfileOpen(!mobileProfileOpen)}
                 />
                 </div>
 
               {mobileProfileOpen && (
-                <div className="absolute right-0 top-10 bg-gray-900 border border-white/20 rounded-lg shadow-xl min-w-[160px] z-50">
+                <div className="absolute left-0 top-15 bg-gray-900 border border-white/20 rounded-lg shadow-xl min-w-[160px] z-50">
                   <div className="flex flex-col p-2 gap-1">
 
                     {myCardProfile ? (
@@ -330,13 +321,13 @@ const Header = () => {
                       </button>
                     )}
 
-                    <Link
+                    {/* <Link
                       to="/orders"
                       onClick={() => setMobileProfileOpen(false)}
                       className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
                     >
                       My Orders
-                    </Link>
+                    </Link> */}
 
                     <button
                       onClick={handleLogout}
@@ -350,6 +341,44 @@ const Header = () => {
               )}
             </div>
           )}
+
+
+
+          {/* LOGO */}
+        <Link to="/">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center text-white text-2xl font-semibold"
+          >
+            {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
+                         <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+                Brilson
+              </div>
+          </motion.div>
+        </Link>
+
+
+
+
+          {/* CART */}
+          <Link to="/your-items" className="relative text-2xl text-white">
+            <LuShoppingCart />
+            {cartCount > 0 && (
+              <span className="absolute -top-3 -right-3 w-6 h-6 bg-cyan-500 text-white rounded-full text-sm flex items-center justify-center font-bold">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
+
+            <Link
+                      to="/orders"
+                      onClick={() => setMobileProfileOpen(false)}
+                      className="hover:bg-gray-800 rounded text-gray-300 hover:text-white"
+                    >
+                      My Orders
+                    </Link>
         </div>
 
       </div>
