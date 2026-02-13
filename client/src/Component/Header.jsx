@@ -7,6 +7,7 @@ import { LuShoppingCart } from "react-icons/lu";
 import { IoIosArrowDown, IoMdArrowDropdownCircle, IoMdArrowDroprightCircle, IoMdMenu } from "react-icons/io";
 import axios from "axios";
 import LogoSection from "./LogoSection";
+import {BookCheck} from "lucide-react";
 
 
 // import UserAllCards from "./UserAllCards";
@@ -242,7 +243,7 @@ const Header = () => {
         </div>
 
         {/* MOBILE ACTIONS */}
-        <div className="md:hidden flex items-center gap-5">
+        <div className="md:hidden flex items-center justify-between w-full">
 
 
 {/* PROFILE */}
@@ -363,7 +364,7 @@ const Header = () => {
 
           {/* CART */}
           <Link to="/your-items" className="relative text-2xl text-white">
-            <LuShoppingCart />
+            <LuShoppingCart size={28} />
             {cartCount > 0 && (
               <span className="absolute -top-3 -right-3 w-6 h-6 bg-cyan-500 text-white rounded-full text-sm flex items-center justify-center font-bold">
                 {cartCount}
@@ -377,7 +378,8 @@ const Header = () => {
                       onClick={() => setMobileProfileOpen(false)}
                       className="hover:bg-gray-800 rounded text-gray-300 hover:text-white"
                     >
-                      My Orders
+                      {/* My Orders */}
+                      <BookCheck size={28} />
                     </Link>
         </div>
 

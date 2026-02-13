@@ -25,6 +25,10 @@ import ServicesProfile from "./ProfileComp/ServicesProfile";
 import PortfolioProfile from "./ProfileComp/PortfolioProfile";
 import ProductsProfile from "./ProfileComp/ProductsProfile";
 import GalleryProfile from "./ProfileComp/GalleryProfile";
+import ProfileFooter from "./ProfileComp/EditProfileComp/ProfileFooter";
+import downloadCSV from "./ProfileComp/SaveCSVfileContact";
+
+
 
 const ProfilePage = () => {
   const { slug } = useParams();
@@ -33,7 +37,7 @@ const ProfilePage = () => {
   const [id, setId] = useState(null);
   const [showEditButton, setShowEditButton] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [balance, setBalance] = useState(0);
+  // const [balance, setBalance] = useState(0);
   const [referralCode, setReferralCode] = useState('');
   const [showReferralTooltip, setShowReferralTooltip] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -85,29 +89,6 @@ const ProfilePage = () => {
 
 
 
-
-  // Get balance and referral code
-  useEffect(() => {
-    const fetchBalance = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/users/balance`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setBalance(res.data.Balance);
-        setReferralCode(res.data.referalCode);
-        setUserId(res.data.userId);
-      } catch (err) {
-        setBalance(0);
-        console.log(err);
-      }
-    };
-    fetchBalance();
-  }, []);
-
   // Fetch profile data
   useEffect(() => {
     const fetchProfile = async () => {
@@ -158,6 +139,8 @@ const ProfilePage = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  
+
 
   const handleWhatsApp = () => {
     if (profileData.phone) {
@@ -165,6 +148,21 @@ const ProfilePage = () => {
       window.open(`https://wa.me/${phoneNumber}`, '_blank');
     }
   };
+
+   const handlePhone = () => {
+    if (profileData.phone) {
+      const phoneNumber = profileData.phone.replace(/\D/g, '');
+      window.open(`tel:${phoneNumber}`);
+    }
+  };
+
+
+  const handleEmail = () => {
+    console.log(profileData.email);
+  if (profileData.email) {
+    window.location.href = `mailto:${profileData.email}`;
+  }
+};
 
 
   const handleShare = async () => {
@@ -193,6 +191,9 @@ const ProfilePage = () => {
   link.target = "_blank"
   link.click();
 };
+
+
+
 
 
 
@@ -337,6 +338,17 @@ const ProfilePage = () => {
 
 
 
+// set Contact Data for the csv 
+const contact = {
+  name:profileData.name,
+  phone:profileData.phone,
+  email:profileData.email,
+  company:profileData.company,
+  website:profileData.website,
+}
+
+
+
   return (
     <>
       <Toaster 
@@ -401,19 +413,6 @@ const ProfilePage = () => {
                     <FiEdit size={16} /> Edit Profile
                   </Link>
                 )}
-                
-                <motion.div 
-                  whileHover={{ scale: 1.05 }}
-                  className="relative group"
-                >
-                  <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#E1C48A]/10 to-[#C9A86A]/10 border border-[#E1C48A]/30 rounded-lg hover:border-[#E1C48A]/50 transition-all">
-                    <Wallet className="text-[#E1C48A]" size={18} />
-                    <div className="flex flex-col">
-                      <p className="text-xs text-gray-400">Balance</p>
-                      <p className="font-bold text-lg text-[#E1C48A]">₹{balance}</p>
-                    </div>
-                  </button>
-                </motion.div>
               </div>
             </div>
           </div>
@@ -465,7 +464,7 @@ const ProfilePage = () => {
                 <ContactButton
                   icon={<Phone />}
                   label="Call"
-                  onClick={() => copyText(profileData.phone)}
+                  onClick={handlePhone}
                   color="#FF7F11"
                 />
                 <ContactButton
@@ -477,13 +476,13 @@ const ProfilePage = () => {
                 <ContactButton
                   icon={<FiMail />}
                   label="Email"
-                  onClick={() => copyText(profileData.email)}
+                  onClick={handleEmail}
                   color="#FF7F11"
                 />
                 <ContactButton
                   icon={<FiUserPlus />}
                   label="Save Contact"
-                  onClick={handleShare}
+                  onClick={() => {downloadCSV(contact)}}
                   color="#FF7F11"
                 />
               </div>
@@ -654,6 +653,7 @@ const ProfilePage = () => {
             
             </div>
           </motion.div>
+          <ProfileFooter />
         </div>
       </div>
     </>

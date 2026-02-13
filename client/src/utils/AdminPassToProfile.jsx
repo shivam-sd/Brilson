@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import Header from "../Component/Header";
 import Footer from "../Component/Footer";
+import {Wallet} from "lucide-react";
 
 const AdminPassToProfile = () => {
    const [referralCode, setReferralCode] = useState('');
@@ -22,6 +23,7 @@ const AdminPassToProfile = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [activeFilter, setActiveFilter] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
+  const [balance, setBalance] = useState(0);
 
   // Fetch user ID first
   const fetchMyActiveCard = async () => {
@@ -84,6 +86,28 @@ const AdminPassToProfile = () => {
   }, [userId]);
 
 
+  // // Get balance and referral code
+  // useEffect(() => {
+  //   const fetchBalance = async () => {
+  //     try {
+  //       const token = localStorage.getItem('token');
+  //       const res = await axios.get(
+  //         `${import.meta.env.VITE_BASE_URL}/api/users/balance`,
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  //       setBalance(res.data.Balance);
+  //       setReferralCode(res.data.referalCode);
+  //       setUserId(res.data.userId);
+  //     } catch (err) {
+  //       setBalance(0);
+  //       console.log(err);
+  //     }
+  //   };
+  //   fetchBalance();
+  // }, []);
+
 
 
 // Get balance and referral code
@@ -98,8 +122,11 @@ const AdminPassToProfile = () => {
           }
         );
         setReferralCode(res.data.referalCode);
+        setBalance(res.data.Balance);
+        setUserId(res.data.userId);
         // console.log(res.data)
       } catch (err) {
+            setBalance(0);
         console.log(err);
       }
     };
@@ -264,7 +291,10 @@ const AdminPassToProfile = () => {
           ))}
         </div>
 
+
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          
           {/* Referral Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -272,7 +302,24 @@ const AdminPassToProfile = () => {
             transition={{ delay: 0.1 }}
             className="relative mb-8"
           >
-            <div className="w-full flex items-center justify-center py-12 border border-white/20 rounded-2xl bg-gradient-to-r to-gray-900/40 via-gray-900/30 from-gray-900/20">
+
+            
+            <div className="w-full flex flex-col gap-5 items-center justify-evenly py-12 border border-white/20 rounded-2xl bg-gradient-to-r to-gray-900/40 via-gray-900/30 from-gray-900/20">
+
+<motion.div 
+                  whileHover={{ scale: 1.05 }}
+                  className="relative group"
+                >
+                  <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#E1C48A]/10 to-[#C9A86A]/10 border border-[#E1C48A]/30 rounded-lg hover:border-[#E1C48A]/50 transition-all">
+                    <Wallet className="text-[#E1C48A]" size={18} />
+                    <div className="flex flex-col">
+                      <p className="text-xs text-gray-400">Balance</p>
+                      <p className="font-bold text-lg text-[#E1C48A]">₹{balance}</p>
+                    </div>
+                  </button>
+                </motion.div>
+
+
               <div className="p-6 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 border border-white/10">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-2 rounded-lg bg-gradient-to-r from-yellow-500/20 to-amber-500/20">
@@ -304,7 +351,9 @@ const AdminPassToProfile = () => {
                             <FiCopy className="text-yellow-400" size={20} />
                           )}
                         </motion.button>
+
                       </div>
+
                     </div>
                     
                     {/* Decorative Elements */}
@@ -313,8 +362,12 @@ const AdminPassToProfile = () => {
                   </div>
                 </div>
               </div>
+
             </div>
+            
           </motion.div>
+
+          
 
           {/* Cards Dropdown Section
           {cards.length > 0 && (

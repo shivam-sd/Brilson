@@ -104,7 +104,7 @@ const handleSubmit = async (e) => {
 
       setTimeout(() => {
         // navigate(`/profile/${id}`)
-        navigate(`/admin/passTo/Profile`)
+        navigate(`/profile/${id}`, {replace:true});
       },800)
 
     } catch (err) {

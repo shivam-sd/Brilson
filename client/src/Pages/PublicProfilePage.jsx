@@ -25,6 +25,9 @@ import ServicesProfile from "./ProfileComp/ServicesProfile";
 import PortfolioProfile from "./ProfileComp/PortfolioProfile";
 import ProductsProfile from "./ProfileComp/ProductsProfile";
 import GalleryProfile from "./ProfileComp/GalleryProfile";
+import ProfileFooter from "./ProfileComp/EditProfileComp/ProfileFooter";
+import downloadCSV from "./ProfileComp/SaveCSVfileContact";
+
 
 const PublicProfilePage = () => {
   const { slug } = useParams();
@@ -246,6 +249,17 @@ const PublicProfilePage = () => {
   </motion.a>
 );
 
+
+
+// set Contact Data for the csv 
+const contact = {
+  name:profileData.name,
+  phone:profileData.phone,
+  email:profileData.email,
+  company:profileData.company,
+  website:profileData.website,
+}
+
   return (
     <>
       <Toaster 
@@ -278,7 +292,7 @@ const PublicProfilePage = () => {
         </div>
 
         {/* Public Profile Header */}
-        <div className="sticky top-0 z-50 bg-gradient-to-b from-black/80 via-gray-900/80 to-transparent backdrop-blur-xl border-b border-white/10">
+        {/* <div className="sticky top-0 z-50 bg-gradient-to-b from-black/80 via-gray-900/80 to-transparent backdrop-blur-xl border-b border-white/10">
           <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -286,7 +300,7 @@ const PublicProfilePage = () => {
                   whileHover={{ scale: 1.05 }}
                   className="flex items-center gap-3"
                 >
-                  {/* <h2 className="text-2xl font-bold text-[#E1C48A]">BRILSON</h2> */}
+          
                      <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
                 Brilson
               </div>
@@ -297,7 +311,7 @@ const PublicProfilePage = () => {
               
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Main Profile Container */}
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -360,7 +374,7 @@ const PublicProfilePage = () => {
                 <ContactButton
                   icon={<FiUserPlus />}
                   label="Save Contact"
-                  onClick={handleShare}
+                  onClick={() => {downloadCSV(contact)}}
                   color="#FF7F11"
                 />
               </div>
@@ -517,6 +531,8 @@ const PublicProfilePage = () => {
               </div>
             </div>
           </motion.div>
+
+          <ProfileFooter />
         </div>
 
         
