@@ -3,6 +3,7 @@ import axios from "axios";
 import { Camera, Loader2 } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import imageCompression from "browser-image-compression";
 
 const ProfileLogoEdit = () => {
   const { id } = useParams();
@@ -35,14 +36,32 @@ const ProfileLogoEdit = () => {
   }, [id]);
 
   // HANDLE FILE
-  const handleChange = (e) => {
+  const handleChange = async(e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    setLogo(file);
-    setPreview(URL.createObjectURL(file));
+    try{
 
-    setShowUpdateBtn(true); 
+      const option = {
+      maxSizeMB: 0.5,          
+      maxWidthOrHeight: 800,   
+      useWebWorker: true,
+      }
+
+const compressedFile = await imageCompression(file, option);
+
+console.log("Original:", file.size / 1024, "KB");
+    console.log("Compressed:", compressedFile.size / 1024, "KB");
+
+
+      setLogo(compressedFile);
+      setPreview(URL.createObjectURL(compressedFile));
+      setShowUpdateBtn(true); 
+    }catch(err){
+
+    }
+
+
   };
 
   // UPDATE LOGO

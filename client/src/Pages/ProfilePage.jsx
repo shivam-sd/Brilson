@@ -5,6 +5,8 @@ import {
   FiBriefcase, FiUser, FiFacebook, FiLinkedin,
   FiTwitter, FiInstagram, FiChevronRight
 } from "react-icons/fi";
+import { CiShare2 } from "react-icons/ci";
+import { IoLocationOutline } from "react-icons/io5";
 import { CgWebsite } from "react-icons/cg";
 import { FaWhatsapp, FaYoutube } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
@@ -395,7 +397,7 @@ const contact = {
               </div> */}
               <button
                         onClick={handleShare}
-                        className="px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
+                        className="lg:flex md:flex hidden px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
                       >
                         Share Profile
                       </button>
@@ -447,7 +449,7 @@ const contact = {
                 </div>
 
                 {/* Name and Title */}
-                <h2 className="text-4xl font-bold text-white mb-2">
+                <h2 className="text-4xl font-bold font-Playfair text-white mb-2">
                   {profileData.name}
                 </h2>
                 <p className="text-xl text-yellow-600 mb-1">{profileData.title}</p>
@@ -486,6 +488,13 @@ const contact = {
                   color="#FF7F11"
                 />
               </div>
+
+
+<button onClick={handleShare} className="lg:hidden md:hidden p-2 w-full flex items-center justify-center gap-3 bg-gradient-to-l to-slate-900 from-slate-950 border-2 border-white/10 rounded-lg mb-5">
+<CiShare2 size={24} className="text-yellow-400 font-bold" /> <span className="text-lg">Share Profile</span>
+</button>
+
+
 
            
 
@@ -536,6 +545,25 @@ const contact = {
   </div>
   </div>
 
+<div className="w-full 
+  border border-white/10 
+  p-4 
+  rounded-xl 
+  mb-5 
+  flex items-center gap-3 
+  shadow-lg 
+  bg-gradient-to-r from-slate-900 to-slate-950
+  backdrop-blur-md">
+
+  <IoLocationOutline 
+    size={22} 
+    className="text-yellow-400 shrink-0" 
+  />
+
+  <span className="text-gray-200 text-sm leading-relaxed break-words">
+    {profileData.city}
+  </span>
+</div>
 
 {/* mobile device ke liye */}
 

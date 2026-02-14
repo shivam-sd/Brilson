@@ -210,19 +210,24 @@ const EditCardProfile = async (req, res) => {
     const { id } = req.params;
     const userId = req.user;
 
-    const card = await CardProfileModel.findOne({
-      _id: id,
-      owner: userId,   
+    const updateFields = {};
+
+    // convert body  nested profile updates
+    Object.keys(req.body).forEach((key) => {
+      updateFields[`profile.${key}`] = req.body[key];
     });
+
+    const card = await CardProfileModel.findOneAndUpdate(
+      { _id: id, owner: userId },
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    );
 
     if (!card) {
       return res.status(403).json({
         error: "You are not allowed to edit this profile",
       });
     }
-
-    card.profile = req.body;
-    await card.save();
 
     res.json({
       message: "Profile updated successfully",
@@ -236,7 +241,6 @@ const EditCardProfile = async (req, res) => {
     });
   }
 };
-
 
 
 

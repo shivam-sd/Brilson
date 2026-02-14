@@ -17,6 +17,8 @@ import {
   Search,
   Edit2
 } from 'lucide-react';
+import { TbWorldStar } from "react-icons/tb";
+import { BiSolidContact } from "react-icons/bi";
 
 const Layout = () => {
   const { id } = useParams(); 
@@ -32,17 +34,31 @@ const Layout = () => {
 
   const menuItems = [
     {
-      id: 'profile',
+      id: 'basic-info',
       path: '',
-      label: 'Edit Profile',
+      label: 'Basic Info',
       icon: <Edit2 size={20} />,
       badge: null
     },
     {
-      id: 'profile',
-      path: 'Profile-logo',
+      id: 'profile-logo',
+      path: 'profile-logo',
       label: 'Profile',
       icon: <User size={20} />,
+      badge: null
+    },
+    {
+      id: 'update-contact',
+      path: 'update-contact',
+      label: 'Contact',
+      icon: <BiSolidContact size={20} />,
+      badge: null
+    },
+    {
+      id: 'update-social-links',
+      path: 'update-social-links',
+      label: 'Socail Media',
+      icon: <TbWorldStar size={20} />,
       badge: null
     },
     {
@@ -75,11 +91,6 @@ const Layout = () => {
     }
   ];
 
-  const userStats = [
-    { label: 'Profile Views', value: '1.2K', color: 'text-blue-400' },
-    { label: 'Completion', value: '85%', color: 'text-emerald-400' },
-    { label: 'Last Updated', value: 'Today', color: 'text-amber-400' }
-  ];
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-white">

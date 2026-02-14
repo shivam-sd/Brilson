@@ -6,7 +6,8 @@ import { useParams, useNavigate, replace } from "react-router-dom";
 
 
 
-const EditProfile = () => {
+
+const UpdateProfileConatct = () => {
   const { id } = useParams();
   // console.log(id)
   const navigate = useNavigate();
@@ -14,9 +15,10 @@ const EditProfile = () => {
   const [Id, setId] = useState(null);
 
   const [form, setForm] = useState({
-    name: "",
-    bio: "",
-    about: "",
+    email: "",
+    phone: "",
+    city: "",
+    website: "",
   });
 
 
@@ -34,9 +36,10 @@ setId(res.data.card._id);
 const profile = res.data.card.profile;
 
 setForm({
-    name: profile?.name || "",
-    bio: profile?.bio || "",
-    about: profile?.about || "",
+    email: profile?.email || "",
+    phone: profile?.phone || "",
+    city: profile?.city || "",
+     website: profile?.website || "",
 });
 
 } catch (err) {
@@ -61,10 +64,7 @@ const handleChange = (e) => {
 const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!form.name || !form.email || !form.phone) {
-        toast.error("Name, Email and Phone are required");
-        return;
-    }
+
     // console.log(Id)
 
     try {
@@ -108,20 +108,17 @@ const handleSubmit = async (e) => {
           className="w-full max-w-4xl bg-[#111827] border border-gray-800 rounded-3xl p-8 md:p-10 shadow-2xl"
         >
           <h2 className="text-3xl font-bold text-white text-center">
-            Basic Information
+            Contact
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6 mt-8">
-            <Input label="Full Name" name="name" value={form.name} onChange={handleChange} />
+            <Input label="Email" name="email" value={form.email} onChange={handleChange} />
+            <Input label="Phone" name="phone" value={form.phone} onChange={handleChange} />
+            <Input label="Address" name="city" value={form.city} onChange={handleChange} />
+            <Input label="Website" name="website" value={form.website} onChange={handleChange} />
           </div>
 
-          <div className="mt-6">
-            <Textarea label="Bio" name="bio" value={form.bio} onChange={handleChange} rows={2} />
-          </div>
-
-          <div className="mt-6">
-            <Textarea label="About" name="about" value={form.about} onChange={handleChange} rows={4} />
-          </div>
+        
 
           <motion.button
             disabled={loading}
@@ -148,11 +145,5 @@ const Input = ({ label, ...props }) => (
   </div>
 );
 
-const Textarea = ({ label, ...props }) => (
-  <div>
-    <label className="text-sm text-gray-400 mb-2 block">{label}</label>
-    <textarea {...props} className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white resize-none" />
-  </div>
-);
 
-export default EditProfile;
+export default UpdateProfileConatct;

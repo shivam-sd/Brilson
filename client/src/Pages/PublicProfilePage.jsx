@@ -339,7 +339,7 @@ const contact = {
                 </div>
 
                 {/* Name and Title */}
-                <h2 className="text-4xl font-bold text-white mb-2">
+                <h2 className="text-4xl font-bold font-Playfair text-white mb-2">
                   {profileData.name}
                 </h2>
                 <p className="text-xl text-yellow-600 mb-1">{profileData.title}</p>
