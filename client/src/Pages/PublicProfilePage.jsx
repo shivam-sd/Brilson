@@ -27,6 +27,8 @@ import ProductsProfile from "./ProfileComp/ProductsProfile";
 import GalleryProfile from "./ProfileComp/GalleryProfile";
 import ProfileFooter from "./ProfileComp/EditProfileComp/ProfileFooter";
 import downloadCSV from "./ProfileComp/SaveCSVfileContact";
+import downloadVCF from "./ProfileComp/SaveVCFfile";
+import { CiShare2 } from "react-icons/ci";
 
 
 const PublicProfilePage = () => {
@@ -117,21 +119,21 @@ const PublicProfilePage = () => {
   };
 
   const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${profileData.name}'s Profile`,
-          text: profileData.bio || `Connect with ${profileData.name}`,
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.log('Sharing cancelled');
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            // title: `${profileData.name}'s Profile`,
+            // text: profileData.bio || `Connect with ${profileData.name}`,
+            url: `https://brilson.in/public/profile/${slug}`,
+          });
+        } catch (error) {
+          console.log('Sharing cancelled');
+        }
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        toast.success('Profile link copied!');
       }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success('Profile link copied!');
-    }
-  };
+    };
 
 
     const handleDownloadQr = (url) => {
@@ -191,7 +193,7 @@ const PublicProfilePage = () => {
       whileHover={{ scale: 1.05, y: -2 }}
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 w-full"
+      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 w-full font-Poppins"
     >
         {React.cloneElement(icon, { size: 20, style: { color }  })}
       <span className="font-medium text-white flex-1 text-left">{label}</span>
@@ -205,7 +207,7 @@ const PublicProfilePage = () => {
       href={url.startsWith('http') ? url : `https://${url}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300"
+      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins"
     >
         {React.cloneElement(icon, { size: 20, style: { color } })}
       <span className="font-medium text-white flex-1 text-left">{platform}</span>
@@ -230,7 +232,7 @@ const PublicProfilePage = () => {
       shadow-lg
       hover:border-[#E1C48A]/40
       transition-all duration-300
-      shrink-0
+      shrink-0 font-Poppins
     "
   >
     <div
@@ -292,7 +294,7 @@ const contact = {
         </div>
 
         {/* Public Profile Header */}
-        {/* <div className="sticky top-0 z-50 bg-gradient-to-b from-black/80 via-gray-900/80 to-transparent backdrop-blur-xl border-b border-white/10">
+        <div className="sticky top-0 z-50 bg-gradient-to-b from-black/80 via-gray-900/80 to-transparent backdrop-blur-xl border-b border-white/10">
           <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -301,17 +303,25 @@ const contact = {
                   className="flex items-center gap-3"
                 >
           
-                     <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+                     {/* <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
                 Brilson
-              </div>
+              </div> */}
               
+              <button
+                        onClick={handleShare}
+                        className="lg:flex md:flex hidden px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer font-Poppins"
+                      >
+                        Share Profile
+                      </button>
+
+
                 </motion.div>
               </div>
               
               
             </div>
           </div>
-        </div> */}
+        </div>
 
         {/* Main Profile Container */}
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -342,12 +352,12 @@ const contact = {
                 <h2 className="text-4xl font-bold font-Playfair text-white mb-2">
                   {profileData.name}
                 </h2>
-                <p className="text-xl text-yellow-600 mb-1">{profileData.title}</p>
-                <p className="text-gray-400 mb-6">{profileData.company}</p>
+                <p className="text-xl text-yellow-600 mb-1 font-Poppins">{profileData.title}</p>
+                <p className="text-gray-400 mb-6 font-Poppins">{profileData.company}</p>
                 
                 {/* Tagline */}
                 <div className="px-7 py-2 bg-gradient-to-r from-[#E1C48A]/10 to-[#C9A86A]/10 border border-[#E1C48A]/30 rounded-full">
-                  <p className="text-[#E1C48A] italic text-lg">{profileData.bio}</p>
+                  <p className="text-[#E1C48A] italic text-lg font-Poppins">{profileData.bio}</p>
                 </div>
               </div>
 
@@ -374,10 +384,15 @@ const contact = {
                 <ContactButton
                   icon={<FiUserPlus />}
                   label="Save Contact"
-                  onClick={() => {downloadCSV(contact)}}
+                  onClick={() => {downloadVCF(profileData, logo)}}
                   color="#FF7F11"
                 />
               </div>
+
+
+              <button onClick={handleShare} className="lg:hidden md:hidden p-2 w-full flex items-center justify-center gap-3 bg-gradient-to-l to-slate-900 from-slate-950 border-2 border-white/10 rounded-lg mb-5">
+              <CiShare2 size={24} className="text-yellow-400 font-bold" /> <span className="text-lg font-Poppins">Share Profile</span>
+              </button>
 
               {/* Sections */}
               <div className="space-y-12">
@@ -472,17 +487,17 @@ const contact = {
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold mb-3 text-gray-300">About:</h3>
                   <div>
-                    <p className="text-gray-300 leading-relaxed text-lg">
+                    <p className="text-gray-300 leading-relaxed text-md font-Poppins">
                       {profileData.about}
                     </p>
                   </div>
                 </div>
                 
                 {/* Portfolio */}
-                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                {/* <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold mb-3 text-gray-300">Portfolio:</h3>
                   <PortfolioProfile activationCode={slug} />
-                </div>
+                </div> */}
 
                 {/* Product */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">

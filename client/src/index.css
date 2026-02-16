@@ -18,6 +18,12 @@
     /* --font-Poppins:"Poppins", "sans-serif" */
     --font-Playfair:'Playfair Display', "serif"
 }
+@theme{
+    /* --font-Pacifico:"Space+Grotesk", "sans-serif" */
+    /* --font-Roboto:"Merriweather", "sans-serif" */
+    --font-Poppins:"Poppins", "sans-serif"
+    /* --font-Playfair:'Playfair Display', "serif" */
+}
 
 
 

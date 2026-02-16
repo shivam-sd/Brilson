@@ -28,7 +28,8 @@ import PortfolioProfile from "./ProfileComp/PortfolioProfile";
 import ProductsProfile from "./ProfileComp/ProductsProfile";
 import GalleryProfile from "./ProfileComp/GalleryProfile";
 import ProfileFooter from "./ProfileComp/EditProfileComp/ProfileFooter";
-import downloadCSV from "./ProfileComp/SaveCSVfileContact";
+// import downloadCSV from "./ProfileComp/SaveCSVfileContact";
+import downloadVCF from "./ProfileComp/SaveVCFfile";
 
 
 
@@ -279,7 +280,7 @@ const ProfilePage = () => {
       whileHover={{ scale: 1.05, y: -2 }}
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 w-full"
+      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 w-full font-Poppins"
     >
         {React.cloneElement(icon, { size: 20, style: { color }  })}
       <span className="font-medium text-white flex-1 text-left">{label}</span>
@@ -293,7 +294,7 @@ const ProfilePage = () => {
       href={url.startsWith('http') ? url : `https://${url}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300"
+      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins "
     >
         {React.cloneElement(icon, { size: 20, style: { color } })}
       <span className="font-medium text-white flex-1 text-left">{platform}</span>
@@ -319,7 +320,7 @@ const ProfilePage = () => {
       shadow-lg
       hover:border-[#E1C48A]/40
       transition-all duration-300
-      shrink-0
+      shrink-0 font-Poppins
     "
   >
     <div
@@ -397,7 +398,7 @@ const contact = {
               </div> */}
               <button
                         onClick={handleShare}
-                        className="lg:flex md:flex hidden px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
+                        className="lg:flex md:flex hidden px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer font-Poppins"
                       >
                         Share Profile
                       </button>
@@ -410,7 +411,7 @@ const contact = {
                 {showEditButton && id && (
                   <Link 
                     to={`/profile/edit/${id}`}
-                    className="md:flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all text-sm font-medium flex"
+                    className="md:flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all text-sm font-medium flex font-Poppins"
                   >
                     <FiEdit size={16} /> Edit Profile
                   </Link>
@@ -453,11 +454,11 @@ const contact = {
                   {profileData.name}
                 </h2>
                 <p className="text-xl text-yellow-600 mb-1">{profileData.title}</p>
-                <p className="text-gray-400 mb-6">{profileData.company}</p>
+                <p className="text-gray-400 mb-6 font-semibold font-Poppins">{profileData.company}</p>
                 
                 {/* Tagline */}
                 <div className="px-7 py-2 bg-gradient-to-r from-[#E1C48A]/10 to-[#C9A86A]/10 border border-[#E1C48A]/30 rounded-full">
-                  <p className="text-[#E1C48A] italic text-lg">{profileData.bio}</p>
+                  <p className="text-[#E1C48A] italic text-lg font-Poppins">{profileData.bio}</p>
                 </div>
               </div>
 
@@ -484,7 +485,7 @@ const contact = {
                 <ContactButton
                   icon={<FiUserPlus />}
                   label="Save Contact"
-                  onClick={() => {downloadCSV(contact)}}
+                  onClick={() => {downloadVCF(profileData, logo)}}
                   color="#FF7F11"
                 />
               </div>
@@ -560,7 +561,7 @@ const contact = {
     className="text-yellow-400 shrink-0" 
   />
 
-  <span className="text-gray-200 text-sm leading-relaxed break-words">
+  <span className="text-gray-200 text-sm leading-relaxed break-words font-Poppins">
     {profileData.city}
   </span>
 </div>
@@ -617,7 +618,7 @@ const contact = {
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                 <h3 className="text-2xl font-bold mb-3 text-gray-300">About:</h3>
                   <div>
-                    <p className="text-gray-300 leading-relaxed text-lg">
+                    <p className="text-gray-300 leading-relaxed text-md font-Poppins">
                       {profileData.about}
                     </p>
                   </div>
@@ -625,10 +626,10 @@ const contact = {
                 
 
 {/* Portfolio */}
-<div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+{/* <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                 <h3 className="text-2xl font-bold mb-3 text-gray-300">Portfolio:</h3>
                   <PortfolioProfile activationCode={slug} />
-                </div>
+                </div> */}
 
 
 {/* Product */}

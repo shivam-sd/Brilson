@@ -16,6 +16,7 @@ const UpdateProduct = () => {
     title: "",
     description: "",
     activationCode: id,
+    price:"",
     image: null,
   });
 
@@ -36,6 +37,7 @@ useEffect(() => {
               title: res.data.data.title,
               description: res.data.data.description,
               activationCode: id,
+              price:res.data.data.price,
               image: res.data.data.image,
             });
             setProductId(res.data.data._id);
@@ -72,6 +74,7 @@ useEffect(() => {
       fd.append("activationCode", form.activationCode);
       fd.append("title", form.title);
       fd.append("description", form.description);
+      fd.append("price", form.price);
       if (form.image) fd.append("image", form.image);
 
       const res = await axios.put(
@@ -84,7 +87,7 @@ useEffect(() => {
 
       toast.success("Product Added");
 
-      setForm({ title: "", description: "", duration: "", image: null,  });
+      setForm({ title: "", description: "", duration: "", price:"", image: null,  });
       setPreview(null);
       navigate(`/profile/edit/${activationCode}`, {replace:true});
     } catch (err) {
@@ -145,6 +148,15 @@ useEffect(() => {
           value={form.title}
           onChange={handleChange}
           placeholder="Product Title"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
+        />
+
+        {/* Price */}
+        <input
+          name="price"
+          value={form.price}
+          onChange={handleChange}
+          placeholder="Product Price"
           className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
         />
 

@@ -15,8 +15,18 @@ const EditProfile = () => {
 
   const [form, setForm] = useState({
     name: "",
+    email: "",
+    phone: "",
     bio: "",
     about: "",
+    city: "",
+    company:"",
+    website: "",
+    linkedin: "",
+    twitter: "" ,
+    instagram: "",
+    youtube:"",
+    facebook:"",
   });
 
 
@@ -35,8 +45,18 @@ const profile = res.data.card.profile;
 
 setForm({
     name: profile?.name || "",
+    email: profile?.email || "",
+    phone: profile?.phone || "",
     bio: profile?.bio || "",
     about: profile?.about || "",
+    city: profile?.city || "",
+    company: profile?.company || "",
+    website: profile?.website || "",
+    linkedin: profile?.linkedin || "",
+    twitter: profile?.twitter || "",
+    instagram: profile?.instagram || "",
+    youtube: profile?.youtube || "",
+    facebook: profile?.facebook || "",
 });
 
 } catch (err) {
@@ -113,6 +133,9 @@ const handleSubmit = async (e) => {
 
           <div className="grid md:grid-cols-2 gap-6 mt-8">
             <Input label="Full Name" name="name" value={form.name} onChange={handleChange} />
+            <Input label="Email" name="email" value={form.email} onChange={handleChange} />
+            <Input label="Phone" name="phone" value={form.phone} onChange={handleChange} />
+            <Input label="Address" name="city" value={form.city} onChange={handleChange} />
           </div>
 
           <div className="mt-6">
@@ -128,7 +151,7 @@ const handleSubmit = async (e) => {
             type="submit"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="mt-8 w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-semibold cursor-pointer"
+            className="mt-8 w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-semibold"
           >
             {loading ? "Saving..." : "Save Changes"}
           </motion.button>

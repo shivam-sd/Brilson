@@ -70,7 +70,7 @@ import UpdateGallery from "./Pages/ProfileComp/EditProfileComp/ProfileGallery/Up
 import ProfileLogoEdit from "./Pages/ProfileComp/EditProfileComp/ProfileLogoEdit";
 import EditProfileSocialMedia from "./Pages/ProfileComp/EditProfileComp/ProfileSocialMedial/EditProfileSocialMedia";
 import UpdatePaymentQR from "./Admin/ProfilePaymentQr/UpdateProfilePaymentQr";
-import UpdateProfileConatct from "./Pages/ProfileComp/EditProfileComp/ProfileContact/UpdateProfileConatct";
+// import UpdateProfileConatct from "./Pages/ProfileComp/EditProfileComp/ProfileContact/UpdateProfileConatct";
 
 
 
@@ -140,7 +140,7 @@ function App() {
   <Route index element={<EditProfile />} />
   <Route path="profile-logo" element={<ProfileLogoEdit />} />
   <Route path="update-social-links" element={<EditProfileSocialMedia />} />
-  <Route path="update-contact" element={<UpdateProfileConatct />} />
+  {/* <Route path="update-contact" element={<UpdateProfileConatct />} /> */}
   <Route path="portfolio" element={<PortfolioEditProfile />} />
   <Route path="services" element={<ServicesEditProfile />} />
   <Route path="products" element={<ProductsEditProfile />} />

@@ -133,11 +133,11 @@ const ProductsEditProfile = () => {
                   <h3 className="text-lg font-bold text-white group-hover:text-blue-300 transition-colors duration-300 line-clamp-1 flex-1">
                     {product.title}
                   </h3>
-                  {product.duration && (
+                  {product.price && (
                     <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-blue-900/20 to-blue-800/20 rounded-lg border border-blue-700/30 ml-2 whitespace-nowrap">
-                      <Clock size={14} className="text-blue-400" />
+                      <span className="text-sm font-bold">₹</span> 
                       <span className="text-sm font-medium text-blue-300">
-                        {product.duration}
+                        {product.price}
                       </span>
                     </div>
                   )}

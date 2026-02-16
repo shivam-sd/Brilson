@@ -70,7 +70,7 @@ const id = activationCode;
                   {product.title}
                 </h3>
                 <span className="text-xl font-bold text-[#E1C48A] ml-2 whitespace-nowrap">
-                  {product.price}
+                 <span className="text-lg font-fold">₹</span> {product.price}
                 </span>
               </div>
               

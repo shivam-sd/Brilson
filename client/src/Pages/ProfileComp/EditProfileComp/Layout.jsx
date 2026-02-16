@@ -47,13 +47,13 @@ const Layout = () => {
       icon: <User size={20} />,
       badge: null
     },
-    {
-      id: 'update-contact',
-      path: 'update-contact',
-      label: 'Contact',
-      icon: <BiSolidContact size={20} />,
-      badge: null
-    },
+    // {
+    //   id: 'update-contact',
+    //   path: 'update-contact',
+    //   label: 'Contact',
+    //   icon: <BiSolidContact size={20} />,
+    //   badge: null
+    // },
     {
       id: 'update-social-links',
       path: 'update-social-links',
@@ -61,13 +61,13 @@ const Layout = () => {
       icon: <TbWorldStar size={20} />,
       badge: null
     },
-    {
-      id: 'portfolio',
-      path: 'portfolio',
-      label: 'Portfolio',
-      icon: <Briefcase size={20} />,
-      badge: '3'
-    },
+    // {
+    //   id: 'portfolio',
+    //   path: 'portfolio',
+    //   label: 'Portfolio',
+    //   icon: <Briefcase size={20} />,
+    //   badge: '3'
+    // },
     {
       id: 'services',
       path: 'services',
