@@ -39,12 +39,12 @@ const profile = res.data.card.profile;
 
 setForm({
     company: profile?.company || "",
-    website: profile?.website || "",
-    linkedin: profile?.linkedin || "",
-    twitter: profile?.twitter || "",
-    instagram: profile?.instagram || "",
-    youtube: profile?.youtube || "",
-    facebook: profile?.facebook || "",
+    website: profile?.website || "https://",
+    linkedin: profile?.linkedin || "https://www.linkedin.com/in/",
+    twitter: profile?.twitter || "https://x.com/",
+    instagram: profile?.instagram || "https://www.instagram.com/",
+    youtube: profile?.youtube || "https://youtube.com/",
+    facebook: profile?.facebook || "https://www.facebook.com/",
 });
 
 } catch (err) {

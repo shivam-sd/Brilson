@@ -12,7 +12,6 @@ const UpdateGallery = () => {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    category: "",
     activationCode: id,
     image: null,
   });
@@ -32,7 +31,6 @@ const UpdateGallery = () => {
             setForm({
                   title: res.data.data.title,
     description: res.data.data.description,
-    category: res.data.data.category,
     image: null
             });
 
@@ -69,7 +67,6 @@ const UpdateGallery = () => {
       fd.append("activationCode", form.activationCode);
       fd.append("title", form.title);
       fd.append("description", form.description);
-      fd.append("category", form.category);
       if (form.image) fd.append("image", form.image);
 
       const res = await axios.put(
@@ -82,7 +79,7 @@ const UpdateGallery = () => {
 
       toast.success("Gallery Item Added");
 
-      setForm({ title: "", description: "", duration: "", category: "", image: null,  });
+      setForm({ title: "", description: "", duration: "", image: null,  });
       setPreview(null);
       navigate(`/profile/edit/${res.data.data.activationCode}`, {replace:true});
     } catch (err) {
@@ -152,15 +149,6 @@ const UpdateGallery = () => {
           onChange={handleChange}
           placeholder="Gallery Item Description"
           rows={4}
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
-        />
-
- {/* Category */}
-        <input
-          name="category"
-          value={form.category}
-          onChange={handleChange}
-          placeholder="Gallery Item Category"
           className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
         />
 

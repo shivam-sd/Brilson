@@ -92,11 +92,6 @@ const GalleryEditProfile = () => {
     className="w-full h-52 object-cover group-hover:scale-110 transition duration-500"
   />
 
-  {/* CATEGORY BADGE */}
-  <span className="absolute top-2 left-2 text-xs bg-black/60 px-2 py-1 rounded text-white">
-    {item.category}
-  </span>
-
   {/* DELETE ICON */}
   <MdDelete
     onClick={() => handleDelete(item._id)}

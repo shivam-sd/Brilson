@@ -29,7 +29,10 @@ const ProductSchema = new mongoose.Schema(
     },
     price:{
       type:Number
-    }
+    },
+    link:{
+      type:String
+    },
 
   },
   { timestamps: true }

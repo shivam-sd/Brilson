@@ -14,6 +14,7 @@ const AddProduct = () => {
     description: "",
     activationCode: id,
     price: "",
+    link:"",
     image: null,
   });
 
@@ -43,6 +44,7 @@ const AddProduct = () => {
       fd.append("title", form.title);
       fd.append("description", form.description);
       fd.append("price", form.price);
+      fd.append("link", form.link);
       if (form.image) fd.append("image", form.image);
 
       const res = await axios.post(
@@ -125,6 +127,16 @@ const AddProduct = () => {
           value={form.price}
           onChange={handleChange}
           placeholder="Product Price"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
+        />
+
+
+        {/* Product Link */}
+        <input
+          name="link"
+          value={form.link}
+          onChange={handleChange}
+          placeholder="Product Link"
           className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
         />
 

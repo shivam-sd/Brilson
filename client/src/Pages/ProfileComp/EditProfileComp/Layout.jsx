@@ -145,6 +145,7 @@ const Layout = () => {
             {menuItems.map((item) => (
               <NavLink
                 key={item.id}
+                replace
                 to={`/profile/edit/${id}/${item.path}`}
                 end
                 onClick={() => setIsMobileMenuOpen(false)}

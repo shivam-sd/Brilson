@@ -4,7 +4,7 @@ const cloudinary = require("cloudinary").v2;
 
 const addProduct = async (req, res) => {
   try {
-    const { activationCode, title, description, price } = req.body;
+    const { activationCode, title, description, price, link } = req.body;
     const userId = req.user;
 
     // Find card
@@ -41,7 +41,8 @@ imageUrl = result.secure_url;
       image: imageUrl,
       owner: userId,
       activationCode,
-      price
+      price,
+      link
     });
 
     res.json({
@@ -68,11 +69,12 @@ const updateProduct = async (req, res) => {
 
 
     // Update fields
-    const { title, description, price } = req.body;
+    const { title, description, price, link } = req.body;
 
     if (title) product.title = title;
     if (description) product.description = description;
     if(price) product.price = price;
+    if (link) product.link = link;
 
     // IMAGE UPDATE 
     if (req.files?.image) {

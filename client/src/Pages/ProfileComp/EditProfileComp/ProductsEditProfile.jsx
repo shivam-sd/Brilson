@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { MdDelete } from "react-icons/md";
+import { FaEye } from "react-icons/fa";
+
 import {
   Edit2,
   Trash2,
@@ -148,6 +150,23 @@ const ProductsEditProfile = () => {
                   <p className="text-gray-300 text-sm line-clamp-2 truncate">
                     {product.description}
                   </p>
+
+    {
+      product.link && (<>
+      <Link to={product.link}><FaEye /></Link>
+      </>)
+    }
+
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <Link
+                    to={`/profile/products/update/${product._id}`}
+                    className="bg-blue-600 text-white font-bold p-2 px-6 rounded-lg hover:bg-blue-700 transition-all"
+                  >
+                    Update Product
+                  </Link>
+
                   {/* delete product */}
                   <button>
                     <MdDelete
@@ -156,15 +175,8 @@ const ProductsEditProfile = () => {
                       onClick={() => handleDelete(product._id)}
                     />
                   </button>
-                </div>
 
-                <div className="flex items-center justify-center">
-                  <Link
-                    to={`/profile/products/update/${product._id}`}
-                    className="bg-blue-600 text-white font-bold p-2 px-6 rounded-lg hover:bg-blue-700 transition-all"
-                  >
-                    Update Product
-                  </Link>
+              
                 </div>
               </div>
             </div>

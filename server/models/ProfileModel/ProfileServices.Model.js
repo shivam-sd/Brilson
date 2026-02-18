@@ -27,6 +27,14 @@ const ProfileService = new mongoose.Schema(
       trim: true,
     },
 
+    image:{
+      type:String
+    },
+
+    link:{
+      type:String
+    },
+
     features: [
       {
         type: String,

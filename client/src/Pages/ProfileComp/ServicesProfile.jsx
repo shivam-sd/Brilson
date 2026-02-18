@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { FaEye } from "react-icons/fa";
+
 import { 
   Server, Code, Brush, Smartphone, 
   Cloud, Database, MessageSquare, 
@@ -46,47 +49,65 @@ const ServicesProfile = ({ activationCode}) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {services.map((service, index) => (
           <motion.div
-            key={service.id}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
-            className="group relative bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-2xl p-8 hover:border-[#E1C48A]/30 transition-all duration-500 hover:translate-y-[-8px] cursor-pointer"
-          >
-                    
-            
-            {/* Service Title */}
-            <h3 className="text-xl font-bold text-white mb-4 group-hover:text-[#E1C48A] transition-colors duration-300">
-              {service.title}
-            </h3>
-            
-            {/* Service Description */}
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              {service.description}
-            </p>
-            
-            {/* Features List */}
-            <div className="space-y-3 mb-8">
-              {service.features.map((feature, idx) => (
-                <div key={idx} className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle size={12} className="text-green-400" />
-                  </div>
-                  <span className="text-gray-300 text-sm">{feature}</span>
-                </div>
-              ))}
-            </div>
-            
-            {/* Pricing */}
-            <div className="flex items-center justify-between mb-8 pt-6 border-t border-white/10">
-              <div className="flex items-center justify-center gap-2">
-               
-                    <p className="text-md text-gray-400">Price:-</p>
-                  <p className="text-sm font-bold text-gray-200">{service.price}</p>
+  key={service._id}
+  initial={{ opacity: 0, y: 30 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  transition={{ delay: index * 0.1 }}
+  className="group relative bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-2xl overflow-hidden hover:border-[#E1C48A]/30 transition-all duration-500 hover:-translate-y-2 cursor-pointer"
+>
 
-              </div>
-            </div>
-          </motion.div>
+  {/* IMAGE */}
+  <div className="relative h-48 w-full overflow-hidden">
+    <img
+      src={service.image}
+      alt={service.title}
+      className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+    />
+
+    {/* Overlay */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+    {/* Price Badge */}
+    <div className="absolute top-3 right-3 bg-black/60 backdrop-blur px-3 py-1 rounded-full text-sm font-semibold text-emerald-400 border border-emerald-500/30">
+      ₹ {service.price}
+    </div>
+  </div>
+
+  {/* CONTENT */}
+  <div className="p-6">
+
+    <div className="flex items-center justify-between">
+    {/* Title */}
+    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#E1C48A] transition">
+      {service.title}
+    </h3>
+
+{
+  service.link && (<>
+ <Link to={service.link}><FaEye size={20} /></Link> 
+  </>)
+}
+
+    </div>
+
+    {/* Description */}
+    <p className="text-gray-400 text-sm mb-5 line-clamp-3">
+      {service.description}
+    </p>
+
+    {/* Features */}
+    <div className="space-y-2 mb-6">
+      {service.features?.slice(0,3).map((feature, idx) => (
+        <div key={idx} className="flex items-center gap-2 text-sm text-gray-300">
+          <CheckCircle size={14} className="text-emerald-400" />
+          {feature}
+        </div>
+      ))}
+    </div>
+  </div>
+</motion.div>
+
         ))}
       </div>
 

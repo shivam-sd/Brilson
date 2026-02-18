@@ -17,6 +17,7 @@ const UpdateProduct = () => {
     description: "",
     activationCode: id,
     price:"",
+    link:"",
     image: null,
   });
 
@@ -39,6 +40,7 @@ useEffect(() => {
               activationCode: id,
               price:res.data.data.price,
               image: res.data.data.image,
+              link:res.data.data.link,
             });
             setProductId(res.data.data._id);
             setPreview(res.data.data.image);
@@ -75,6 +77,7 @@ useEffect(() => {
       fd.append("title", form.title);
       fd.append("description", form.description);
       fd.append("price", form.price);
+      fd.append("link", form.link);
       if (form.image) fd.append("image", form.image);
 
       const res = await axios.put(
@@ -157,6 +160,16 @@ useEffect(() => {
           value={form.price}
           onChange={handleChange}
           placeholder="Product Price"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
+        />
+
+
+        {/* Product link */}
+        <input
+          name="link"
+          value={form.link}
+          onChange={handleChange}
+          placeholder="Product Link"
           className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
         />
 

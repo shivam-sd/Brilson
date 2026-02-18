@@ -111,12 +111,6 @@ const PublicProfilePage = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleWhatsApp = () => {
-    if (profileData.phone) {
-      const phoneNumber = profileData.phone.replace(/\D/g, '');
-      window.open(`https://wa.me/${phoneNumber}`, '_blank');
-    }
-  };
 
   const handleShare = async () => {
       if (navigator.share) {
@@ -134,6 +128,29 @@ const PublicProfilePage = () => {
         toast.success('Profile link copied!');
       }
     };
+
+
+    const handleWhatsApp = () => {
+    if (profileData.phone) {
+      const phoneNumber = profileData.phone.replace(/\D/g, '');
+      window.open(`https://wa.me/${phoneNumber}`, '_blank');
+    }
+  };
+
+   const handlePhone = () => {
+    if (profileData.phone) {
+      const phoneNumber = profileData.phone.replace(/\D/g, '');
+      window.open(`tel:${phoneNumber}`);
+    }
+  };
+
+
+    const handleEmail = () => {
+    // console.log(profileData.email);
+  if (profileData.email) {
+    window.location.href = `mailto:${profileData.email}`;
+  }
+};
 
 
     const handleDownloadQr = (url) => {
@@ -290,7 +307,7 @@ const contact = {
               backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)`,
               backgroundSize: '40px 40px'
             }}
-          />
+          /> 
         </div>
 
         {/* Public Profile Header */}
@@ -366,7 +383,7 @@ const contact = {
                 <ContactButton
                   icon={<Phone />}
                   label="Call"
-                  onClick={() => copyText(profileData.phone)}
+                  onClick={handlePhone}
                   color="#FF7F11"
                 />
                 <ContactButton
@@ -378,7 +395,7 @@ const contact = {
                 <ContactButton
                   icon={<FiMail />}
                   label="Email"
-                  onClick={() => copyText(profileData.email)}
+                  onClick={handleEmail}
                   color="#FF7F11"
                 />
                 <ContactButton

@@ -4,6 +4,9 @@ import { ShoppingBag, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { FaEye } from "react-icons/fa";
+
 
 const ProductsProfile = ({activationCode}) => {
   const [loading, setLoading] = useState(true);
@@ -74,10 +77,21 @@ const id = activationCode;
                 </span>
               </div>
               
+              <div className="flex items-center justify-between mb-4">
+
+
               {/* Description */}
-              <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+              <p className="text-gray-300 text-sm line-clamp-2">
                 {product.description}
               </p>
+
+    {
+      product.link && (<>
+      <Link to={product.link}><FaEye /></Link>
+      </>)
+    }
+
+    </div>
             </div>
           </motion.div>
         ))}
