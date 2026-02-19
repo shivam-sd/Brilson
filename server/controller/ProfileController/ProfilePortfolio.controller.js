@@ -46,7 +46,7 @@ imageUrl = result.secure_url;
 
     res.json({
       success: true,
-      data: portfolio,
+      data: portfolio, 
     });
 
   } catch (err) {

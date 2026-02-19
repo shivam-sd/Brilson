@@ -69,8 +69,9 @@ import AddGallery from "./Pages/ProfileComp/EditProfileComp/ProfileGallery/AddGa
 import UpdateGallery from "./Pages/ProfileComp/EditProfileComp/ProfileGallery/UpdateGallery";
 import ProfileLogoEdit from "./Pages/ProfileComp/EditProfileComp/ProfileLogoEdit";
 import EditProfileSocialMedia from "./Pages/ProfileComp/EditProfileComp/ProfileSocialMedial/EditProfileSocialMedia";
-import UpdatePaymentQR from "./Admin/ProfilePaymentQr/UpdateProfilePaymentQr";
-// import UpdateProfileConatct from "./Pages/ProfileComp/EditProfileComp/ProfileContact/UpdateProfileConatct";
+import PaymentDetailsPage from "./Pages/ProfileComp/EditProfileComp/PaymentDetails";
+import AddPaymentDetails from "./Pages/ProfileComp/EditProfileComp/PaymentDetails/AddPaymentDetails";
+import UpdatePaymentDetails from "./Pages/ProfileComp/EditProfileComp/PaymentDetails/UpdatePaymentDetails";
 
 
 
@@ -145,6 +146,7 @@ function App() {
   <Route path="services" element={<ServicesEditProfile />} />
   <Route path="products" element={<ProductsEditProfile />} />
   <Route path="gallery" element={<GalleryEditProfile />} />
+  <Route path="payment-details" element={<PaymentDetailsPage />} />
 </Route>
 
   <Route path="/profile/products/add/:id" element={<AddProduct />} />
@@ -155,6 +157,8 @@ function App() {
   <Route path="/profile/services/update/:id" element={<UpdateServices />} />
   <Route path="/profile/gallery/add/:id" element={<AddGallery />} />
   <Route path="/profile/gallery/update/:id" element={<UpdateGallery />} />
+  <Route path="/profile/payment-details/add/:id" element={<AddPaymentDetails />} />
+  <Route path="/profile/payment-details/update/:id" element={<UpdatePaymentDetails />} />
 
 
 
@@ -241,14 +245,6 @@ function App() {
               }
             />
 
-            <Route
-              path="profile-payment-qr"
-              element={
-                <ProtectedRoute>
-                  <UpdatePaymentQR />
-                </ProtectedRoute>
-              }
-            />
 
             <Route
               path="orders/invoices"

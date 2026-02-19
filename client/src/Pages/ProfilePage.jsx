@@ -1,9 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
-  FiMail, 
+  FiMail,
   FiEdit,
-  FiBriefcase, FiUser, FiFacebook, FiLinkedin,
-  FiTwitter, FiInstagram, FiChevronRight
+  FiBriefcase,
+  FiUser,
+  FiFacebook,
+  FiLinkedin,
+  FiTwitter,
+  FiInstagram,
+  FiChevronRight,
 } from "react-icons/fi";
 import { CiShare2 } from "react-icons/ci";
 import { IoLocationOutline } from "react-icons/io5";
@@ -14,12 +19,22 @@ import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import {
-  Wallet, QrCode,
-  Briefcase, Globe, 
-   ChevronUp as ChevronUpIcon,
-  ChevronDown as ChevronDownIcon, Target, Camera, Box, Palette,
-  Phone, MessageCircle, MapPin, Award as AwardIcon,
-  Users as UsersIcon, Calendar
+  Wallet,
+  QrCode,
+  Briefcase,
+  Globe,
+  ChevronUp as ChevronUpIcon,
+  ChevronDown as ChevronDownIcon,
+  Target,
+  Camera,
+  Box,
+  Palette,
+  Phone,
+  MessageCircle,
+  MapPin,
+  Award as AwardIcon,
+  Users as UsersIcon,
+  Calendar,
 } from "lucide-react";
 import { FiUserPlus } from "react-icons/fi";
 import { FaRegMessage } from "react-icons/fa6";
@@ -28,10 +43,9 @@ import PortfolioProfile from "./ProfileComp/PortfolioProfile";
 import ProductsProfile from "./ProfileComp/ProductsProfile";
 import GalleryProfile from "./ProfileComp/GalleryProfile";
 import ProfileFooter from "./ProfileComp/EditProfileComp/ProfileFooter";
+import PaymentDetailsProfile from "./ProfileComp/PaymentDetailsProfile";
 // import downloadCSV from "./ProfileComp/SaveCSVfileContact";
 import downloadVCF from "./ProfileComp/SaveVCFfile";
-
-
 
 const ProfilePage = () => {
   const { slug } = useParams();
@@ -41,27 +55,24 @@ const ProfilePage = () => {
   const [showEditButton, setShowEditButton] = useState(false);
   const [loading, setLoading] = useState(true);
   // const [balance, setBalance] = useState(0);
-  const [referralCode, setReferralCode] = useState('');
+  const [referralCode, setReferralCode] = useState("");
   const [showReferralTooltip, setShowReferralTooltip] = useState(false);
   const [userId, setUserId] = useState(null);
   const [logo, setLogo] = useState();
   const [preview, setPreview] = useState(null);
 
-
   // Refs for section observation
   const aboutRef = useRef(null);
   const connectRef = useRef(null);
-  
+
   const [activeSection, setActiveSection] = useState("about");
-
-
 
   // GET PROFILE LOGO
   useEffect(() => {
     const fetchLogo = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/profile-logo/get/${slug}`
+          `${import.meta.env.VITE_BASE_URL}/api/profile-logo/get/${slug}`,
         );
 
         setLogo(res.data.profileLogo.image);
@@ -73,24 +84,22 @@ const ProfilePage = () => {
     fetchLogo();
   }, [slug]);
 
-
-// fetch paymetn qr
+  // fetch paymetn qr
   useEffect(() => {
     const fetchqr = async () => {
-        try{
-            const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/profile-paymentQr/get`);
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/profile-paymentQr/get`,
+        );
 
-            // console.log(res)
-            setPreview(res.data.paymentqr.image);
-
-        }catch(err){
-            console.log(err);
-        }
-    }
+        // console.log(res)
+        setPreview(res.data.paymentqr.image);
+      } catch (err) {
+        console.log(err);
+      }
+    };
     fetchqr();
-  },[]);
-
-
+  }, []);
 
   // Fetch profile data
   useEffect(() => {
@@ -98,7 +107,7 @@ const ProfilePage = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/card/${slug}`
+          `${import.meta.env.VITE_BASE_URL}/api/card/${slug}`,
         );
         setProfile(res.data.profile);
         setShowEditButton(res.data.card._id);
@@ -122,14 +131,14 @@ const ProfilePage = () => {
       products: productsRef,
       portfolio: portfolioRef,
       services: servicesRef,
-      gallery: galleryRef
+      gallery: galleryRef,
     };
 
     const section = sections[sectionId];
     if (section && section.current) {
       section.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+        behavior: "smooth",
+        block: "start",
       });
     }
   };
@@ -142,31 +151,26 @@ const ProfilePage = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  
-
-
   const handleWhatsApp = () => {
     if (profileData.phone) {
-      const phoneNumber = profileData.phone.replace(/\D/g, '');
-      window.open(`https://wa.me/${phoneNumber}`, '_blank');
+      const phoneNumber = profileData.phone.replace(/\D/g, "");
+      window.open(`https://wa.me/${phoneNumber}`, "_blank");
     }
   };
 
-   const handlePhone = () => {
+  const handlePhone = () => {
     if (profileData.phone) {
-      const phoneNumber = profileData.phone.replace(/\D/g, '');
+      const phoneNumber = profileData.phone.replace(/\D/g, "");
       window.open(`tel:${phoneNumber}`);
     }
   };
 
-
   const handleEmail = () => {
     console.log(profileData.email);
-  if (profileData.email) {
-    window.location.href = `mailto:${profileData.email}`;
-  }
-};
-
+    if (profileData.email) {
+      window.location.href = `mailto:${profileData.email}`;
+    }
+  };
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -177,28 +181,23 @@ const ProfilePage = () => {
           url: `https://brilson.in/public/profile/${slug}`,
         });
       } catch (error) {
-        console.log('Sharing cancelled');
+        console.log("Sharing cancelled");
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast.success('Profile link copied!');
+      toast.success("Profile link copied!");
     }
   };
 
   const handleDownloadQr = (url) => {
-  if (!url) return;
+    if (!url) return;
 
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "payment-qr.png";
-  link.target = "_blank"
-  link.click();
-};
-
-
-
-
-
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "payment-qr.png";
+    link.target = "_blank";
+    link.click();
+  };
 
   if (loading) {
     return (
@@ -216,7 +215,10 @@ const ProfilePage = () => {
       <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] flex items-center justify-center text-white">
         <div className="text-center">
           <p className="text-xl text-gray-400">Profile not found</p>
-          <Link to="/" className="text-[#E1C48A] hover:text-[#F5D8A5] mt-4 inline-block">
+          <Link
+            to="/"
+            className="text-[#E1C48A] hover:text-[#F5D8A5] mt-4 inline-block"
+          >
             Go back home
           </Link>
         </div>
@@ -238,42 +240,36 @@ const ProfilePage = () => {
     instagram: profile?.instagram || "",
     facebook: profile?.facebook || "",
     title: profile?.title || "",
-    company: profile?.company || ""
+    company: profile?.company || "",
   };
 
   const SectionHeader = ({ title, icon, sectionId, children }) => (
-  <div
-    className="mb-10 text-white"
-    ref={
-      sectionId === "about"
-        ? aboutRef
-        : sectionId === "connect"
-        ? connectRef
-        : null
-    }
-  >
-    <div className="py-4 rounded-xl ">
-      <div className="flex items-center gap-3 px-4">
-        <div className="p-2 rounded-lg bg-gradient-to-r from-[#E1C48A]/20 to-[#C9A86A]/20">
-          {React.cloneElement(icon, {
-            className: "text-[#E1C48A]",
-            size: 20,
-          })}
+    <div
+      className="mb-10 text-white"
+      ref={
+        sectionId === "about"
+          ? aboutRef
+          : sectionId === "connect"
+            ? connectRef
+            : null
+      }
+    >
+      <div className="py-4 rounded-xl ">
+        <div className="flex items-center gap-3 px-4">
+          <div className="p-2 rounded-lg bg-gradient-to-r from-[#E1C48A]/20 to-[#C9A86A]/20">
+            {React.cloneElement(icon, {
+              className: "text-[#E1C48A]",
+              size: 20,
+            })}
+          </div>
+
+          <h2 className="text-xl font-bold text-[#E1C48A]">{title}</h2>
         </div>
-
-        <h2 className="text-xl font-bold text-[#E1C48A]">
-          {title}
-        </h2>
       </div>
+
+      <div className="mt-2">{children}</div>
     </div>
-
-    <div className="mt-2">
-      {children}
-    </div>
-  </div>
-);
-
-
+  );
 
   const ContactButton = ({ icon, label, onClick, color = "#E1C48A" }) => (
     <motion.button
@@ -282,7 +278,7 @@ const ProfilePage = () => {
       onClick={onClick}
       className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 w-full font-Poppins"
     >
-        {React.cloneElement(icon, { size: 20, style: { color }  })}
+      {React.cloneElement(icon, { size: 20, style: { color } })}
       <span className="font-medium text-white flex-1 text-left">{label}</span>
       <FiChevronRight className="text-gray-400" size={16} />
     </motion.button>
@@ -291,26 +287,28 @@ const ProfilePage = () => {
   const SocialLink = ({ platform, url, icon, color }) => (
     <motion.a
       whileHover={{ scale: 1.05, y: -2 }}
-      href={url.startsWith('http') ? url : `https://${url}`}
+      href={url.startsWith("http") ? url : `https://${url}`}
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins "
     >
-        {React.cloneElement(icon, { size: 20, style: { color } })}
-      <span className="font-medium text-white flex-1 text-left">{platform}</span>
+      {React.cloneElement(icon, { size: 20, style: { color } })}
+      <span className="font-medium text-white flex-1 text-left">
+        {platform}
+      </span>
     </motion.a>
   );
 
   // Mobile device ke liye
 
   const SocialLink1 = ({ platform, url, icon, color }) => (
-  <motion.a
-    whileHover={{ y: -4 }}
-    whileTap={{ scale: 0.95 }}
-    href={url.startsWith("http") ? url : `https://${url}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="
+    <motion.a
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.95 }}
+      href={url.startsWith("http") ? url : `https://${url}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="
       min-w-[90px]
       h-[80px]
       flex flex-col items-center justify-center gap-2
@@ -322,63 +320,57 @@ const ProfilePage = () => {
       transition-all duration-300
       shrink-0 font-Poppins
     "
-  >
-    <div
-      className="w-10 h-10 flex items-center justify-center rounded-full"
-      style={{ backgroundColor: `${color}20` }}
     >
-      {React.cloneElement(icon, {
-        size: 18,
-        style: { color },
-      })}
-    </div>
+      <div
+        className="w-10 h-10 flex items-center justify-center rounded-full"
+        style={{ backgroundColor: `${color}20` }}
+      >
+        {React.cloneElement(icon, {
+          size: 18,
+          style: { color },
+        })}
+      </div>
 
-    <span className="text-xs text-gray-300 font-medium">
-      {platform}
-    </span>
-  </motion.a>
-);
+      <span className="text-xs text-gray-300 font-medium">{platform}</span>
+    </motion.a>
+  );
 
-
-
-// set Contact Data for the csv 
-const contact = {
-  name:profileData.name,
-  phone:profileData.phone,
-  email:profileData.email,
-  company:profileData.company,
-  website:profileData.website,
-}
-
-
+  // set Contact Data for the csv
+  const contact = {
+    name: profileData.name,
+    phone: profileData.phone,
+    email: profileData.email,
+    company: profileData.company,
+    website: profileData.website,
+  };
 
   return (
     <>
-      <Toaster 
-        position="top-right" 
+      <Toaster
+        position="top-right"
         toastOptions={{
           style: {
-            background: 'linear-gradient(135deg, #0a0a0f 0%, #0f1117 100%)',
-            color: '#fff',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(10px)',
+            background: "linear-gradient(135deg, #0a0a0f 0%, #0f1117 100%)",
+            color: "#fff",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            backdropFilter: "blur(10px)",
           },
-        }} 
+        }}
       />
-      
+
       <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 text-white bg-transparent">
         {/* Background Effects */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#E1C48A]/5 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/3 rounded-full blur-3xl" />
-          
+
           {/* Grid Pattern */}
-          <div 
+          <div
             className="absolute inset-0 opacity-10"
             style={{
               backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)`,
-              backgroundSize: '40px 40px'
+              backgroundSize: "40px 40px",
             }}
           />
         </div>
@@ -388,28 +380,26 @@ const contact = {
           <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.05 }}
                   className="flex items-center"
                 >
                   {/* <h2 className="text-2xl font-bold text-[#E1C48A]">BRILSON</h2> */}
-                     {/* <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+                  {/* <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
                 Brilson
               </div> */}
-              <button
-                        onClick={handleShare}
-                        className="lg:flex md:flex hidden px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer font-Poppins"
-                      >
-                        Share Profile
-                      </button>
-
+                  <button
+                    onClick={handleShare}
+                    className="lg:flex md:flex hidden px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer font-Poppins"
+                  >
+                    Share Profile
+                  </button>
                 </motion.div>
               </div>
-              
+
               <div className="flex items-center gap-4">
-                
                 {showEditButton && id && (
-                  <Link 
+                  <Link
                     to={`/profile/edit/${id}`}
                     className="md:flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all text-sm font-medium flex font-Poppins"
                   >
@@ -421,8 +411,6 @@ const contact = {
           </div>
         </div>
 
-
-      
         {/* Main Profile Container */}
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Profile Box */}
@@ -431,11 +419,8 @@ const contact = {
             animate={{ opacity: 1, y: 0 }}
             className="relative"
           >
-        
-            
             {/* Main Profile Card */}
             <div className="relative bg-transparent border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
-              
               {/* Profile Header */}
               <div className="flex flex-col items-center text-center mb-10">
                 {/* Round Profile Image */}
@@ -453,12 +438,18 @@ const contact = {
                 <h2 className="text-4xl font-bold font-Playfair text-white mb-2">
                   {profileData.name}
                 </h2>
-                <p className="text-xl text-yellow-600 mb-1">{profileData.title}</p>
-                <p className="text-gray-400 mb-6 font-semibold font-Poppins">{profileData.company}</p>
-                
+                <p className="text-xl text-yellow-600 mb-1">
+                  {profileData.title}
+                </p>
+                <p className="text-gray-400 mb-6 font-semibold font-Poppins">
+                  {profileData.company}
+                </p>
+
                 {/* Tagline */}
                 <div className="px-7 py-2 bg-gradient-to-r from-[#E1C48A]/10 to-[#C9A86A]/10 border border-[#E1C48A]/30 rounded-full">
-                  <p className="text-[#E1C48A] italic text-lg font-Poppins">{profileData.bio}</p>
+                  <p className="text-[#E1C48A] italic text-lg font-Poppins">
+                    {profileData.bio}
+                  </p>
                 </div>
               </div>
 
@@ -485,68 +476,71 @@ const contact = {
                 <ContactButton
                   icon={<FiUserPlus />}
                   label="Save Contact"
-                  onClick={() => {downloadVCF(profileData, logo)}}
+                  onClick={() => {
+                    downloadVCF(profileData, logo);
+                  }}
                   color="#FF7F11"
                 />
               </div>
 
-
-<button onClick={handleShare} className="lg:hidden md:hidden p-2 w-full flex items-center justify-center gap-3 bg-gradient-to-l to-slate-900 from-slate-950 border-2 border-white/10 rounded-lg mb-5">
-<CiShare2 size={24} className="text-yellow-400 font-bold" /> <span className="text-lg">Share Profile</span>
-</button>
-
-
-
-           
+              <button
+                onClick={handleShare}
+                className="lg:hidden md:hidden p-2 w-full flex items-center justify-center gap-3 bg-gradient-to-l to-slate-900 from-slate-950 border-2 border-white/10 rounded-lg mb-5"
+              >
+                <CiShare2 size={24} className="text-yellow-400 font-bold" />{" "}
+                <span className="text-lg">Share Profile</span>
+              </button>
 
               {/* Sections */}
               <div className="space-y-12">
-               
                 {/* CONNECT Section */}
 
-<div className="lg:flex hidden flex-col p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
-<h3 className="text-2xl font-bold text-gray-300 mb-4">Connect</h3>
-  <div className="lg:flex hidden flex-wrap items-center justify-between gap-2">
-    <SocialLink
-      platform="Website"
-      url={profileData.website}
-      icon={<CgWebsite />}
-      color="#8B5CF6"
-      />
-    <SocialLink
-      platform="Instagram"
-      url={profileData.instagram}
-      icon={<FiInstagram />}
-      color="#EC4899"
-      />
-    <SocialLink
-      platform="Facebook"
-      url={profileData.facebook}
-      icon={<FiFacebook />}
-      color="#3B82F6"
-      />
-    <SocialLink
-      platform="YouTube"
-      url="https://youtube.com"
-      icon={<FaYoutube />}
-      color="#EF4444"
-      />
-    <SocialLink
-      platform="LinkedIn"
-      url={profileData.linkedin}
-      icon={<FiLinkedin />}
-      color="#0A66C2"
-    />
-    <SocialLink
-      platform="Twitter"
-      url={profileData.twitter}
-      icon={<FiTwitter />}
-      color="#1DA1F2"
-    />
-  </div>
-  </div>
+                <div className="lg:flex hidden flex-col p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                  <h3 className="text-2xl font-bold text-gray-300 mb-4">
+                    Connect
+                  </h3>
+                  <div className="lg:flex hidden flex-wrap items-center justify-between gap-2">
+                    <SocialLink
+                      platform="Website"
+                      url={profileData.website}
+                      icon={<CgWebsite />}
+                      color="#8B5CF6"
+                    />
+                    <SocialLink
+                      platform="Instagram"
+                      url={profileData.instagram}
+                      icon={<FiInstagram />}
+                      color="#EC4899"
+                    />
+                    <SocialLink
+                      platform="Facebook"
+                      url={profileData.facebook}
+                      icon={<FiFacebook />}
+                      color="#3B82F6"
+                    />
+                    <SocialLink
+                      platform="YouTube"
+                      url="https://youtube.com"
+                      icon={<FaYoutube />}
+                      color="#EF4444"
+                    />
+                    <SocialLink
+                      platform="LinkedIn"
+                      url={profileData.linkedin}
+                      icon={<FiLinkedin />}
+                      color="#0A66C2"
+                    />
+                    <SocialLink
+                      platform="Twitter"
+                      url={profileData.twitter}
+                      icon={<FiTwitter />}
+                      color="#1DA1F2"
+                    />
+                  </div>
+                </div>
 
-<div className="w-full 
+                <div
+                  className="w-full 
   border border-white/10 
   p-4 
   rounded-xl 
@@ -554,132 +548,114 @@ const contact = {
   flex items-center gap-3 
   shadow-lg 
   bg-gradient-to-r from-slate-900 to-slate-950
-  backdrop-blur-md">
+  backdrop-blur-md"
+                >
+                  <IoLocationOutline
+                    size={22}
+                    className="text-yellow-400 shrink-0"
+                  />
 
-  <IoLocationOutline 
-    size={22} 
-    className="text-yellow-400 shrink-0" 
-  />
+                  <span className="text-gray-200 text-sm leading-relaxed break-words font-Poppins">
+                    {profileData.city}
+                  </span>
+                </div>
 
-  <span className="text-gray-200 text-sm leading-relaxed break-words font-Poppins">
-    {profileData.city}
-  </span>
-</div>
+                {/* mobile device ke liye */}
 
-{/* mobile device ke liye */}
+                <div className="lg:hidden flex flex-colp-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                  <div className="lg:hidden flex flex-wrap items-center justify-between gap-2">
+                    <SocialLink1
+                      platform="Website"
+                      url={profileData.website}
+                      icon={<CgWebsite />}
+                      color="#8B5CF6"
+                    />
+                    <SocialLink1
+                      platform="Instagram"
+                      url={profileData.instagram}
+                      icon={<FiInstagram />}
+                      color="#EC4899"
+                    />
+                    <SocialLink1
+                      platform="Facebook"
+                      url={profileData.facebook}
+                      icon={<FiFacebook />}
+                      color="#3B82F6"
+                    />
+                    <SocialLink1
+                      platform="YouTube"
+                      url="https://youtube.com"
+                      icon={<FaYoutube />}
+                      color="#EF4444"
+                    />
+                    <SocialLink1
+                      platform="LinkedIn"
+                      url={profileData.linkedin}
+                      icon={<FiLinkedin />}
+                      color="#0A66C2"
+                    />
+                    <SocialLink1
+                      platform="Twitter"
+                      url={profileData.twitter}
+                      icon={<FiTwitter />}
+                      color="#1DA1F2"
+                    />
+                  </div>
+                </div>
 
-
-<div className="lg:hidden flex flex-colp-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
-
-<div className="lg:hidden flex flex-wrap items-center justify-between gap-2">
-    <SocialLink1
-      platform="Website"
-      url={profileData.website}
-      icon={<CgWebsite />}
-      color="#8B5CF6"
-      />
-    <SocialLink1
-      platform="Instagram"
-      url={profileData.instagram}
-      icon={<FiInstagram />}
-      color="#EC4899"
-      />
-    <SocialLink1
-      platform="Facebook"
-      url={profileData.facebook}
-      icon={<FiFacebook />}
-      color="#3B82F6"
-      />
-    <SocialLink1
-      platform="YouTube"
-      url="https://youtube.com"
-      icon={<FaYoutube />}
-      color="#EF4444"
-      />
-    <SocialLink1
-      platform="LinkedIn"
-      url={profileData.linkedin}
-      icon={<FiLinkedin />}
-      color="#0A66C2"
-      />
-    <SocialLink1
-      platform="Twitter"
-      url={profileData.twitter}
-      icon={<FiTwitter />}
-      color="#1DA1F2"
-      />
-  </div>
-      </div>
-
-
-
-
- {/* About Section */}
+                {/* About Section */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
-                <h3 className="text-2xl font-bold mb-3 text-gray-300">About:</h3>
+                  <h3 className="text-2xl font-bold mb-3 text-gray-300">
+                    About:
+                  </h3>
                   <div>
                     <p className="text-gray-300 leading-relaxed text-md font-Poppins">
                       {profileData.about}
                     </p>
                   </div>
                 </div>
-                
 
-{/* Portfolio */}
-{/* <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                {/* Portfolio */}
+                {/* <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                 <h3 className="text-2xl font-bold mb-3 text-gray-300">Portfolio:</h3>
                   <PortfolioProfile activationCode={slug} />
                 </div> */}
 
-
-{/* Product */}
-<div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
-                <h3 className="text-2xl font-bold mb-3 text-gray-300">Products:</h3>
+                {/* Product */}
+                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                  <h3 className="text-2xl font-bold mb-3 text-gray-300">
+                    Products:
+                  </h3>
                   <ProductsProfile activationCode={slug} />
                 </div>
 
-
-
-
-{/* Services */}
-<div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
-                <h3 className="text-2xl font-bold mb-3 text-gray-300">Services:</h3>
+                {/* Services */}
+                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                  <h3 className="text-2xl font-bold mb-3 text-gray-300">
+                    Services:
+                  </h3>
                   <ServicesProfile activationCode={slug} />
                 </div>
 
-
-{/* Gallery */}
-<div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
-                <h3 className="text-2xl font-bold mb-3 text-gray-300">Gallery:</h3>
+                {/* Gallery */}
+                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                  <h3 className="text-2xl font-bold mb-3 text-gray-300">
+                    Gallery:
+                  </h3>
                   <GalleryProfile activationCode={slug} />
                 </div>
 
-
-
                 
-              {/* QR Code Section */}
-                <div className="mt-16 p-8 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-2xl text-center">
-                  <div className="max-w-md mx-auto">
-                    <h3 className="text-xl font-bold text-[#E1C48A] mb-6">Digital Business Card</h3>
-                    <div className="w-32 h-32  bg-white rounded-2xl mx-auto mb-6">
-                      <img src={preview} alt="" className="w-ful h-full object-cover" />
-                    </div>
-                    <p className="text-gray-400 text-md mb-8">
-                      Scan to save contact or visit profile instantly
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">                      <button
-  onClick={() => handleDownloadQr(preview)}
-  className="px-8 py-3 bg-gradient-to-r from-white/10 to-transparent border border-white/10 rounded-xl text-white hover:border-[#E1C48A]/40 transition-colors cursor-pointer"
->
-  Download QR
-</button>
-
-                    </div>
-                  </div>
+                {/* Payment Details */}
+                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                  {/* <h3 className="text-2xl font-bold mb-3 text-gray-300">
+                    Payment Details
+                  </h3> */}
+                  <PaymentDetailsProfile activationCode={slug} />
                 </div>
-              </div>
 
-            
+
+              </div>
             </div>
           </motion.div>
           <ProfileFooter />

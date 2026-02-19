@@ -28,6 +28,7 @@ import GalleryProfile from "./ProfileComp/GalleryProfile";
 import ProfileFooter from "./ProfileComp/EditProfileComp/ProfileFooter";
 import downloadCSV from "./ProfileComp/SaveCSVfileContact";
 import downloadVCF from "./ProfileComp/SaveVCFfile";
+import PaymentDetailsProfile from "./ProfileComp/PaymentDetailsProfile";
 import { CiShare2 } from "react-icons/ci";
 
 
@@ -534,32 +535,14 @@ const contact = {
                   <GalleryProfile activationCode={slug} />
                 </div>
 
-                {/* QR Code Section */}
-                <div className="mt-16 p-8 bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-2xl text-center">
-                  <div className="max-w-md mx-auto">
-                    <h3 className="text-xl font-bold text-[#E1C48A] mb-6">Digital Business Card</h3>
-                                        <div className="w-32 h-32  bg-white rounded-2xl mx-auto mb-6">
-                      <img src={preview} alt="" className="w-ful h-full object-cover" />
-                    </div>
-                    <p className="text-gray-400 text-md mb-8">
-                      Scan to save contact or visit profile instantly
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <button
-                        onClick={handleShare}
-                        className="px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity"
-                      >
-                        Share Profile
-                      </button>
-                                           <button
-  onClick={() => handleDownloadQr(preview)}
-  className="px-8 py-3 bg-gradient-to-r from-white/10 to-transparent border border-white/10 rounded-xl text-white hover:border-[#E1C48A]/40 transition-colors cursor-pointer"
->
-  Download QR
-</button>
-                    </div>
-                  </div>
+
+{/* Payment Details */}
+                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                  {/* <h3 className="text-2xl font-bold mb-3 text-gray-300">Gallery:</h3> */}
+                  <PaymentDetailsProfile activationCode={slug} />
                 </div>
+
+                
               </div>
             </div>
           </motion.div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useParams, useLocation } from "react-router-dom";
+import { MdOutlinePayment } from "react-icons/md";
 import { 
   Menu, 
   X, 
@@ -87,6 +88,13 @@ const Layout = () => {
       path: 'gallery',
       label: 'Gallery',
       icon: <Image size={20} />,
+      badge: null
+    },
+    {
+      id: 'payment',
+      path: 'payment-details',
+      label: 'Payment Details',
+      icon: <MdOutlinePayment size={20} />,
       badge: null
     }
   ];

@@ -104,12 +104,7 @@ const AdminLayout = () => {
             <FiSettings size={20} /> Settings
           </NavLink>
 
-          <NavLink
-            to="profile-payment-qr"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <BsQrCode size={20} /> Profile Payment QR
-          </NavLink>
+
         </nav>
 
         <div className="mt-auto">
@@ -184,12 +179,7 @@ const AdminLayout = () => {
             <GrDocumentLocked size={20} /> Orders invoices
           </NavLink>
 
-           <NavLink
-            to="profile-payment-qr"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <BsQrCode size={20} /> Profile Payment QR
-          </NavLink>
+    
 
           {/* <NavLink
             to="/settings"
