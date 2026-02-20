@@ -72,6 +72,9 @@ import EditProfileSocialMedia from "./Pages/ProfileComp/EditProfileComp/ProfileS
 import PaymentDetailsPage from "./Pages/ProfileComp/EditProfileComp/PaymentDetails";
 import AddPaymentDetails from "./Pages/ProfileComp/EditProfileComp/PaymentDetails/AddPaymentDetails";
 import UpdatePaymentDetails from "./Pages/ProfileComp/EditProfileComp/PaymentDetails/UpdatePaymentDetails";
+import ProfileEditLocation from "./Pages/ProfileComp/EditProfileComp/ProfileEditLocation";
+import AddProfileLocation from "./Pages/ProfileComp/EditProfileComp/ProfileLocation/AddProfileLocation";
+import UpdateProfileLocation from "./Pages/ProfileComp/EditProfileComp/ProfileLocation/UpdateProfileLocation";
 
 
 
@@ -147,6 +150,7 @@ function App() {
   <Route path="products" element={<ProductsEditProfile />} />
   <Route path="gallery" element={<GalleryEditProfile />} />
   <Route path="payment-details" element={<PaymentDetailsPage />} />
+  <Route path="location&review" element={<ProfileEditLocation />} />
 </Route>
 
   <Route path="/profile/products/add/:id" element={<AddProduct />} />
@@ -159,6 +163,8 @@ function App() {
   <Route path="/profile/gallery/update/:id" element={<UpdateGallery />} />
   <Route path="/profile/payment-details/add/:id" element={<AddPaymentDetails />} />
   <Route path="/profile/payment-details/update/:id" element={<UpdatePaymentDetails />} />
+  <Route path="/profile/location/add/:id" element={<AddProfileLocation />} />
+  <Route path="/profile/location/update/:id" element={<UpdateProfileLocation />} />
 
 
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useParams, useLocation } from "react-router-dom";
 import { MdOutlinePayment } from "react-icons/md";
+import { FaLocationCrosshairs } from "react-icons/fa6";
 import { 
   Menu, 
   X, 
@@ -95,6 +96,13 @@ const Layout = () => {
       path: 'payment-details',
       label: 'Payment Details',
       icon: <MdOutlinePayment size={20} />,
+      badge: null
+    },
+    {
+      id: 'location&review',
+      path: 'location&review',
+      label: 'Location & Review',
+      icon: <FaLocationCrosshairs size={20} />,
       badge: null
     }
   ];

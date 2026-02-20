@@ -41,6 +41,7 @@ const ProfileServicesRouter = require("./routes/ProfileRoutes/ProfileServices");
 const ProfileGalleryRouter = require("./routes/ProfileRoutes/ProfileGallery");
 const ProfileLogoRouter = require("./routes/ProfileRoutes/ProfileLogo");
 const PaymentDetails = require("./routes/ProfileRoutes/PaymentDetails.route");
+const LocationReviewRouter = require("./routes/ProfileRoutes/LocationReviews.route");
 
 
 
@@ -113,6 +114,7 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   app.use("/api/profile-gallery", ProfileGalleryRouter);
   app.use("/api/profile-logo", ProfileLogoRouter);
   app.use("/api/profile/payment-details", PaymentDetails);
+  app.use("/api/profile/location", LocationReviewRouter);
 
   
 

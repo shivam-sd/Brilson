@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { CiLocationOn } from "react-icons/ci";
 import {
   FiMail, 
   FiChevronRight,
@@ -29,6 +30,7 @@ import ProfileFooter from "./ProfileComp/EditProfileComp/ProfileFooter";
 import downloadCSV from "./ProfileComp/SaveCSVfileContact";
 import downloadVCF from "./ProfileComp/SaveVCFfile";
 import PaymentDetailsProfile from "./ProfileComp/PaymentDetailsProfile";
+import ProfileLocation from "./ProfileComp/ProfileLocation";
 import { CiShare2 } from "react-icons/ci";
 
 
@@ -540,6 +542,16 @@ const contact = {
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   {/* <h3 className="text-2xl font-bold mb-3 text-gray-300">Gallery:</h3> */}
                   <PaymentDetailsProfile activationCode={slug} />
+                </div>
+
+
+
+{/* Location */}
+                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                  <h3 className="text-2xl font-bold mb-3 text-gray-300 flex items-center gap-2">
+                    <CiLocationOn size={28} /> Location & Reviews
+                  </h3>
+                  <ProfileLocation activationCode={slug} />
                 </div>
 
                 
