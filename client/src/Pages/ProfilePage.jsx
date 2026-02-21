@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { CiLocationOn } from "react-icons/ci";
+import { LuYoutube } from "react-icons/lu";
+import { TbWorld } from "react-icons/tb";
 import {
   FiMail,
   FiEdit,
@@ -48,6 +50,7 @@ import PaymentDetailsProfile from "./ProfileComp/PaymentDetailsProfile";
 import ProfileLocation from "./ProfileComp/ProfileLocation";
 // import downloadCSV from "./ProfileComp/SaveCSVfileContact";
 import downloadVCF from "./ProfileComp/SaveVCFfile";
+import ProfileResume from "./ProfileComp/ProfileResume";
 
 const ProfilePage = () => {
   const { slug } = useParams();
@@ -276,7 +279,7 @@ const ProfilePage = () => {
       href={url.startsWith("http") ? url : `https://${url}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins "
+      className="flex flex-col items-center justify-center gap-3 p-4 bg-gradient-to-r from-slate-800/40 to-transparent border border-slate-800 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins "
     >
       {React.cloneElement(icon, { size: 20, style: { color } })}
       <span className="font-medium text-white flex-1 text-left">
@@ -294,15 +297,9 @@ const ProfilePage = () => {
       href={url.startsWith("http") ? url : `https://${url}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="
-      min-w-[90px]
-      h-[80px]
+      className=" pl-2
       flex flex-col items-center justify-center gap-2
-      rounded-2xl
-      bg-gradient-to-r from-white/5 to-transparent
-      border border-white/10
-      shadow-lg
-      hover:border-[#E1C48A]/40
+      rounded-2xl shadow-lg
       transition-all duration-300
       shrink-0 font-Poppins
     "
@@ -489,26 +486,26 @@ const ProfilePage = () => {
                     <SocialLink
                       platform="Website"
                       url={profileData.website}
-                      icon={<CgWebsite />}
-                      color="#8B5CF6"
+                      icon={<TbWorld />}
+                      color="#06D001"
                     />
                     <SocialLink
                       platform="Instagram"
                       url={profileData.instagram}
                       icon={<FiInstagram />}
-                      color="#EC4899"
+                      color="#DC143C"
                     />
                     <SocialLink
                       platform="Facebook"
                       url={profileData.facebook}
                       icon={<FiFacebook />}
-                      color="#3B82F6"
+                      color="#6F00FF"
                     />
                     <SocialLink
                       platform="YouTube"
                       url="https://youtube.com"
-                      icon={<FaYoutube />}
-                      color="#EF4444"
+                      icon={<LuYoutube />}
+                      color="#F63049"
                     />
                     <SocialLink
                       platform="LinkedIn"
@@ -548,13 +545,13 @@ const ProfilePage = () => {
 
                 {/* mobile device ke liye */}
 
-                <div className="lg:hidden flex flex-colp-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
-                  <div className="lg:hidden flex flex-wrap items-center justify-between gap-2">
+                <div className="lg:hidden flex">
+                  <div className="lg:hidden grid grid-cols-4 items-center justify-between gap-2">
                     <SocialLink1
                       platform="Website"
                       url={profileData.website}
-                      icon={<CgWebsite />}
-                      color="#8B5CF6"
+                      icon={<TbWorld />}
+                      color="#06D001"
                     />
                     <SocialLink1
                       platform="Instagram"
@@ -631,14 +628,15 @@ const ProfilePage = () => {
                   <GalleryProfile activationCode={slug} />
                 </div>
 
-                
-                {/* Payment Details */}
-                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
-                  {/* <h3 className="text-2xl font-bold mb-3 text-gray-300">
-                    Payment Details
+
+{/* Resume */}
+                <div className="">
+                  {/* <h3 className="text-2xl font-bold mb-3 text-gray-300 flex items-center gap-2">
+                    <CiLocationOn size={28} /> Resume
                   </h3> */}
-                  <PaymentDetailsProfile activationCode={slug} />
+                  <ProfileResume activationCode={slug} />
                 </div>
+
 
 
 {/* Location */}
@@ -648,6 +646,16 @@ const ProfilePage = () => {
                   </h3>
                   <ProfileLocation activationCode={slug} />
                 </div>
+
+                
+                {/* Payment Details */}
+                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                  {/* <h3 className="text-2xl font-bold mb-3 text-gray-300">
+                    Payment Details
+                  </h3> */}
+                  <PaymentDetailsProfile activationCode={slug} />
+                </div>
+
 
 
               </div>

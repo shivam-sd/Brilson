@@ -75,6 +75,9 @@ import UpdatePaymentDetails from "./Pages/ProfileComp/EditProfileComp/PaymentDet
 import ProfileEditLocation from "./Pages/ProfileComp/EditProfileComp/ProfileEditLocation";
 import AddProfileLocation from "./Pages/ProfileComp/EditProfileComp/ProfileLocation/AddProfileLocation";
 import UpdateProfileLocation from "./Pages/ProfileComp/EditProfileComp/ProfileLocation/UpdateProfileLocation";
+import AddResume from "./Pages/ProfileComp/EditProfileComp/ProfileResume/AddResume";
+import UpdateResume from "./Pages/ProfileComp/EditProfileComp/ProfileResume/UpdateResume";
+import ProfileResumeEdit from "./Pages/ProfileComp/EditProfileComp/ProfileResumeEdit";
 
 
 
@@ -151,6 +154,7 @@ function App() {
   <Route path="gallery" element={<GalleryEditProfile />} />
   <Route path="payment-details" element={<PaymentDetailsPage />} />
   <Route path="location&review" element={<ProfileEditLocation />} />
+  <Route path="resume" element={<ProfileResumeEdit />} />
 </Route>
 
   <Route path="/profile/products/add/:id" element={<AddProduct />} />
@@ -165,6 +169,8 @@ function App() {
   <Route path="/profile/payment-details/update/:id" element={<UpdatePaymentDetails />} />
   <Route path="/profile/location/add/:id" element={<AddProfileLocation />} />
   <Route path="/profile/location/update/:id" element={<UpdateProfileLocation />} />
+  <Route path="/profile/resume/add/:id" element={<AddResume />} />
+  <Route path="/profile/resume/update/:id" element={<UpdateResume />} />
 
 
 

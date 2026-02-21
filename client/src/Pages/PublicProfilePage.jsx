@@ -32,6 +32,7 @@ import downloadVCF from "./ProfileComp/SaveVCFfile";
 import PaymentDetailsProfile from "./ProfileComp/PaymentDetailsProfile";
 import ProfileLocation from "./ProfileComp/ProfileLocation";
 import { CiShare2 } from "react-icons/ci";
+import ProfileResume from "./ProfileComp/ProfileResume";
 
 
 const PublicProfilePage = () => {
@@ -537,6 +538,25 @@ const contact = {
                   <GalleryProfile activationCode={slug} />
                 </div>
 
+{/* Resume */}
+                <div className="">
+                  {/* <h3 className="text-2xl font-bold mb-3 text-gray-300 flex items-center gap-2">
+                    <CiLocationOn size={28} /> Resume
+                  </h3> */}
+                  <ProfileResume activationCode={slug} />
+                </div>
+
+
+
+
+                {/* Location */}
+                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                  <h3 className="text-2xl font-bold mb-3 text-gray-300 flex items-center gap-2">
+                    <CiLocationOn size={28} /> Location & Reviews
+                  </h3>
+                  <ProfileLocation activationCode={slug} />
+                </div>
+
 
 {/* Payment Details */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
@@ -546,13 +566,7 @@ const contact = {
 
 
 
-{/* Location */}
-                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
-                  <h3 className="text-2xl font-bold mb-3 text-gray-300 flex items-center gap-2">
-                    <CiLocationOn size={28} /> Location & Reviews
-                  </h3>
-                  <ProfileLocation activationCode={slug} />
-                </div>
+
 
                 
               </div>

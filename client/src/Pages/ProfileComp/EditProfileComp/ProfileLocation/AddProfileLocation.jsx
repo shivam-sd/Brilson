@@ -59,11 +59,12 @@ const AddProfileLocation = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 via-black to-gray-900 p-6">
 
-      <div className="w-full max-w-2xl bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl p-8 sm:p-10 relative overflow-hidden">
+     <div className="w-full max-w-2xl relative z-10 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl p-8 sm:p-10 overflow-hidden">
 
         {/* Glow Effects */}
-        <div className="absolute -top-20 -left-20 w-72 h-72 bg-emerald-500/20 blur-3xl rounded-full"></div>
-        <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-blue-500/20 blur-3xl rounded-full"></div>
+        {/* Glow Effects */}
+<div className="pointer-events-none absolute -top-20 -left-20 w-72 h-72 bg-emerald-500/20 blur-3xl rounded-full"></div>
+<div className="pointer-events-none absolute -bottom-20 -right-20 w-72 h-72 bg-blue-500/20 blur-3xl rounded-full"></div>
 
         <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-8">
           Add Location & Reviews
@@ -110,7 +111,7 @@ const AddProfileLocation = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-gradient-to-r from-emerald-600 to-green-600 rounded-xl font-semibold flex justify-center items-center gap-2 hover:scale-105 transition shadow-lg cursor-pointer"
+            className="w-full py-4 bg-gradient-to-r from-emerald-600 to-green-600 rounded-xl font-semibold flex justify-center items-center gap-2 transition shadow-lg active:scale-95 disabled:opacity-60"
           >
             {loading ? (
               <>

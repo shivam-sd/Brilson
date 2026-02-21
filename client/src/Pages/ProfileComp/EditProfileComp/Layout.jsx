@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useParams, useLocation } from "react-router-dom";
 import { MdOutlinePayment } from "react-icons/md";
 import { FaLocationCrosshairs } from "react-icons/fa6";
+import { FaFilePdf } from "react-icons/fa";
 import { 
   Menu, 
   X, 
@@ -36,17 +37,17 @@ const Layout = () => {
 
   const menuItems = [
     {
-      id: 'basic-info',
-      path: '',
-      label: 'Basic Info',
-      icon: <Edit2 size={20} />,
-      badge: null
-    },
-    {
       id: 'profile-logo',
       path: 'profile-logo',
       label: 'Profile',
       icon: <User size={20} />,
+      badge: null
+    },
+    {
+      id: 'basic-info',
+      path: '',
+      label: 'Basic Info',
+      icon: <Edit2 size={20} />,
       badge: null
     },
     // {
@@ -104,6 +105,13 @@ const Layout = () => {
       label: 'Location & Review',
       icon: <FaLocationCrosshairs size={20} />,
       badge: null
+    },
+    {
+      id: 'resume',
+      path: 'resume',
+      label: 'Resume',
+      icon: <FaFilePdf size={20} />,
+      badge: null
     }
   ];
 
@@ -156,8 +164,8 @@ const Layout = () => {
         </div>
 
         {/* Navigation Menu */}
-        <div className="p-4">
-          <nav className="space-y-1">
+        <div className="p-4 ">
+          <nav className="space-y-1 ">
             {menuItems.map((item) => (
               <NavLink
                 key={item.id}
@@ -178,7 +186,7 @@ const Layout = () => {
                   p-2 rounded-lg transition-all duration-300
                   ${activePath === item.id 
                     ? 'bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg shadow-blue-500/30' 
-                    : 'bg-gray-900/50 group-hover:bg-gray-800/50'
+                    :''
                   }
                 `}>
                   {React.cloneElement(item.icon, {
