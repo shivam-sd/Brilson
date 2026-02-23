@@ -56,14 +56,18 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   await loadConfig();
 //   console.log("Runtime Config Loaded:", getConfig());
 
-  // Cloudinary runtime setup
-  if (getConfig().cloudinary) {
-    cloudinary.config({
-      cloud_name: getConfig().cloudinary.cloudName,
-      api_key: getConfig().cloudinary.apiKey,
-      api_secret: getConfig().cloudinary.apiSecret,
-    });
-  }
+// Cloudinary runtime setup
+if (getConfig().cloudinary) {
+  cloudinary.config({
+    cloud_name: getConfig().cloudinary.cloudName,
+    api_key: getConfig().cloudinary.apiKey,
+    api_secret: getConfig().cloudinary.apiSecret,
+  });
+}
+
+
+app.use("/public", SharePublicProfilerouter);
+
 
   // Middlewares
   app.use(express.json());
@@ -118,7 +122,6 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   app.use("/api/profile/payment-details", PaymentDetails);
   app.use("/api/profile/location", LocationReviewRouter);
   app.use("/api/profile/resume", ProfileResume);
-  app.use("/public", SharePublicProfilerouter);
 
   
 

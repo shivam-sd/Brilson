@@ -110,6 +110,11 @@ const PublicProfilePage = () => {
     }
   }, [slug]);
 
+
+  
+
+
+
   const copyText = (text) => {
     if (!text) return;
     navigator.clipboard.writeText(text);
@@ -169,6 +174,10 @@ const PublicProfilePage = () => {
   link.target = "_blank"
   link.click();
 };
+
+
+
+
 
 
   if (loading) {
@@ -279,6 +288,33 @@ const contact = {
   company:profileData.company,
   website:profileData.website,
 }
+
+
+
+// if(profileData){
+//     return(<>
+//   <html>
+//   <head>
+//     <title>${profileData.name}</title>
+
+//     <meta property="og:title" content={profileData.name} />
+//     <meta property="og:image" content={logo} />
+//     <meta property="og:url" content={`https://brilson.in/public/profile/${slug}`} />
+//     <meta property="og:type" content="website" />
+
+//     <meta name="twitter:card" content="summary_large_image" />
+//   </head>
+//   <body>
+//     <script>
+//       {window.location.href = `https://brilson.in/public/profile/${slug}`};
+//     </script>
+//   </body>
+//   </html>
+//     </>)
+//   }
+
+
+
 
   return (
     <>
