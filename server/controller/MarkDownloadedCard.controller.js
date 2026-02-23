@@ -8,7 +8,7 @@ const markDownloadedOnCard  = async(req,res) => {
         await CardProfileModel.findByIdAndUpdate(id, 
             { $set: { isDownloaded: true } },{new:true});
 
-        res.status(200).json({success:true});
+        res.status(200).json({success:true, activationCode:CardProfileModel.activationCode});
 
     }catch(err){
         res.status(500).json({error:"Server Error"});

@@ -68,6 +68,8 @@ if (getConfig().cloudinary) {
 
 app.use("/public", SharePublicProfilerouter);
 
+app.use(express.static(path.join(__dirname, "dist")));
+
 
   // Middlewares
   app.use(express.json());

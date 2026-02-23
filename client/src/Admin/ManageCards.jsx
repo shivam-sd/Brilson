@@ -1,16 +1,87 @@
 import React, { useEffect, useState } from "react";
-import { FiPlus, FiAlertCircle, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiSearch } from "react-icons/fi";
+import { FiPlus, FiAlertCircle, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiSearch, FiDownloadCloud } from "react-icons/fi";
 import { FaDownload, FaEye } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import QRCodeStyling from "qr-code-styling";
+import JSZip from "jszip"; 
 
-/*  SIR STYLE QR  */
-const createQR = (url) =>
-  new QRCodeStyling({ 
+/*   QR image par text add karne ke liye  */
+const addTextToQRImage = async (qrCode, activationCode, profileName) => {
+  try {
+    // QR code ko blob mein convert karo
+    const blob = await qrCode.getRawData("png");
+    
+    // Image create karo
+    const img = new Image();
+    const imageUrl = URL.createObjectURL(blob);
+    
+    return new Promise((resolve) => {
+      img.onload = () => {
+        // Canvas banayein (QR + text ke liye extra space)
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // QR size 300px, text ke liye 80px extra
+        const qrSize = 300;
+        const textHeight = 80;
+        canvas.width = qrSize;
+        canvas.height = qrSize + textHeight;
+        
+        // White background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // QR code draw karo
+        ctx.drawImage(img, 0, 0, qrSize, qrSize);
+        
+        // Border line between QR and text
+        ctx.strokeStyle = '#cccccc';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(20, qrSize + 5);
+        ctx.lineTo(canvas.width - 20, qrSize + 5);
+        ctx.stroke();
+        
+        // Activation Code text
+        ctx.font = 'bold 18px "Courier New", monospace';
+        ctx.fillStyle = '#000000';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, qrSize + 35);
+        
+        // Profile name (agar available ho)
+        if (profileName && profileName !== '—' && profileName !== 'No Name') {
+          ctx.font = '14px Arial, sans-serif';
+          ctx.fillStyle = '#666666';
+          ctx.fillText(profileName, canvas.width / 2, qrSize + 60);
+        }
+        
+        // Canvas ko blob mein convert karo
+        canvas.toBlob((newBlob) => {
+          const finalUrl = URL.createObjectURL(newBlob);
+          resolve(finalUrl);
+        }, 'image/png');
+      };
+      
+      img.src = imageUrl;
+    });
+  } catch (error) {
+    console.error("Error adding text to QR:", error);
+    // Fallback - bina text ke QR
+    const blob = await qrCode.getRawData("png");
+    return URL.createObjectURL(blob);
+  }
+};
+
+/*  QR with Activation Code  */
+const createQR = (url, activationCode) => {
+  // QR data mein activation code bhi add karo
+  const qrData = `${url}\nActivation Code: ${activationCode}`;
+  
+  return new QRCodeStyling({ 
     width: 300,
     height: 300,
-    data: url,
+    data: qrData,
     type: "png",
     dotsOptions: {
       color: "#000000",
@@ -32,6 +103,7 @@ const createQR = (url) =>
     },
     image: "/B.png",
   });
+};
 
 const ManageCards = () => {
   const [cards, setCards] = useState([]);
@@ -44,12 +116,13 @@ const ManageCards = () => {
     inactive: 0
   });
   const [qrImages, setQrImages] = useState({});
+  const [downloadingDate, setDownloadingDate] = useState(null); // NEW: Track which date is downloading
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCards, setTotalCards] = useState(0);
-  const [limit] = useState(40); // Items per page
+  const [limit] = useState(40);
   
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,38 +145,40 @@ const ManageCards = () => {
       const allCards = res.data.allCards || [];
       setCards(allCards);
       
-      // Set pagination data
       setTotalCards(res.data.totalCards || 0);
       setTotalPages(res.data.totalPages || 1);
       setCurrentPage(res.data.page || 1);
       
-      // Calculate stats
       const total = res.data.totalCards || 0;
       const activated = allCards.filter(card => card.isActivated).length;
       const inactive = allCards.length - activated;
       
       setStats({ total, activated, inactive });
-
-      // Generate QR images for all cards
+      
+      // Generate QR images for all cards with activation code AND text overlay
       const qrPromises = allCards.map(async (card) => {
         if (card.qrUrl) {
           try {
-            const qr = createQR(card.qrUrl);
-            const blob = await qr.getRawData("png");
-            const imageUrl = URL.createObjectURL(blob);
-            return { activationCode: card.activationCode, imageUrl };
+            const qr = createQR(card.qrUrl, card.activationCode);
+            // Add text overlay to QR image
+            const finalImageUrl = await addTextToQRImage(
+              qr, 
+              card.activationCode, 
+              card.owner?.name || card.profile?.name || ''
+            );
+            return { cardId: card._id, imageUrl: finalImageUrl };
           } catch (err) {
             console.error(`Error generating QR for ${card.cardId}:`, err);
-            return { activationCode: card.activationCode, imageUrl: null };
+            return { cardId: card._id, imageUrl: null };
           }
         }
-        return { activationCode: card.activationCode, imageUrl: null };
+        return { cardId: card._id, imageUrl: null };
       });
 
       const qrResults = await Promise.all(qrPromises);
       const qrMap = {};
       qrResults.forEach(result => {
-        qrMap[result.activationCode] = result.imageUrl;
+        qrMap[result.cardId] = result.imageUrl;
       });
       setQrImages(qrMap);
 
@@ -176,54 +251,181 @@ const ManageCards = () => {
     ([date]) => !selectedDate || date === selectedDate
   );
 
-  /*  PREVIEW  */
-  const previewQR = async (url) => {
-    if (!url) {
+  /*  PREVIEW - ab image ke ANDAR activation code dikhega  */
+  const previewQR = async (card) => {
+    if (!card.qrUrl) {
       alert("No QR URL available for this card");
       return;
     }
-    const qr = createQR(url);
+    // Create QR with activation code
+    const qr = createQR(card.qrUrl, card.activationCode);
     const blob = await qr.getRawData("png");
     const imgUrl = URL.createObjectURL(blob);
 
-    const win = window.open("", "_blank", "width=420,height=480");
+    const win = window.open("", "_blank", "width=500,height=550");
     win.document.write(`
-      <body style="margin:0;background:#0b1220;display:flex;justify-content:center;align-items:center">
-        <img src="${imgUrl}" style="background:#fff;padding:20px;border-radius:16px" />
+      <body style="margin:0;background:#0b1220;display:flex;flex-direction:column;justify-content:center;align-items:center;font-family:Arial,sans-serif;padding:20px;">
+        <div style="background:#fff;padding:20px;border-radius:16px;margin-bottom:20px;">
+          <img src="${imgUrl}" style="width:300px;height:300px;" />
+        </div>
+        <div style="background:#1a1a2e;padding:15px 30px;border-radius:8px;border:1px solid #333;">
+          <p style="color:#888;font-size:14px;margin:0 0 5px 0;">Activation Code</p>
+          <p style="color:#00ff00;font-size:24px;font-weight:bold;margin:0;letter-spacing:2px;">${card.activationCode}</p>
+        </div>
       </body>
     `);
   };
 
-  /*  DOWNLOAD  */
+  /*  DOWNLOAD SINGLE CARD  */
   const downloadQR = async (card) => {
     if (!card.qrUrl) {
       alert("No QR URL available for download");
       return;
     }
     
-    const qr = createQR(card.qrUrl);
-    qr.download({ name: `card-${card.cardId}`, extension: "png" });
+    try {
+      // Create QR with activation code
+      const qr = createQR(card.qrUrl, card.activationCode);
+      
+      // Add text overlay to QR image
+      const finalImageUrl = await addTextToQRImage(
+        qr, 
+        card.activationCode, 
+        card.owner?.name || card.profile?.name || 'No Name'
+      );
+      
+      // Download the final image
+      const link = document.createElement('a');
+      link.href = finalImageUrl;
+      link.download = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Cleanup
+      URL.revokeObjectURL(finalImageUrl);
 
-    if (!card.isDownloaded) {
-      try {
-        await axios.patch(
-          `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-            },
-          }
-        );
+      // Update downloaded status
+      if (!card.isDownloaded) {
+        try {
+          await axios.patch(
+            `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+              },
+            }
+          );
 
-        setCards((prev) =>
-          prev.map((c) =>
-            c._id === card._id ? { ...c, isDownloaded: true } : c
-          )
-        );
-      } catch (error) {
-        console.error("Error marking as downloaded:", error);
+          setCards((prev) =>
+            prev.map((c) =>
+              c._id === card._id ? { ...c, isDownloaded: true } : c
+            )
+          );
+        } catch (error) {
+          console.error("Error marking as downloaded:", error);
+        }
       }
+    } catch (error) {
+      console.error("Error downloading QR:", error);
+      alert("Error downloading QR code. Please try again.");
+    }
+  };
+
+  /*  NEW: BULK DOWNLOAD ALL CARDS OF A SPECIFIC DATE  */
+  const downloadAllByDate = async (date, cardsList) => {
+    if (!cardsList || cardsList.length === 0) {
+      alert("No cards available for this date");
+      return;
+    }
+
+    // Filter cards that have qrUrl
+    const validCards = cardsList.filter(card => card.qrUrl);
+    
+    if (validCards.length === 0) {
+      alert("No cards with QR available for this date");
+      return;
+    }
+
+    setDownloadingDate(date); // Show loading state
+
+    try {
+      // Create a new ZIP file
+      const zip = new JSZip();
+      const folderName = `cards-${date}`;
+      const folder = zip.folder(folderName);
+
+      // Show progress message
+      alert(`Downloading ${validCards.length} cards. Please wait...`);
+
+      // Process all cards in parallel with a limit to avoid overwhelming the browser
+      const chunkSize = 5; // Process 5 cards at a time
+      const results = [];
+
+      for (let i = 0; i < validCards.length; i += chunkSize) {
+        const chunk = validCards.slice(i, i + chunkSize);
+        const chunkPromises = chunk.map(async (card) => {
+          try {
+            // Generate QR for this card
+            const qr = createQR(card.qrUrl, card.activationCode);
+            
+            // Add text overlay
+            const finalImageUrl = await addTextToQRImage(
+              qr, 
+              card.activationCode, 
+              card.owner?.name || card.profile?.name || 'No Name'
+            );
+
+            // Fetch the image as blob
+            const response = await fetch(finalImageUrl);
+            const blob = await response.blob();
+
+            // Create filename
+            const filename = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.png`;
+
+            // Add to ZIP
+            folder.file(filename, blob, { binary: true });
+
+            // Cleanup
+            URL.revokeObjectURL(finalImageUrl);
+
+            return { success: true, card };
+          } catch (error) {
+            console.error(`Error processing card ${card.activationCode}:`, error);
+            return { success: false, card };
+          }
+        });
+
+        const chunkResults = await Promise.all(chunkPromises);
+        results.push(...chunkResults);
+      }
+
+      // Generate ZIP and trigger download
+      const zipContent = await zip.generateAsync({ type: "blob" });
+      const zipUrl = URL.createObjectURL(zipContent);
+
+      const link = document.createElement('a');
+      link.href = zipUrl;
+      link.download = `all-cards-${date}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Cleanup
+      URL.revokeObjectURL(zipUrl);
+
+      // Count successful downloads
+      const successful = results.filter(r => r.success).length;
+      const failed = results.filter(r => !r.success).length;
+
+      alert(`Download complete!\nSuccessful: ${successful}\nFailed: ${failed}`);
+
+    } catch (error) {
+      console.error("Error in bulk download:", error);
+      alert("Error downloading cards. Please try again.");
+    } finally {
+      setDownloadingDate(null);
     }
   };
 
@@ -278,31 +480,21 @@ const ManageCards = () => {
       </div>
       
       <div className="flex items-center gap-1">
-        {/* First Page */}
         <button
           onClick={() => handlePageChange(1)}
           disabled={currentPage === 1}
-          className={`p-2 rounded-lg ${currentPage === 1 
-            ? 'text-gray-600 cursor-not-allowed' 
-            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-          }`}
+          className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
         >
           <FiChevronsLeft size={18} />
         </button>
-        
-        {/* Previous Page */}
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className={`p-2 rounded-lg ${currentPage === 1 
-            ? 'text-gray-600 cursor-not-allowed' 
-            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-          }`}
+          className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
         >
           <FiChevronLeft size={18} />
         </button>
         
-        {/* Page Numbers */}
         {getPageNumbers().map((pageNum, index) => (
           <button
             key={index}
@@ -320,26 +512,17 @@ const ManageCards = () => {
           </button>
         ))}
         
-        {/* Next Page */}
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={`p-2 rounded-lg ${currentPage === totalPages 
-            ? 'text-gray-600 cursor-not-allowed' 
-            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-          }`}
+          className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
         >
           <FiChevronRight size={18} />
         </button>
-        
-        {/* Last Page */}
         <button
           onClick={() => handlePageChange(totalPages)}
           disabled={currentPage === totalPages}
-          className={`p-2 rounded-lg ${currentPage === totalPages 
-            ? 'text-gray-600 cursor-not-allowed' 
-            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-          }`}
+          className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
         >
           <FiChevronsRight size={18} />
         </button>
@@ -352,7 +535,7 @@ const ManageCards = () => {
     </div>
   );
 
-  /*  UI  */
+  /*  BAS YE NAYA BUTTON ADD HOGA DATE HEADER MEIN  */
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-[100vw] overflow-x-hidden">
       {/* HEADER */}
@@ -445,8 +628,6 @@ const ManageCards = () => {
         </div>
       </div>
 
-      
-
       {/* STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 md:mb-8">
         <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50">
@@ -486,14 +667,13 @@ const ManageCards = () => {
         </div>
       </div>
 
-      {/* DESKTOP TABLE - LARGE SCREENS (1024px and above) */}
+      {/* DESKTOP TABLE */}
       <div className="hidden lg:block">
         <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
           <table className="w-full min-w-full">
             <thead className="bg-gray-800/50 border-b border-gray-700/50">
               <tr>
                 <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
-                {/* <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Card ID</th> */}
                 <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
                 <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
                 <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation</th>
@@ -509,37 +689,52 @@ const ManageCards = () => {
               {filteredGroupedCards.length > 0 ? (
                 filteredGroupedCards.map(([date, list]) => (
                   <React.Fragment key={date}>
+                    {/*  Date header with Download All button */}
                     <tr className="bg-gray-800/30">
-                      <td colSpan="10" className="p-3 font-medium text-gray-300 text-sm">
-                        <div className="flex items-center gap-2">
-                          <span>📅</span>
-                          <span>{new Date(date).toLocaleDateString("en-GB")}</span>
+                      <td colSpan="10" className="p-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span>📅</span>
+                            <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
+                            <span className="ml-2 text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">
+                              {list.length} cards
+                            </span>
+                          </div>
+                          
+                          {/* Download All button for this date */}
+                          <button
+                            onClick={() => downloadAllByDate(date, list)}
+                            disabled={downloadingDate === date}
+                            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                              downloadingDate === date
+                                ? 'bg-gray-600 cursor-not-allowed opacity-50'
+                                : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg cursor-pointer'
+                            }`}
+                          >
+                            {downloadingDate === date ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <span>Downloading...</span>
+                              </>
+                            ) : (
+                              <>
+                                <FiDownloadCloud size={16} />
+                                <span>Download All ({list.length})</span>
+                              </>
+                            )}
+                          </button>
                         </div>
                       </td>
                     </tr>
 
                     {list.map((card) => (
-                      <tr 
-                        key={card._id} 
-                        className="hover:bg-gray-800/20 transition-colors"
-                      >
+                      <tr key={card._id} className="hover:bg-gray-800/20 transition-colors">
                         <td className="p-3">
-                          <input
-                            checked={card.isDownloaded}
-                            readOnly
-                            type="checkbox"
-                            className="w-4 h-4 rounded"
-                          />
+                          <input checked={card.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" />
                         </td>
-                        {/* <td className="p-3">
-                          <div className="font-mono text-xs max-w-[120px] truncate" title={card.cardId}>
-                            {card.cardId}
-                          </div>
-                        </td> */}
                         <td className="p-3">
                           <StatusBadge active={card.isActivated} />
                         </td>
-
                         <td className="p-3">
                           <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
                             {card.owner?.name || "—"}
@@ -566,17 +761,13 @@ const ManageCards = () => {
                                 }}
                               />
                             ) : (
-                              <img
-                                src="/qr.png"
-                                alt="Demo QR"
-                                className="w-10 h-10"
-                              />
+                              <img src="/qr.png" alt="Demo QR" className="w-10 h-10" />
                             )}
                           </div>
                         </td>
                         <td className="p-3 text-center">
                           <button
-                            onClick={() => previewQR(card.qrUrl)}
+                            onClick={() => previewQR(card)}
                             className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 mx-auto ${
                               !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
@@ -641,18 +832,16 @@ const ManageCards = () => {
           </table>
         </div>
         
-        {/* Pagination for Desktop - ALWAYS SHOW IF totalPages > 1 */}
         {totalPages > 1 && <Pagination />}
       </div>
 
-      {/* TABLET VIEW - MEDIUM SCREENS (768px to 1023px) */}
+      {/* TABLET VIEW - SAME BUTTON ADDITION */}
       <div className="hidden md:block lg:hidden">
         <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
           <table className="w-full min-w-full">
             <thead className="bg-gray-800/50 border-b border-gray-700/50">
               <tr>
                 <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
-                {/* <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Card ID</th> */}
                 <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
                 <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
                 <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation</th>
@@ -664,33 +853,49 @@ const ManageCards = () => {
               {filteredGroupedCards.length > 0 ? (
                 filteredGroupedCards.map(([date, list]) => (
                   <React.Fragment key={date}>
+                    {/* UPDATED: Date header with Download All button */}
                     <tr className="bg-gray-800/30">
-                      <td colSpan="6" className="p-3 font-medium text-gray-300 text-sm">
-                        <div className="flex items-center gap-2">
-                          <span>📅</span>
-                          <span>{new Date(date).toLocaleDateString("en-GB")}</span>
+                      <td colSpan="6" className="p-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span>📅</span>
+                            <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
+                            <span className="ml-2 text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">
+                              {list.length} cards
+                            </span>
+                          </div>
+                          
+                          {/* NEW: Download All button for this date */}
+                          <button
+                            onClick={() => downloadAllByDate(date, list)}
+                            disabled={downloadingDate === date}
+                            className={`flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
+                              downloadingDate === date
+                                ? 'bg-gray-600 cursor-not-allowed opacity-50'
+                                : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
+                            }`}
+                          >
+                            {downloadingDate === date ? (
+                              <>
+                                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <span>...</span>
+                              </>
+                            ) : (
+                              <>
+                                <FiDownloadCloud size={12} />
+                                <span>All ({list.length})</span>
+                              </>
+                            )}
+                          </button>
                         </div>
                       </td>
                     </tr>
 
                     {list.map((card) => (
-                      <tr 
-                        key={card._id} 
-                        className="hover:bg-gray-800/20 transition-colors"
-                      >
+                      <tr key={card._id} className="hover:bg-gray-800/20 transition-colors">
                         <td className="p-3">
-                          <input
-                            checked={card.isDownloaded}
-                            readOnly
-                            type="checkbox"
-                            className="w-4 h-4 rounded"
-                          />
+                          <input checked={card.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" />
                         </td>
-                        {/* <td className="p-3">
-                          <div className="font-mono text-xs max-w-[100px] truncate" title={card.cardId}>
-                            {card.cardId}
-                          </div>
-                        </td> */}
                         <td className="p-3">
                           <StatusBadge active={card.isActivated} />
                         </td>
@@ -718,15 +923,11 @@ const ManageCards = () => {
                                   }}
                                 />
                               ) : (
-                                <img
-                                  src="/qr.png"
-                                  alt="Demo QR"
-                                  className="w-8 h-8"
-                                />
+                                <img src="/qr.png" alt="Demo QR" className="w-8 h-8" />
                               )}
                             </div>
                             <button
-                              onClick={() => previewQR(card.qrUrl)}
+                              onClick={() => previewQR(card)}
                               className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 ${
                                 !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                               }`}
@@ -781,33 +982,53 @@ const ManageCards = () => {
           </table>
         </div>
         
-        {/* Pagination for Tablet - ALWAYS SHOW IF totalPages > 1 */}
         {totalPages > 1 && <Pagination />}
       </div>
 
-      {/* MOBILE TABLE VIEW (Below 768px) - Horizontal Scrollable Table */}
+      {/* MOBILE VIEW - SAME BUTTON ADDITION */}
       <div className="block md:hidden">
         {filteredGroupedCards.length > 0 ? (
           filteredGroupedCards.map(([date, list]) => (
             <div key={date} className="mb-6">
-              {/* Date Header */}
+              {/* UPDATED: Date header with Download All button */}
               <div className="mb-3 p-3 bg-gray-800/30 rounded-lg sticky top-0 z-10">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">📅</span>
-                  <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
-                  <span className="ml-auto text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded">
-                    {list.length} cards
-                  </span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">📅</span>
+                    <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
+                  </div>
+                  
+                  {/* NEW: Download All button for mobile */}
+                  <button
+                    onClick={() => downloadAllByDate(date, list)}
+                    disabled={downloadingDate === date}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                      downloadingDate === date
+                        ? 'bg-gray-600 cursor-not-allowed opacity-50'
+                        : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
+                    }`}
+                  >
+                    {downloadingDate === date ? (
+                      <>
+                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiDownloadCloud size={12} />
+                        <span>All {list.length}</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
 
-              {/* Horizontal Scrollable Table */}
+              {/* Table remains same */}
               <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
                 <table className="min-w-[700px] w-full">
                   <thead className="bg-gray-800/50 border-b border-gray-700/50">
                     <tr>
                       <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[40px]">✓</th>
-                      {/* <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[120px]">Card ID</th> */}
                       <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Status</th>
                       <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Owner</th>
                       <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[100px]">Activation</th>
@@ -819,23 +1040,10 @@ const ManageCards = () => {
 
                   <tbody className="divide-y divide-gray-700/30">
                     {list.map((card) => (
-                      <tr 
-                        key={card._id} 
-                        className="hover:bg-gray-800/20 transition-colors"
-                      >
+                      <tr key={card._id} className="hover:bg-gray-800/20 transition-colors">
                         <td className="p-2">
-                          <input
-                            checked={card.isDownloaded}
-                            readOnly
-                            type="checkbox"
-                            className="w-4 h-4 rounded"
-                          />
+                          <input checked={card.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" />
                         </td>
-                        {/* <td className="p-2">
-                          <div className="font-mono text-xs max-w-[110px] truncate" title={card.cardId}>
-                            {card.cardId}
-                          </div>
-                        </td> */}
                         <td className="p-2">
                           <StatusBadge active={card.isActivated} />
                         </td>
@@ -865,11 +1073,7 @@ const ManageCards = () => {
                                 }}
                               />
                             ) : (
-                              <img
-                                src="/qr.png"
-                                alt="Demo QR"
-                                className="w-8 h-8"
-                              />
+                              <img src="/qr.png" alt="Demo QR" className="w-8 h-8" />
                             )}
                           </div>
                         </td>
@@ -877,7 +1081,7 @@ const ManageCards = () => {
                           <div className="flex flex-col gap-1.5">
                             <div className="flex gap-1.5 justify-center">
                               <button
-                                onClick={() => previewQR(card.qrUrl)}
+                                onClick={() => previewQR(card)}
                                 className={`flex-1 text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 min-w-[32px] ${
                                   !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                                 }`}
@@ -914,7 +1118,6 @@ const ManageCards = () => {
                 </table>
               </div>
               
-              {/* Mobile Scroll Hint */}
               <div className="mt-2 text-center">
                 <p className="text-xs text-gray-500 animate-pulse">
                   ← Scroll horizontally to view all columns →
@@ -946,7 +1149,6 @@ const ManageCards = () => {
           </div>
         )}
         
-        {/* Pagination for Mobile - ALWAYS SHOW IF totalPages > 1 */}
         {totalPages > 1 && <Pagination />}
       </div>
     </div>
