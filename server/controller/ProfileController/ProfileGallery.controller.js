@@ -135,7 +135,7 @@ const getGallery = async (req, res) => {
     if (!Gallery.length) {
       return res.status(404).json({ message: "No Gallery found for this activation code" });
     }
-    console.log("Gallery found:", Gallery);
+    // console.log("Gallery found:", Gallery);
 
     res.json({
       success: true,

@@ -125,7 +125,7 @@ const PublicProfilePage = () => {
           await navigator.share({
             // title: `${profileData.name}'s Profile`,
             // text: profileData.bio || `Connect with ${profileData.name}`,
-            url: `https://brilson.in/share/public/profile/${slug}`,  // ye url backend ka hai. isse banane ke liye OG backend banaya hai.
+            url: `https://brilson.in/public/profile/${slug}`,
           });
         } catch (error) {
           console.log('Sharing cancelled');

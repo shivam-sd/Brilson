@@ -118,7 +118,7 @@ const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
   app.use("/api/profile/payment-details", PaymentDetails);
   app.use("/api/profile/location", LocationReviewRouter);
   app.use("/api/profile/resume", ProfileResume);
-  app.use("/share/public", SharePublicProfilerouter);
+  app.use("/public", SharePublicProfilerouter);
 
   
 
