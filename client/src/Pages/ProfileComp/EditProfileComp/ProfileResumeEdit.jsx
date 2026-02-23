@@ -92,6 +92,7 @@ const ProfileResumeEdit = () => {
               <a
                 href={resume.resume}
                 download={resume.name}
+                target="_blank"
                 className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-xl text-sm font-medium transition w-full sm:w-auto"
               >
                 <Download size={16} />

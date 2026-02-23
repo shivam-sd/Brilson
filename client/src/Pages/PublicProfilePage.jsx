@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { CiLocationOn } from "react-icons/ci";
+import { TbWorld } from "react-icons/tb";
+import { LuYoutube } from "react-icons/lu";
+import { IoLocationOutline } from "react-icons/io5";
 import {
   FiMail, 
   FiChevronRight,
@@ -122,7 +125,7 @@ const PublicProfilePage = () => {
           await navigator.share({
             // title: `${profileData.name}'s Profile`,
             // text: profileData.bio || `Connect with ${profileData.name}`,
-            url: `https://brilson.in/public/profile/${slug}`,
+            url: `https://brilson.in/share/public/profile/${slug}`,  // ye url backend ka hai. isse banane ke liye OG backend banaya hai.
           });
         } catch (error) {
           console.log('Sharing cancelled');
@@ -223,55 +226,49 @@ const PublicProfilePage = () => {
   );
 
   const SocialLink = ({ platform, url, icon, color }) => (
-    <motion.a
-      whileHover={{ scale: 1.05, y: -2 }}
-      href={url.startsWith('http') ? url : `https://${url}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins"
-    >
-        {React.cloneElement(icon, { size: 20, style: { color } })}
-      <span className="font-medium text-white flex-1 text-left">{platform}</span>
-    </motion.a>
-  );
-
-  // Mobile device ke liye
-  const SocialLink1 = ({ platform, url, icon, color }) => (
-  <motion.a
-    whileHover={{ y: -4 }}
-    whileTap={{ scale: 0.95 }}
-    href={url.startsWith("http") ? url : `https://${url}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="
-      min-w-[90px]
-      h-[80px]
-      flex flex-col items-center justify-center gap-2
-      rounded-2xl
-      bg-gradient-to-r from-white/5 to-transparent
-      border border-white/10
-      shadow-lg
-      hover:border-[#E1C48A]/40
-      transition-all duration-300
-      shrink-0 font-Poppins
-    "
-  >
-    <div
-      className="w-10 h-10 flex items-center justify-center rounded-full"
-      style={{ backgroundColor: `${color}20` }}
-    >
-      {React.cloneElement(icon, {
-        size: 18,
-        style: { color },
-      })}
-    </div>
-
-    <span className="text-xs text-gray-300 font-medium">
-      {platform}
-    </span>
-  </motion.a>
-);
-
+      <motion.a
+        whileHover={{ scale: 1.05, y: -2 }}
+        href={url.startsWith("http") ? url : `https://${url}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex flex-col items-center justify-center gap-2 p-4 bg-gradient-to-r from-slate-800/40 to-transparent border border-slate-800 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins "
+      >
+        {React.cloneElement(icon, { size: 24, style: { color } })}
+        <span className="text-white flex-1 text-left">
+          {platform}
+        </span>
+      </motion.a>
+    );
+  
+    // Mobile device ke liye
+  
+    const SocialLink1 = ({ platform, url, icon, color }) => (
+      <motion.a
+        whileHover={{ y: -4 }}
+        whileTap={{ scale: 0.95 }}
+        href={url.startsWith("http") ? url : `https://${url}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="
+        flex flex-col items-center justify-center gap-2 shadow-lg
+        transition-all duration-300
+        shrink-0 font-Poppins p-1 w-20 bg-gradient-to-r from-slate-800/40 to-transparent border border-slate-800 rounded-xl
+      "
+      >
+        <div
+          className="w-10 h-10 flex items-center justify-center rounded-full"
+          style={{ backgroundColor: `${color}20` }}
+        >
+          {React.cloneElement(icon, {
+            size: 18,
+            style: { color },
+          })}
+        </div>
+  
+        <span className="text-xs text-gray-300 font-medium">{platform}</span>
+      </motion.a>
+    );
+  
 
 
 // set Contact Data for the csv 
@@ -345,7 +342,7 @@ const contact = {
         </div>
 
         {/* Main Profile Container */}
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="relative z-10 max-w-6xl mx-auto sm:px-6 lg:px-8 py-8">
           {/* Profile Box */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -422,88 +419,109 @@ const contact = {
                 <div className="lg:flex hidden flex-col p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold text-gray-300 mb-4">Connect</h3>
                   <div className="lg:flex hidden flex-wrap items-center justify-between gap-2">
-                    <SocialLink
-                      platform="Website"
-                      url={profileData.website}
-                      icon={<CgWebsite />}
-                      color="#8B5CF6"
-                    />
-                    <SocialLink
-                      platform="Instagram"
-                      url={profileData.instagram}
-                      icon={<FiInstagram />}
-                      color="#EC4899"
-                    />
-                    <SocialLink
-                      platform="Facebook"
-                      url={profileData.facebook}
-                      icon={<FiFacebook />}
-                      color="#3B82F6"
-                    />
-                    <SocialLink
-                      platform="YouTube"
-                      url="https://youtube.com"
-                      icon={<FaYoutube />}
-                      color="#EF4444"
-                    />
-                    <SocialLink
-                      platform="LinkedIn"
-                      url={profileData.linkedin}
-                      icon={<FiLinkedin />}
-                      color="#0A66C2"
-                    />
-                    <SocialLink
-                      platform="Twitter"
-                      url={profileData.twitter}
-                      icon={<FiTwitter />}
-                      color="#1DA1F2"
-                    />
-                  </div>
-                </div>
-
-                {/* Mobile device ke liye */}
-                <div className="lg:hidden flex flex-col p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
-                  <h3 className="text-2xl font-bold text-gray-300 mb-4">Connect</h3>
-                  <div className="lg:hidden flex flex-wrap items-center justify-between gap-2">
-                    <SocialLink1
-                      platform="Website"
-                      url={profileData.website}
-                      icon={<CgWebsite />}
-                      color="#8B5CF6"
-                    />
-                    <SocialLink1
-                      platform="Instagram"
-                      url={profileData.instagram}
-                      icon={<FiInstagram />}
-                      color="#EC4899"
-                    />
-                    <SocialLink1
-                      platform="Facebook"
-                      url={profileData.facebook}
-                      icon={<FiFacebook />}
-                      color="#3B82F6"
-                    />
-                    <SocialLink1
-                      platform="YouTube"
-                      url="https://youtube.com"
-                      icon={<FaYoutube />}
-                      color="#EF4444"
-                    />
-                    <SocialLink1
-                      platform="LinkedIn"
-                      url={profileData.linkedin}
-                      icon={<FiLinkedin />}
-                      color="#0A66C2"
-                    />
-                    <SocialLink1
-                      platform="Twitter"
-                      url={profileData.twitter}
-                      icon={<FiTwitter />}
-                      color="#1DA1F2"
-                    />
-                  </div>
-                </div>
-
+                                      <SocialLink
+                                        platform="Website"
+                                        url={profileData.website}
+                                        icon={<TbWorld />}
+                                        color="#06D001"
+                                      />
+                                      <SocialLink
+                                        platform="Instagram"
+                                        url={profileData.instagram}
+                                        icon={<FiInstagram />}
+                                        color="#DC143C"
+                                      />
+                                      <SocialLink
+                                        platform="Facebook"
+                                        url={profileData.facebook}
+                                        icon={<FiFacebook />}
+                                        color="#6F00FF"
+                                      />
+                                      <SocialLink
+                                        platform="YouTube"
+                                        url="https://youtube.com"
+                                        icon={<LuYoutube />}
+                                        color="#F63049"
+                                      />
+                                      <SocialLink
+                                        platform="LinkedIn"
+                                        url={profileData.linkedin}
+                                        icon={<FiLinkedin />}
+                                        color="#0A66C2"
+                                      />
+                                      <SocialLink
+                                        platform="Twitter"
+                                        url={profileData.twitter}
+                                        icon={<FiTwitter />}
+                                        color="#1DA1F2"
+                                      />
+                                    </div>
+                                  </div>
+                  
+                                  <div
+                                    className="w-full 
+                    border border-white/10 
+                    p-4 
+                    rounded-xl 
+                    mb-5 
+                    flex items-center gap-3 
+                    shadow-lg 
+                    bg-gradient-to-r from-slate-900 to-slate-950
+                    backdrop-blur-md"
+                                  >
+                                    <IoLocationOutline
+                                      size={22}
+                                      className="text-yellow-400 shrink-0"
+                                    />
+                  
+                                    <span className="text-gray-200 text-sm leading-relaxed break-words font-Poppins">
+                                      {profileData.city}
+                                    </span>
+                                  </div>
+                  
+                                  {/* mobile device ke liye */}
+                  
+                                  <div className="lg:hidden flex">
+                                    <div className="lg:hidden grid grid-cols-4 items-center justify-between gap-4">
+                                      <SocialLink1
+                                        platform="Website"
+                                        url={profileData.website}
+                                        icon={<TbWorld />}
+                                        color="#06D001"
+                                      />
+                                      <SocialLink1
+                                        platform="Instagram"
+                                        url={profileData.instagram}
+                                        icon={<FiInstagram />}
+                                        color="#EC4899"
+                                      />
+                                      <SocialLink1
+                                        platform="Facebook"
+                                        url={profileData.facebook}
+                                        icon={<FiFacebook />}
+                                        color="#3B82F6"
+                                      />
+                                      <SocialLink1
+                                        platform="YouTube"
+                                        url="https://youtube.com"
+                                        icon={<FaYoutube />}
+                                        color="#EF4444"
+                                      />
+                                      <SocialLink1
+                                        platform="LinkedIn"
+                                        url={profileData.linkedin}
+                                        icon={<FiLinkedin />}
+                                        color="#0A66C2"
+                                      />
+                                      <SocialLink1
+                                        platform="Twitter"
+                                        url={profileData.twitter}
+                                        icon={<FiTwitter />}
+                                        color="#1DA1F2"
+                                      />
+                                    </div>
+                                  </div>
+                  
                 {/* About Section */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold mb-3 text-gray-300">About:</h3>

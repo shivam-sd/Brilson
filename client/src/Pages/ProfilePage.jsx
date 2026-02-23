@@ -167,7 +167,7 @@ const ProfilePage = () => {
         await navigator.share({
           // title: `${profileData.name}'s Profile`,
           // text: profileData.bio || `Connect with ${profileData.name}`,
-          url: `https://brilson.in/public/profile/${slug}`,
+          url: `https://brilson.in/share/public/profile/${slug}`,  // ye url backend ka hai. isse banane ke liye OG backend banaya hai.
         });
       } catch (error) {
         console.log("Sharing cancelled");
@@ -297,11 +297,10 @@ const ProfilePage = () => {
       href={url.startsWith("http") ? url : `https://${url}`}
       target="_blank"
       rel="noopener noreferrer"
-      className=" pl-2
-      flex flex-col items-center justify-center gap-2
-      rounded-2xl shadow-lg
+      className="
+      flex flex-col items-center justify-center gap-2 shadow-lg
       transition-all duration-300
-      shrink-0 font-Poppins
+      shrink-0 font-Poppins p-1 w-20 bg-gradient-to-r from-slate-800/40 to-transparent border border-slate-800 rounded-xl
     "
     >
       <div
@@ -395,7 +394,7 @@ const ProfilePage = () => {
         </div>
 
         {/* Main Profile Container */}
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="relative z-10 max-w-6xl mx-auto sm:px-6 lg:px-8 py-8">
           {/* Profile Box */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -546,7 +545,7 @@ const ProfilePage = () => {
                 {/* mobile device ke liye */}
 
                 <div className="lg:hidden flex">
-                  <div className="lg:hidden grid grid-cols-4 items-center justify-between gap-2">
+                  <div className="lg:hidden grid grid-cols-4 items-center justify-between gap-4">
                     <SocialLink1
                       platform="Website"
                       url={profileData.website}

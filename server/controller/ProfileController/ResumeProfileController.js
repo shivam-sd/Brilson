@@ -17,18 +17,29 @@ const addResume = async (req,res) => {
     }
 
     const file = req?.files?.resume;
-    console.log(file)
+    // console.log(file)
 
     if(!file){
          return res.status(400).json({ message: "Resume file is required" });
     }
 
+
+       if (file.mimetype !== 'application/pdf') {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Only PDF files are allowed" 
+            });
+        }
+
     const result = await cloudinary.uploader.upload(file.tempFilePath, {
-        resource_type:"raw",
+        resource_type:"image",
         use_filename: true,
       overwrite: true,
         folder:"Profile Resume"
     });
+
+
+    // console.log("Result", result);
 
 
     const resume = await resumeModel.create({
@@ -66,9 +77,20 @@ const updateResume = async (req,res) => {
 
     const file = req?.files?.resume;
 
+
+
     if(!file){
          return res.status(400).json({ message: "Resume file is required" });
     }
+
+
+
+       if (file.mimetype !== 'application/pdf') {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Only PDF files are allowed" 
+            });
+        }
 
     const result = await cloudinary.uploader.upload(file.tempFilePath, {
         resource_type:"raw",
