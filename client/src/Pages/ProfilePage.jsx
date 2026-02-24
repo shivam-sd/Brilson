@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { CiLocationOn } from "react-icons/ci";
 import { LuYoutube } from "react-icons/lu";
 import { TbWorld } from "react-icons/tb";
@@ -99,6 +100,7 @@ const ProfilePage = () => {
           `${import.meta.env.VITE_BASE_URL}/api/card/${slug}`,
         );
         setProfile(res.data.profile);
+        // console.log(res.data.profile.whatsapp);
         setShowEditButton(res.data.card._id);
         setId(res.data.card.slug);
       } catch (err) {
@@ -141,15 +143,15 @@ const ProfilePage = () => {
   };
 
   const handleWhatsApp = () => {
-    if (profileData.phone) {
-      const phoneNumber = profileData.phone.replace(/\D/g, "");
+    if (profileData.whatsapp) {
+      const phoneNumber = profileData.whatsapp.replace(/\D/g, "");
       window.open(`https://wa.me/${phoneNumber}`, "_blank");
     }
   };
 
   const handlePhone = () => {
-    if (profileData.phone) {
-      const phoneNumber = profileData.phone.replace(/\D/g, "");
+    if (profileData.whatsapp) {
+      const phoneNumber = profileData.whatsapp.replace(/\D/g, "");
       window.open(`tel:${phoneNumber}`);
     }
   };
@@ -190,28 +192,48 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
+<>
+<Helmet>
+        <title>Loading Profile... | Brilson</title>
+        <meta name="description" content="Loading premium digital business card profile" />
+        <meta property="og:title" content="Brilson - Digital Business Cards" />
+        <meta property="og:image" content="https://brilson.in/default-og-image.jpg" />
+      </Helmet>
+
       <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-16 h-16 border-4 border-[#E1C48A]/30 border-t-[#E1C48A] rounded-full mx-auto mb-4"></div>
           <p className="text-gray-400">Loading premium profile...</p>
         </div>
       </div>
+</>
     );
   }
 
   if (!profile) {
     return (
+      <>
+
+      <Helmet>
+        <title>Profile Not Found | Brilson</title>
+        <meta name="description" content="The requested profile could not be found" />
+        <meta property="og:title" content="Profile Not Found | Brilson" />
+        <meta property="og:image" content="https://brilson.in/default-og-image.jpg" />
+        <meta name="robots" content="noindex" />
+      </Helmet>
+      
       <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] flex items-center justify-center text-white">
         <div className="text-center">
           <p className="text-xl text-gray-400">Profile not found</p>
           <Link
             to="/"
             className="text-[#E1C48A] hover:text-[#F5D8A5] mt-4 inline-block"
-          >
+            >
             Go back home
           </Link>
         </div>
       </div>
+            </>
     );
   }
 
@@ -223,6 +245,7 @@ const ProfilePage = () => {
     bio: profile?.bio || "Smart solutions that move your business forward",
     about: profile?.about || "",
     city: profile?.city || "",
+    whatsapp:profile?.whatsapp || "",
     website: profile?.website || "",
     linkedin: profile?.linkedin || "",
     twitter: profile?.twitter || "",
@@ -328,6 +351,46 @@ const ProfilePage = () => {
 
   return (
     <>
+    <Helmet>
+      {/* Basic Meta Tags */}
+      <title>{profileData.name ? `${profileData.name}'s Profile | Brilson` : 'Profile | Brilson'}</title>
+      {/* <meta 
+        name="description" 
+        content={profileData.about || profileData.bio || `Connect with ${profileData.name} on Brilson`} 
+      /> */}
+      
+      {/* Open Graph Meta Tags Facebook, WhatsApp, LinkedIn */}
+      <meta property="og:title" content={`${profileData.name}'s Profile | Brilson`} />
+      {/* <meta 
+        property="og:description" 
+        content={profileData.about || profileData.bio || `Connect with ${profileData.name}`} 
+      /> */}
+      <meta property="og:image" content={logo || 'https://brilson.in/default-og-image.jpg'} />
+      <meta property="og:url" content={`https://brilson.in/public/profile/${slug}`} />
+      <meta property="og:type" content="profile" />
+      <meta property="og:site_name" content="Brilson" />
+      
+      {/* Twitter Card Tags */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={`${profileData.name}'s Profile | Brilson`} />
+      {/* <meta 
+        name="twitter:description" 
+        content={profileData.about || profileData.bio || `Connect with ${profileData.name}`} 
+      /> */}
+      <meta name="twitter:image" content={logo || 'https://brilson.in/default-og-image.jpg'} />
+      
+      {/* Additional SEO Tags */}
+      <meta name="keywords" content={`${profileData.name}, ${profileData.title}, ${profileData.company}, digital business card, brilson`} />
+      <meta name="author" content={profileData.name} />
+      <meta name="robots" content="index, follow" />
+      <link rel="canonical" href={`https://brilson.in/public/profile/${slug}`} />
+      
+      {/* WhatsApp Specific - ye additional meta tags helpful hain */}
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={`${profileData.name}'s profile picture`} />
+    </Helmet>
+
       <Toaster
         position="top-right"
         toastOptions={{
@@ -423,16 +486,32 @@ const ProfilePage = () => {
                 <p className="text-xl text-yellow-600 mb-1">
                   {profileData.title}
                 </p>
-                <p className="text-gray-400 mb-6 font-semibold font-Poppins">
-                  {profileData.company}
-                </p>
+                              <div className="px-6 py-5 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl border border-gray-700/50">
+  <div className="flex items-start gap-4">
+    {/* Decorative icon */}
+    <div className="hidden sm:block">
+      <svg className="w-8 h-8 text-[#E1C48A]/40" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/>
+      </svg>
+    </div>
+    
+    <div className="flex-1">
+      <p className="text-gray-300 text-lg md:text-xl font-light italic leading-relaxed">
+        {profileData.bio}
+      </p>
+      
+      {/* Author line (optional) */}
+      <p className="mt-2 text-right text-sm text-gray-500">
+        — {profileData.name || 'User'}
+      </p>
+    </div>
+  </div>
+</div>
 
-                {/* Tagline */}
-                <div className="px-7 py-2 bg-gradient-to-r from-[#E1C48A]/10 to-[#C9A86A]/10 border border-[#E1C48A]/30 rounded-full">
-                  <p className="text-[#E1C48A] italic text-lg font-Poppins">
-                    {profileData.bio}
-                  </p>
-                </div>
+                {/* <p className="text-gray-400 mb-6 font-semibold font-Poppins">
+                  {profileData.company}
+                </p> */}
+               
               </div>
 
               {/* Quick Contact Buttons */}

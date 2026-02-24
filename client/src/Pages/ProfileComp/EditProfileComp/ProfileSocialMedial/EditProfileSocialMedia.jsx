@@ -15,7 +15,6 @@ const EditProfileSocialMedia = () => {
 
   const [form, setForm] = useState({
     company:"",
-    website:"",
     linkedin: "",
     twitter: "" ,
     instagram: "",
@@ -39,7 +38,6 @@ const profile = res.data.card.profile;
 
 setForm({
     company: profile?.company || "",
-    website: profile?.website || "https://",
     linkedin: profile?.linkedin || "https://www.linkedin.com/in/",
     twitter: profile?.twitter || "https://x.com/",
     instagram: profile?.instagram || "https://www.instagram.com/",
@@ -115,8 +113,7 @@ const handleSubmit = async (e) => {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6 mt-8">
-            <Input label="Company" name="company" value={form.company} onChange={handleChange} />
-            <Input label="Website" name="website" value={form.website} onChange={handleChange} />
+            {/* <Input label="Company" name="company" value={form.company} onChange={handleChange} /> */}
             <Input label="LinkedIn" name="linkedin" value={form.linkedin} onChange={handleChange} />
             <Input label="Twitter" name="twitter" value={form.twitter} onChange={handleChange} />
             <Input label="Instagram" name="instagram" value={form.instagram} onChange={handleChange} />

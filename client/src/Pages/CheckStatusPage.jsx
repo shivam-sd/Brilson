@@ -16,7 +16,7 @@ const CheckStatusPage = () => {
         );
 // console.log(res);
         if (res.data?.isActivated) {
-          navigate(`/profile/${res.data.slug}`, { replace: true });
+          navigate(`/profile/${activationCode}`, { replace: true });
         } else {
           navigate(`/card/activate`, { replace: true });
         }

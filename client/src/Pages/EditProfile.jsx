@@ -17,9 +17,12 @@ const EditProfile = () => {
     name: "",
     email: "",
     phone: "",
+    countryCode: "",
     bio: "",
     about: "",
     city: "",
+    whatsapp:"",
+    website:"",
     company:"",
     website: "",
     linkedin: "",
@@ -47,9 +50,12 @@ setForm({
     name: profile?.name || "",
     email: profile?.email || "",
     phone: profile?.phone || "",
+    countryCode: profile?.countryCode || "+91",
     bio: profile?.bio || "",
     about: profile?.about || "",
     city: profile?.city || "",
+    whatsapp: profile?.whatsapp || "",
+    website: profile?.website || "https://",
     company: profile?.company || "",
     website: profile?.website || "",
     linkedin: profile?.linkedin || "",
@@ -72,7 +78,19 @@ getProfileInfo();
 // HANDLE INPUT CHANGE
 
 const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+   const { name, value } = e.target;
+
+  if (name === "phone") {
+    const numericValue = value.replace(/\D/g, "");
+
+    // Restrict to max 10 digits
+    if (numericValue.length <= 10) {
+      setForm({ ...form, phone: numericValue });
+    }
+    return;
+  }
+
+  setForm({ ...form, [name]: value });
 };
 
 
@@ -82,9 +100,14 @@ const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!form.name || !form.email || !form.phone) {
-        toast.error("Name, Email and Phone are required");
-        return;
-    }
+  toast.error("Name, Email and Phone are required");
+  return;
+}
+
+if (form.phone.length !== 10) {
+  toast.error("Phone number must be exactly 10 digits");
+  return;
+}
     // console.log(Id)
 
     try {
@@ -92,7 +115,10 @@ const handleSubmit = async (e) => {
 
       await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/card/${Id}/edit`,
-        form,{
+         {
+    ...form,
+    phone: `${form.countryCode}${form.phone}`
+  },{
           headers:{
             Authorization: `Bearer ${localStorage.getItem("token")}`
           }
@@ -132,15 +158,50 @@ const handleSubmit = async (e) => {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6 mt-8">
-            <Input label="Full Name" name="name" value={form.name} onChange={handleChange} />
+            <Input label="Full Name & Company Name" name="name" value={form.name} onChange={handleChange} />
             <Input label="Email" name="email" value={form.email} onChange={handleChange} />
-            <Input label="Phone" name="phone" value={form.phone} onChange={handleChange} />
+           <div>
+  <label className="text-sm text-gray-400 mb-2 block">
+    Phone
+  </label>
+
+  <div className="flex gap-2">
+    <select
+      name="countryCode"
+      value={form.countryCode}
+      onChange={handleChange}
+      className="px-3 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white"
+    >
+      <option value="+91">🇮🇳 +91</option>
+      <option value="+1">🇺🇸 +1</option>
+      <option value="+44">🇬🇧 +44</option>
+      <option value="+971">🇦🇪 +971</option>
+      <option value="+61">🇦🇺 +61</option>
+    </select>
+
+    <input
+      type="text"
+      name="phone"
+      value={form.phone}
+      onChange={handleChange}
+      maxLength={10}
+      placeholder="Enter 10 digit number"
+      className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white"
+    />
+  </div>
+</div>
+            <Input label="Whatsapp Number" name="whatsapp" value={form.whatsapp} onChange={handleChange} />
             <Input label="Address" name="city" value={form.city} onChange={handleChange} />
           </div>
 
           <div className="mt-6">
             <Textarea label="Bio" name="bio" value={form.bio} onChange={handleChange} rows={2} />
           </div>
+
+<div className="mt-6">
+
+          <Input label="Website" name="website" value={form.website} onChange={handleChange} />
+</div>
 
           <div className="mt-6">
             <Textarea label="About" name="about" value={form.about} onChange={handleChange} rows={4} />

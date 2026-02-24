@@ -1,5 +1,6 @@
 import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
+import { HelmetProvider } from 'react-helmet-async';
 const HomePage = React.lazy(() => import("./HomePage"));
 import ReactLenis from "lenis/react";
 import HowitWorks from "./Pages/HowitWorks";
@@ -84,6 +85,7 @@ import ProfileResumeEdit from "./Pages/ProfileComp/EditProfileComp/ProfileResume
 function App() {
   return (
     <>
+    <HelmetProvider>
       <div>
         <Routes>
           <Route
@@ -370,6 +372,7 @@ function App() {
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </div>
+      </HelmetProvider>
     </>
   );
 }

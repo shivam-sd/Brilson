@@ -53,6 +53,7 @@ const CardProfileSchema = new mongoose.Schema(
       bio: String,
       about: String,
       city: String,
+      whatsapp:String,
       company:String,
       twitter: String,
       instagram: String,
