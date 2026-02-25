@@ -205,6 +205,7 @@ const ActivateCardAPi = async (req, res) => {
 
 
 
+
 const EditCardProfile = async (req, res) => {
   try {
     const { id } = req.params;
@@ -243,6 +244,33 @@ const EditCardProfile = async (req, res) => {
 };
 
 
+const updateCountryCode = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user;
+    const { countryCode } = req.body;
+
+    const updatedProfile = await CardProfileModel.findByIdAndUpdate(
+      {_id:id, owner:userId},
+      {
+        $set: {
+          "profile.countryCode": countryCode,
+        },
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "Country code updated successfully",
+      data: updatedProfile,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 
 // const EditCardProfile = async (req, res) => {
 //   try {
@@ -263,4 +291,4 @@ const EditCardProfile = async (req, res) => {
 //   }
 // };
 
-module.exports = {ActivateCardAPi,EditCardProfile};
+module.exports = {ActivateCardAPi, EditCardProfile, updateCountryCode};

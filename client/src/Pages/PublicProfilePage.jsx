@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Helmet } from "react-helmet-async";
+import { SiSharex } from "react-icons/si";
+import { BsEmojiGrin } from "react-icons/bs";
+import { FaSnapchatGhost } from "react-icons/fa";
+import { MdElectricBolt } from "react-icons/md";
+import { FaReddit } from "react-icons/fa6";
+import { FaPinterestSquare } from "react-icons/fa";
 import { CiLocationOn } from "react-icons/ci";
 import { TbWorld } from "react-icons/tb";
 import { LuYoutube } from "react-icons/lu";
@@ -238,7 +244,15 @@ const PublicProfilePage = () => {
     instagram: profile?.instagram || "",
     facebook: profile?.facebook || "",
     title: profile?.title || "",
-    company: profile?.company || ""
+    company: profile?.company || "",
+     youtube: profile?.youtube || "",
+    snapchat: profile?.snapchat || "",
+    sharechat: profile?.sharechat || "",
+    moj: profile?.moj || "",
+    josh: profile?.josh || "",
+    pinterest: profile?.pinterest || "",
+    reddit: profile?.reddit || "",
+    telegram: profile?.telegram || "",
   };
 
   const ContactButton = ({ icon, label, onClick, color = "#E1C48A" }) => (
@@ -257,13 +271,13 @@ const PublicProfilePage = () => {
   const SocialLink = ({ platform, url, icon, color }) => (
       <motion.a
         whileHover={{ scale: 1.05, y: -2 }}
-        href={url.startsWith("http") ? url : `https://${url}`}
+        href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex flex-col items-center justify-center gap-2 p-4 bg-gradient-to-r from-slate-800/40 to-transparent border border-slate-800 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins "
+        className="flex flex-col items-center justify-center gap-3 p-4 bg-gradient-to-r from-slate-800/40 to-transparent border border-slate-800 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins "
       >
-        {React.cloneElement(icon, { size: 24, style: { color } })}
-        <span className="text-white flex-1 text-left">
+        {React.cloneElement(icon, { size: 20, style: { color } })}
+        <span className="font-medium text-white flex-1 text-left">
           {platform}
         </span>
       </motion.a>
@@ -540,43 +554,131 @@ const contact = {
                 {/* CONNECT Section */}
                 <div className="lg:flex hidden flex-col p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold text-gray-300 mb-4">Connect</h3>
-                  <div className="lg:flex hidden flex-wrap items-center justify-between gap-2">
-                                      <SocialLink
-                                        platform="Website"
-                                        url={profileData.website}
-                                        icon={<TbWorld />}
-                                        color="#06D001"
-                                      />
-                                      <SocialLink
-                                        platform="Instagram"
-                                        url={profileData.instagram}
-                                        icon={<FiInstagram />}
-                                        color="#DC143C"
-                                      />
-                                      <SocialLink
-                                        platform="Facebook"
-                                        url={profileData.facebook}
-                                        icon={<FiFacebook />}
-                                        color="#6F00FF"
-                                      />
-                                      <SocialLink
-                                        platform="YouTube"
-                                        url="https://youtube.com"
-                                        icon={<LuYoutube />}
-                                        color="#F63049"
-                                      />
-                                      <SocialLink
-                                        platform="LinkedIn"
-                                        url={profileData.linkedin}
-                                        icon={<FiLinkedin />}
-                                        color="#0A66C2"
-                                      />
-                                      <SocialLink
-                                        platform="Twitter"
-                                        url={profileData.twitter}
-                                        icon={<FiTwitter />}
-                                        color="#1DA1F2"
-                                      />
+                  <div className="lg:grid hidden grid grid-cols-6 items-center justify-between gap-4">
+                                     {
+                                                           profileData.website ? <>
+                                                           <SocialLink
+                                                           platform="Website"
+                                                           url={profileData.website}
+                                                           icon={<TbWorld />}
+                                                           color="#06D001"
+                                                         />
+                                                           </> : <></> 
+                                                         }
+                                                         
+                                                         {
+                                                           profileData.instagram ? <>
+                                                           <SocialLink
+                                                           platform="Instagram"
+                                                           url={profileData.instagram}
+                                                           icon={<FiInstagram />}
+                                                           color="#DC143C"
+                                                         />
+                                                           </> : <></>
+                                                         }
+                                                         
+                                                         {
+                                                           profileData.facebook ? <><SocialLink
+                                                           platform="Facebook"
+                                                           url={profileData.facebook}
+                                                           icon={<FiFacebook />}
+                                                           color="#6F00FF"
+                                                         /></> : <></>
+                                                         }
+                                                         
+                                                         
+                                                         {
+                                                           profileData.youtube ? <>
+                                                           <SocialLink
+                                                           platform="YouTube"
+                                                           url={profileData.youtube}
+                                                           icon={<LuYoutube />}
+                                                           color="#F63049"
+                                                         />
+                                                           </> : <></>
+                                                         }
+                                     
+                                       {
+                                                           profileData.linkedin ? <><SocialLink
+                                                           platform="LinkedIn"
+                                                           url={profileData.linkedin}
+                                                           icon={<FiLinkedin />}
+                                                           color="#0A66C2"
+                                                         /></> : <></>
+                                                         }
+                                     
+                                                         
+                                                         {
+                                                           profileData.twitter ? <>
+                                                           <SocialLink
+                                                           platform="Twitter"
+                                                           url={profileData.twitter}
+                                                           icon={<FiTwitter />}
+                                                           color="#1DA1F2"
+                                                         /></> : <></>
+                                                         }
+                                     
+                                                         {
+                                                           profileData.snapchat ? <>
+                                                           <SocialLink
+                                                           platform="Snap Chat"
+                                                           url={profileData.snapchat}
+                                                           icon={<FaSnapchatGhost />}
+                                                           color="#FFFC00"
+                                                         /></> : <></>
+                                                         }
+                                     
+                                                         {
+                                                           profileData.moj ? <>
+                                                           <SocialLink
+                                                           platform="Moj"
+                                                           url={profileData.moj}
+                                                           icon={<BsEmojiGrin />}
+                                                           color="#80191A"
+                                                         /></> : <></>
+                                                         }
+                                     
+                                                         {
+                                                           profileData.josh ? <>
+                                                           <SocialLink
+                                                           platform="Josh"
+                                                           url={profileData.josh}
+                                                           icon={<MdElectricBolt />}
+                                                           color="#FF0099"
+                                                         /></> : <></>
+                                                         }
+                                     
+                                                         {
+                                                           profileData.pinterest ? <>
+                                                           <SocialLink
+                                                           platform="Pinterest"
+                                                           url={profileData.pinterest}
+                                                           icon={<FaPinterestSquare />}
+                                                           color="#80191A"
+                                                         /></> : <></>
+                                                         }
+                                     
+                                     
+                                     
+                                                         {
+                                                           profileData.reddit ? <>
+                                                           <SocialLink
+                                                           platform="Reddit"
+                                                           url={profileData.reddit}
+                                                           icon={<FaReddit />}
+                                                           color="#FF4500"
+                                                         /></> : <></>
+                                                         }
+
+                                                         {
+                                                           profileData.sharechat ? <>
+                                                           <SocialLink
+                                                           platform="Share Char"
+                                                           url={profileData.sharechat}
+                                                           icon={<SiSharex />}
+                                                           color="#9661BA"
+                                                         /></> : <></>
+                                                         }
                                     </div>
                                   </div>
                   
@@ -605,42 +707,130 @@ const contact = {
                   
                                   <div className="lg:hidden flex">
                                     <div className="lg:hidden grid grid-cols-4 items-center justify-between gap-4">
-                                      <SocialLink1
-                                        platform="Website"
-                                        url={profileData.website}
-                                        icon={<TbWorld />}
-                                        color="#06D001"
-                                      />
-                                      <SocialLink1
-                                        platform="Instagram"
-                                        url={profileData.instagram}
-                                        icon={<FiInstagram />}
-                                        color="#EC4899"
-                                      />
-                                      <SocialLink1
-                                        platform="Facebook"
-                                        url={profileData.facebook}
-                                        icon={<FiFacebook />}
-                                        color="#3B82F6"
-                                      />
-                                      <SocialLink1
-                                        platform="YouTube"
-                                        url="https://youtube.com"
-                                        icon={<FaYoutube />}
-                                        color="#EF4444"
-                                      />
-                                      <SocialLink1
-                                        platform="LinkedIn"
-                                        url={profileData.linkedin}
-                                        icon={<FiLinkedin />}
-                                        color="#0A66C2"
-                                      />
-                                      <SocialLink1
-                                        platform="Twitter"
-                                        url={profileData.twitter}
-                                        icon={<FiTwitter />}
-                                        color="#1DA1F2"
-                                      />
+                                      {
+                                                            profileData.website ? <>
+                                                            <SocialLink1
+                                                            platform="Website"
+                                                            url={profileData.website}
+                                                            icon={<TbWorld />}
+                                                            color="#06D001"
+                                                          />
+                                                            </> : <></> 
+                                                          }
+                                                          
+                                                          {
+                                                            profileData.instagram ? <>
+                                                            <SocialLink1
+                                                            platform="Instagram"
+                                                            url={profileData.instagram}
+                                                            icon={<FiInstagram />}
+                                                            color="#DC143C"
+                                                          />
+                                                            </> : <></>
+                                                          }
+                                                          
+                                                          {
+                                                            profileData.facebook ? <><SocialLink1
+                                                            platform="Facebook"
+                                                            url={profileData.facebook}
+                                                            icon={<FiFacebook />}
+                                                            color="#6F00FF"
+                                                          /></> : <></>
+                                                          }
+                                                          
+                                                          
+                                                          {
+                                                            profileData.youtube ? <>
+                                                            <SocialLink1
+                                                            platform="YouTube"
+                                                            url={profileData.youtube}
+                                                            icon={<LuYoutube />}
+                                                            color="#F63049"
+                                                          />
+                                                            </> : <></>
+                                                          }
+                                      
+                                        {
+                                                            profileData.linkedin ? <><SocialLink1
+                                                            platform="LinkedIn"
+                                                            url={profileData.linkedin}
+                                                            icon={<FiLinkedin />}
+                                                            color="#0A66C2"
+                                                          /></> : <></>
+                                                          }
+                                      
+                                                          
+                                                          {
+                                                            profileData.twitter ? <>
+                                                            <SocialLink1
+                                                            platform="Twitter"
+                                                            url={profileData.twitter}
+                                                            icon={<FiTwitter />}
+                                                            color="#1DA1F2"
+                                                          /></> : <></>
+                                                          }
+                                      
+                                                          {
+                                                            profileData.snapchat ? <>
+                                                            <SocialLink1
+                                                            platform="Snap Chat"
+                                                            url={profileData.snapchat}
+                                                            icon={<FaSnapchatGhost />}
+                                                            color="#FFFC00"
+                                                          /></> : <></>
+                                                          }
+                                      
+                                                          {
+                                                            profileData.moj ? <>
+                                                            <SocialLink1
+                                                            platform="Moj"
+                                                            url={profileData.moj}
+                                                            icon={<BsEmojiGrin />}
+                                                            color="#80191A"
+                                                          /></> : <></>
+                                                          }
+                                      
+                                                          {
+                                                            profileData.josh ? <>
+                                                            <SocialLink1
+                                                            platform="Josh"
+                                                            url={profileData.josh}
+                                                            icon={<MdElectricBolt />}
+                                                            color="#FF0099"
+                                                          /></> : <></>
+                                                          }
+                                      
+                                                          {
+                                                            profileData.pinterest ? <>
+                                                            <SocialLink1
+                                                            platform="Pinterest"
+                                                            url={profileData.pinterest}
+                                                            icon={<FaPinterestSquare />}
+                                                            color="#80191A"
+                                                          /></> : <></>
+                                                          }
+                                      
+                                      
+                                                          {
+                                                            profileData.reddit ? <>
+                                                            <SocialLink1
+                                                            platform="Reddit"
+                                                            url={profileData.reddit}
+                                                            icon={<FaReddit />}
+                                                            color="#FF4500"
+                                                          /></> : <></>
+                                                          }
+
+                                                          {
+                                                           profileData.sharechat ? <>
+                                                           <SocialLink1
+                                                           platform="Share Char"
+                                                           url={profileData.sharechat}
+                                                           icon={<SiSharex />}
+                                                           color="#9661BA"
+                                                         /></> : <></>
+                                                         }
+                                      
                                     </div>
                                   </div>
                   

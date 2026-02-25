@@ -48,6 +48,7 @@ const CardProfileSchema = new mongoose.Schema(
 
     profile: {
       name: String,
+      countryCode: String,
       phone: String,
       email: String,
       bio: String,
@@ -60,7 +61,14 @@ const CardProfileSchema = new mongoose.Schema(
       linkedin: String,
       website: String,
       youtube: String,
-      facebook:String
+      facebook:String,
+      telegram: String,
+      snapchat: String,
+      sharechat: String,
+      moj:String,
+josh:String,
+pinterest:String,
+reddit:String
     },
   }, 
   { timestamps: true }

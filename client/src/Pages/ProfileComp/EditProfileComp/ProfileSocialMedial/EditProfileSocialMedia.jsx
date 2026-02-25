@@ -4,8 +4,6 @@ import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import { useParams, useNavigate, replace } from "react-router-dom";
 
-
-
 const EditProfileSocialMedia = () => {
   const { id } = useParams();
   // console.log(id)
@@ -14,57 +12,67 @@ const EditProfileSocialMedia = () => {
   const [Id, setId] = useState(null);
 
   const [form, setForm] = useState({
-    company:"",
+    company: "",
     linkedin: "",
-    twitter: "" ,
+    twitter: "",
     instagram: "",
-    youtube:"",
-    facebook:"",
+    youtube: "",
+    facebook: "",
+    telegram: "",
+    snapchat: "",
+    sharechat: "",
+    moj: "",
+    josh: "",
+    pinterest: "",
+    reddit: "",
   });
 
-
-     // FETCH EXISTING PROFILE
+  // FETCH EXISTING PROFILE
 
   useEffect(() => {
     const getProfileInfo = async () => {
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/card/${id}`,
-          { withCredentials: true }
+          { withCredentials: true },
         );
-console.log(res.data.card._id)
-setId(res.data.card._id);
-const profile = res.data.card.profile;
+        console.log(res.data.card._id);
+        setId(res.data.card._id);
+        const profile = res.data.card.profile;
 
-setForm({
-    company: profile?.company || "",
-    linkedin: profile?.linkedin || "https://www.linkedin.com/in/",
-    twitter: profile?.twitter || "https://x.com/",
-    instagram: profile?.instagram || "https://www.instagram.com/",
-    youtube: profile?.youtube || "https://youtube.com/",
-    facebook: profile?.facebook || "https://www.facebook.com/",
-});
-
-} catch (err) {
-    console.error(err);
+        setForm({
+          company: profile?.company,
+          linkedin: profile?.linkedin,
+          twitter: profile?.twitter,
+          instagram: profile?.instagram,
+          youtube: profile?.youtube,
+          facebook: profile?.facebook,
+          telegram: profile?.telegram,
+          snapchat: profile?.snapchat,
+          sharechat: profile?.sharechat,
+          moj: profile?.moj,
+          josh: profile?.josh,
+          pinterest: profile?.pinterest,
+          reddit: profile?.reddit,
+        });
+      } catch (err) {
+        console.error(err);
         toast.error("Failed to load profile data");
-    }
-};
+      }
+    };
 
-getProfileInfo();
-}, [id]);
+    getProfileInfo();
+  }, [id]);
 
+  // HANDLE INPUT CHANGE
 
-// HANDLE INPUT CHANGE
-
-const handleChange = (e) => {
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-};
+  };
 
+  // UPDATE PROFILE
 
-// UPDATE PROFILE
-
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(Id)
 
@@ -73,21 +81,21 @@ const handleSubmit = async (e) => {
 
       await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/card/${Id}/edit`,
-        form,{
-          headers:{
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
+        form,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       toast.success("Profile updated successfully");
 
       setTimeout(() => {
         // navigate(`/profile/${id}`)
-        navigate(`/profile/${id}`, {replace:true});
-      },800)
-
+        navigate(`/profile/${id}`, { replace: true });
+      }, 800);
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.error || "Update failed");
@@ -114,11 +122,90 @@ const handleSubmit = async (e) => {
 
           <div className="grid md:grid-cols-2 gap-6 mt-8">
             {/* <Input label="Company" name="company" value={form.company} onChange={handleChange} /> */}
-            <Input label="LinkedIn" name="linkedin" value={form.linkedin} onChange={handleChange} />
-            <Input label="Twitter" name="twitter" value={form.twitter} onChange={handleChange} />
-            <Input label="Instagram" name="instagram" value={form.instagram} onChange={handleChange} />
-            <Input label="Youtube" name="youtube" value={form.youtube} onChange={handleChange} />
-            <Input label="Facebook" name="facebook" value={form.facebook} onChange={handleChange} />
+            <Input
+              label="LinkedIn"
+              name="linkedin"
+              value={form.linkedin}
+              placeholder={"https://www.linkedin.com/in/username"}
+              onChange={handleChange}
+            />
+            <Input
+              label="Twitter"
+              name="twitter"
+              value={form.twitter}
+              placeholder={"https://twitter.com/username"}
+              onChange={handleChange}
+            />
+            <Input
+              label="Instagram"
+              name="instagram"
+              value={form.instagram}
+              placeholder={"https://www.instagram.com/username"}
+              onChange={handleChange}
+            />
+            <Input
+              label="Youtube"
+              name="youtube"
+              value={form.youtube}
+              placeholder={"https://youtube.com/ChannelName"}
+              onChange={handleChange}
+            />
+            <Input
+              label="Facebook"
+              name="facebook"
+              value={form.facebook}
+              placeholder={"https://facebook.com/in/username"}
+              onChange={handleChange}
+            />
+            <Input
+              label="Telegram"
+              name="telegram"
+              value={form.telegram}
+              placeholder={"https://telegram.com/in/username"}
+              onChange={handleChange}
+            />
+            <Input
+              label="SnapChat"
+              name="snapchat"
+              value={form.snapchat}
+              placeholder={"https://snapchat.com/in/username"}
+              onChange={handleChange}
+            />
+            <Input
+              label="Share Chat"
+              name="sharechat"
+              value={form.sharechat}
+              placeholder={"https://sharechat.com/in/username"}
+              onChange={handleChange}
+            />
+            <Input
+              label="Moj"
+              name="moj"
+              value={form.moj}
+              placeholder={"https://moj.com/in/username"}
+              onChange={handleChange}
+            />
+            <Input
+              label="Pinterest"
+              name="pinterest"
+              value={form.pinterest}
+              placeholder={"https://pintrest.com/in/username"}
+              onChange={handleChange}
+            />
+            <Input
+              label="Reddit"
+              name="reddit"
+              value={form.reddit}
+              placeholder={"https://reddit.com/in/username"}
+              onChange={handleChange}
+            />
+            <Input
+              label="Josh"
+              name="josh"
+              value={form.josh}
+              placeholder={"https://josh.com/in/username"}
+              onChange={handleChange}
+            />
           </div>
 
           <motion.button
@@ -142,7 +229,10 @@ const handleSubmit = async (e) => {
 const Input = ({ label, ...props }) => (
   <div>
     <label className="text-sm text-gray-400 mb-2 block">{label}</label>
-    <input {...props} className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white" />
+    <input
+      {...props}
+      className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white"
+    />
   </div>
 );
 
