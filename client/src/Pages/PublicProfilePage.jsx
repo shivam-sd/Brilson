@@ -43,6 +43,7 @@ import PaymentDetailsProfile from "./ProfileComp/PaymentDetailsProfile";
 import ProfileLocation from "./ProfileComp/ProfileLocation";
 import { CiShare2 } from "react-icons/ci";
 import ProfileResume from "./ProfileComp/ProfileResume";
+import ProfileCoverPhoto from "./ProfileComp/ProfileCoverPhoto";
 
 
 const PublicProfilePage = () => {
@@ -461,6 +462,9 @@ const contact = {
             animate={{ opacity: 1, y: 0 }}
             className="relative"
           >
+
+<ProfileCoverPhoto activationCode={slug} />
+
             {/* Main Profile Card */}
             <div className="relative bg-transparent border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
               

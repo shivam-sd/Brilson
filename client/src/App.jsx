@@ -68,7 +68,6 @@ import AddServices from "./Pages/ProfileComp/EditProfileComp/ProfileServices/Add
 import UpdateServices from "./Pages/ProfileComp/EditProfileComp/ProfileServices/UpdateServices";
 import AddGallery from "./Pages/ProfileComp/EditProfileComp/ProfileGallery/AddGallery";
 import UpdateGallery from "./Pages/ProfileComp/EditProfileComp/ProfileGallery/UpdateGallery";
-import ProfileLogoEdit from "./Pages/ProfileComp/EditProfileComp/ProfileLogoEdit";
 import EditProfileSocialMedia from "./Pages/ProfileComp/EditProfileComp/ProfileSocialMedial/EditProfileSocialMedia";
 import PaymentDetailsPage from "./Pages/ProfileComp/EditProfileComp/PaymentDetails";
 import AddPaymentDetails from "./Pages/ProfileComp/EditProfileComp/PaymentDetails/AddPaymentDetails";
@@ -79,6 +78,8 @@ import UpdateProfileLocation from "./Pages/ProfileComp/EditProfileComp/ProfileLo
 import AddResume from "./Pages/ProfileComp/EditProfileComp/ProfileResume/AddResume";
 import UpdateResume from "./Pages/ProfileComp/EditProfileComp/ProfileResume/UpdateResume";
 import ProfileResumeEdit from "./Pages/ProfileComp/EditProfileComp/ProfileResumeEdit";
+import ProfileLogoEdit from "./Pages/ProfileComp/EditProfileComp/ProfileLogoEdit";
+import ProfileCoverEdit from "./Pages/ProfileComp/EditProfileComp/ProfileCoverEdit";
 
 
 
@@ -148,6 +149,7 @@ function App() {
           <Route path="/profile/edit/:id" element={<Layout />}>
   <Route index element={<EditProfile />} />
   <Route path="profile-logo" element={<ProfileLogoEdit />} />
+  <Route path="profile-cover" element={<ProfileCoverEdit />} />
   <Route path="update-social-links" element={<EditProfileSocialMedia />} />
   {/* <Route path="update-contact" element={<UpdateProfileConatct />} /> */}
   <Route path="portfolio" element={<PortfolioEditProfile />} />

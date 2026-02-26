@@ -126,7 +126,7 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
           </button>
           <button
             onClick={handleCropConfirm}
-            className="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white font-semibold flex items-center justify-center gap-2 transition"
+            className="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white font-semibold flex items-center justify-center gap-2 transition cursor-pointer"
           >
             <Check size={18} />
             Apply

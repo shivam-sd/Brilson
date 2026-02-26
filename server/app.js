@@ -44,6 +44,7 @@ const PaymentDetails = require("./routes/ProfileRoutes/PaymentDetails.route");
 const LocationReviewRouter = require("./routes/ProfileRoutes/LocationReviews.route");
 const ProfileResume = require("./routes/ProfileRoutes/ProfileResume");
 const SharePublicProfilerouter = require("./routes/ProfileRoutes/sharePublicProfile.route");
+const profileCoverPhotoRoute = require("./routes/ProfileRoutes/ProfileCover.route");
 
 
 
@@ -124,6 +125,7 @@ app.use(express.static(path.join(__dirname, "dist")));
   app.use("/api/profile/payment-details", PaymentDetails);
   app.use("/api/profile/location", LocationReviewRouter);
   app.use("/api/profile/resume", ProfileResume);
+  app.use("/api/profile-cover", profileCoverPhotoRoute);
 
   
 
