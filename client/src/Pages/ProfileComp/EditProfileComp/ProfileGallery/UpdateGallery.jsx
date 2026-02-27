@@ -3,6 +3,8 @@ import axios from "axios";
 import { Upload, Loader2, Plus, ImageIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
+import ImageCropper from "../ImageCropper/ImageCropper";
+import imageCompression from "browser-image-compression";
 
 const UpdateGallery = () => {
   const { id } = useParams();
@@ -18,6 +20,9 @@ const UpdateGallery = () => {
 
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [originalImage, setOriginalImage] = useState(null);
+  const [showCrop, setShowCrop] = useState(null);
+  const [FinalFile, setFinalFile] = useState(null);
 
 
 
@@ -50,11 +55,59 @@ const UpdateGallery = () => {
 
     if (name === "image" && files?.[0]) {
       setForm({ ...form, image: files[0] });
-      setPreview(URL.createObjectURL(files[0]));
+      const imageUrl = URL.createObjectURL(files[0]);
+      setOriginalImage(imageUrl);
+      setPreview(imageUrl);
+      setShowCrop(true);
     } else {
       setForm({ ...form, [name]: value });
     }
   };
+
+
+  const handleCropComplete = async (croppedFile) => {
+    try{
+      setShowCrop(false);
+
+      const options = {
+           maxSizeMB: 0.3,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+        fileType: 'image/jpeg'
+      }
+
+const finalFile = await imageCompression(croppedFile, options);
+setFinalFile(finalFile);
+
+const previewUrl = URL.createObjectURL(finalFile);
+setPreview(previewUrl);
+
+
+if(originalImage){
+  URL.revokeObjectURL(originalImage);
+}
+
+
+    // Log file details for debugging
+      console.log('Final file size:', finalFile.size / 1024, 'KB');
+      console.log('Final file type:', finalFile.type);
+
+    }catch(err){
+console.error('Crop complete error:', err);
+                toast.error("Error cropping image");
+    }
+  }
+
+
+  const handleCropCancel = () => {
+    setShowCrop(false);
+
+    if(originalImage){
+      URL.revokeObjectURL(originalImage);
+    }
+
+  }
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,7 +120,7 @@ const UpdateGallery = () => {
       fd.append("activationCode", form.activationCode);
       fd.append("title", form.title);
       fd.append("description", form.description);
-      if (form.image) fd.append("image", form.image);
+      if (form.image) fd.append("image", FinalFile);
 
       const res = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/profile-gallery/update/${id}`,
@@ -172,6 +225,19 @@ const UpdateGallery = () => {
           )}
         </button>
       </form>
+
+{
+  showCrop && (<>
+  
+  <ImageCropper 
+  image={originalImage}
+  onCancel={handleCropCancel}
+  onCropComplete={handleCropComplete}
+  />
+  
+  </>)
+}
+
     </div>
   );
 };

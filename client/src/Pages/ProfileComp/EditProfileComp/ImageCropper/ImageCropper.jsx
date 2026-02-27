@@ -102,7 +102,7 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
             onCropComplete={onCropCompleteHandler}
             onZoomChange={setZoom}
           />
-        </div>
+        </div> 
         
         <div className="mt-4">
           <input

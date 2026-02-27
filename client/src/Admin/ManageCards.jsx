@@ -74,9 +74,9 @@ const addTextToQRImage = async (qrCode, activationCode, profileName) => {
 };
 
 /*  QR with Activation Code  */
-const createQR = (url, activationCode) => {
+const createQR = (url) => {
   // QR data mein activation code bhi add karo
-  const qrData = `${url}\nActivation Code: ${activationCode}`;
+  const qrData = `${url}`;
   
   return new QRCodeStyling({ 
     width: 300,

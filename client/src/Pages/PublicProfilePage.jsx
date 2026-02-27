@@ -7,19 +7,19 @@ import { MdElectricBolt } from "react-icons/md";
 import { FaReddit } from "react-icons/fa6";
 import { FaPinterestSquare } from "react-icons/fa";
 import { CiLocationOn } from "react-icons/ci";
-import { TbWorld } from "react-icons/tb";
-import { LuYoutube } from "react-icons/lu";
+import { TbWorldSearch } from "react-icons/tb";
+import { FaYoutube } from "react-icons/fa";
+import { FaFacebook } from "react-icons/fa";
 import { IoLocationOutline } from "react-icons/io5";
+import { TbBrandTwitterFilled } from "react-icons/tb";
 import {
   FiMail, 
   FiChevronRight,
   FiInstagram,
-  FiFacebook,
-  FiLinkedin,
-  FiTwitter
 } from "react-icons/fi";
 import { CgWebsite } from "react-icons/cg";
-import { FaWhatsapp, FaYoutube } from "react-icons/fa";
+import { FaLinkedin } from "react-icons/fa6";
+import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
@@ -564,8 +564,8 @@ const contact = {
                                                            <SocialLink
                                                            platform="Website"
                                                            url={profileData.website}
-                                                           icon={<TbWorld />}
-                                                           color="#06D001"
+                                                           icon={<TbWorldSearch />}
+                                                           color="#08CB00"
                                                          />
                                                            </> : <></> 
                                                          }
@@ -576,7 +576,7 @@ const contact = {
                                                            platform="Instagram"
                                                            url={profileData.instagram}
                                                            icon={<FiInstagram />}
-                                                           color="#DC143C"
+                                                           color="#FF0087"
                                                          />
                                                            </> : <></>
                                                          }
@@ -585,7 +585,7 @@ const contact = {
                                                            profileData.facebook ? <><SocialLink
                                                            platform="Facebook"
                                                            url={profileData.facebook}
-                                                           icon={<FiFacebook />}
+                                                           icon={<FaFacebook />}
                                                            color="#6F00FF"
                                                          /></> : <></>
                                                          }
@@ -596,7 +596,7 @@ const contact = {
                                                            <SocialLink
                                                            platform="YouTube"
                                                            url={profileData.youtube}
-                                                           icon={<LuYoutube />}
+                                                           icon={<FaYoutube />}
                                                            color="#F63049"
                                                          />
                                                            </> : <></>
@@ -606,7 +606,7 @@ const contact = {
                                                            profileData.linkedin ? <><SocialLink
                                                            platform="LinkedIn"
                                                            url={profileData.linkedin}
-                                                           icon={<FiLinkedin />}
+                                                           icon={<FaLinkedin  />}
                                                            color="#0A66C2"
                                                          /></> : <></>
                                                          }
@@ -617,7 +617,7 @@ const contact = {
                                                            <SocialLink
                                                            platform="Twitter"
                                                            url={profileData.twitter}
-                                                           icon={<FiTwitter />}
+                                                           icon={<TbBrandTwitterFilled />}
                                                            color="#1DA1F2"
                                                          /></> : <></>
                                                          }
@@ -716,8 +716,8 @@ const contact = {
                                                             <SocialLink1
                                                             platform="Website"
                                                             url={profileData.website}
-                                                            icon={<TbWorld />}
-                                                            color="#06D001"
+                                                            icon={<TbWorldSearch />}
+                                                            color="#08CB00"
                                                           />
                                                             </> : <></> 
                                                           }
@@ -728,7 +728,7 @@ const contact = {
                                                             platform="Instagram"
                                                             url={profileData.instagram}
                                                             icon={<FiInstagram />}
-                                                            color="#DC143C"
+                                                            color="#FF0087"
                                                           />
                                                             </> : <></>
                                                           }
@@ -737,7 +737,7 @@ const contact = {
                                                             profileData.facebook ? <><SocialLink1
                                                             platform="Facebook"
                                                             url={profileData.facebook}
-                                                            icon={<FiFacebook />}
+                                                            icon={<FaFacebook />}
                                                             color="#6F00FF"
                                                           /></> : <></>
                                                           }
@@ -748,7 +748,7 @@ const contact = {
                                                             <SocialLink1
                                                             platform="YouTube"
                                                             url={profileData.youtube}
-                                                            icon={<LuYoutube />}
+                                                            icon={<FaYoutube />}
                                                             color="#F63049"
                                                           />
                                                             </> : <></>
@@ -758,7 +758,7 @@ const contact = {
                                                             profileData.linkedin ? <><SocialLink1
                                                             platform="LinkedIn"
                                                             url={profileData.linkedin}
-                                                            icon={<FiLinkedin />}
+                                                            icon={<FaLinkedin  />}
                                                             color="#0A66C2"
                                                           /></> : <></>
                                                           }
@@ -769,7 +769,7 @@ const contact = {
                                                             <SocialLink1
                                                             platform="Twitter"
                                                             url={profileData.twitter}
-                                                            icon={<FiTwitter />}
+                                                            icon={<TbBrandTwitterFilled />}
                                                             color="#1DA1F2"
                                                           /></> : <></>
                                                           }

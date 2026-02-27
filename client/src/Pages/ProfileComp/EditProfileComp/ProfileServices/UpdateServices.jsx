@@ -3,6 +3,8 @@ import axios from "axios";
 import { Loader2, Plus, X, Image as ImgIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
+import ImageCropper from "../ImageCropper/ImageCropper";
+import imageCompression from "browser-image-compression";
 
 const UpdateServices = () => {
   const { id } = useParams();
@@ -11,6 +13,9 @@ const UpdateServices = () => {
 
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [originalImage, setOriginalImage] = useState(null);
+  const [showCropper, setShowCropper] = useState(null);
+  const [FinalFile, setFinalFile] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -63,8 +68,58 @@ const UpdateServices = () => {
     if (!file) return;
 
     setForm({ ...form, image: file });
-    setPreview(URL.createObjectURL(file));
+    const imageUrl = URL.createObjectURL(file)
+    setOriginalImage(imageUrl);
+    setPreview(imageUrl);
+    setShowCropper(true);
   };
+
+
+  const handleCropComplete = async (croppedFile) => {
+    try{
+      setShowCropper(false);
+
+      // foe the image compression 
+      const options = {
+           maxSizeMB: 0.3,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+        fileType: 'image/jpeg'
+      }
+
+      const finalFile = await imageCompression(croppedFile, options);
+      setFinalFile(finalFile);
+
+      const previewUrl = URL.createObjectURL(finalFile);
+      setPreview(previewUrl);
+
+
+      if(originalImage){
+        URL.revokeObjectURL(originalImage);
+      }
+
+
+        // Log file details for debugging
+      console.log('Final file size:', finalFile.size / 1024, 'KB');
+      console.log('Final file type:', finalFile.type);
+
+
+    }catch(err){
+          console.error('Crop complete error:', err);
+                toast.error("Error cropping image");
+    }
+  }
+
+
+const handleCropCancel = () => {
+  setShowCropper(false);
+
+  if(originalImage){
+    URL.revokeObjectURL(originalImage);
+  }
+}
+
+
 
   // FEATURES
   const handleFeatureChange = (i, val) => {
@@ -112,7 +167,7 @@ const UpdateServices = () => {
 
       // Only send image if new selected
       if (form.image instanceof File) {
-        fd.append("image", form.image);
+        fd.append("image", FinalFile);
       }
 
       const res = await axios.put(
@@ -245,6 +300,19 @@ const UpdateServices = () => {
           )}
         </button>
       </form>
+
+{
+  showCropper && (<>
+  
+<ImageCropper 
+image={originalImage}
+onCancel={handleCropCancel}
+onCropComplete={handleCropComplete}
+/>
+
+  </>)
+}
+
 
       <style>{`
         .input {

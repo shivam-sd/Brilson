@@ -7,23 +7,21 @@ import { CiLocationOn } from "react-icons/ci";
 import { MdElectricBolt } from "react-icons/md";
 import { FaSnapchatGhost } from "react-icons/fa";
 import { BsEmojiGrin } from "react-icons/bs";
-import { LuYoutube } from "react-icons/lu";
-import { TbWorld } from "react-icons/tb";
+import { GrInstagram } from "react-icons/gr";
+import { TbWorldSearch } from "react-icons/tb";
+import { TbBrandTwitterFilled } from "react-icons/tb";
+import { FaFacebook } from "react-icons/fa";
+import { FaLinkedin } from "react-icons/fa6";
+import { FaYoutube } from "react-icons/fa";
 import {
   FiMail,
   FiEdit,
-  FiBriefcase,
-  FiUser,
-  FiFacebook,
-  FiLinkedin,
-  FiTwitter,
-  FiInstagram,
   FiChevronRight,
 } from "react-icons/fi";
 import { CiShare2 } from "react-icons/ci";
 import { IoLocationOutline } from "react-icons/io5";
 import { CgWebsite } from "react-icons/cg";
-import { FaWhatsapp, FaYoutube } from "react-icons/fa";
+import { FaWhatsapp } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
@@ -330,7 +328,7 @@ const ProfilePage = () => {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex flex-col items-center justify-center gap-3 p-4 bg-gradient-to-r from-slate-800/40 to-transparent border border-slate-800 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins "
+      className="flex flex-col items-center justify-center gap-3 p-4 bg-gradient-to-r from-slate-800/40 to-transparent border border-slate-800 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins"
     >
       {React.cloneElement(icon, { size: 20, style: { color } })}
       <span className="font-medium text-white flex-1 text-left">
@@ -626,8 +624,8 @@ const ProfilePage = () => {
                         <SocialLink
                           platform="Website"
                           url={profileData.website}
-                          icon={<TbWorld />}
-                          color="#06D001"
+                          icon={<TbWorldSearch />}
+                          color="#08CB00"
                         />
                       </>
                     ) : (
@@ -639,8 +637,8 @@ const ProfilePage = () => {
                         <SocialLink
                           platform="Instagram"
                           url={profileData.instagram}
-                          icon={<FiInstagram />}
-                          color="#DC143C"
+                          icon={<GrInstagram />}
+                          color="#FF0087"
                         />
                       </>
                     ) : (
@@ -652,7 +650,7 @@ const ProfilePage = () => {
                         <SocialLink
                           platform="Facebook"
                           url={profileData.facebook}
-                          icon={<FiFacebook />}
+                          icon={<FaFacebook />}
                           color="#6F00FF"
                         />
                       </>
@@ -665,7 +663,7 @@ const ProfilePage = () => {
                         <SocialLink
                           platform="YouTube"
                           url={profileData.youtube}
-                          icon={<LuYoutube />}
+                          icon={<FaYoutube />}
                           color="#F63049"
                         />
                       </>
@@ -678,7 +676,7 @@ const ProfilePage = () => {
                         <SocialLink
                           platform="LinkedIn"
                           url={profileData.linkedin}
-                          icon={<FiLinkedin />}
+                          icon={<FaLinkedin />}
                           color="#0A66C2"
                         />
                       </>
@@ -691,7 +689,7 @@ const ProfilePage = () => {
                         <SocialLink
                           platform="Twitter"
                           url={profileData.twitter}
-                          icon={<FiTwitter />}
+                          icon={<TbBrandTwitterFilled />}
                           color="#1DA1F2"
                         />
                       </>
@@ -809,8 +807,8 @@ const ProfilePage = () => {
                         <SocialLink1
                           platform="Website"
                           url={profileData.website}
-                          icon={<TbWorld />}
-                          color="#06D001"
+                          icon={<TbWorldSearch />}
+                          color="#08CB00"
                         />
                       </>
                     ) : (
@@ -822,8 +820,8 @@ const ProfilePage = () => {
                         <SocialLink1
                           platform="Instagram"
                           url={profileData.instagram}
-                          icon={<FiInstagram />}
-                          color="#DC143C"
+                          icon={<GrInstagram />}
+                          color="#FF0087"
                         />
                       </>
                     ) : (
@@ -835,7 +833,7 @@ const ProfilePage = () => {
                         <SocialLink1
                           platform="Facebook"
                           url={profileData.facebook}
-                          icon={<FiFacebook />}
+                          icon={<FaFacebook />}
                           color="#6F00FF"
                         />
                       </>
@@ -848,7 +846,7 @@ const ProfilePage = () => {
                         <SocialLink1
                           platform="YouTube"
                           url={profileData.youtube}
-                          icon={<LuYoutube />}
+                          icon={<FaYoutube />}
                           color="#F63049"
                         />
                       </>
@@ -861,7 +859,7 @@ const ProfilePage = () => {
                         <SocialLink1
                           platform="LinkedIn"
                           url={profileData.linkedin}
-                          icon={<FiLinkedin />}
+                          icon={<FaLinkedin />}
                           color="#0A66C2"
                         />
                       </>
@@ -874,7 +872,7 @@ const ProfilePage = () => {
                         <SocialLink1
                           platform="Twitter"
                           url={profileData.twitter}
-                          icon={<FiTwitter />}
+                          icon={<TbBrandTwitterFilled />}
                           color="#1DA1F2"
                         />
                       </>

@@ -4,6 +4,8 @@ import { Upload, Loader2, Plus, ImageIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import ImageCropper from "../ImageCropper/ImageCropper";
+import imageCompression from "browser-image-compression";
 
 const UpdateProduct = () => {
   const { id } = useParams();
@@ -23,6 +25,9 @@ const UpdateProduct = () => {
 
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [OriginalImage, setOriginalImage] = useState(null);
+  const [ShowCropper, setShowCropper] = useState(null);
+  const [FinalFile, setFinalFile] = useState(null);
 
   
   //fetch Product details and prefill form
@@ -59,11 +64,58 @@ useEffect(() => {
 
     if (name === "image" && files?.[0]) {
       setForm({ ...form, image: files[0] });
-      setPreview(URL.createObjectURL(files[0]));
+const imageUrl = URL.createObjectURL(files[0]);
+setOriginalImage(imageUrl);
+      setPreview(imageUrl);
+      setShowCropper(true);
     } else {
       setForm({ ...form, [name]: value });
     }
   };
+
+  const handleCropComplete = async (croppedFile) => {
+    try {
+      setShowCropper(false);
+      
+      // Additional compression before preview
+      const options = {
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+        fileType: 'image/jpeg'
+      };
+      
+      const finalFile = await imageCompression(croppedFile, options);
+      setFinalFile(finalFile);
+      
+      // Create preview
+      const previewUrl = URL.createObjectURL(finalFile);
+      setPreview(previewUrl);
+      
+      
+      // Clean up original image URL
+      if (OriginalImage) {
+        URL.revokeObjectURL(OriginalImage);
+      }
+      
+      // Log file details for debugging
+      console.log('Final file size:', finalFile.size / 1024, 'KB');
+      console.log('Final file type:', finalFile.type);
+      
+    } catch (err) {
+      console.error('Crop complete error:', err);
+      toast.error("Error cropping image");
+    }
+  };
+
+  const handleCancelCrop = () => {
+    setShowCropper(false);
+
+    if(OriginalImage){
+      URL.revokeObjectURL(OriginalImage);
+    }
+  }
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -78,7 +130,7 @@ useEffect(() => {
       fd.append("description", form.description);
       fd.append("price", form.price);
       fd.append("link", form.link);
-      if (form.image) fd.append("image", form.image);
+      if (form.image) fd.append("image", FinalFile);
 
       const res = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/profile-products/update/${productId}`,
@@ -202,6 +254,18 @@ useEffect(() => {
           )}
         </button>
       </form>
+
+      
+{/* CROPPER MODAL */}
+      {ShowCropper && (
+        <ImageCropper
+          image={OriginalImage}
+          onCancel={handleCancelCrop}
+          onCropComplete={handleCropComplete}
+        />
+      )}
+
+
     </div>
   );
 };

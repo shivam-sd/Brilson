@@ -3,6 +3,8 @@ import axios from "axios";
 import { Loader2, Plus, X, Image as ImgIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
+import ImageCropper from "../ImageCropper/ImageCropper";
+import imageCompression from "browser-image-compression";
 
 const AddServices = () => {
   const { id } = useParams();
@@ -11,6 +13,9 @@ const AddServices = () => {
 
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [orignalImage, setOrignalImage] = useState(null);
+  const [showCropper, setShowCropper] = useState(null);
+  const [finalFile, setFinalFile] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -30,8 +35,58 @@ const AddServices = () => {
     if (!file) return;
 
     setForm({ ...form, image: file });
-    setPreview(URL.createObjectURL(file));
+    const imageUrl = URL.createObjectURL(file);
+    setOrignalImage(imageUrl);
+    setPreview(imageUrl);
+    setShowCropper(true);
   };
+
+
+const handleCropComplete = async (croppedFile) => {
+  try{
+    setShowCropper(false);
+
+// foe the image compression 
+       const options = {
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+        fileType: 'image/jpeg'
+      };
+      
+      const finalfile = await imageCompression(croppedFile, options);
+      setFinalFile(finalfile);
+
+      const previewUrl = URL.createObjectURL(finalfile);
+setPreview(previewUrl);
+
+
+if(orignalImage){
+  URL.revokeObjectURL(orignalImage);
+}
+
+
+     // Log file details for debugging
+      console.log('Final file size:', finalfile.size / 1024, 'KB');
+      console.log('Final file type:', finalfile.type);
+
+
+  }catch(err){
+     console.error('Crop complete error:', err);
+          toast.error("Error cropping image");
+  }
+}
+
+
+const handleCropCancel = () => {
+  setShowCropper(false);
+
+  if(orignalImage){
+    URL.revokeObjectURL(orignalImage);
+  }
+} 
+
+
 
   const handleFeatureChange = (i, val) => {
     const updated = [...form.features];
@@ -68,7 +123,7 @@ const AddServices = () => {
       );
 
       if (form.image) {
-        fd.append("image", form.image);
+        fd.append("image", finalFile);
       }
 
       await axios.post(
@@ -207,6 +262,19 @@ const AddServices = () => {
           )}
         </button>
       </form>
+
+{
+  showCropper && (<>
+  
+  <ImageCropper 
+  image={orignalImage}
+  onCancel={handleCropCancel}
+  onCropComplete={handleCropComplete}
+  />
+  
+  </>)
+}
+
     </div>
   );
 };
