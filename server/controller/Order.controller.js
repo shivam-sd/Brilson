@@ -8,7 +8,7 @@ const ProductModel = require("../models/Product.model");
   //  CREATE ORDER
 
 const orderCreate = async (req, res) => {
-  try {
+  try { 
     const userId = req.user;
     const { address } = req.body;
 

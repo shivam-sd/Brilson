@@ -33,7 +33,6 @@
     "multer": "^2.0.2",
     "path": "^0.12.7",
     "pdfkit": "^0.17.2",
-    "pupeteer": "^0.0.1",
     "puppeteer": "^24.34.0",
     "qr-code-styling": "^1.9.2",
     "qrcode": "^1.5.4",

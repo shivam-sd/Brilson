@@ -8,7 +8,7 @@ const downloadInvoice = async (req, res) => {
 
     if (!orderId) {
       return res.status(400).json({ error: "Order ID required" });
-    }
+    } 
 
     const order = await OrderModel.findById(orderId);
 

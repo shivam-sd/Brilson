@@ -9,7 +9,7 @@ const uploadInvoiceToCloudinary = async (filePath, invoiceNumber) => {
       use_filename: true,
       overwrite: true,
     });
-
+ 
     return {
       pdfUrl: result.secure_url,       
       cloudinaryId: result.public_id,

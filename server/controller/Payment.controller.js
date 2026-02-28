@@ -130,6 +130,8 @@ const verifyPayment = async (req, res) => {
     try {
       const { pdfPath, invoiceNumber } = await createInvoicePdf(order);
 
+      // console.log("PDF PATH Payment Controller se", pdfPath);
+
       const cloudinaryData = await uploadInvoiceToCloudinary(
         pdfPath,
         invoiceNumber
