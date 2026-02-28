@@ -26,11 +26,9 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    // Set canvas dimensions to crop size
     canvas.width = pixelCrop.width;
     canvas.height = pixelCrop.height;
 
-    // Draw cropped image
     ctx.drawImage(
       image,
       pixelCrop.x,
@@ -43,11 +41,9 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
       pixelCrop.height
     );
 
-    // Convert canvas to blob
     return new Promise((resolve) => {
       canvas.toBlob(
         async (blob) => {
-          // Compress the cropped image
           const compressedFile = await compressImage(blob);
           resolve(compressedFile);
         },
@@ -61,8 +57,8 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
     const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
     
     const options = {
-      maxSizeMB: 0.3, // Max 300KB
-      maxWidthOrHeight: 500, // Max dimensions
+      maxSizeMB: 0.3,
+      maxWidthOrHeight: 500,
       useWebWorker: true,
       fileType: 'image/jpeg'
     };
@@ -88,52 +84,93 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
-      <div className="relative w-full max-w-2xl bg-gray-900 rounded-2xl p-4">
-        <div className="relative h-[500px] w-full rounded-xl overflow-hidden">
-          <Cropper
-            image={image}
-            crop={crop}
-            zoom={zoom}
-            aspect={1}
-            cropShape="round"
-            showGrid={false}
-            onCropChange={setCrop}
-            onCropComplete={onCropCompleteHandler}
-            onZoomChange={setZoom}
-          />
-        </div> 
+    <>
+      
+      <div className="fixed inset-0 z-[9999] overflow-hidden">
+       
+        <div className="absolute inset-0 bg-black/90" onClick={onCancel}></div>
         
-        <div className="mt-4">
-          <input
-            type="range"
-            value={zoom}
-            min={1}
-            max={3}
-            step={0.1}
-            onChange={(e) => setZoom(parseFloat(e.target.value))}
-            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-          />
-        </div>
+        
+        <div className="absolute inset-0 flex justify-center p-4">
+          <div 
+            className="relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-white">Crop Image</h3>
+              <button 
+                onClick={onCancel}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            {/* Cropper area */}
+            <div className="relative h-[400px] w-full bg-gray-950">
+              <Cropper
+                image={image}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                cropShape="round"
+                showGrid={false}
+                onCropChange={setCrop}
+                onCropComplete={onCropCompleteHandler}
+                onZoomChange={setZoom}
+                classes={{
+                  containerClassName: 'absolute inset-0',
+                  mediaClassName: 'object-contain',
+                }}
+              />
+            </div>
+            
+            {/* Zoom control */}
+            <div className="px-6 py-4 border-t border-gray-800">
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-gray-400">Zoom</span>
+                <input
+                  type="range"
+                  value={zoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  onChange={(e) => setZoom(parseFloat(e.target.value))}
+                  className="flex-1 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+                <span className="text-xs text-gray-400 w-8 text-right">{zoom.toFixed(1)}x</span>
+              </div>
+            </div>
 
-        <div className="flex gap-3 mt-4">
-          <button
-            onClick={onCancel}
-            className="flex-1 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-semibold flex items-center justify-center gap-2 transition"
-          >
-            <X size={18} />
-            Cancel
-          </button>
-          <button
-            onClick={handleCropConfirm}
-            className="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white font-semibold flex items-center justify-center gap-2 transition cursor-pointer"
-          >
-            <Check size={18} />
-            Apply
-          </button>
+            {/* Action buttons  */}
+            <div className="px-6 py-4 bg-gray-900 flex gap-3">
+              <button
+                onClick={onCancel}
+                className="flex-1 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-medium flex items-center justify-center gap-2 transition-colors"
+              >
+                <X size={18} />
+                Cancel
+              </button>
+              <button
+                onClick={handleCropConfirm}
+                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              >
+                <Check size={18} />
+                Apply
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* CSS to prevent body scroll when cropper is open */}
+      <style>{`
+        body.modal-open {
+          overflow: hidden;
+        }
+      `}</style>
+    </>
   );
 };
 

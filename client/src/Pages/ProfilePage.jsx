@@ -475,8 +475,8 @@ const ProfilePage = () => {
         </div>
 
         {/* Header with Balance */}
-        <div className="sticky top-0 z-50 bg-gradient-to-b from-black/80 via-gray-900/80 to-transparent backdrop-blur-xl border-b border-white/10">
-          <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 py-4">
+        <div className="sticky top-0 z-50 backdrop-blur-xl border-b border-white/10">
+          <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 lg:py-4 md:py-4 p-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <motion.div
@@ -511,7 +511,7 @@ const ProfilePage = () => {
         </div>
 
         {/* Main Profile Container */}
-        <div className="relative z-10 max-w-6xl mx-auto sm:px-6 lg:px-8 py-8">
+        <div className="relative z-10 max-w-6xl mx-auto sm:px-6 lg:px-8 lg:py-8 md:py-8">
           {/* Profile Box */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -560,9 +560,9 @@ const ProfilePage = () => {
                       </p>
 
                       {/* Author line */}
-                      <p className="mt-2 text-right text-sm text-gray-500">
+                      {/* <p className="mt-2 text-right text-sm text-gray-500">
                         — {profileData.name || "User"}
-                      </p>
+                      </p> */}
                     </div>
                   </div>
                 </div>

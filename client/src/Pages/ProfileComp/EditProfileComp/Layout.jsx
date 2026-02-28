@@ -70,22 +70,22 @@ const Layout = () => {
   }, [isMobile, isMobileMenuOpen]);
 
   const menuItems = [
-    {
-      id: 'profile-logo',
-      path: 'profile-logo',
-      label: 'Profile',
-      icon: <User size={20} />,
-      badge: null,
-      mobileIcon: <User size={22} />
-    },
-    {
-      id: 'profile-cover',
-      path: 'profile-cover',
-      label: 'Profile Cover',
-      icon: <PiSelectionBackgroundFill size={20} />,
-      badge: null,
-      mobileIcon: <PiSelectionBackgroundFill size={22} />
-    },
+    // {
+    //   id: 'profile-logo',
+    //   path: 'profile-logo',
+    //   label: 'Profile',
+    //   icon: <User size={20} />,
+    //   badge: null,
+    //   mobileIcon: <User size={22} />
+    // },
+    // {
+    //   id: 'profile-cover',
+    //   path: 'profile-cover',
+    //   label: 'Profile Cover',
+    //   icon: <PiSelectionBackgroundFill size={20} />,
+    //   badge: null,
+    //   mobileIcon: <PiSelectionBackgroundFill size={22} />
+    // },
     {
       id: 'basic-info',
       path: '',

@@ -13,7 +13,7 @@ const ProfileCoverPhoto = ({ activationCode }) => {
         );
         setCover(res.data.profileLogo.image);
       } catch (err) {
-        toast.error("Failed to load Cover Photo");
+        // toast.error("Failed to load Cover Photo");
       }
     };
 
@@ -24,7 +24,7 @@ const ProfileCoverPhoto = ({ activationCode }) => {
     <div className="w-full z-0 pb-24">
 
       {/* Cover Photo */}
-      <div className="w-full h-36 md:h-52 lg:h-52 xl:h-52 overflow-hidden absolute rounded-t-2xl">
+      <div className="w-full h-54 md:h-52 lg:h-56 xl:h-56 overflow-hidden absolute lg:rounded-t-2xl md:rounded-t-2xl">
 
         {cover ? (
           <img

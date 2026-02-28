@@ -28,7 +28,7 @@ const ProfileCoverEdit = () => {
         );
         setLogo(res.data.profileLogo.image);
       } catch (err) {
-        toast.error("Failed to load Cover Photo");
+        // toast.error("Failed to load Cover Photo");
       }
     };
     fetchLogo();
