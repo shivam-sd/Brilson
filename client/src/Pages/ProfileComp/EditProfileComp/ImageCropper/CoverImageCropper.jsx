@@ -1,12 +1,22 @@
 import React, { useState, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
-import { X, Check } from 'lucide-react';
+import { X, Check, Crop } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 
-const ImageCropper = ({ image, onCancel, onCropComplete }) => {
+const CoverImageCropper = ({ image, onCancel, onCropComplete }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [aspect, setAspect] = useState(16/9); // Default to 16:9
+
+  // Available aspect ratios
+  const aspectRatios = [
+    { value: 16/9, label: '16:9', icon: '🖥️' },
+    { value: 4/3, label: '4:3', icon: '📱' },
+    { value: 1/1, label: '1:1', icon: '⬛' },
+    { value: 2/3, label: '2:3', icon: '📸' },
+    { value: 21/9, label: '21:9', icon: '🎬' },
+  ];
 
   const onCropCompleteHandler = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -85,20 +95,20 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
 
   return (
     <>
-      
       <div className="fixed inset-0 z-[9999] overflow-hidden">
-       
         <div className="absolute inset-0 bg-black/90" onClick={onCancel}></div>
-        
         
         <div className="absolute inset-0 flex justify-center p-4">
           <div 
-            className="relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
-              <h3 className="text-center text-lg font-semibold text-white">Crop Image</h3>
+            <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between bg-gray-900">
+              <h3 className="text-center text-lg font-semibold text-white flex items-center gap-2">
+                <Crop size={20} className="text-blue-500" />
+                Crop Cover Photo
+              </h3>
               <button 
                 onClick={onCancel}
                 className="text-gray-400 hover:text-white transition-colors"
@@ -107,15 +117,36 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
               </button>
             </div>
             
+            {/* Aspect Ratio Selector */}
+            <div className="px-6 py-3 bg-gray-900 border-b border-gray-800">
+              <p className="text-sm text-gray-400 mb-3">Aspect Ratio</p>
+              <div className="flex flex-wrap gap-2">
+                {aspectRatios.map((ratio) => (
+                  <button
+                    key={ratio.label}
+                    onClick={() => setAspect(ratio.value)}
+                    className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+                      aspect === ratio.value
+                        ? 'bg-blue-600 text-white ring-2 ring-blue-400 ring-offset-2 ring-offset-gray-900'
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    }`}
+                  >
+                    <span>{ratio.icon}</span>
+                    <span className="font-medium">{ratio.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Cropper area */}
-            <div className="relative h-[400px] w-full bg-gray-950">
+            <div className="relative h-[450px] w-full bg-gray-950">
               <Cropper
                 image={image}
                 crop={crop}
                 zoom={zoom}
-                aspect={1}
-                cropShape="round"
-                showGrid={false}
+                aspect={aspect}
+                cropShape="rect"
+                showGrid={true}
                 onCropChange={setCrop}
                 onCropComplete={onCropCompleteHandler}
                 onZoomChange={setZoom}
@@ -124,10 +155,15 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
                   mediaClassName: 'object-contain',
                 }}
               />
+              
+              {/* Overlay with aspect ratio label */}
+              <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm text-white border border-gray-700">
+                {aspectRatios.find(r => r.value === aspect)?.label || `${aspect.toFixed(2)}`}
+              </div>
             </div>
             
             {/* Zoom control */}
-            <div className="px-6 py-4 border-t border-gray-800">
+            <div className="px-6 py-4 border-t border-gray-800 bg-gray-900">
               <div className="flex items-center gap-4">
                 <span className="text-xs text-gray-400">Zoom</span>
                 <input
@@ -143,8 +179,8 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
               </div>
             </div>
 
-            {/* Action buttons  */}
-            <div className="px-6 py-4 bg-gray-900 flex gap-3">
+            {/* Action buttons */}
+            <div className="px-6 py-4 bg-gray-900 flex gap-3 border-t border-gray-800">
               <button
                 onClick={onCancel}
                 className="flex-1 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-medium flex items-center justify-center gap-2 transition-colors"
@@ -164,14 +200,36 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
         </div>
       </div>
 
-      {/* CSS to prevent body scroll when cropper is open */}
       <style>{`
         body.modal-open {
           overflow: hidden;
+        }
+        
+        /* Custom range input styling */
+        input[type=range]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 18px;
+          height: 18px;
+          background: #3b82f6;
+          border-radius: 50%;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        input[type=range]::-moz-range-thumb {
+          width: 18px;
+          height: 18px;
+          background: #3b82f6;
+          border-radius: 50%;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
       `}</style>
     </>
   );
 };
 
-export default ImageCropper;
+export default CoverImageCropper;

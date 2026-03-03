@@ -4,11 +4,8 @@ const UserModel = require("../models/User.model");
 const OrderModel = require("../models/Order.model");
 const PaymentModel = require("../models/Payment.model");
 const crypto = require("crypto");
-const distributeMLMCommission = require("../controller/mlmCommission.controller");
-const deleteLocalFile = require("../utils/deleteLocalFile");
 const createInvoicePdf = require("../utils/createInvoicePdf");
-const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
-const distributeReferralReward = require("../utils/distributeReferralReward");
+const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary"); 
 
 
 
@@ -80,7 +77,7 @@ const verifyPayment = async (req, res) => {
     if (expectedSignature !== razorpay_signature) {
       return res.status(400).json({ error: "Invalid signature" });
     }
-
+ 
     //  UPDATE PAYMENT
     const payment = await PaymentModel.findOneAndUpdate(
       { razorpayOrderId: razorpay_order_id },
@@ -113,9 +110,7 @@ const verifyPayment = async (req, res) => {
       user.totalOrders += 1;
       await user.save();
     }
-    
-    // DISTRIBUTE MLM COMMISSION
-    await distributeReferralReward(order.userId);
+  
     
     //  RESPONSE FIRST 
     res.status(200).json({

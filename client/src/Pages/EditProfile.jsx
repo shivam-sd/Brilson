@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Camera, Loader2, X, Check, Upload } from "lucide-react";
 import imageCompression from "browser-image-compression";
 import ImageCropper from "./ProfileComp/EditProfileComp/ImageCropper/ImageCropper"; 
+import CoverImageCropper from "./ProfileComp/EditProfileComp/ImageCropper/CoverImageCropper";
 
 const EditProfile = () => {
   const { id } = useParams();
@@ -45,6 +46,7 @@ const EditProfile = () => {
     email: "",
     phone: "",
     countryCode: "+91",
+    WacountryCode: "+91",
     bio: "",
     about: "",
     city: "",
@@ -83,6 +85,7 @@ const EditProfile = () => {
           email: profile?.email || "",
           phone: profile?.phone || "",
           countryCode: profile?.countryCode || "+91",
+          WacountryCode: profile?.WacountryCode || "+91",
           bio: profile?.bio || "",
           about: profile?.about || "",
           city: profile?.city || "",
@@ -126,7 +129,7 @@ const EditProfile = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ========== PROFILE PHOTO HANDLERS ==========
+  //  PROFILE PHOTO HANDLERS 
   const handleLogoChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -161,6 +164,7 @@ const EditProfile = () => {
       if (originalImage) {
         URL.revokeObjectURL(originalImage);
       }
+
     } catch (err) {
       console.error('Crop complete error:', err);
       toast.error("Error cropping image");
@@ -206,6 +210,7 @@ const EditProfile = () => {
       toast.success("Profile photo updated");
       setShowLogoUpdateBtn(false);
       setLogoPreview(null);
+      window.location.reload();
       
     } catch (err) {
       console.error('Upload error:', err);
@@ -250,6 +255,7 @@ const EditProfile = () => {
       if (originalCoverImage) {
         URL.revokeObjectURL(originalCoverImage);
       }
+
     } catch (err) {
       console.error('Crop complete error:', err);
       toast.error("Error cropping image");
@@ -295,6 +301,7 @@ const EditProfile = () => {
       toast.success("Cover photo updated");
       setShowCoverUpdateBtn(false);
       setCoverPreview(null);
+      window.location.reload();
       
     } catch (err) {
       console.error('Upload error:', err);
@@ -320,17 +327,35 @@ const EditProfile = () => {
     }
   };
 
+
+  // UPDATE COUNTRY CODE
+  const updateWaCountryCode = async () => {
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/api/card/${Id}/editWaCountryCode`,
+        { WacountryCode: form.WacountryCode },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+    } catch (err) {
+      console.error("Failed to update country code:", err);
+    }
+  };
+
   // UPDATE PROFILE
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.email || !form.phone) {
-      toast.error("Name, Email and Phone are required");
-      return;
-    }
 
     if (form.phone.length !== 10) {
       toast.error("Phone number must be exactly 10 digits");
+      return;
+    }
+
+    if (form.whatsapp.length !== 10) {
+      toast.error("Whatsapp number must be exactly 10 digits");
       return;
     }
 
@@ -362,6 +387,7 @@ const EditProfile = () => {
       );
 
       await updateCountryCode();
+      await updateWaCountryCode();
 
       toast.success("Profile updated successfully");
 
@@ -531,7 +557,7 @@ const EditProfile = () => {
                     Phone Number <span className="text-red-400">*</span>
                   </label>
 
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex sm:flex-row gap-2">
                     <select
                       name="countryCode"
                       value={form.countryCode}
@@ -564,11 +590,52 @@ const EditProfile = () => {
                   )}
                 </div>
 
-                <Input 
+
+{/* Phone with Country Code */}
+                <div className="md:col-span-2 lg:col-span-1">
+                  <label className="text-sm text-gray-400 mb-2 block">
+                    Whatsapp Number <span className="text-red-400">*</span>
+                  </label>
+
+                  <div className="flex sm:flex-row gap-2">
+                    <select
+                      name="WacountryCode"
+                      value={form.WacountryCode}
+                      onChange={handleChange}
+                      className="w-full sm:w-32 px-3 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    >
+                      {countryCodes.map((cc) => (
+                        <option key={cc.code} value={cc.code}>
+                          {cc.country} {cc.code}
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="tel"
                   label="WhatsApp Number" 
-                  name="whatsapp" 
+                  name="whatsapp"
                   value={form.whatsapp} 
-                  onChange={handleChange} 
+                  onChange={handleChange}
+                  maxLength={10} 
+                  placeholder="With country code"
+                      className={`flex-1 px-4 py-3 rounded-xl bg-[#0B1220] border ${
+                        phoneError ? 'border-red-500' : 'border-gray-700'
+                      } text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all`}
+                      required
+                    />
+                  </div>
+                </div>
+
+
+
+                <Input 
+                type="tel"
+                  label="WhatsApp Number" 
+                  name="whatsapp"
+                  value={form.whatsapp} 
+                  onChange={handleChange}
+                  maxLength={10} 
                   placeholder="With country code"
                 />
                 
@@ -651,7 +718,7 @@ const EditProfile = () => {
 
       {/* COVER PHOTO CROPPER MODAL */}
       {showCoverCropper && (
-        <ImageCropper
+        <CoverImageCropper
           image={originalCoverImage}
           onCancel={handleCoverCancelCrop}
           onCropComplete={handleCoverCropComplete}

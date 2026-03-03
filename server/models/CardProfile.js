@@ -49,6 +49,7 @@ const CardProfileSchema = new mongoose.Schema(
     profile: {
       name: String,
       countryCode: String,
+      WacountryCode: String,
       phone: String,
       email: String,
       bio: String,

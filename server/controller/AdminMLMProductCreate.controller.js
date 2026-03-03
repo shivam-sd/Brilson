@@ -6,7 +6,7 @@ const createMLMProduct = async (req, res) => {
     // commission = base percentage 
 
     const product = await ProductModel.findOne({ title });
-
+ 
     if (!product) {
       return res.status(404).json({ error: "Product Not Found!" });
     }

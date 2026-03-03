@@ -4,7 +4,7 @@ const UserModel = require("../models/User.model");
 const getWalletBalance = async (req, res) => {
     try{
         const userId = req.user;
-
+ 
         const user = await UserModel.findById(userId);
         if(!user){
             return res.status(404).json({ error: "User not found" });

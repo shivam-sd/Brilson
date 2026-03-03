@@ -47,6 +47,9 @@ const UserRegister = async (req, res) => {
         return res.status(400).json({ error: "Invalid referral code" });
       }
       referredBy = refUser._id;
+      refUser.referralStatus = "in_progress";
+      // refUser.referralCount += 1
+      await refUser.save();
     }
 
     //  Generate own referral code

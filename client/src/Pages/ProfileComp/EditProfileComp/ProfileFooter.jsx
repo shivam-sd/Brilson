@@ -7,6 +7,8 @@ import {
   Zap,
   Star
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
 
 const ProfileFooter = () => {
   const currentYear = new Date().getFullYear();
@@ -33,16 +35,16 @@ const ProfileFooter = () => {
                   <Zap size={22} className="text-yellow-400 animate-pulse" />
                   <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
                 </div>
-                <span className="text-sm font-medium uppercase tracking-wider text-gray-300">
+                <Link to={"https://brilson.in"} className="text-sm font-medium uppercase tracking-wider text-gray-300">
                   Product by
-                </span>
+                </Link>
               </div>
               <div className="h-6 w-px bg-gradient-to-b from-blue-500 to-purple-500"></div>
               <div className="flex items-center gap-2">
                 <Sparkles size={20} className="text-blue-400" />
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <Link to={"https://brilson.in"} className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                   BRILSON
-                </span>
+                </Link>
               </div>
             </div>
           </div>

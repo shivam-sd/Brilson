@@ -13,6 +13,7 @@ import axios from "axios";
 import Header from "../Component/Header";
 import Footer from "../Component/Footer";
 import {Wallet} from "lucide-react";
+import ReferralDashboard from "./ReferralDashboard";
 
 const AdminPassToProfile = () => {
    const [referralCode, setReferralCode] = useState('');
@@ -503,7 +504,10 @@ const AdminPassToProfile = () => {
             )}
           </motion.div>
         </div>
+<ReferralDashboard />
       </div>
+
+
       <Footer />
     </>
   );

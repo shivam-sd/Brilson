@@ -1,10 +1,11 @@
 const UserModel = require("../models/User.model");
 const ProductModel = require("../models/Product.model");
-
+const cardProfile = require("../models/CardProfile");
+ 
 
 const distributeMLMCommission = async ({ order, buyerId, referralCode }) => {
   try {
-    if (!referralCode) return;
+    if (!referralCode) return; 
 
     const currentUser = await UserModel.findOne({ referralCode });
     if (!currentUser) return;

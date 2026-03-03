@@ -79,6 +79,23 @@ const userSchema = new mongoose.Schema(
         ref: "CardProfile",
       },
     ],
+
+//     referralCount: {
+//   type: Number,
+//   default: 0
+// },
+
+referralStatus: {
+  type: String,
+  enum: ["in_progress", "completed"],
+  default: "in_progress"
+},
+
+hasReceivedFirstActivationReward: {
+  type: Boolean,
+  default: false
+}
+
   },
 
   { timestamps: true }
