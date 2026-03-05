@@ -26,7 +26,7 @@ router.post("/cards/bulk",  bulkCreateCards);
 router.post("/card/activate", authUserToken, ActivateCardAPi);
 
 // POST /GET/Referral
-router.get("/user/referral", authUserToken, getMyReferrals);
+// router.get("/user/referral", authUserToken, getMyReferrals);
 
 // GET /api/card/:slug
 router.get("/card/:slug", getCardProfiles);
