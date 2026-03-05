@@ -23,8 +23,12 @@ const ReferralDashboard = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/user/referral`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${import.meta.env.VITE_BASE_URL}/api/user/referral`,{
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       console.log("Referral Data:", response);
       setReferralData(response.data);

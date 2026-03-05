@@ -160,19 +160,19 @@ const Layout = () => {
         <button
           id="menu-button"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg shadow-blue-900/30 active:scale-95 transition-transform"
+          className="p-2.5 rounded-xl shadow-lg shadow-blue-900/30 active:scale-95 transition-transform"
         >
           {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
         
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+          {/* <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
             <User size={16} />
           </div>
           <div>
             <h2 className="text-sm font-semibold">Edit Profile</h2>
             <p className="text-xs text-gray-400">ID: {id?.slice(-6)}</p>
-          </div>
+          </div> */}
         </div>
 
         <div className="w-10 h-10"></div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, replace } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaUser } from "react-icons/fa";
 import { FaRegUserCircle } from "react-icons/fa";
@@ -8,6 +8,7 @@ import { IoIosArrowDown, IoMdArrowDropdownCircle, IoMdArrowDroprightCircle, IoMd
 import axios from "axios";
 import LogoSection from "./LogoSection";
 import {BookCheck} from "lucide-react";
+import {useNavigate} from "react-router-dom";
 
 
 // import UserAllCards from "./UserAllCards";
@@ -26,7 +27,7 @@ const Header = () => {
 
 
 
-  
+  const navigate = useNavigate();
 
 
 
@@ -100,6 +101,7 @@ const Header = () => {
           withCredentials: true,
         }
       );
+      navigate("/", {replace:true});
     }
   } catch (err) {
     console.log("Logout API error:", err);
@@ -350,7 +352,7 @@ const Header = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center text-white text-2xl font-semibold"
+            className="flex items-center text-white text-2xl font-semibold ml-8"
           >
             {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
                          <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
