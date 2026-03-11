@@ -11,6 +11,7 @@ import {
   FiX,
 } from "react-icons/fi";
 import { BsQrCode } from "react-icons/bs";
+import { RiSecurePaymentFill } from "react-icons/ri";
 import { MdAnalytics } from "react-icons/md";
 import { GrDocumentLocked } from "react-icons/gr";
 
@@ -96,6 +97,15 @@ const AdminLayout = () => {
           >
             <FiSettings size={20} /> Landing Page Content
           </NavLink>
+
+
+          <NavLink
+            to="payment/gateway/isactive"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <RiSecurePaymentFill size={20} /> Payment Gateway
+          </NavLink>
+
 
           <NavLink
             to="setting/config"

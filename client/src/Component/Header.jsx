@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, replace } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaUser } from "react-icons/fa";
@@ -22,19 +22,28 @@ const Header = () => {
   // const [cards, setCards] = useState([]);
   // const [showAllCards, setShowAllCards] = useState(false);
   // const [open, setOpen] = useState(false);
+    const menuRef = useRef(null);
 
   const isLoggedIn = !!token;
 
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMobileProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+
 
   const navigate = useNavigate();
-
-
-
-
-
-
-
 
 
   /* CART COUNT */
@@ -263,7 +272,9 @@ const Header = () => {
                 </div>
 
               {mobileProfileOpen && (
-                <div className="absolute left-0 top-15 bg-gray-900 border border-white/20 rounded-lg shadow-xl min-w-[160px] z-50">
+                <div className="absolute left-0 top-15 bg-gray-900 border border-white/20 rounded-lg shadow-xl min-w-[160px] z-50"
+                ref={menuRef}
+                >
                   <div className="flex flex-col p-2 gap-1">
 
                     {myCardProfile ? (

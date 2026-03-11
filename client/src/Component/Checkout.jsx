@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
+import CashfreePayment from "./CashfreePayment";
+import PayUPayment from "./PayUPayment";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRazorpay } from "react-razorpay";
+import { SiRazorpay } from "react-icons/si";
 import {
   FiTruck,
   FiShoppingBag,
@@ -23,6 +26,7 @@ const Checkout = () => {
   const [orderItems, setOrderItems] = useState([]);
   const [createdOrder, setCreatedOrder] = useState(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [gateway,setGateway] = useState("razorpay")
 
   // Address state
   const [address, setAddress] = useState({
@@ -37,7 +41,7 @@ const Checkout = () => {
   // Checkout data from cart
   const checkoutData = location.state?.checkoutData || {};
 
-  /* 🔐 LOAD CART DATA */
+  /*  LOAD CART DATA */
   useEffect(() => {
     if (!token) {
       navigate("/login", { replace: true });
@@ -52,6 +56,35 @@ const Checkout = () => {
       fetchCart();
     }
   }, []);
+
+
+
+
+  // fetch gateway active
+  useEffect(()=>{
+
+const fetchGateway = async()=>{
+
+try{
+
+const res = await axios.get(
+`${import.meta.env.VITE_BASE_URL}/api/payment/isactive/gateway`
+)
+
+setGateway(res.data.gateway)
+console.log(res);
+
+}catch(err){
+
+console.log(err)
+
+}
+
+}
+
+fetchGateway()
+
+},[])
 
   const fetchCart = async () => {
     try {
@@ -131,7 +164,7 @@ const Checkout = () => {
     }
   };
 
-  /* 💰 AMOUNT CALCULATION using data from cart or local calculation */
+  /* AMOUNT CALCULATION using data from cart or local calculation */
   const { subtotal, totalDiscount, totalGst, total } = useMemo(() => {
     // If we have totals from cart, use them
     if (checkoutData.subtotal !== undefined) {
@@ -543,24 +576,53 @@ const Checkout = () => {
                   </div>
                 </div>
 
+
                 {/* Payment Button */}
-                <button
-                  onClick={handlePayment}
-                  disabled={!createdOrder || isProcessingPayment}
-                  className="w-full mt-4 sm:mt-6 py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 sm:gap-3"
-                >
-                  {isProcessingPayment ? (
-                    <>
-                      <FiLoader className="animate-spin w-4 h-4 sm:w-5 sm:h-5" />
-                      Processing Payment...
-                    </>
-                  ) : (
-                    <>
-                      <FiCheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-                      Pay ₹{total.toFixed(2)}
-                    </>
-                  )}
-                </button>
+
+{isProcessingPayment ? (
+
+<button
+disabled
+className="w-full mt-4 sm:mt-6 py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 sm:gap-3 opacity-70"
+>
+<FiLoader className="animate-spin w-4 h-4 sm:w-5 sm:h-5" />
+Processing Payment...
+</button>
+
+) : (
+
+<>
+
+{/* Razorpay */}
+{gateway === "razorpay" && createdOrder && (
+<button
+onClick={handlePayment}
+disabled={!createdOrder}
+className="w-full mt-4 sm:mt-6 py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+>
+Pay ₹{total} <SiRazorpay /> 
+</button>
+)}
+
+{/* Cashfree */}
+{gateway === "cashfree" && createdOrder && (
+<CashfreePayment
+createdOrder={createdOrder}
+total={total}
+/>
+)}
+
+{/* PayU */}
+{gateway === "payu" && createdOrder && (
+<PayUPayment
+createdOrder={createdOrder}
+total={total}
+/>
+)}
+
+</>
+
+)}
 
                 {/* Security Note */}
                 <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">

@@ -12,10 +12,11 @@
   "description": "",
   "dependencies": {
     "archiver": "^7.0.1",
-    "axios": "^1.13.2",
+    "axios": "^1.13.6",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.1",
     "canvas": "^3.2.0",
+    "cashfree-pg": "^5.1.0",
     "cloudinary": "^2.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

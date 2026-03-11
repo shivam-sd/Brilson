@@ -80,6 +80,8 @@ import UpdateResume from "./Pages/ProfileComp/EditProfileComp/ProfileResume/Upda
 import ProfileResumeEdit from "./Pages/ProfileComp/EditProfileComp/ProfileResumeEdit";
 import ProfileLogoEdit from "./Pages/ProfileComp/EditProfileComp/ProfileLogoEdit";
 import ProfileCoverEdit from "./Pages/ProfileComp/EditProfileComp/ProfileCoverEdit";
+import CashfreePaymentSuccessPage from "./Component/CashfreeSuccessPage";
+import AdminPaymentGateway from "./Admin/AdminPaymentGateway";
 
 
 
@@ -137,6 +139,7 @@ function App() {
             <Route path="/refund-policy" element={<RefundPolicyPage />} />
             <Route path="/about-us" element={<AboutUsPage />} />
             <Route path="/careers" element={<CareersPage />} />
+            <Route path="/payment/success/:orderId" element={<CashfreePaymentSuccessPage />} />
           </Route>
 
           <Route path="/c/card/:activationCode" element={<CheckStatusPage />} />
@@ -225,6 +228,17 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+
+            <Route
+              path="payment/gateway/isactive"
+              element={
+                <ProtectedRoute>
+                  <AdminPaymentGateway />
+                </ProtectedRoute>
+              }
+            />
+
 
             <Route
               path="setting/config"

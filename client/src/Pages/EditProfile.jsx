@@ -628,7 +628,7 @@ const EditProfile = () => {
                 </div>
 
 
-
+{/* 
                 <Input 
                 type="tel"
                   label="WhatsApp Number" 
@@ -638,7 +638,7 @@ const EditProfile = () => {
                   maxLength={10} 
                   placeholder="With country code"
                 />
-                
+                 */}
                 <Input 
                   label="Address" 
                   name="city" 

@@ -38,6 +38,13 @@ const orderSchema = new mongoose.Schema({
       return this.totalAmount - this.cost;
     }
   },
+
+  paymentGateway:{
+  type:String,
+  enum:["razorpay","cashfree","payu"]
+},
+
+
   status: {
     type: String,
     default: "pending",
