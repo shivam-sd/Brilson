@@ -13,55 +13,90 @@ const CashfreePayment = ({ createdOrder, total }) => {
   const navigate = useNavigate();
 
   const handleCashfreePayment = async () => {
+  try {
 
-    try {
-
-      if (!createdOrder) {
-        toast.error("Create order first");
-        return;
-      }
-
-      setLoading(true);
-
-      // STEP 1: CREATE PAYMENT SESSION WITH RETURN URL
-      const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/payment/cashfree/create`,
-        {
-          orderId: createdOrder._id,
-          returnUrl: `${window.location.origin}/orders`
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      const { paymentSessionId } = res.data;
-
-      // STEP 2: LOAD CASFREE SDK
-      const cashfree = await load({
-        mode: "sandbox" // Change to "production" in live
-      });
-
-      // STEP 3: INITIATE CHECKOUT
-      await cashfree.checkout({
-        paymentSessionId: paymentSessionId,
-        redirectTarget: "" 
-      });
-
-      if(res.data.success){
-        toast.success("Payment successful!");
-        navigate(`/orders`, {replace:true});
-      }
-
-    } catch (err) {
-      console.error("Payment error:", err);
-      toast.error(err?.response?.data?.message || "Cashfree payment failed");
-    } finally {
-      setLoading(false);
+    if (!createdOrder) {
+      toast.error("Create order first");
+      return;
     }
-  };
+
+    setLoading(true);
+
+    //  CREATE CASHFREE ORDER
+    const res = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/api/payment/cashfree/create`,
+      {
+        orderId: createdOrder._id
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const { paymentSessionId, cfOrderId } = res.data;
+
+    if (!paymentSessionId) {
+      toast.error("Payment session failed");
+      return;
+    }
+
+    //  LOAD CASHFREE SDK
+    const cashfree = await load({
+      mode: "sandbox"
+    });
+
+    if (!cashfree) {
+      toast.error("Cashfree SDK failed to load");
+      return;
+    }
+
+    //  OPEN CHECKOUT
+    await cashfree.checkout({
+      paymentSessionId,
+      redirectTarget: "_modal"
+    });
+
+    //  VERIFY PAYMENT
+    const verify = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/api/payment/cashfree/verify`,
+      {
+        orderId: cfOrderId   
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (verify.data.success) {
+
+      toast.success("Payment successful");
+
+      navigate("/orders", { replace: true });
+
+    } else {
+
+      toast.error("Payment verification failed");
+
+    }
+
+  } catch (err) {
+
+    console.error("Payment error:", err);
+
+    toast.error("Cashfree payment failed");
+
+  } finally {
+
+    setLoading(false);
+
+  }
+};
+
+
 
   return (
     <div className="w-full">

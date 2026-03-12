@@ -1,128 +1,158 @@
-const crypto = require("crypto");
 const OrderModel = require("../models/Order.model");
-const userModel = require("../models/User.model");
 const PaymentModel = require("../models/PayU.model");
+const UserModel = require("../models/User.model");
 const createInvoicePdf = require("../utils/createInvoicePdf");
 const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
 
-const createPayUOrder = async(req,res)=>{
 
- try{
+const createPayUOrder = async (req, res) => {
+  try {
 
-  const {orderId} = req.body;
+    const { orderId } = req.body;
 
-  const order = await OrderModel.findById(orderId);
+    const order = await OrderModel.findById(orderId);
 
-  if(!order){
-    return res.status(404).json({error:"Order not found"});
-  }
-
-  const txnid = "txn_" + Date.now();
-
-  const key = process.env.PAYU_MERCHANT_KEY;
-  const salt = process.env.PAYU_MERCHANT_SALT;
-
-  const productinfo = "Order Payment";
-
-  const hashString =
-  `${key}|${txnid}|${order.totalAmount}|${productinfo}|test|test@test.com|||||||||||${salt}`;
-
-  const hash = crypto
-  .createHash("sha512")
-  .update(hashString)
-  .digest("hex");
-
-  await PaymentModel.create({
-
-    userId: order.userId,
-    orderId: order._id,
-    txnid: txnid,
-    amount: order.totalAmount,
-    status:"created"
-
-  })
-
-
-
-    //  UPDATE ORDER
-      const Updateorder = await OrderModel.findByIdAndUpdate(
-        orderId,
-        { status: "paid" },
-        { new: true }
-      );
-
-        if (!Updateorder) {
+    if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
 
+    const txnid = "txn_" + Date.now();
 
-      // Update user's total orders
-        const user = await userModel.findById(Updateorder.userId);
-        if(user){
-          user.totalOrders += 1;
-          await user.save();
-        }
-      
+    const key = process.env.PAYU_MERCHANT_KEY;
+    const salt = process.env.PAYU_MERCHANT_SALT;
 
+    const firstname = order.address?.name || "Customer";
+    const email = order.address?.email;
+    const phone = order.address?.phone;
 
-  res.json({
+    const productinfo = "Order Payment";
 
-   paymentUrl:process.env.PAYU_BASE_URL,
+    const hashString =
+      `${key}|${txnid}|${order.totalAmount}|${productinfo}|${firstname}|${email}|||||||||||${salt}`;
 
-   data:{
-    key,
-    txnid,
-    amount:order.totalAmount,
-    productinfo,
-    firstname:"test",
-    email:"test@test.com",
-    phone:"9999999999",
-    surl:`${process.env.BASE_URL}/api/payment/payu-success`,
-    furl:`${process.env.BASE_URL}/api/payment/payu-failure`,
-    hash
-   }
+    const hash = crypto
+      .createHash("sha512")
+      .update(hashString)
+      .digest("hex");
 
-  });
+    await PaymentModel.create({
+      userId: order.userId,
+      orderId: order._id,
+      txnid,
+      amount: order.totalAmount,
+      status: "created"
+    });
 
-
-
-  try {
-        const { pdfPath, invoiceNumber } = await createInvoicePdf(Updateorder);
-  
-        // console.log("PDF PATH Payment Controller se", pdfPath);
-  
-        const cloudinaryData = await uploadInvoiceToCloudinary(
-          pdfPath,
-          invoiceNumber
-        );
-  
-        order.invoice = {
-          number: invoiceNumber,
-          pdfUrl: cloudinaryData.pdfUrl,
-          cloudinaryId: cloudinaryData.cloudinaryId,
-          generatedAt: new Date(),
-        };
-  
-        await order.save();
-  
-        // delete local file
-        // await deleteLocalFile(pdfPath);
-  
-        console.log("Invoice generated & uploaded successfully");
-      } catch (invoiceError) {
-        console.error("Invoice generation failed:", invoiceError);
+    res.json({
+      paymentUrl: process.env.PAYU_BASE_URL,
+      data: {
+        key,
+        txnid,
+        amount: order.totalAmount,
+        productinfo,
+        firstname,
+        email,
+        phone,
+        surl: `${process.env.BASE_URL}/api/payment/payu-success`,
+        furl: `${process.env.BASE_URL}/api/payment/payu-failure`,
+        hash
       }
+    });
+
+  } catch (err) {
+
+    console.error("PayU error", err);
+
+    res.status(500).json({
+      error: "PayU payment error"
+    });
+
+  }
+};
+
+
+
+const payuSuccess = async (req,res)=>{
+
+ try{
+
+  const {txnid, status} = req.body;
+
+  if(status !== "success"){
+    return res.redirect("/payment-failed");
+  }
+
+  const payment = await PaymentModel.findOne({txnid});
+
+  if(!payment){
+    return res.redirect("/payment-failed");
+  }
+
+  payment.status="paid";
+  await payment.save();
+
+  const order = await OrderModel.findByIdAndUpdate(
+    payment.orderId,
+    {status:"paid", new:true}
+  );
+
+
+  // UPDATE USER ORDER COUNT
+      const user = await UserModel.findById(order.userId);
+  
+      if (user) {
+        user.totalOrders += 1;
+        await user.save();
+      }
+
+
+      res.json({ success: true });
+
+
+      try {
+      
+            const { pdfPath, invoiceNumber } = await createInvoicePdf(order);
+      
+            const cloudinaryData = await uploadInvoiceToCloudinary(
+              pdfPath,
+              invoiceNumber
+            );
+      
+            order.invoice = {
+              number: invoiceNumber,
+              pdfUrl: cloudinaryData.pdfUrl,
+              cloudinaryId: cloudinaryData.cloudinaryId,
+              generatedAt: new Date()
+            };
+      
+            await order.save();
+      
+            console.log("Invoice generated");
+      
+          } catch (invoiceError) {
+      
+            console.error("Invoice error:", invoiceError);
+      
+          }
+  
+  
+  res.redirect("/orders");
+
   
 
  }catch(err){
 
-  console.error("PayU error",err)
-  res.status(500).json({error:"PayU payment error"})
+  console.error(err);
+  res.redirect("/payment-failed");
 
  }
 
 }
 
-module.exports={
- createPayUOrder
-}
+
+
+
+module.exports = {
+  createPayUOrder,
+  payuSuccess
+};

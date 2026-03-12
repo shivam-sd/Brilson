@@ -1,4 +1,3 @@
-const { Cashfree } = require("cashfree-pg");
 const OrderModel = require("../models/Order.model");
 const PaymentModel = require("../models/Cashfree.model");
 const UserModel = require("../models/User.model");
@@ -15,147 +14,172 @@ const headers = {
 };
 
 
-// CREATE ORDER
-const createCashfreeOrder = async (req,res)=>{
-
- try{
-
-  const {orderId} = req.body;
-
-  const order = await OrderModel.findById(orderId);
-
-  if(!order){
-    return res.status(404).json({error:"Order not found"});
-  }
-
-  const data = {
-
-   order_id: order._id.toString(),
-   order_amount: order.totalAmount,
-   order_currency: "INR",
-
-   customer_details:{
-    customer_id: order.userId.toString(),
-    customer_email: order.address?.email,
-    customer_phone: order.address?.phone,
-    customer_name: order.address?.name
-   }
-
-  }
-
-  const response = await axios.post(
-    "https://sandbox.cashfree.com/pg/orders",
-    data,
-    {headers}
-  );
-
- const orderData = await PaymentModel.create({
-
-    userId: order?.userId,
-    orderId: order?._id,
-    cashfreeOrderId: order?._id,
-    amount: order?.totalAmount,
-    status:"created"
-
-  })
-
-  res.json({
-
-    paymentSessionId: response.data.payment_session_id,
-    orderData
-  })
-
- }catch(err){
-
-  console.error("Cashfree create error",err);
-  res.status(500).json({error:"Cashfree payment error"});
-
- }
-
-}
 
 
+// CREATE CASHFREE ORDER
 
 
-const verifyCashfreePayment = async (req,res)=>{
+const createCashfreeOrder = async (req, res) => {
 
- try{
+  try {
 
-  const {orderId} = req.body;
+    const { orderId } = req.body;
 
-  const response = await axios.get(
-   `https://sandbox.cashfree.com/pg/orders/${orderId}`,
-   {headers}
-  );
+    const order = await OrderModel.findById(orderId);
 
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
 
-  console.log(response);
-   if(response.data.order_status !== "ACTIVE"){
-    return res.status(400).json({error:"Payment not completed"});
-  }
+    const data = {
 
-  await PaymentModel.findOneAndUpdate(
-    {cashfreeOrderId:orderId},
-    {status:"paid"},
-    {new:true}
-  );
+      order_id: `order_${order._id}_${Date.now()}`,
+      order_amount: order.totalAmount,
+      order_currency: "INR",
 
-  const order = await OrderModel.findByIdAndUpdate(
-    orderId,
-    {status:"paid"},
-    {new:true}
-  );
+      customer_details: {
+        customer_id: order.userId.toString(),
+        customer_email: order.address?.email,
+        customer_phone: order.address?.phone,
+        customer_name: order.address?.name
+      }
 
-  const user = await UserModel.findById(order.userId);
+    };
 
-  if(user){
-    user.totalOrders += 1;
-    await user.save();
-  }
+    const response = await axios.post(
+      "https://sandbox.cashfree.com/pg/orders",
+      data,
+      { headers }
+    );
 
-  res.json({success:true});
+    const cfOrderId = response.data.order_id;
 
-  // BACKGROUND INVOICE
+    const payment = await PaymentModel.create({
+      userId: order.userId,
+      orderId: order._id,
+      cashfreeOrderId: cfOrderId,
+      amount: order.totalAmount,
+      status: "created"
+    });
 
-  try{
+    res.json({
+      paymentSessionId: response.data.payment_session_id,
+      cfOrderId: cfOrderId
+    });
 
-   const {pdfPath,invoiceNumber} = await createInvoicePdf(order);
+  } catch (err) {
 
-   const cloudinaryData = await uploadInvoiceToCloudinary(
-     pdfPath,
-     invoiceNumber
-   );
+    console.error("Cashfree create error:", err.response?.data || err);
 
-   order.invoice={
-    number:invoiceNumber,
-    pdfUrl:cloudinaryData.pdfUrl,
-    cloudinaryId:cloudinaryData.cloudinaryId,
-    generatedAt:new Date()
-   }
-
-   
-
-   await order.save()
-   console.log(order);
-
-  }catch(invoiceError){
-
-   console.error("Invoice error",invoiceError)
+    res.status(500).json({
+      error: "Cashfree payment error"
+    });
 
   }
 
- }catch(err){
+};
 
-  console.error("Verify Cashfree error",err)
-  res.status(500).json({error:"Verification failed"})
 
- }
 
-}
+
+// VERIFY CASHFREE PAYMENT
+
+
+const verifyCashfreePayment = async (req, res) => {
+
+  try {
+
+    const { orderId } = req.body; 
+
+    const response = await axios.get(
+      `https://sandbox.cashfree.com/pg/orders/${orderId}`,
+      { headers }
+    );
+
+    const orderStatus = response.data.order_status;
+
+    if (orderStatus !== "PAID") {
+      return res.status(400).json({
+        error: "Payment not completed"
+      });
+    }
+
+    // FIND PAYMENT ENTRY
+    const payment = await PaymentModel.findOne({
+      cashfreeOrderId: orderId
+    });
+
+    if (!payment) {
+      return res.status(404).json({
+        error: "Payment record not found"
+      });
+    }
+
+    payment.status = "paid";
+    await payment.save();
+
+    // UPDATE MAIN ORDER
+    const order = await OrderModel.findByIdAndUpdate(
+      payment.orderId,
+      { status: "paid" },
+      { new: true }
+    );
+
+    // UPDATE USER ORDER COUNT
+    const user = await UserModel.findById(order.userId);
+
+    if (user) {
+      user.totalOrders += 1;
+      await user.save();
+    }
+
+    res.json({ success: true });
+
+    // =========================
+    // BACKGROUND INVOICE
+    // =========================
+
+    try {
+
+      const { pdfPath, invoiceNumber } = await createInvoicePdf(order);
+
+      const cloudinaryData = await uploadInvoiceToCloudinary(
+        pdfPath,
+        invoiceNumber
+      );
+
+      order.invoice = {
+        number: invoiceNumber,
+        pdfUrl: cloudinaryData.pdfUrl,
+        cloudinaryId: cloudinaryData.cloudinaryId,
+        generatedAt: new Date()
+      };
+
+      await order.save();
+
+      console.log("Invoice generated");
+
+    } catch (invoiceError) {
+
+      console.error("Invoice error:", invoiceError);
+
+    }
+
+  } catch (err) {
+
+    console.error("Verify Cashfree error:", err.response?.data || err);
+
+    res.status(500).json({
+      error: "Verification failed"
+    });
+
+  }
+
+};
 
 
 
 module.exports = {
-    createCashfreeOrder,
-    verifyCashfreePayment
-}
+  createCashfreeOrder,
+  verifyCashfreePayment
+};
