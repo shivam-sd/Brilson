@@ -1,3 +1,5 @@
+const dotenv = require("dotenv").config();
+const crypto = require("crypto");
 const OrderModel = require("../models/Order.model");
 const PaymentModel = require("../models/PayU.model");
 const UserModel = require("../models/User.model");
@@ -5,7 +7,9 @@ const createInvoicePdf = require("../utils/createInvoicePdf");
 const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
 
 
+// CREATE PAYU ORDER
 const createPayUOrder = async (req, res) => {
+
   try {
 
     const { orderId } = req.body;
@@ -53,106 +57,112 @@ const createPayUOrder = async (req, res) => {
         firstname,
         email,
         phone,
-        surl: `${process.env.BASE_URL}/api/payment/payu-success`,
-        furl: `${process.env.BASE_URL}/api/payment/payu-failure`,
+        surl: `https://api.brilson.in/api/payment/`,
+        furl: `https://api.brilson.in/api/payment/payu-failure`,
         hash
       }
     });
 
   } catch (err) {
 
-    console.error("PayU error", err);
+    console.error("PayU create error", err);
 
     res.status(500).json({
       error: "PayU payment error"
     });
 
   }
+
 };
 
 
 
-const payuSuccess = async (req,res)=>{
+// PAYU SUCCESS VERIFY
+const VerifyPayU = async (req, res) => {
 
- try{
+  try {
 
-  const {txnid, status} = req.body;
+    const { status, txnid, hash } = req.body;
 
-  if(status !== "success"){
-    return res.redirect("/payment-failed");
+    const salt = process.env.PAYU_MERCHANT_SALT;
+
+    const hashString =
+      `${salt}|${status}|||||||||||${req.body.email}|${req.body.firstname}|${req.body.productinfo}|${req.body.amount}|${txnid}|${process.env.PAYU_MERCHANT_KEY}`;
+
+    const generatedHash = crypto
+      .createHash("sha512")
+      .update(hashString)
+      .digest("hex");
+
+    if (generatedHash !== hash) {
+      return res.redirect(`${process.env.BASE_URL1}/payment-failed`);
+    }
+
+    if (status !== "success") {
+      return res.redirect(`${process.env.BASE_URL1}/payment-failed`);
+    }
+
+    const payment = await PaymentModel.findOneAndUpdate(
+      { txnid },
+      { status: "paid" },
+      { new: true }
+    );
+
+    if (!payment) {
+      return res.redirect(`${process.env.BASE_URL1}/payment-failed`);
+    }
+
+    const order = await OrderModel.findByIdAndUpdate(
+      payment.orderId,
+      { status: "paid" },
+      { new: true }
+    );
+
+    const user = await UserModel.findById(order.userId);
+
+    if (user) {
+      user.totalOrders += 1;
+      await user.save();
+    }
+
+    // GENERATE INVOICE
+    try {
+
+      const { pdfPath, invoiceNumber } = await createInvoicePdf(order);
+
+      const cloudinaryData = await uploadInvoiceToCloudinary(
+        pdfPath,
+        invoiceNumber
+      );
+
+      order.invoice = {
+        number: invoiceNumber,
+        pdfUrl: cloudinaryData.pdfUrl,
+        cloudinaryId: cloudinaryData.cloudinaryId,
+        generatedAt: new Date()
+      };
+
+      await order.save();
+
+    } catch (invoiceError) {
+
+      console.error("Invoice error:", invoiceError);
+
+    }
+
+    res.redirect(`${process.env.BASE_URL1}/payment-success`);
+
+  } catch (err) {
+
+    console.error("PayU verify error", err);
+    res.redirect(`${process.env.BASE_URL1}/payment-failed`);
+
   }
 
-  const payment = await PaymentModel.findOne({txnid});
-
-  if(!payment){
-    return res.redirect("/payment-failed");
-  }
-
-  payment.status="paid";
-  await payment.save();
-
-  const order = await OrderModel.findByIdAndUpdate(
-    payment.orderId,
-    {status:"paid", new:true}
-  );
-
-
-  // UPDATE USER ORDER COUNT
-      const user = await UserModel.findById(order.userId);
-  
-      if (user) {
-        user.totalOrders += 1;
-        await user.save();
-      }
-
-
-      res.json({ success: true });
-
-
-      try {
-      
-            const { pdfPath, invoiceNumber } = await createInvoicePdf(order);
-      
-            const cloudinaryData = await uploadInvoiceToCloudinary(
-              pdfPath,
-              invoiceNumber
-            );
-      
-            order.invoice = {
-              number: invoiceNumber,
-              pdfUrl: cloudinaryData.pdfUrl,
-              cloudinaryId: cloudinaryData.cloudinaryId,
-              generatedAt: new Date()
-            };
-      
-            await order.save();
-      
-            console.log("Invoice generated");
-      
-          } catch (invoiceError) {
-      
-            console.error("Invoice error:", invoiceError);
-      
-          }
-  
-  
-  res.redirect("/orders");
-
-  
-
- }catch(err){
-
-  console.error(err);
-  res.redirect("/payment-failed");
-
- }
-
-}
-
-
+};
 
 
 module.exports = {
   createPayUOrder,
-  payuSuccess
+  VerifyPayU
 };
