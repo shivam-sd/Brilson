@@ -125,8 +125,8 @@ const TestimonialsAdmin = () => {
       );
 
       toast.success("Testimonials updated successfully!");
-      setTimeout(() => {
-        navigate("/landing/page/content");
+setTimeout(() => {
+        navigate("/admindashboard/landing/page/content", {replace:true});
       }, 1500);
     } catch (err) {
       toast.error("Update failed");

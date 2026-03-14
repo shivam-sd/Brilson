@@ -103,8 +103,8 @@ const PowerfulFeatures = () => {
       await axios.put(`${BASE_URL}/api/admin/powerfull/features/update`, formData);
 
       toast.success("Features updated successfully!");
-      setTimeout(() => {
-        navigate("landing/page/content");
+setTimeout(() => {
+        navigate("/admindashboard/landing/page/content", {replace:true});
       }, 1500);
     } catch (err) {
       console.error(err);

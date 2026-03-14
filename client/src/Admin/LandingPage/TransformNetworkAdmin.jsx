@@ -80,8 +80,8 @@ const TransformNetworkAdmin = () => {
       await axios.put(`${BASE_URL}/api/admin/transform/update`, form);
 
       toast.success("Transform section updated successfully!");
-      setTimeout(() => {
-        navigate("/landing/page/content");
+setTimeout(() => {
+        navigate("/admindashboard/landing/page/content", {replace:true});
       }, 1500);
     } catch (err) {
       console.error(err);

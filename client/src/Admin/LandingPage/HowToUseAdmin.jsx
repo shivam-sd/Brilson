@@ -56,7 +56,7 @@ const HowToUseAdmin = () => {
     fetchData();
   }, [BASE_URL]);
 
-  /* ================= HANDLERS ================= */
+  /*  HANDLERS  */
   const handleStepChange = (index, field, value) => {
     setSteps((prev) =>
       prev.map((step, i) =>
@@ -97,7 +97,7 @@ const HowToUseAdmin = () => {
     setSteps((prev) => prev.filter((_, i) => i !== index));
   };
 
-  /* ================= UPDATE ================= */
+  /*  UPDATE  */
   const handleUpdate = async () => {
     try {
       setSaving(true);
@@ -127,8 +127,8 @@ const HowToUseAdmin = () => {
       );
 
       toast.success("How To Use updated successfully!");
-      setTimeout(() => {
-        navigate("/landing/page/content");
+setTimeout(() => {
+        navigate("/admindashboard/landing/page/content", {replace:true});
       }, 1500);
     } catch (err) {
       console.error(err);

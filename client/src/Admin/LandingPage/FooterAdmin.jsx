@@ -56,7 +56,7 @@ const FooterAdmin = () => {
       await axios.put(`${BASE_URL}/api/admin/footer/update`, footer);
       toast.success("Footer updated successfully");
       setTimeout(() => {
-        navigate("/admindashboard/landing/page/content");
+        navigate("/admindashboard/landing/page/content", {replace:true});
       }, 1500);
     } catch {
       toast.error(" Update failed");

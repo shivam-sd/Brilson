@@ -57,8 +57,8 @@ const createPayUOrder = async (req, res) => {
         firstname,
         email,
         phone,
-        surl: `https://api.brilson.in/api/payment/`,
-        furl: `https://api.brilson.in/api/payment/payu-failure`,
+        surl: `${process.env.BASE_URL1}/orders`,
+        furl: `${process.env.BASE_URL1}/payment/payu-failure`,
         hash
       }
     });

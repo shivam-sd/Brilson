@@ -160,11 +160,10 @@ const HomePageContent = () => {
         }
       );
 
-      navigate("/landing/page/content");
+      setTimeout(() => {
+        navigate("/admindashboard/landing/page/content", {replace:true});
+      }, 1500);
       toast.success("Homepage updated successfully!");
-
-      // Refresh data after save
-      window.location.reload();
       
     } catch (err) {
       console.error(err);

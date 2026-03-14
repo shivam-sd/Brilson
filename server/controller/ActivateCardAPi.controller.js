@@ -62,16 +62,18 @@ const ActivateCardAPi = async (req, res) => {
 
     // user.activatedCardsCount += 1;
 
-    /*  FIRST ACTIVATION → GIVE REWARD  */
-    if (refferdByUser.referralStatus === "in_progress" && user.referredBy) {
+    /*  FIRST ACTIVATION  GIVE REWARD  */
+    if (user.referredBy) {
 
-      refferdByUser.referralStatus = "completed";
+  const refferdByUser = await UserModel.findById(user.referredBy);
 
-      await refferdByUser.save();
+  if (refferdByUser && refferdByUser.referralStatus === "in_progress") {
+    refferdByUser.referralStatus = "completed";
+    await refferdByUser.save();
+  }
 
-      await distributeActivationCommission(refferdByUser._id);
-
-    } else {
+  await distributeActivationCommission(user._id);
+} else {
       await user.save();
       await refferdByUser.save();
     }
