@@ -9,13 +9,11 @@ const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
 
 // CREATE PAYU ORDER
 const createPayUOrder = async (req, res) => {
-
   try {
 
     const { orderId } = req.body;
 
     const order = await OrderModel.findById(orderId);
-
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
@@ -57,8 +55,8 @@ const createPayUOrder = async (req, res) => {
         firstname,
         email,
         phone,
-        surl: `${process.env.BASE_URL1}/orders`,
-        furl: `${process.env.BASE_URL1}/payment/payu-failure`,
+        surl: `${process.env.BASE_URL1}/api/payment/payu/verify`,
+        furl: `${process.env.BASE_URL1}/api/payment/payu-failure`,
         hash
       }
     });
@@ -72,7 +70,6 @@ const createPayUOrder = async (req, res) => {
     });
 
   }
-
 };
 
 
@@ -82,21 +79,7 @@ const VerifyPayU = async (req, res) => {
 
   try {
 
-    const { status, txnid, hash } = req.body;
-
-    const salt = process.env.PAYU_MERCHANT_SALT;
-
-    const hashString =
-      `${salt}|${status}|||||||||||${req.body.email}|${req.body.firstname}|${req.body.productinfo}|${req.body.amount}|${txnid}|${process.env.PAYU_MERCHANT_KEY}`;
-
-    const generatedHash = crypto
-      .createHash("sha512")
-      .update(hashString)
-      .digest("hex");
-
-    if (generatedHash !== hash) {
-      return res.redirect(`${process.env.BASE_URL1}/payment-failed`);
-    }
+    const { status, txnid } = req.body;
 
     if (status !== "success") {
       return res.redirect(`${process.env.BASE_URL1}/payment-failed`);
@@ -125,7 +108,6 @@ const VerifyPayU = async (req, res) => {
       await user.save();
     }
 
-    // GENERATE INVOICE
     try {
 
       const { pdfPath, invoiceNumber } = await createInvoicePdf(order);
@@ -145,9 +127,7 @@ const VerifyPayU = async (req, res) => {
       await order.save();
 
     } catch (invoiceError) {
-
       console.error("Invoice error:", invoiceError);
-
     }
 
     res.redirect(`${process.env.BASE_URL1}/payment-success`);

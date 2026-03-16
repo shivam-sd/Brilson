@@ -22,7 +22,7 @@ router.post("/cashfree/verify", verifyCashfreePayment);
 
 
 // PAYU
-router.post("/payu/create", authUserToken, createPayUOrder, VerifyPayU);
+router.post("/payu/create", authUserToken, createPayUOrder);
 router.post("/payu/verify", VerifyPayU);
 
 router.get("/payu-failure", (req,res) => {

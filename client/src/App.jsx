@@ -80,8 +80,8 @@ import UpdateResume from "./Pages/ProfileComp/EditProfileComp/ProfileResume/Upda
 import ProfileResumeEdit from "./Pages/ProfileComp/EditProfileComp/ProfileResumeEdit";
 import ProfileLogoEdit from "./Pages/ProfileComp/EditProfileComp/ProfileLogoEdit";
 import ProfileCoverEdit from "./Pages/ProfileComp/EditProfileComp/ProfileCoverEdit";
-import CashfreePaymentSuccessPage from "./Component/CashfreeSuccessPage";
 import AdminPaymentGateway from "./Admin/AdminPaymentGateway";
+import PaymentSuccess from "./Component/PaymentSuccess";
 
 
 
@@ -138,8 +138,7 @@ function App() {
             <Route path="/terms-conditions" element={<TermsConditionsPage />} />
             <Route path="/refund-policy" element={<RefundPolicyPage />} />
             <Route path="/about-us" element={<AboutUsPage />} />
-            <Route path="/careers" element={<CareersPage />} />
-            <Route path="/payment/success/:orderId" element={<CashfreePaymentSuccessPage />} />
+            <Route path="/careers" element={<CareersPage />} /> 
           </Route>
 
           <Route path="/c/card/:activationCode" element={<CheckStatusPage />} />
@@ -178,6 +177,7 @@ function App() {
   <Route path="/profile/location/update/:id" element={<UpdateProfileLocation />} />
   <Route path="/profile/resume/add/:id" element={<AddResume />} />
   <Route path="/profile/resume/update/:id" element={<UpdateResume />} />
+  <Route path="/payment-success" element={<PaymentSuccess />} />
 
 
 

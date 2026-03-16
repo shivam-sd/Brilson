@@ -8,6 +8,10 @@ const Orders = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
+  useEffect(() => {
+  window.history.replaceState(null, "", "/orders");
+}, []);
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [downloadingId, setDownloadingId] = useState(null);
