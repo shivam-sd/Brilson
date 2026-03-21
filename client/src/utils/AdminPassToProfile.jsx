@@ -3,6 +3,8 @@ import {
   FiCopy, FiEye, FiEdit, FiArrowUpRight, FiCheck,
   FiChevronDown, FiChevronUp
 } from "react-icons/fi";
+import { MdOutlineReviews } from "react-icons/md";
+import { FaTags } from "react-icons/fa";
 import { 
   Zap, Briefcase, Eye, Pencil
 } from "lucide-react";
@@ -305,12 +307,21 @@ const AdminPassToProfile = () => {
           >
 
             
-            <div className="w-full flex flex-col gap-5 items-center justify-evenly py-12 border border-white/20 rounded-2xl bg-gradient-to-r to-gray-900/40 via-gray-900/30 from-gray-900/20">
+            <div className="w-full flex flex-col gap-5 items-center justify-evenly py-12  rounded-2xl bg-gradient-to-r to-gray-900/40 via-gray-900/30 from-gray-900/20">
 
 <motion.div 
                   whileHover={{ scale: 1.05 }}
-                  className="relative group"
+                  className="relative group flex items-center lg:gap-20 md:gap-15 gap-4 lg:bg-gradient-to-r lg:from-gray-800/60 lg:to-gray-900/60 border border-white/5 rounded-xl hover:border-cyan-500/30 transition-all duration-300 cursor-pointer lg:px-6 md:px-6 py-3"
                 >
+                
+                  <button className="hidden lg:flex bg-blue-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
+<MdOutlineReviews size={20} />
+Add Google Reviews</button>
+
+                  <button className="lg:hidden flex text-sm bg-blue-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
+<MdOutlineReviews size={50} />
+Add Google Reviews</button>
+                  
                   <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#E1C48A]/10 to-[#C9A86A]/10 border border-[#E1C48A]/30 rounded-lg hover:border-[#E1C48A]/50 transition-all">
                     <Wallet className="text-[#E1C48A]" size={18} />
                     <div className="flex flex-col">
@@ -318,6 +329,13 @@ const AdminPassToProfile = () => {
                       <p className="font-bold text-lg text-[#E1C48A]">₹{balance}</p>
                     </div>
                   </button>
+
+<button className="hidden lg:flex bg-green-700/20 p-2 rounded-lg cursor-pointer flex items-center justify-center gap-2">
+<FaTags size={20} /> Add Parking Tag</button>
+
+<button className="lg:hidden flex text-sm bg-green-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
+<FaTags size={50} /> Add Parking Tag</button>
+
                 </motion.div>
 
 

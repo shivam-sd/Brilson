@@ -67,9 +67,9 @@ const ActivateCardAPi = async (req, res) => {
 
   const refferdByUser = await UserModel.findById(user.referredBy);
 
-  if (refferdByUser && refferdByUser.referralStatus === "in_progress") {
-    refferdByUser.referralStatus = "completed";
-    await refferdByUser.save();
+  if (refferdByUser) {
+     user.referralStatus = "completed";
+    await user.save();
   }
 
   await distributeActivationCommission(user._id);
