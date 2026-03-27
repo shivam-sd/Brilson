@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster, toast } from "react-hot-toast";
+import { FaIdCard } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Header from "../Component/Header";
@@ -307,7 +308,17 @@ const AdminPassToProfile = () => {
           >
 
             
+            <div className="w-full flex items-center justify-center">
+                  <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#E1C48A]/10 to-[#C9A86A]/10 border border-[#E1C48A]/30 rounded-lg hover:border-[#E1C48A]/50 transition-all">
+                    <Wallet className="text-[#E1C48A]" size={18} />
+                    <div className="flex flex-col">
+                      <p className="text-xs text-gray-400">Balance</p>
+                      <p className="font-bold text-lg text-[#E1C48A]">₹{balance}</p>
+                    </div>
+                  </button>
+            </div>
             <div className="w-full flex flex-col gap-5 items-center justify-evenly py-12  rounded-2xl bg-gradient-to-r to-gray-900/40 via-gray-900/30 from-gray-900/20">
+
 
 <motion.div 
                   whileHover={{ scale: 1.05 }}
@@ -321,14 +332,11 @@ Add Google Reviews</button>
                   <button className="lg:hidden flex text-sm bg-blue-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
 <MdOutlineReviews size={50} />
 Add Google Reviews</button>
-                  
-                  <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#E1C48A]/10 to-[#C9A86A]/10 border border-[#E1C48A]/30 rounded-lg hover:border-[#E1C48A]/50 transition-all">
-                    <Wallet className="text-[#E1C48A]" size={18} />
-                    <div className="flex flex-col">
-                      <p className="text-xs text-gray-400">Balance</p>
-                      <p className="font-bold text-lg text-[#E1C48A]">₹{balance}</p>
-                    </div>
-                  </button>
+
+                  <Link to={"/card/activate"} replace className="flex text-sm bg-yellow-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
+                    <FaIdCard size={30} />
+                    Activate Card
+                  </Link>
 
 <button className="hidden lg:flex bg-green-700/20 p-2 rounded-lg cursor-pointer flex items-center justify-center gap-2">
 <FaTags size={20} /> Add Parking Tag</button>

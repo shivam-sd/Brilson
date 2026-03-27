@@ -1,6 +1,6 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
-require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
