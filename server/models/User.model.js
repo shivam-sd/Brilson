@@ -80,6 +80,13 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
+    myParkingTags: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ParkingTag",
+      },
+    ],
+
 //     referralCount: {
 //   type: Number,
 //   default: 0

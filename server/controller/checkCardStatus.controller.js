@@ -4,7 +4,7 @@ const cardProfileModel = require("../models/CardProfile");
 const checkCardStatus = async(req,res) => {
     try{
         const {activationCode} = req.params;
-        console.log("activation code" , activationCode)
+        console.log("activation code" , activationCode);
 
         const card = await cardProfileModel.findOne({activationCode});
 

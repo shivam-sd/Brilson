@@ -325,7 +325,21 @@ const AdminPassToProfile = () => {
                   className="relative group flex items-center lg:gap-20 md:gap-15 gap-4 lg:bg-gradient-to-r lg:from-gray-800/60 lg:to-gray-900/60 border border-white/5 rounded-xl hover:border-cyan-500/30 transition-all duration-300 cursor-pointer lg:px-6 md:px-6 py-3"
                 >
                 
-                  <button className="hidden lg:flex bg-blue-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
+
+                <button className="hidden lg:flex bg-green-700/20 p-2 rounded-lg cursor-pointer flex items-center justify-center gap-2">
+<FaTags size={20} /> Add Parking Tag</button>
+
+<button className="lg:hidden flex text-sm bg-green-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
+<FaTags size={50} /> Add Parking Tag</button>
+                  
+
+                  <Link to={"/card/activate"} replace className="flex text-sm bg-yellow-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
+                    <FaIdCard size={30} />
+                    Activate Card
+                  </Link>
+
+
+<button className="hidden lg:flex bg-blue-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
 <MdOutlineReviews size={20} />
 Add Google Reviews</button>
 
@@ -333,16 +347,6 @@ Add Google Reviews</button>
 <MdOutlineReviews size={50} />
 Add Google Reviews</button>
 
-                  <Link to={"/card/activate"} replace className="flex text-sm bg-yellow-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
-                    <FaIdCard size={30} />
-                    Activate Card
-                  </Link>
-
-<button className="hidden lg:flex bg-green-700/20 p-2 rounded-lg cursor-pointer flex items-center justify-center gap-2">
-<FaTags size={20} /> Add Parking Tag</button>
-
-<button className="lg:hidden flex text-sm bg-green-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
-<FaTags size={50} /> Add Parking Tag</button>
 
                 </motion.div>
 

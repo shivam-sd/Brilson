@@ -45,7 +45,7 @@ const LocationReviewRouter = require("./routes/ProfileRoutes/LocationReviews.rou
 const ProfileResume = require("./routes/ProfileRoutes/ProfileResume");
 const SharePublicProfilerouter = require("./routes/ProfileRoutes/sharePublicProfile.route");
 const profileCoverPhotoRoute = require("./routes/ProfileRoutes/ProfileCover.route");
-
+const ParkingtagRouter = require("./routes/ParkingTag.routes");
 
 
 // Runtime config
@@ -105,6 +105,7 @@ app.use(express.static(path.join(__dirname, "dist")));
   app.use("/api", OrderRouter);
   app.use("/api/payment", PaymentRouter);
   app.use("/api", getCardProfiles);
+  app.use("/api", ParkingtagRouter);
   app.use("/api/category", categoryRouter);
   app.use("/api/badges", badgesRouter);
   app.use("/api/config", ConfigRouter);

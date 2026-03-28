@@ -10,7 +10,7 @@ const CheckStatusPage = () => {
 
   useEffect(() => {
     const CheckStatus = async () => {
-      try {
+      try { 
         const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/check/card/${activationCode}`
         );

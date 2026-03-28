@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const CardProfileSchema = new mongoose.Schema(
   {
 
-
     activationCode: {
       type: String,
       required: true,
