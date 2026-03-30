@@ -6,6 +6,16 @@ const ConfigSchema = new mongoose.Schema({
         keyId: String,
         keySecret: String
     },
+    cashfree:{
+        appId: String,
+        secretKey: String,
+         environment: String
+    },
+    payU:{
+        key: String,
+        salt: String,
+         payUBaseUrl: String
+    },
     cloudinary:{
         cloudName: String,
         apiKey: String,

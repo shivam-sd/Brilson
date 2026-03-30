@@ -1,17 +1,10 @@
+const { getConfig } = require("../config/runTimeConfigLoader");
 const OrderModel = require("../models/Order.model");
 const PaymentModel = require("../models/Cashfree.model");
 const UserModel = require("../models/User.model");
 const createInvoicePdf = require("../utils/createInvoicePdf");
 const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
 const axios = require("axios");
-
-const headers = {
-  accept: "application/json",
-  "Content-Type": "application/json",
-  "x-client-id": process.env.CASHFREE_APP_ID,
-  "x-client-secret": process.env.CASHFREE_SECRET_KEY,
-  "x-api-version": "2022-09-01",
-};
 
 
 
@@ -20,6 +13,11 @@ const headers = {
 
 
 const createCashfreeOrder = async (req, res) => {
+
+  const config = getConfig();
+
+console.log("Cashfree Config: Create se", config.cashfree);
+
 
   try {
 
@@ -45,6 +43,14 @@ const createCashfreeOrder = async (req, res) => {
       }
 
     };
+
+    const headers = {
+  accept: "application/json",
+  "Content-Type": "application/json",
+  "x-client-id": config.cashfree?.appId || process.env.CASHFREE_APP_ID,
+  "x-client-secret": config.cashfree?.secretKey || process.env.CASHFREE_SECRET_KEY,
+  "x-api-version": "2022-09-01",
+};
 
     const response = await axios.post(
       "https://sandbox.cashfree.com/pg/orders",
@@ -86,6 +92,19 @@ const createCashfreeOrder = async (req, res) => {
 
 
 const verifyCashfreePayment = async (req, res) => {
+
+    const config = getConfig();
+
+  const headers = {
+    accept: "application/json",
+    "Content-Type": "application/json",
+    "x-client-id": config?.cashfree?.appId || process.env.CASHFREE_APP_ID,
+    "x-client-secret": config?.cashfree?.secretKey || process.env.CASHFREE_SECRET_KEY,
+    "x-api-version": "2022-09-01",
+  };
+
+
+  console.log("Cashfree Config: Verify Se", config.cashfree);
 
   try {
 

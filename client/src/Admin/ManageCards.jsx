@@ -4,35 +4,35 @@ import { FaDownload, FaEye } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import QRCodeStyling from "qr-code-styling";
-import JSZip from "jszip"; 
+import JSZip from "jszip";
+import { HexColorPicker } from "react-colorful";
 
-/*   QR image par text add karne ke liye  */
-const addTextToQRImage = async (qrCode, activationCode, profileName) => {
+/* QR image par text add karne ke liye with custom colors */
+const addTextToQRImage = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
   try {
-    // QR code ko blob mein convert karo
     const blob = await qrCode.getRawData("png");
-    
-    // Image create karo
     const img = new Image();
     const imageUrl = URL.createObjectURL(blob);
     
     return new Promise((resolve) => {
       img.onload = () => {
-        // Canvas banayein (QR + text ke liye extra space)
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        // QR size 300px, text ke liye 80px extra
         const qrSize = 300;
-        const textHeight = 80;
+        const textHeight = 50;
         canvas.width = qrSize;
         canvas.height = qrSize + textHeight;
         
-        // White background
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Clear canvas (transparent or colored background)
+        if (bgColor === 'transparent') {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        } else {
+          ctx.fillStyle = bgColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
         
-        // QR code draw karo
+        // Draw QR code
         ctx.drawImage(img, 0, 0, qrSize, qrSize);
         
         // Border line between QR and text
@@ -43,20 +43,19 @@ const addTextToQRImage = async (qrCode, activationCode, profileName) => {
         ctx.lineTo(canvas.width - 20, qrSize + 5);
         ctx.stroke();
         
-        // Activation Code text
+        // Activation Code text with custom color
         ctx.font = 'bold 18px "Courier New", monospace';
-        ctx.fillStyle = '#000000';
+        ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, qrSize + 35);
         
-        // Profile name (agar available ho)
-        if (profileName && profileName !== '—' && profileName !== 'No Name') {
+        // Profile name with custom color
+        if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
           ctx.font = '14px Arial, sans-serif';
-          ctx.fillStyle = '#666666';
+          ctx.fillStyle = textColor;
           ctx.fillText(profileName, canvas.width / 2, qrSize + 60);
         }
         
-        // Canvas ko blob mein convert karo
         canvas.toBlob((newBlob) => {
           const finalUrl = URL.createObjectURL(newBlob);
           resolve(finalUrl);
@@ -67,15 +66,13 @@ const addTextToQRImage = async (qrCode, activationCode, profileName) => {
     });
   } catch (error) {
     console.error("Error adding text to QR:", error);
-    // Fallback - bina text ke QR
     const blob = await qrCode.getRawData("png");
     return URL.createObjectURL(blob);
   }
 };
 
-/*  QR with Activation Code  */
-const createQR = (url) => {
-  // QR data mein activation code bhi add karo
+/* QR with Custom Colors */
+const createQR = (url, dotsColor = "#000000", bgColor = "transparent") => {
   const qrData = `${url}`;
   
   return new QRCodeStyling({ 
@@ -84,7 +81,7 @@ const createQR = (url) => {
     data: qrData,
     type: "png",
     dotsOptions: {
-      color: "#000000",
+      color: dotsColor,
       type: "dots",
     },
     cornersSquareOptions: {
@@ -94,7 +91,8 @@ const createQR = (url) => {
       type: "dot",
     },
     backgroundOptions: {
-      color: "#ffffff",
+      color: bgColor,
+      round: 25
     },
     imageOptions: {
       crossOrigin: "anonymous",
@@ -116,19 +114,25 @@ const ManageCards = () => {
     inactive: 0
   });
   const [qrImages, setQrImages] = useState({});
-  const [downloadingDate, setDownloadingDate] = useState(null); // NEW: Track which date is downloading
+  const [downloadingDate, setDownloadingDate] = useState(null);
+  
+  // Color customization states
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [qrBgColor, setQrBgColor] = useState("transparent");
+  const [qrDotsColor, setQrDotsColor] = useState("#000000");
+  const [textColor, setTextColor] = useState("#000000");
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCards, setTotalCards] = useState(0);
-  const [limit] = useState(40);
+  const [limit] = useState(100);
   
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
-  /*  FETCH WITH PAGINATION & SEARCH  */
+  /* FETCH WITH PAGINATION & SEARCH */
   const fetchCards = async (page = 1, search = "") => {
     try {
       setLoading(true);
@@ -155,16 +159,17 @@ const ManageCards = () => {
       
       setStats({ total, activated, inactive });
       
-      // Generate QR images for all cards with activation code AND text overlay
+      // Generate QR images with custom colors
       const qrPromises = allCards.map(async (card) => {
         if (card.qrUrl) {
           try {
-            const qr = createQR(card.qrUrl, card.activationCode);
-            // Add text overlay to QR image
+            const qr = createQR(card.qrUrl, qrDotsColor, qrBgColor);
             const finalImageUrl = await addTextToQRImage(
               qr, 
               card.activationCode, 
-              card.owner?.name || card.profile?.name || ''
+              card.owner?.name || card.profile?.name || '',
+              textColor,
+              qrBgColor
             );
             return { cardId: card._id, imageUrl: finalImageUrl };
           } catch (err) {
@@ -188,6 +193,41 @@ const ManageCards = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Regenerate QR when colors change
+  useEffect(() => {
+    if (cards.length > 0) {
+      regenerateQRCodes();
+    }
+  }, [qrBgColor, qrDotsColor, textColor]);
+
+  const regenerateQRCodes = async () => {
+    const qrPromises = cards.map(async (card) => {
+      if (card.qrUrl) {
+        try {
+          const qr = createQR(card.qrUrl, qrDotsColor, qrBgColor);
+          const finalImageUrl = await addTextToQRImage(
+            qr, 
+            card.activationCode, 
+            card.owner?.name || card.profile?.name || '',
+            textColor,
+            qrBgColor
+          );
+          return { cardId: card._id, imageUrl: finalImageUrl };
+        } catch (err) {
+          return { cardId: card._id, imageUrl: null };
+        }
+      }
+      return { cardId: card._id, imageUrl: null };
+    });
+
+    const qrResults = await Promise.all(qrPromises);
+    const qrMap = {};
+    qrResults.forEach(result => {
+      qrMap[result.cardId] = result.imageUrl;
+    });
+    setQrImages(qrMap);
   };
 
   // Initial fetch
@@ -239,7 +279,7 @@ const ManageCards = () => {
     return pageNumbers;
   };
 
-  /*  GROUP BY DATE  */
+  /* GROUP BY DATE */
   const groupedCards = cards.reduce((acc, card) => {
     const date = new Date(card.createdAt).toISOString().split("T")[0];
     if (!acc[date]) acc[date] = [];
@@ -251,14 +291,13 @@ const ManageCards = () => {
     ([date]) => !selectedDate || date === selectedDate
   );
 
-  /*  PREVIEW - ab image ke ANDAR activation code dikhega  */
+  /* PREVIEW */
   const previewQR = async (card) => {
     if (!card.qrUrl) {
       alert("No QR URL available for this card");
       return;
     }
-    // Create QR with activation code
-    const qr = createQR(card.qrUrl, card.activationCode);
+    const qr = createQR(card.qrUrl, qrDotsColor, qrBgColor);
     const blob = await qr.getRawData("png");
     const imgUrl = URL.createObjectURL(blob);
 
@@ -276,7 +315,7 @@ const ManageCards = () => {
     `);
   };
 
-  /*  DOWNLOAD SINGLE CARD  */
+  /* DOWNLOAD SINGLE CARD */
   const downloadQR = async (card) => {
     if (!card.qrUrl) {
       alert("No QR URL available for download");
@@ -284,17 +323,15 @@ const ManageCards = () => {
     }
     
     try {
-      // Create QR with activation code
-      const qr = createQR(card.qrUrl, card.activationCode);
-      
-      // Add text overlay to QR image
+      const qr = createQR(card.qrUrl, qrDotsColor, qrBgColor);
       const finalImageUrl = await addTextToQRImage(
         qr, 
         card.activationCode, 
-        card.owner?.name || card.profile?.name || 'No Name'
+        card.owner?.name || card.profile?.name || '',
+        textColor,
+        qrBgColor
       );
       
-      // Download the final image
       const link = document.createElement('a');
       link.href = finalImageUrl;
       link.download = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.png`;
@@ -302,10 +339,8 @@ const ManageCards = () => {
       link.click();
       document.body.removeChild(link);
       
-      // Cleanup
       URL.revokeObjectURL(finalImageUrl);
 
-      // Update downloaded status
       if (!card.isDownloaded) {
         try {
           await axios.patch(
@@ -333,14 +368,13 @@ const ManageCards = () => {
     }
   };
 
-  /*  NEW: BULK DOWNLOAD ALL CARDS OF A SPECIFIC DATE  */
+  /* BULK DOWNLOAD ALL CARDS OF A SPECIFIC DATE */
   const downloadAllByDate = async (date, cardsList) => {
     if (!cardsList || cardsList.length === 0) {
       alert("No cards available for this date");
       return;
     }
 
-    // Filter cards that have qrUrl
     const validCards = cardsList.filter(card => card.qrUrl);
     
     if (validCards.length === 0) {
@@ -348,46 +382,37 @@ const ManageCards = () => {
       return;
     }
 
-    setDownloadingDate(date); // Show loading state
+    setDownloadingDate(date);
 
     try {
-      // Create a new ZIP file
       const zip = new JSZip();
       const folderName = `cards-${date}`;
       const folder = zip.folder(folderName);
 
-      // Show progress message
       alert(`Downloading ${validCards.length} cards. Please wait...`);
 
-      // Process all cards in parallel with a limit to avoid overwhelming the browser
-      const chunkSize = 5; // Process 5 cards at a time
+      const chunkSize = 5;
       const results = [];
 
       for (let i = 0; i < validCards.length; i += chunkSize) {
         const chunk = validCards.slice(i, i + chunkSize);
         const chunkPromises = chunk.map(async (card) => {
           try {
-            // Generate QR for this card
-            const qr = createQR(card.qrUrl, card.activationCode);
-            
-            // Add text overlay
+            const qr = createQR(card.qrUrl, qrDotsColor, qrBgColor);
             const finalImageUrl = await addTextToQRImage(
               qr, 
               card.activationCode, 
-              card.owner?.name || card.profile?.name || 'No Name'
+              card.owner?.name || card.profile?.name || '',
+              textColor,
+              qrBgColor
             );
 
-            // Fetch the image as blob
             const response = await fetch(finalImageUrl);
             const blob = await response.blob();
 
-            // Create filename
             const filename = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.png`;
 
-            // Add to ZIP
             folder.file(filename, blob, { binary: true });
-
-            // Cleanup
             URL.revokeObjectURL(finalImageUrl);
 
             return { success: true, card };
@@ -401,7 +426,6 @@ const ManageCards = () => {
         results.push(...chunkResults);
       }
 
-      // Generate ZIP and trigger download
       const zipContent = await zip.generateAsync({ type: "blob" });
       const zipUrl = URL.createObjectURL(zipContent);
 
@@ -412,10 +436,8 @@ const ManageCards = () => {
       link.click();
       document.body.removeChild(link);
 
-      // Cleanup
       URL.revokeObjectURL(zipUrl);
 
-      // Count successful downloads
       const successful = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
 
@@ -429,7 +451,7 @@ const ManageCards = () => {
     }
   };
 
-  /*  LOADING  */
+  /* LOADING */
   if (loading) {
     return (
       <div className="min-h-[60vh] flex justify-center items-center">
@@ -438,7 +460,7 @@ const ManageCards = () => {
     );
   }
 
-  /*  ERROR  */
+  /* ERROR */
   if (error) {
     return (
       <div className="text-center text-red-400 p-8">
@@ -448,7 +470,7 @@ const ManageCards = () => {
     );
   }
 
-  /*  STATUS BADGE  */
+  /* STATUS BADGE */
   const StatusBadge = ({ active }) => (
     <span
       className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
@@ -461,7 +483,7 @@ const ManageCards = () => {
     </span>
   );
 
-  /*  PAGINATION COMPONENT  */
+  /* PAGINATION COMPONENT */
   const Pagination = () => (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-2 py-4 bg-gray-800/30 rounded-lg">
       <div className="text-sm text-gray-400">
@@ -480,50 +502,31 @@ const ManageCards = () => {
       </div>
       
       <div className="flex items-center gap-1">
-        <button
-          onClick={() => handlePageChange(1)}
-          disabled={currentPage === 1}
-          className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
-        >
+        <button onClick={() => handlePageChange(1)} disabled={currentPage === 1}
+          className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronsLeft size={18} />
         </button>
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
-        >
+        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}
+          className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronLeft size={18} />
         </button>
         
         {getPageNumbers().map((pageNum, index) => (
-          <button
-            key={index}
-            onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
+          <button key={index} onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
             className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg text-sm font-medium ${
-              currentPage === pageNum
-                ? 'bg-indigo-500 text-white shadow-lg'
-                : pageNum === '...'
-                ? 'text-gray-400 cursor-default'
-                : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-            }`}
-            disabled={pageNum === '...'}
-          >
+              currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
+              pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+            }`} disabled={pageNum === '...'}>
             {pageNum}
           </button>
         ))}
         
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
-        >
+        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}
+          className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronRight size={18} />
         </button>
-        <button
-          onClick={() => handlePageChange(totalPages)}
-          disabled={currentPage === totalPages}
-          className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}
-        >
+        <button onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages}
+          className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronsRight size={18} />
         </button>
       </div>
@@ -535,7 +538,6 @@ const ManageCards = () => {
     </div>
   );
 
-  /*  BAS YE NAYA BUTTON ADD HOGA DATE HEADER MEIN  */
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-[100vw] overflow-x-hidden">
       {/* HEADER */}
@@ -551,6 +553,17 @@ const ManageCards = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-center">
+          {/* COLOR CUSTOMIZATION BUTTON */}
+          <button
+            onClick={() => setShowColorPicker(!showColorPicker)}
+            className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center gap-2 text-white hover:shadow-lg transition-all cursor-pointer"
+          >
+            <div className="w-4 h-4 rounded-full border border-white" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}></div>
+            <div className="w-4 h-4 rounded-full border border-white" style={{ backgroundColor: qrDotsColor }}></div>
+            <div className="w-4 h-4 rounded-full border border-white" style={{ backgroundColor: textColor }}></div>
+            <span>Customize Colors</span>
+          </button>
+
           {/* SEARCH BAR */}
           <form onSubmit={handleSearch} className="relative w-full sm:w-56">
             <div className="relative">
@@ -569,9 +582,8 @@ const ManageCards = () => {
                   type="button"
                   onClick={handleClearSearch}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1"
-                  title="Clear search"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                   </svg>
                 </button>
@@ -579,7 +591,7 @@ const ManageCards = () => {
             </div>
           </form>
 
-          {/* Sleek Date Picker */}
+          {/* Date Picker */}
           <div className="relative w-full sm:w-56">
             <input
               type="date"
@@ -592,41 +604,156 @@ const ManageCards = () => {
                 <button
                   onClick={() => setSelectedDate("")}
                   className="text-gray-400 hover:text-white transition-colors p-1"
-                  title="Clear"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                   </svg>
                 </button>
               )}
               <div className="w-px h-4 bg-gray-700" />
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
             </div>
           </div>
 
-          {/* Elegant Create Button */}
+          {/* Create Button */}
           <Link
             to="/api/cards/bulk"
             className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-5 py-3 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 w-full sm:w-auto group"
           >
-            <div className="relative">
-              <FiPlus className="text-lg transition-transform duration-300 group-hover:rotate-180" />
-            </div>
+            <FiPlus className="text-lg transition-transform duration-300 group-hover:rotate-180" />
             <span className="font-medium">Create Cards</span>
-            <svg 
-              className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24" 
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-            </svg>
           </Link>
         </div>
       </div>
+
+      {/* COLOR PICKER MODAL */}
+      {showColorPicker && (
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center p-4">
+          <div className="absolute top-5 bg-gray-900 rounded-2xl max-w-md w-full border border-gray-700 shadow-2xl p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-white">Customize QR Colors</h3>
+              <button onClick={() => setShowColorPicker(false)} className="text-gray-400 hover:text-white">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* QR Background Color */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">QR Background Color</label>
+                <div className="flex items-center gap-3">
+                  <HexColorPicker color={qrBgColor === 'transparent' ? '#ffffff' : qrBgColor} onChange={(color) => setQrBgColor(color)} />
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => setQrBgColor("transparent")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700">
+                      Transparent
+                    </button>
+                    <button onClick={() => setQrBgColor("#ffffff")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-white border border-gray-600 rounded"></div>
+                      White
+                    </button>
+                    <button onClick={() => setQrBgColor("#000000")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-black border border-gray-600 rounded"></div>
+                      Black
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* QR Dots Color */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">QR Dots Color</label>
+                <div className="flex items-center gap-3">
+                  <HexColorPicker color={qrDotsColor} onChange={setQrDotsColor} />
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => setQrDotsColor("#000000")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-black rounded"></div>
+                      Black
+                    </button>
+                    <button onClick={() => setQrDotsColor("#E1C48A")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
+                      Gold
+                    </button>
+                    <button onClick={() => setQrDotsColor("#3B82F6")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                      Blue
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Text Color */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Text Color</label>
+                <div className="flex items-center gap-3">
+                  <HexColorPicker color={textColor} onChange={setTextColor} />
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => setTextColor("#000000")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-black rounded"></div>
+                      Black
+                    </button>
+                    <button onClick={() => setTextColor("#E1C48A")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
+                      Gold
+                    </button>
+                    <button onClick={() => setTextColor("#ffffff")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-white rounded"></div>
+                      White
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Preview */}
+              <div className="pt-4 border-t border-gray-700">
+                <p className="text-sm text-gray-400 text-center mb-3">Live Preview</p>
+                <div className="bg-gray-800 rounded-lg p-4 flex justify-center">
+                  <div className="w-24 h-24 rounded-lg flex items-center justify-center" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}>
+                    <div className="w-16 h-16 flex items-center justify-center">
+                      <svg viewBox="0 0 100 100" className="w-14 h-14">
+                        <rect x="20" y="20" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="35" y="20" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="50" y="20" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="20" y="35" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="50" y="35" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="20" y="50" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="35" y="50" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="50" y="50" width="10" height="10" fill={qrDotsColor} />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-center text-xs mt-2" style={{ color: textColor }}>
+                  Code: ABC123XYZ
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <button onClick={() => setShowColorPicker(false)}
+                className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors">
+                Close
+              </button>
+              <button onClick={() => setShowColorPicker(false)}
+                className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-lg text-white transition-colors cursor-pointer">
+                Apply Colors
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 md:mb-8">
@@ -689,9 +816,8 @@ const ManageCards = () => {
               {filteredGroupedCards.length > 0 ? (
                 filteredGroupedCards.map(([date, list]) => (
                   <React.Fragment key={date}>
-                    {/*  Date header with Download All button */}
                     <tr className="bg-gray-800/30">
-                      <td colSpan="10" className="p-3">
+                      <td colSpan="9" className="p-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span>📅</span>
@@ -700,8 +826,6 @@ const ManageCards = () => {
                               {list.length} cards
                             </span>
                           </div>
-                          
-                          {/* Download All button for this date */}
                           <button
                             onClick={() => downloadAllByDate(date, list)}
                             disabled={downloadingDate === date}
@@ -771,7 +895,6 @@ const ManageCards = () => {
                             className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 mx-auto ${
                               !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
-                            title={card.qrUrl ? "Preview QR" : "No QR available"}
                             disabled={!card.qrUrl}
                           >
                             <FaEye className="w-4 h-4" />
@@ -783,7 +906,6 @@ const ManageCards = () => {
                             className={`bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition mx-auto ${
                               !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
-                            title={card.qrUrl ? "Download QR" : "No QR available"}
                             disabled={!card.qrUrl}
                           >
                             <FaDownload className="w-4 h-4" />
@@ -804,18 +926,17 @@ const ManageCards = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="10" className="p-6 text-center">
+                  <td colSpan="9" className="p-6 text-center">
                     <div className="text-gray-400">
                       {searchQuery ? (
                         <>
                           <FiSearch className="w-12 h-12 mx-auto mb-3 text-gray-500" />
                           <p className="text-lg">No cards found for "{searchQuery}"</p>
-                          <p className="text-sm mt-2">Try a different search term</p>
                           <button
                             onClick={handleClearSearch}
                             className="mt-4 text-indigo-400 hover:text-indigo-300 transition-colors"
                           >
-                            Clear search and show all cards
+                            Clear search
                           </button>
                         </>
                       ) : (
@@ -835,7 +956,7 @@ const ManageCards = () => {
         {totalPages > 1 && <Pagination />}
       </div>
 
-      {/* TABLET VIEW - SAME BUTTON ADDITION */}
+      {/* TABLET VIEW */}
       <div className="hidden md:block lg:hidden">
         <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
           <table className="w-full min-w-full">
@@ -853,9 +974,8 @@ const ManageCards = () => {
               {filteredGroupedCards.length > 0 ? (
                 filteredGroupedCards.map(([date, list]) => (
                   <React.Fragment key={date}>
-                    {/* UPDATED: Date header with Download All button */}
                     <tr className="bg-gray-800/30">
-                      <td colSpan="6" className="p-3">
+                      <td colSpan="5" className="p-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span>📅</span>
@@ -864,8 +984,6 @@ const ManageCards = () => {
                               {list.length} cards
                             </span>
                           </div>
-                          
-                          {/* NEW: Download All button for this date */}
                           <button
                             onClick={() => downloadAllByDate(date, list)}
                             disabled={downloadingDate === date}
@@ -931,7 +1049,6 @@ const ManageCards = () => {
                               className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 ${
                                 !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                               }`}
-                              title={card.qrUrl ? "Preview QR" : "No QR available"}
                               disabled={!card.qrUrl}
                             >
                               <FaEye className="w-4 h-4" />
@@ -941,7 +1058,6 @@ const ManageCards = () => {
                               className={`bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition ${
                                 !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                               }`}
-                              title={card.qrUrl ? "Download QR" : "No QR available"}
                               disabled={!card.qrUrl}
                             >
                               <FaDownload className="w-4 h-4" />
@@ -961,12 +1077,12 @@ const ManageCards = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="p-6 text-center">
+                  <td colSpan="5" className="p-6 text-center">
                     <div className="text-gray-400">
                       {searchQuery ? (
                         <>
                           <FiSearch className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                          <p className="text-lg">No cards found for "{searchQuery}"</p>
+                          <p className="text-lg">No cards found</p>
                         </>
                       ) : (
                         <>
@@ -985,20 +1101,17 @@ const ManageCards = () => {
         {totalPages > 1 && <Pagination />}
       </div>
 
-      {/* MOBILE VIEW - SAME BUTTON ADDITION */}
+      {/* MOBILE VIEW */}
       <div className="block md:hidden">
         {filteredGroupedCards.length > 0 ? (
           filteredGroupedCards.map(([date, list]) => (
             <div key={date} className="mb-6">
-              {/* UPDATED: Date header with Download All button */}
               <div className="mb-3 p-3 bg-gray-800/30 rounded-lg sticky top-0 z-10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">📅</span>
                     <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
                   </div>
-                  
-                  {/* NEW: Download All button for mobile */}
                   <button
                     onClick={() => downloadAllByDate(date, list)}
                     disabled={downloadingDate === date}
@@ -1023,129 +1136,49 @@ const ManageCards = () => {
                 </div>
               </div>
 
-              {/* Table remains same */}
-              <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
-                <table className="min-w-[700px] w-full">
-                  <thead className="bg-gray-800/50 border-b border-gray-700/50">
-                    <tr>
-                      <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[40px]">✓</th>
-                      <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Status</th>
-                      <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Owner</th>
-                      <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[100px]">Activation</th>
-                      <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap min-w-[80px]">Created</th>
-                      <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap min-w-[70px]">QR</th>
-                      <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap min-w-[100px]">Actions</th>
-                    </tr>
-                  </thead>
-
-                  <tbody className="divide-y divide-gray-700/30">
-                    {list.map((card) => (
-                      <tr key={card._id} className="hover:bg-gray-800/20 transition-colors">
-                        <td className="p-2">
-                          <input checked={card.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" />
-                        </td>
-                        <td className="p-2">
+              <div className="space-y-3">
+                {list.map((card) => (
+                  <div key={card._id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
                           <StatusBadge active={card.isActivated} />
-                        </td>
-                        <td className="p-2">
-                          <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
-                            {card.owner?.name || "—"}
-                          </span>
-                        </td>
-                        <td className="p-2">
-                          <div className="font-mono text-xs text-indigo-400 truncate max-w-[90px]" title={card.activationCode}>
-                            {card.activationCode}
-                          </div>
-                        </td>
-                        <td className="p-2 text-gray-400 text-xs">
-                          {new Date(card.activatedAt).toLocaleDateString()}
-                        </td>
-                        <td className="p-2 text-center">
-                          <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mx-auto">
-                            {qrImages[card._id] ? (
-                              <img
-                                src={qrImages[card._id]}
-                                alt="QR Code"
-                                className="w-8 h-8"
-                                onError={(e) => {
-                                  e.target.onerror = null;
-                                  e.target.src = "/qr.png";
-                                }}
-                              />
-                            ) : (
-                              <img src="/qr.png" alt="Demo QR" className="w-8 h-8" />
-                            )}
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <div className="flex flex-col gap-1.5">
-                            <div className="flex gap-1.5 justify-center">
-                              <button
-                                onClick={() => previewQR(card)}
-                                className={`flex-1 text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 min-w-[32px] ${
-                                  !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                                }`}
-                                title={card.qrUrl ? "Preview QR" : "No QR available"}
-                                disabled={!card.qrUrl}
-                              >
-                                <FaEye className="w-3.5 h-3.5 mx-auto" />
-                              </button>
-                              <button
-                                onClick={() => downloadQR(card)}
-                                className={`flex-1 bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition min-w-[32px] ${
-                                  !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                                }`}
-                                title={card.qrUrl ? "Download QR" : "No QR available"}
-                                disabled={!card.qrUrl}
-                              >
-                                <FaDownload className="w-3.5 h-3.5 mx-auto" />
-                              </button>
-                            </div>
-                            {card.slug && (
-                              <Link 
-                                to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
-                                className="text-xs text-center text-indigo-400 hover:text-indigo-300 transition py-1 border border-indigo-500/50 rounded"
-                                target="_blank"
-                              >
-                                Profile
-                              </Link>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              
-              <div className="mt-2 text-center">
-                <p className="text-xs text-gray-500 animate-pulse">
-                  ← Scroll horizontally to view all columns →
-                </p>
+                          <span className="text-xs text-gray-400">✓ {card.isDownloaded ? 'Downloaded' : 'Not Downloaded'}</span>
+                        </div>
+                        <p className="text-sm font-medium text-white">{card.owner?.name || "—"}</p>
+                        <p className="text-xs text-indigo-400 font-mono mt-1">{card.activationCode}</p>
+                      </div>
+                      <div className="w-12 h-12 bg-white p-1 rounded-lg">
+                        {qrImages[card._id] ? (
+                          <img src={qrImages[card._id]} alt="QR" className="w-full h-full object-cover" />
+                        ) : (
+                          <img src="/qr.png" alt="QR" className="w-full h-full" />
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-2 pt-2 border-t border-gray-700/50">
+                      <button onClick={() => previewQR(card)} disabled={!card.qrUrl}
+                        className="flex-1 py-1.5 bg-blue-500/20 rounded-lg text-blue-400 text-xs flex items-center justify-center gap-1">
+                        <FaEye size={12} /> Preview
+                      </button>
+                      <button onClick={() => downloadQR(card)} disabled={!card.qrUrl}
+                        className="flex-1 py-1.5 bg-cyan-500/20 rounded-lg text-cyan-400 text-xs flex items-center justify-center gap-1">
+                        <FaDownload size={12} /> Download
+                      </button>
+                      <Link to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`} target="_blank"
+                        className="flex-1 py-1.5 bg-indigo-500/20 rounded-lg text-indigo-400 text-xs flex items-center justify-center gap-1">
+                        View
+                      </Link>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ))
         ) : (
-          <div className="p-6 text-center">
-            <div className="text-gray-400">
-              {searchQuery ? (
-                <>
-                  <FiSearch className="w-16 h-16 mx-auto mb-3 text-gray-500" />
-                  <p className="text-lg">No cards found for "{searchQuery}"</p>
-                  <button
-                    onClick={handleClearSearch}
-                    className="mt-4 px-4 py-2 bg-indigo-500/20 text-indigo-400 rounded-lg hover:bg-indigo-500/30 transition-colors"
-                  >
-                    Clear search
-                  </button>
-                </>
-              ) : (
-                <>
-                  <FiAlertCircle className="w-16 h-16 mx-auto mb-3 text-gray-500" />
-                  <p className="text-lg">No cards available</p>
-                </>
-              )}
-            </div>
+          <div className="p-6 text-center bg-gray-800/30 rounded-xl">
+            <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
+            <p className="text-gray-400">No cards available</p>
           </div>
         )}
         

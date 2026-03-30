@@ -1,3 +1,4 @@
+const { getConfig } = require("../config/runTimeConfigLoader");
 const dotenv = require("dotenv").config();
 const crypto = require("crypto");
 const OrderModel = require("../models/Order.model");
@@ -7,12 +8,14 @@ const createInvoicePdf = require("../utils/createInvoicePdf");
 const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
 
 
+
 // CREATE PAYU ORDER
 const createPayUOrder = async (req, res) => {
+  const config = getConfig();
   try {
-
+    
     const { orderId } = req.body;
-
+    
     const order = await OrderModel.findById(orderId);
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
@@ -20,8 +23,8 @@ const createPayUOrder = async (req, res) => {
 
     const txnid = "txn_" + Date.now();
 
-    const key = process.env.PAYU_MERCHANT_KEY;
-    const salt = process.env.PAYU_MERCHANT_SALT;
+   const key = config?.payU?.key || process.env.PAYU_KEY;
+const salt = config?.payU?.salt || process.env.PAYU_SALT;
 
     const firstname = order.address?.name || "Customer";
     const email = order.address?.email;
@@ -46,7 +49,7 @@ const createPayUOrder = async (req, res) => {
     });
 
     res.json({
-      paymentUrl: process.env.PAYU_BASE_URL,
+      paymentUrl: config?.payU?.payUBaseUrl || process.env.PAYU_BASE_URL,
       data: {
         key,
         txnid,
