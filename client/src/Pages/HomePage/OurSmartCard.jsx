@@ -245,11 +245,11 @@ const OurSmartCard = () => {
 
               {/* IMAGE SECTION */}
               <div className="h-72 mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-cyan-900/20 to-blue-900/20 flex items-center justify-center relative border border-white/10 hover:border-white/40 duration-300 cursor-pointer">
-                {product.image ? (
+                {product.images ? (
                   <img
-                  src={product.image}
+                  src={product.images[0]}
                   alt={product.title || "Product"}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 "
+                  className="lg:scale-130 md:scale-130 scale-110 h-full object-cover group-hover:scale-125 transition-transform duration-300 "
                   onError={(e) => {
                     e.target.style.display = 'none';
                     e.target.parentElement.innerHTML = `

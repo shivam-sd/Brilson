@@ -33,7 +33,7 @@ const addToCart = async (req, res) => {
       cartItem = await CartModel.create({
         userId,
         productId,
-        image: product.image,
+        image: product.images[0],
         title: product.title,
         price: product.price,
         quantity: quantity || 1,

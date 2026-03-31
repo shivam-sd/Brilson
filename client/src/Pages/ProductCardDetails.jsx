@@ -22,23 +22,31 @@ const ProductCardPreference = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [activeImage, setActiveImage] = useState("");
 
   /* FETCH PRODUCT */
   useEffect(() => {
-    const getProduct = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/find/products/${id}`
-        );
-        setProduct(res.data.product);
-      } catch {
-        toast.error("Product not found");
-      } finally {
-        setLoading(false);
+  const getProduct = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/admin/find/products/${id}`
+      );
+
+      const data = res.data.product;
+      setProduct(data);
+
+      if (data.images?.length) {
+        setActiveImage(data.images[0]);
       }
-    };
-    getProduct();
-  }, [id]);
+
+    } catch {
+      toast.error("Product not found");
+    } finally {
+      setLoading(false);
+    }
+  };
+  getProduct();
+}, [id]);
 
   /* ADD TO CART */
   const addToCart = async () => {
@@ -64,13 +72,14 @@ const ProductCardPreference = () => {
             productId: product._id,
             title: product.title,
             price: product.price,
-            image: product.image,
+            image: product.images?.[0],
             quantity: 1,
           });
         }
+        
         localStorage.setItem("cart", JSON.stringify(cart));
       }
-
+      
       toast.success("Added to cart 🛒");
     } catch {
       toast.error("Failed to add to cart");
@@ -97,7 +106,7 @@ const ProductCardPreference = () => {
   return (
         <>
     <div className="min-h-screen bg-gradient-to-br from-[#05070a] via-gray-900 to-[#05070a] text-white">
-      <div className="max-w-7xl mx-auto px-6 py-16">
+      <div className="max-w-7xl mx-auto px-6 py-16 mt-10">
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-gray-400 mb-8">
@@ -117,11 +126,39 @@ const ProductCardPreference = () => {
                 </span>
               )}
               <img
-                src={product.image}
+                src={activeImage || product.images?.[0]}
                 alt={product.title}
-                className="w-full h-[420px] object-contain"
+                className="lg:scale-150 md:scale-150 scale-200 w-full h-[420px] object-contain cursor-pointer duration-300"
               />
+
+
+{/* THUMBNAILS */}
+{product.images?.length > 0 && (
+  <div className="flex gap-3 mt-6 justify-center flex-wrap">
+    {product.images.map((img, index) => (
+      <div
+        key={index}
+        onClick={() => setActiveImage(img)}
+        className={`cursor-pointer p-2 rounded-xl border transition ${
+          activeImage === img
+            ? "border-cyan-400"
+            : "border-white/10 hover:border-cyan-400"
+        }`}
+      >
+        <img
+          src={img}
+          alt="thumbnail"
+          className="scale-150 w-16 h-16 object-contain duration-300"
+        />
+      </div>
+    ))}
+  </div>
+)}
+
+
             </div>
+
+            
 
             <div className="grid grid-cols-3 gap-4 mt-6">
               {[FiTruck, FiShield, FiRefreshCw].map((Icon, i) => (

@@ -90,12 +90,11 @@ app.use(express.static(path.join(__dirname, "dist")));
 
   app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-  app.use(
-    fileUpload({
-      useTempFiles: true,
-      tempFileDir: "/brilson/",
-    })
-  );
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: '/tmp/',
+  preserveExtension: true
+}));
 
   // Routes
   app.use("/api/users", UserRouter);

@@ -182,11 +182,11 @@ const ChooseYourCard = () => {
 
             {/* IMAGE SECTION */}
             <div className="h-80 bg-gradient-to-br from-cyan-900/20 to-blue-900/20 flex items-center justify-center relative overflow-hidden">
-              {product.image ? (
+              {product.images ? (
                 <img 
-                  src={product.image} 
+                  src={product.images[0]} 
                   alt={product.title || "Smart Card"} 
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  className="lg:scale-135 md:scale-135 w-full h-full object-cover transition-transform duration-500 hover:scale-125"
                   onError={(e) => {
                     e.target.style.display = 'none';
                     e.target.parentElement.innerHTML = `

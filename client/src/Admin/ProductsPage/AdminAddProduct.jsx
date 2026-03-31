@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FiPlus, FiTrash2, FiSave } from "react-icons/fi";
+import { FiPlus, FiTrash2, FiSave, FiX, FiImage } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -9,15 +9,16 @@ const AdminAddProduct = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
   const [badges, setBadges] = useState([]);
-  const [imageFile, setImageFile] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null);
+  
+  // Multiple images state
+  const [imageFiles, setImageFiles] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
   
   // Product state - WITHOUT variants
   const [productData, setProductData] = useState({
     category: "",
     title: "",
     badge: "",
-    image: "",
     description: "",
     price: "",
     oldPrice: "",
@@ -40,10 +41,14 @@ const AdminAddProduct = () => {
   // fetch all category
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/category/active`
-      );
-      setCategories(res?.data?.categories || []);
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/category/active`
+        );
+        setCategories(res?.data?.categories || []);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
     };
     fetchCategories();
   }, []);
@@ -51,21 +56,105 @@ const AdminAddProduct = () => {
   // fetch all badges
   useEffect(() => {
     const fetchBadges = async () => {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/badges/active`
-      );
-      setBadges(res?.data?.badges || []);
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/badges/active`
+        );
+        setBadges(res?.data?.badges || []);
+      } catch (error) {
+        console.error("Error fetching badges:", error);
+      }
     };
     fetchBadges();
   }, []);
 
-  // image upload handler
+  // Multiple image upload handler
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
 
-    setImageFile(file);
-    setPreviewImage(URL.createObjectURL(file));
+    // Validate file types and sizes
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif', 'image/avif'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    
+    const validFiles = [];
+    const invalidFiles = [];
+    
+    files.forEach(file => {
+      if (!allowedTypes.includes(file.type)) {
+        invalidFiles.push(`${file.name} (Invalid format)`);
+      } else if (file.size > maxSize) {
+        invalidFiles.push(`${file.name} (Max 5MB)`);
+      } else {
+        validFiles.push(file);
+      }
+    });
+    
+    if (invalidFiles.length > 0) {
+      toast.error(`Invalid files: ${invalidFiles.join(', ')}`);
+    }
+    
+    if (validFiles.length > 0) {
+      // Limit to maximum 10 images
+      const currentCount = imageFiles.length;
+      const availableSlots = 10 - currentCount;
+      const filesToAdd = validFiles.slice(0, availableSlots);
+      
+      if (filesToAdd.length < validFiles.length) {
+        toast.warning(`Only ${availableSlots} more image(s) allowed. Maximum 10 images total.`);
+      }
+      
+      const newFiles = [...imageFiles, ...filesToAdd];
+      setImageFiles(newFiles);
+      
+      // Create preview URLs
+      const newPreviews = filesToAdd.map(file => URL.createObjectURL(file));
+      setPreviewImages([...previewImages, ...newPreviews]);
+    }
+  };
+  
+  // Remove image
+  const removeImage = (index) => {
+    // Revoke the object URL to avoid memory leaks
+    URL.revokeObjectURL(previewImages[index]);
+    
+    const newImageFiles = imageFiles.filter((_, i) => i !== index);
+    const newPreviewImages = previewImages.filter((_, i) => i !== index);
+    
+    setImageFiles(newImageFiles);
+    setPreviewImages(newPreviewImages);
+  };
+  
+  // Reorder images (drag and drop)
+  const handleDragStart = (e, index) => {
+    e.dataTransfer.setData('text/plain', index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+  
+  const handleDrop = (e, dropIndex) => {
+    e.preventDefault();
+    const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
+    
+    if (dragIndex === dropIndex) return;
+    
+    const newImageFiles = [...imageFiles];
+    const newPreviewImages = [...previewImages];
+    
+    // Reorder files
+    const [movedFile] = newImageFiles.splice(dragIndex, 1);
+    newImageFiles.splice(dropIndex, 0, movedFile);
+    
+    // Reorder previews
+    const [movedPreview] = newPreviewImages.splice(dragIndex, 1);
+    newPreviewImages.splice(dropIndex, 0, movedPreview);
+    
+    setImageFiles(newImageFiles);
+    setPreviewImages(newPreviewImages);
   };
 
   // Handle basic input changes
@@ -142,13 +231,30 @@ const AdminAddProduct = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!imageFile) {
-      toast.error("Product image is required");
+    
+    // Validation
+    if (imageFiles.length === 0) {
+      toast.error("At least one product image is required");
       return;
     }
     
-    if (!productData.price) {
-      toast.error("Product price is required");
+    if (!productData.title.trim()) {
+      toast.error("Product title is required");
+      return;
+    }
+    
+    if (!productData.category) {
+      toast.error("Product category is required");
+      return;
+    }
+    
+    if (!productData.description.trim()) {
+      toast.error("Product description is required");
+      return;
+    }
+    
+    if (!productData.price || productData.price <= 0) {
+      toast.error("Valid product price is required");
       return;
     }
     
@@ -156,10 +262,10 @@ const AdminAddProduct = () => {
 
     // Prepare data for API
     const formData = new FormData();
-    formData.append("title", productData.title);
+    formData.append("title", productData.title.trim());
     formData.append("category", productData.category);
-    formData.append("badge", productData.badge);
-    formData.append("description", productData.description);
+    formData.append("badge", productData.badge || "");
+    formData.append("description", productData.description.trim());
     formData.append("price", productData.price);
     formData.append("oldPrice", productData.oldPrice || "");
     formData.append("color", productData.color || "");
@@ -174,7 +280,10 @@ const AdminAddProduct = () => {
     formData.append("discountType", productData.discountType);
     formData.append("discountValue", productData.discountValue || "0");
     
-    formData.append("image", imageFile);
+    // Append all images - Use 'images' field name to match backend expectation
+    imageFiles.forEach((file, index) => {
+      formData.append("images", file);
+    });
 
     formData.append(
       "features",
@@ -186,13 +295,15 @@ const AdminAddProduct = () => {
     );
 
     try {
-      await axios.post(
+      const token = localStorage.getItem("token");
+      
+      const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/admin/add/products`,
         formData,
         { 
-          withCredentials: true, 
+          withCredentials: true,
           headers: {
-            Authorization: `${localStorage.getItem("token")}`
+            'Authorization': token || ''
           }
         }
       );
@@ -200,11 +311,19 @@ const AdminAddProduct = () => {
       toast.success("Product added successfully");
       navigate("/admindashboard/products/list");
     } catch (err) {
-      toast.error(err?.response?.data?.error || "Failed to add product");
+      console.error("Error details:", err.response?.data || err.message);
+      toast.error(err?.response?.data?.error || err?.response?.data?.message || "Failed to add product");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Cleanup preview URLs on component unmount
+  useEffect(() => {
+    return () => {
+      previewImages.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-4 md:p-8">
@@ -274,7 +393,7 @@ const AdminAddProduct = () => {
                 >
                   <option value="">Select Badge</option>
                   {badges.map((b) => (
-                    <option key={b.name} value={b.name}>
+                    <option key={b._id || b.name} value={b.name}>
                       {b.name}
                     </option>
                   ))}
@@ -292,6 +411,8 @@ const AdminAddProduct = () => {
                   value={productData.price}
                   onChange={handleInputChange}
                   placeholder="299"
+                  min="0"
+                  step="0.01"
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                   required
                 />
@@ -308,6 +429,8 @@ const AdminAddProduct = () => {
                   value={productData.oldPrice}
                   onChange={handleInputChange}
                   placeholder="399"
+                  min="0"
+                  step="0.01"
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                 />
               </div>
@@ -323,6 +446,7 @@ const AdminAddProduct = () => {
                   value={productData.stock}
                   onChange={handleInputChange}
                   placeholder="100"
+                  min="0"
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                 />
               </div>
@@ -535,7 +659,7 @@ const AdminAddProduct = () => {
                       type="text"
                       value={metaTags}
                       onChange={(e) => updateMetaTags(index, e.target.value)}
-                      placeholder={`Meta Tag ${index + 1} (e.g., #NFC Enabled, #QR Code)`}
+                      placeholder={`Meta Tag ${index + 1} (e.g., NFC, QR Code)`}
                       className="flex-1 px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none"
                     />
                     {productData.metaTags.length > 1 && (
@@ -553,39 +677,79 @@ const AdminAddProduct = () => {
               </div>
             </div>
 
-            {/* Image Upload Section */}
+            {/* Multiple Image Upload Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-200">
-                  Product Image
+                  Product Images
                 </h3>
                 <span className="text-sm text-gray-400">
-                  Required • Max size: 5MB
+                  {imageFiles.length}/10 images • Max 5MB each
                 </span>
               </div>
               
               <div>
                 <label className="block text-sm text-gray-400 mb-2">
-                  Upload Product Image *
+                  Upload Product Images *
                 </label>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/svg+xml,image/gif,image/avif"
+                  multiple
                   onChange={handleImageChange}
                   className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600"
-                  required
                 />
+                <p className="text-xs text-gray-500 mt-2">
+                  You can select multiple images at once. Drag and drop to reorder. First image will be the main product image.
+                </p>
 
-                {previewImage && (
-                  <div className="mt-4">
-                    <label className="block text-sm text-gray-400 mb-2">
-                      Preview
+                {/* Image Preview Grid */}
+                {previewImages.length > 0 && (
+                  <div className="mt-6">
+                    <label className="block text-sm text-gray-400 mb-3">
+                      Image Gallery ({previewImages.length})
                     </label>
-                    <img
-                      src={previewImage}
-                      alt="Product Preview"
-                      className="w-full h-64 rounded-xl border border-gray-600 object-contain bg-gray-900"
-                    />
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                      {previewImages.map((preview, index) => (
+                        <div
+                          key={index}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, index)}
+                          onDragOver={handleDragOver}
+                          onDrop={(e) => handleDrop(e, index)}
+                          className="relative group"
+                        >
+                          <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-600 hover:border-cyan-500 transition bg-gray-900">
+                            <img
+                              src={preview}
+                              alt={`Product ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "https://via.placeholder.com/400x300?text=Image+Error";
+                              }}
+                            />
+                            {/* Image number badge */}
+                            <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                              {index + 1}
+                            </div>
+                            {/* Remove button */}
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition"
+                              title="Remove image"
+                            >
+                              <FiX size={14} />
+                            </button>
+                            {/* Drag handle */}
+                            <div className="absolute bottom-2 left-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition cursor-move">
+                              <FiImage size={12} />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

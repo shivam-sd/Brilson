@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiPlus, FiTrash2, FiSave, FiLoader } from "react-icons/fi";
+import { FiPlus, FiTrash2, FiSave, FiLoader, FiX, FiImage } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -12,8 +12,12 @@ const AdminEditProduct = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
   const [badges, setBadges] = useState([]);
-  const [imageFile, setImageFile] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null);
+  
+  // Multiple images state
+  const [imageFiles, setImageFiles] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
+  const [removedImages, setRemovedImages] = useState([]);
 
   // Product state WITHOUT variants
   const [productData, setProductData] = useState({
@@ -21,7 +25,6 @@ const AdminEditProduct = () => {
     title: "",
     badge: "",
     description: "",
-    image: "",
     price: "",
     oldPrice: "",
     color: "",
@@ -72,16 +75,113 @@ const AdminEditProduct = () => {
     fetchBadges();
   }, []);
 
-  // image handle change
+  // Multiple image upload handler
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      setPreviewImage(URL.createObjectURL(file));
-    }
-  } 
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
 
-  // Fetch product data for show already 
+    // Validate file types and sizes
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif', 'image/avif'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    
+    const validFiles = [];
+    const invalidFiles = [];
+    
+    files.forEach(file => {
+      if (!allowedTypes.includes(file.type)) {
+        invalidFiles.push(`${file.name} (Invalid format)`);
+      } else if (file.size > maxSize) {
+        invalidFiles.push(`${file.name} (Max 5MB)`);
+      } else {
+        validFiles.push(file);
+      }
+    });
+    
+    if (invalidFiles.length > 0) {
+      toast.error(`Invalid files: ${invalidFiles.join(', ')}`);
+    }
+    
+    if (validFiles.length > 0) {
+      const currentCount = imageFiles.length + existingImages.length;
+      const availableSlots = 10 - currentCount;
+      const filesToAdd = validFiles.slice(0, availableSlots);
+      
+      if (filesToAdd.length < validFiles.length) {
+        toast.warning(`Only ${availableSlots} more image(s) allowed. Maximum 10 images total.`);
+      }
+      
+      const newFiles = [...imageFiles, ...filesToAdd];
+      setImageFiles(newFiles);
+      
+      // Create preview URLs
+      const newPreviews = filesToAdd.map(file => URL.createObjectURL(file));
+      setPreviewImages([...previewImages, ...newPreviews]);
+    }
+  };
+  
+  // Remove new image (not yet uploaded)
+  const removeNewImage = (index) => {
+    URL.revokeObjectURL(previewImages[index]);
+    
+    const newImageFiles = imageFiles.filter((_, i) => i !== index);
+    const newPreviewImages = previewImages.filter((_, i) => i !== index);
+    
+    setImageFiles(newImageFiles);
+    setPreviewImages(newPreviewImages);
+  };
+  
+  // Remove existing image (mark for deletion)
+  const removeExistingImage = (index) => {
+    const removedImage = existingImages[index];
+    setRemovedImages([...removedImages, removedImage]);
+    const newExistingImages = existingImages.filter((_, i) => i !== index);
+    setExistingImages(newExistingImages);
+    toast.info("Image will be removed on update");
+  };
+  
+  // Restore removed image
+  const restoreExistingImage = (imageUrl) => {
+    const newRemovedImages = removedImages.filter(img => img !== imageUrl);
+    setRemovedImages(newRemovedImages);
+    setExistingImages([...existingImages, imageUrl]);
+  };
+
+  // Reorder images (drag and drop)
+  const handleDragStart = (e, index, type) => {
+    e.dataTransfer.setData('text/plain', JSON.stringify({ index, type }));
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+  
+  const handleDrop = (e, dropIndex, dropType) => {
+    e.preventDefault();
+    const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+    const { index: dragIndex, type: dragType } = dragData;
+    
+    if (dragType !== dropType) return;
+    
+    if (dragType === 'existing') {
+      const newExistingImages = [...existingImages];
+      const [movedImage] = newExistingImages.splice(dragIndex, 1);
+      newExistingImages.splice(dropIndex, 0, movedImage);
+      setExistingImages(newExistingImages);
+    } else if (dragType === 'new') {
+      const newImageFiles = [...imageFiles];
+      const newPreviewImages = [...previewImages];
+      const [movedFile] = newImageFiles.splice(dragIndex, 1);
+      const [movedPreview] = newPreviewImages.splice(dragIndex, 1);
+      newImageFiles.splice(dropIndex, 0, movedFile);
+      newPreviewImages.splice(dropIndex, 0, movedPreview);
+      setImageFiles(newImageFiles);
+      setPreviewImages(newPreviewImages);
+    }
+  };
+
+  // Fetch product data
   useEffect(() => {
     const fetchProductData = async () => {
       try {
@@ -92,57 +192,33 @@ const AdminEditProduct = () => {
         if (response.data?.product) {
           const product = response.data.product;
           
-          // Handle old variant data - if exists, use first variant for price data
-          let priceData = {};
-          if (product.variants && product.variants.length > 0) {
-            // Take first variant's data
-            priceData = {
-              price: product.variants[0]?.price || "",
-              oldPrice: product.variants[0]?.oldPrice || "",
-              color: product.variants[0]?.color || "",
-              stock: product.variants[0]?.stock || ""
-            };
-          } else {
-            // If no variants, use direct product fields
-            priceData = {
-              price: product.price || "",
-              oldPrice: product.oldPrice || "",
-              color: product.color || "",
-              stock: product.stock || ""
-            };
-          }
-          
-          // GST Data (new fields from backend)
-          const gstData = product.gst || {};
-          const discountData = product.discount || {};
-          
-          // Transform API data to form state WITHOUT variants
+          // Handle product data
           setProductData({
             category: product.category || "",
             title: product.title || "",
             badge: product.badge || "",
             description: product.description || "",
-            image: product.image || "",
-            price: priceData.price,
-            oldPrice: priceData.oldPrice,
-            color: priceData.color,
-            stock: priceData.stock || "",
+            price: product.price || "",
+            oldPrice: product.oldPrice || "",
+            color: product.color || "",
+            stock: product.stock || "0",
             
             // GST Fields
-            gstEnabled: gstData.enabled?.toString() || "false",
-            gstRate: gstData.rate?.toString() || "18",
+            gstEnabled: product.gst?.enabled?.toString() || "false",
+            gstRate: product.gst?.rate?.toString() || "18",
             
             // Discount Fields
-            discountEnabled: discountData.enabled?.toString() || "false",
-            discountType: discountData.type || "percentage",
-            discountValue: discountData.value?.toString() || "",
+            discountEnabled: product.discount?.enabled?.toString() || "false",
+            discountType: product.discount?.type || "percentage",
+            discountValue: product.discount?.value?.toString() || "",
             
             features: product.features?.length > 0 ? product.features : [""],
             metaTags: product.metaTags?.length > 0 ? product.metaTags : [""]
           });
 
-          if (product.image) {
-            setPreviewImage(product.image);
+          // Set existing images
+          if (product.images && product.images.length > 0) {
+            setExistingImages(product.images);
           }
         }
       } catch (error) {
@@ -227,7 +303,7 @@ const AdminEditProduct = () => {
     }));
   };
 
-  // Handle form submission with image upload
+  // Handle form submission with multiple images
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -236,14 +312,14 @@ const AdminEditProduct = () => {
       // Create FormData for multipart/form-data
       const formData = new FormData();
       
-      // Add all product data WITHOUT variants
+      // Add all product data
       formData.append('category', productData.category);
       formData.append('title', productData.title);
-      formData.append('badge', productData.badge);
+      formData.append('badge', productData.badge || "");
       formData.append('description', productData.description);
       formData.append('price', productData.price);
-      formData.append('oldPrice', productData.oldPrice);
-      formData.append('color', productData.color);
+      formData.append('oldPrice', productData.oldPrice || "");
+      formData.append('color', productData.color || "");
       formData.append('stock', productData.stock || "0");
       
       // GST Fields
@@ -263,13 +339,16 @@ const AdminEditProduct = () => {
       const filteredMetaTags = productData.metaTags.filter(m => m.trim() !== "");
       formData.append('metaTags', JSON.stringify(filteredMetaTags));
       
-      // Add image if new one is selected
-      if (imageFile) {
-        formData.append('image', imageFile);
-      } else if (productData.image) {
-        // If no new image but existing image, keep the existing one
-        formData.append('existingImage', productData.image);
-      }
+      // Add existing images (that weren't removed)
+      formData.append('existingImages', JSON.stringify(existingImages));
+      
+      // Add removed images
+      formData.append('removedImages', JSON.stringify(removedImages));
+      
+      // Add new images
+      imageFiles.forEach(file => {
+        formData.append('images', file);
+      });
 
       // Make API call
       const response = await axios.put(
@@ -298,6 +377,13 @@ const AdminEditProduct = () => {
     }
   };
 
+  // Cleanup preview URLs on component unmount
+  useEffect(() => {
+    return () => {
+      previewImages.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, []);
+
   // Loading state
   if (isLoading) {
     return (
@@ -309,6 +395,8 @@ const AdminEditProduct = () => {
       </div>
     );
   }
+
+  const totalImages = existingImages.length + imageFiles.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-4 md:p-8">
@@ -394,6 +482,8 @@ const AdminEditProduct = () => {
                   value={productData.price}
                   onChange={handleInputChange}
                   placeholder="299"
+                  min="0"
+                  step="0.01"
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                   required
                 />
@@ -410,6 +500,8 @@ const AdminEditProduct = () => {
                   value={productData.oldPrice}
                   onChange={handleInputChange}
                   placeholder="399"
+                  min="0"
+                  step="0.01"
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                 />
               </div>
@@ -425,6 +517,7 @@ const AdminEditProduct = () => {
                   value={productData.stock}
                   onChange={handleInputChange}
                   placeholder="100"
+                  min="0"
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                 />
               </div>
@@ -637,7 +730,7 @@ const AdminEditProduct = () => {
                       type="text"
                       value={meta}
                       onChange={(e) => updateMetaTags(index, e.target.value)}
-                      placeholder={`Meta Tag ${index + 1} (e.g., #NFC Enabled, #QR Code)`}
+                      placeholder={`Meta Tag ${index + 1} (e.g., NFC, QR Code)`}
                       className="flex-1 px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none"
                     />
                     {productData.metaTags.length > 1 && (
@@ -645,7 +738,7 @@ const AdminEditProduct = () => {
                         type="button"
                         onClick={() => removeMetaTags(index)}
                         className="px-4 py-3 bg-red-500/20 text-red-400 rounded-xl hover:bg-red-500/30 transition"
-                        title="Remove feature"
+                        title="Remove meta tag"
                       >
                         <FiTrash2 size={18} />
                       </button>
@@ -655,56 +748,145 @@ const AdminEditProduct = () => {
               </div>
             </div>
 
-            {/* Image Upload Section */}
+            {/* Multiple Image Upload Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-200">
-                  Product Image
+                  Product Images
                 </h3>
                 <span className="text-sm text-gray-400">
-                  {imageFile ? "New image selected" : "Using existing image"}
+                  {totalImages}/10 images • Max 5MB each
                 </span>
               </div>
               
-              <div className="space-y-4">
-                {/* Image Upload Input */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Upload New Image (Optional)
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600"
-                  />
-                  <p className="text-xs text-gray-400 mt-2">
-                    Supported formats: JPEG, PNG, WebP | Max size: 5MB
-                  </p>
-                </div>
-                
-                {/* Image Preview */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Preview
-                  </label>
-                  <div className="relative w-full h-64 bg-gray-900 rounded-xl overflow-hidden border border-gray-600">
-                    {previewImage ? (
-                      <img
-                        src={previewImage}
-                        alt="Product preview"
-                        className="w-full h-full object-contain"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-500">
-                        <div className="text-center">
-                          <div className="text-4xl mb-2">📷</div>
-                          <p>No image selected</p>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">
+                  Upload New Images
+                </label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/svg+xml,image/gif,image/avif"
+                  multiple
+                  onChange={handleImageChange}
+                  className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600"
+                />
+                <p className="text-xs text-gray-500 mt-2">
+                  You can select multiple images at once. Drag and drop to reorder. First image will be the main product image.
+                </p>
+
+                {/* Existing Images Gallery */}
+                {existingImages.length > 0 && (
+                  <div className="mt-6">
+                    <label className="block text-sm text-gray-400 mb-3">
+                      Current Images ({existingImages.length})
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                      {existingImages.map((image, index) => (
+                        <div
+                          key={index}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, index, 'existing')}
+                          onDragOver={handleDragOver}
+                          onDrop={(e) => handleDrop(e, index, 'existing')}
+                          className="relative group"
+                        >
+                          <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-600 hover:border-cyan-500 transition bg-gray-900">
+                            <img
+                              src={image}
+                              alt={`Product ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "https://via.placeholder.com/400x300?text=Image+Error";
+                              }}
+                            />
+                            <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                              {index + 1}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeExistingImage(index)}
+                              className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition"
+                              title="Remove image"
+                            >
+                              <FiX size={14} />
+                            </button>
+                            <div className="absolute bottom-2 left-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition cursor-move">
+                              <FiImage size={12} />
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* New Images Gallery */}
+                {previewImages.length > 0 && (
+                  <div className="mt-6">
+                    <label className="block text-sm text-gray-400 mb-3">
+                      New Images ({previewImages.length})
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                      {previewImages.map((preview, index) => (
+                        <div
+                          key={index}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, index, 'new')}
+                          onDragOver={handleDragOver}
+                          onDrop={(e) => handleDrop(e, index, 'new')}
+                          className="relative group"
+                        >
+                          <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-green-600 hover:border-cyan-500 transition bg-gray-900">
+                            <img
+                              src={preview}
+                              alt={`New Product ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "https://via.placeholder.com/400x300?text=Image+Error";
+                              }}
+                            />
+                            <div className="absolute top-2 left-2 bg-green-600/90 text-white text-xs px-2 py-1 rounded-full">
+                              NEW
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeNewImage(index)}
+                              className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition"
+                              title="Remove image"
+                            >
+                              <FiX size={14} />
+                            </button>
+                            <div className="absolute bottom-2 left-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition cursor-move">
+                              <FiImage size={12} />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Removed Images Info */}
+                {removedImages.length > 0 && (
+                  <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                    <p className="text-sm text-yellow-400">
+                      ⚠️ {removedImages.length} image(s) will be removed from the product.
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setExistingImages([...existingImages, ...removedImages]);
+                          setRemovedImages([]);
+                          toast.info("All images restored");
+                        }}
+                        className="ml-2 text-cyan-400 hover:text-cyan-300 underline"
+                      >
+                        Undo all
+                      </button>
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

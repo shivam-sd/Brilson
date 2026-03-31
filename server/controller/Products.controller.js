@@ -7,6 +7,7 @@ const cloudinary = require("cloudinary").v2;
 
 const createProduct = async (req, res) => {
   try {
+
     const {
       category,
       title,
@@ -18,8 +19,6 @@ const createProduct = async (req, res) => {
       color,
       features,
       metaTags,
-
-      // GST & Discount 
       gstEnabled,
       gstRate,
       discountEnabled,
@@ -27,22 +26,18 @@ const createProduct = async (req, res) => {
       discountValue
     } = req.body;
 
-    const file = req?.files?.image;
-
-    // REQUIRED VALIDATION
     if (!category || !title || !description || !price) {
       return res.status(400).json({
-        error: "Category, Title, Description and Price are required!",
+        error: "Category, Title, Description and Price are required!"
       });
     }
 
-    if (!file) {
+    if (!req.files || !req.files.images) {
       return res.status(400).json({
-        error: "Product image is required!",
+        error: "Product images are required!"
       });
     }
 
-    // IMAGE VALIDATION
     const allowedFormats = [
       "image/jpeg",
       "image/jpg",
@@ -50,81 +45,101 @@ const createProduct = async (req, res) => {
       "image/webp",
       "image/svg+xml",
       "image/gif",
-      "image/avif",
+      "image/avif"
     ];
 
-    if (!allowedFormats.includes(file.mimetype)) {
-      return res.status(400).json({
-        error: "Only image files are allowed",
-      });
+    let files = req.files.images;
+
+    // convert single image to array
+    if (!Array.isArray(files)) {
+      files = [files];
     }
 
-    // UPLOAD IMAGE
-    const uploadResult = await cloudinary.uploader.upload(
-      file.tempFilePath,
-      { folder: "brilson/products" }
-    );
+    const imagesArray = [];
 
-    // SAFE PARSE
+    for (const file of files) {
+
+      if (!allowedFormats.includes(file.mimetype)) {
+        return res.status(400).json({
+          error: `Invalid image format: ${file.mimetype}`
+        });
+      }
+
+      const result = await cloudinary.uploader.upload(
+        file.tempFilePath,
+        {
+          folder: "brilson/products"
+        }
+      );
+
+      imagesArray.push(result.secure_url);
+    }
+
     const featureList = features ? JSON.parse(features) : [];
     const metaTagList = metaTags ? JSON.parse(metaTags) : [];
 
-    // CREATE PRODUCT
     const product = await ProductModel.create({
       category,
       title,
-      badge,
+      badge: badge || "",
       description,
-      image: uploadResult.secure_url,
+      images: imagesArray,
       stock: stock || 0,
-      price,
-      oldPrice,
-      color,
+      price: Number(price),
+      oldPrice: oldPrice ? Number(oldPrice) : undefined,
+      color: color || "",
 
-      // DISCOUNT CONFIG
       discount: {
         enabled: discountEnabled === "true",
         type: discountType || "percentage",
         value: Number(discountValue) || 0
       },
 
-      // GST CONFIG
       gst: {
         enabled: gstEnabled === "true",
         rate: Number(gstRate) || 18
       },
 
       features: featureList,
-      metaTags: metaTagList,
+      metaTags: metaTagList
     });
 
     return res.status(201).json({
       success: true,
       message: "Product created successfully",
-      product,
+      product
     });
 
   } catch (err) {
+
     console.error("Product Create Error:", err);
+
+    if (err instanceof SyntaxError) {
+      return res.status(400).json({
+        error: "Invalid JSON format in features or metaTags"
+      });
+    }
+
     return res.status(500).json({
       success: false,
-      error: "Internal Server Error",
+      error: err.message || "Internal Server Error"
     });
+
   }
 };
 
 
 
-
-
 const editProduct = async (req, res) => {
   try {
+
     const productId = req.params.id;
 
     const existingProduct = await ProductModel.findById(productId);
+
     if (!existingProduct) {
       return res.status(404).json({
-        error: "Product not found",
+        error: "Product not found"
       });
     }
 
@@ -138,85 +153,107 @@ const editProduct = async (req, res) => {
 
     const updatedData = { ...req.body };
 
-    // IMAGE UPDATE
-    const file = req?.files?.image;
+    const allowedFormats = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+      "image/svg+xml",
+      "image/gif",
+      "image/avif",
+    ];
 
-    if (file) {
-      const allowedFormats = [
-        "image/jpeg",
-        "image/jpg",
-        "image/png",
-        "image/webp",
-        "image/svg+xml",
-        "image/gif",
-        "image/avif",
-      ];
+    const uploadImage = async (file) => {
 
       if (!allowedFormats.includes(file.mimetype)) {
-        return res.status(400).json({
-          error: "Only image files are allowed",
-        });
+        throw new Error(`Invalid image format: ${file.mimetype}`);
       }
 
-      const uploadResult = await cloudinary.uploader.upload(
+      const upload = await cloudinary.uploader.upload(
         file.tempFilePath,
-        { folder: "brilson/products" }
+        {
+          folder: "brilson/products"
+        }
       );
 
-      updatedData.image = uploadResult.secure_url;
+      return upload.secure_url;
+    };
+
+    // IMAGE UPDATE LOGIC
+    if (req.files && req.files.images) {
+
+      let files = req.files.images;
+
+      // convert single file to array
+      if (!Array.isArray(files)) {
+        files = [files];
+      }
+
+      const imagesArray = [];
+
+      for (const file of files) {
+        const url = await uploadImage(file);
+        imagesArray.push(url);
+      }
+
+      updatedData.images = imagesArray;
+
     } else {
-      updatedData.image = existingProduct.image;
+
+      // keep old images
+      updatedData.images = existingProduct.images;
+
     }
 
-    // SAFE JSON PARSING
+    // FEATURES
     updatedData.features = req.body.features
       ? JSON.parse(req.body.features)
       : existingProduct.features;
 
+    // META TAGS
     updatedData.metaTags = req.body.metaTags
       ? JSON.parse(req.body.metaTags)
       : existingProduct.metaTags;
 
-    // GST UPDATE
+    // GST
     updatedData.gst = {
       enabled: gstEnabled === "true",
       rate: Number(gstRate) || existingProduct.gst.rate
     };
 
-    // DISCOUNT UPDATE
+    // DISCOUNT
     updatedData.discount = {
       enabled: discountEnabled === "true",
       type: discountType || existingProduct.discount.type,
-      value: Number(discountValue) || 0
+      value: Number(discountValue) || existingProduct.discount.value
     };
 
-    // UPDATE PRODUCT
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       productId,
       updatedData,
       {
         new: true,
-        runValidators: true,
+        runValidators: true
       }
     );
 
     return res.status(200).json({
       success: true,
       message: "Product updated successfully",
-      product: updatedProduct,
+      product: updatedProduct
     });
 
   } catch (err) {
+
     console.error("Edit Product Error:", err);
+
     return res.status(500).json({
       success: false,
-      error: "Internal Server Error",
+      error: err.message || "Internal Server Error"
     });
+
   }
 };
-
-
-
 
 
 const deleteProduct = async (req, res) => {
