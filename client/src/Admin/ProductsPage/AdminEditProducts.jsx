@@ -3,6 +3,8 @@ import { FiPlus, FiTrash2, FiSave, FiLoader, FiX, FiImage } from "react-icons/fi
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import imageCompression from "browser-image-compression";
+import ImageCropper from "../../Pages/ProfileComp/EditProfileComp/ImageCropper/CoverImageCropper";
 
 const AdminEditProduct = () => {
   const navigate = useNavigate();
@@ -13,11 +15,23 @@ const AdminEditProduct = () => {
   const [categories, setCategories] = useState([]);
   const [badges, setBadges] = useState([]);
   
+  // Cropper states
+  const [showCropper, setShowCropper] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(null);
+  const [currentImageType, setCurrentImageType] = useState(null); // 'existing' or 'new'
+  const [originalImage, setOriginalImage] = useState(null);
+  const [tempImageUrl, setTempImageUrl] = useState(null);
+  
   // Multiple images state
   const [imageFiles, setImageFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
   const [removedImages, setRemovedImages] = useState([]);
+  
+  // Track cropped existing images (original URL -> new File mapping)
+  // const [croppedExistingImagesMap, setCroppedExistingImagesMap] = useState({});
+  // Track cropped existing images (original URL -> { file, previewUrl } mapping)
+const [croppedExistingImagesMap, setCroppedExistingImagesMap] = useState({});
 
   // Product state WITHOUT variants
   const [productData, setProductData] = useState({
@@ -42,6 +56,130 @@ const AdminEditProduct = () => {
     features: [""],
     metaTags: [""]
   });
+
+  // Open cropper for image
+  const openCropper = (index, imageUrl, type) => {
+    setCurrentImageIndex(index);
+    setCurrentImageType(type);
+    setTempImageUrl(imageUrl);
+    setOriginalImage(imageUrl);
+    setShowCropper(true);
+  };
+
+  // Handle crop complete for existing images
+const handleCropCompleteExisting = async (croppedFile, index) => {
+  try {
+    const options = {
+      maxSizeMB: 0.3,
+      maxWidthOrHeight: 500,
+      useWebWorker: true,
+      fileType: 'image/jpeg'
+    };
+    
+    const finalFile = await imageCompression(croppedFile, options);
+    
+    // Store the original image URL before replacing
+    const originalImageUrl = existingImages[index];
+    
+    // Create new preview URL for the cropped image
+    const newPreviewUrl = URL.createObjectURL(finalFile);
+    
+    // Store the mapping from original URL to cropped file
+    // Also store the preview URL for easy lookup
+    setCroppedExistingImagesMap(prev => ({
+      ...prev,
+      [originalImageUrl]: {
+        file: finalFile,
+        previewUrl: newPreviewUrl
+      }
+    }));
+    
+    // Update the existing image with new cropped version (store as blob URL for preview)
+    const newExistingImages = [...existingImages];
+    newExistingImages[index] = newPreviewUrl;
+    setExistingImages(newExistingImages);
+    
+    toast.success("Image cropped successfully!");
+  } catch (err) {
+    console.error('Crop complete error:', err);
+    toast.error("Error cropping image");
+  }
+};
+
+
+  
+  // Handle crop complete for new images
+  const handleCropCompleteNew = async (croppedFile, index) => {
+    try {
+      const options = {
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+        fileType: 'image/jpeg'
+      };
+      
+      const finalFile = await imageCompression(croppedFile, options);
+      
+      // Update the image at the current index
+      const newImageFiles = [...imageFiles];
+      const newPreviewImages = [...previewImages];
+      
+      // Revoke old preview URL to avoid memory leaks
+      if (previewImages[index] && previewImages[index].startsWith('blob:')) {
+        URL.revokeObjectURL(previewImages[index]);
+      }
+      
+      // Update with new cropped file
+      newImageFiles[index] = finalFile;
+      const newPreviewUrl = URL.createObjectURL(finalFile);
+      newPreviewImages[index] = newPreviewUrl;
+      
+      setImageFiles(newImageFiles);
+      setPreviewImages(newPreviewImages);
+      
+      toast.success("Image cropped successfully!");
+    } catch (err) {
+      console.error('Crop complete error:', err);
+      toast.error("Error cropping image");
+    }
+  };
+
+  // Handle crop complete wrapper
+  const handleCropComplete = async (croppedFile) => {
+    try {
+      setShowCropper(false);
+      
+      if (currentImageType === 'existing') {
+        await handleCropCompleteExisting(croppedFile, currentImageIndex);
+      } else if (currentImageType === 'new') {
+        await handleCropCompleteNew(croppedFile, currentImageIndex);
+      }
+      
+    } catch (err) {
+      console.error('Crop complete error:', err);
+      toast.error("Error cropping image");
+    } finally {
+      // Clean up
+      if (tempImageUrl && tempImageUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(tempImageUrl);
+      }
+      setCurrentImageIndex(null);
+      setCurrentImageType(null);
+      setOriginalImage(null);
+      setTempImageUrl(null);
+    }
+  };
+  
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setCurrentImageIndex(null);
+    setCurrentImageType(null);
+    setOriginalImage(null);
+    if (tempImageUrl && tempImageUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(tempImageUrl);
+    }
+    setTempImageUrl(null);
+  };
 
   // fetch all category
   useEffect(() => {
@@ -102,8 +240,9 @@ const AdminEditProduct = () => {
     }
     
     if (validFiles.length > 0) {
-      const currentCount = imageFiles.length + existingImages.length;
-      const availableSlots = 10 - currentCount;
+      // Calculate current total images (existing images + new images)
+      const currentTotalImages = existingImages.length + imageFiles.length;
+      const availableSlots = 10 - currentTotalImages;
       const filesToAdd = validFiles.slice(0, availableSlots);
       
       if (filesToAdd.length < validFiles.length) {
@@ -121,7 +260,9 @@ const AdminEditProduct = () => {
   
   // Remove new image (not yet uploaded)
   const removeNewImage = (index) => {
-    URL.revokeObjectURL(previewImages[index]);
+    if (previewImages[index] && previewImages[index].startsWith('blob:')) {
+      URL.revokeObjectURL(previewImages[index]);
+    }
     
     const newImageFiles = imageFiles.filter((_, i) => i !== index);
     const newPreviewImages = previewImages.filter((_, i) => i !== index);
@@ -131,14 +272,28 @@ const AdminEditProduct = () => {
   };
   
   // Remove existing image (mark for deletion)
-  const removeExistingImage = (index) => {
-    const removedImage = existingImages[index];
-    setRemovedImages([...removedImages, removedImage]);
-    const newExistingImages = existingImages.filter((_, i) => i !== index);
-    setExistingImages(newExistingImages);
-    toast.info("Image will be removed on update");
-  };
+  // Remove existing image (mark for deletion)
+const removeExistingImage = (index) => {
+  const removedImage = existingImages[index];
+  setRemovedImages([...removedImages, removedImage]);
+  const newExistingImages = existingImages.filter((_, i) => i !== index);
+  setExistingImages(newExistingImages);
   
+  // Also remove from cropped images map if exists and cleanup preview URL
+  if (croppedExistingImagesMap[removedImage]) {
+    // Revoke the preview URL if it exists
+    if (croppedExistingImagesMap[removedImage].previewUrl) {
+      URL.revokeObjectURL(croppedExistingImagesMap[removedImage].previewUrl);
+    }
+    const newMap = { ...croppedExistingImagesMap };
+    delete newMap[removedImage];
+    setCroppedExistingImagesMap(newMap);
+  }
+  
+  toast.info("Image will be removed on update");
+};
+
+
   // Restore removed image
   const restoreExistingImage = (imageUrl) => {
     const newRemovedImages = removedImages.filter(img => img !== imageUrl);
@@ -169,6 +324,8 @@ const AdminEditProduct = () => {
       const [movedImage] = newExistingImages.splice(dragIndex, 1);
       newExistingImages.splice(dropIndex, 0, movedImage);
       setExistingImages(newExistingImages);
+      
+      // Reorder cropped images map is not needed as it's keyed by URL
     } else if (dragType === 'new') {
       const newImageFiles = [...imageFiles];
       const newPreviewImages = [...previewImages];
@@ -216,9 +373,9 @@ const AdminEditProduct = () => {
             metaTags: product.metaTags?.length > 0 ? product.metaTags : [""]
           });
 
-          // Set existing images
+          // Set existing images - store original URLs
           if (product.images && product.images.length > 0) {
-            setExistingImages(product.images);
+            setExistingImages([...product.images]);
           }
         }
       } catch (error) {
@@ -303,84 +460,134 @@ const AdminEditProduct = () => {
     }));
   };
 
-  // Handle form submission with multiple images
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+// Handle form submission with multiple images
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    try {
-      // Create FormData for multipart/form-data
-      const formData = new FormData();
-      
-      // Add all product data
-      formData.append('category', productData.category);
-      formData.append('title', productData.title);
-      formData.append('badge', productData.badge || "");
-      formData.append('description', productData.description);
-      formData.append('price', productData.price);
-      formData.append('oldPrice', productData.oldPrice || "");
-      formData.append('color', productData.color || "");
-      formData.append('stock', productData.stock || "0");
-      
-      // GST Fields
-      formData.append('gstEnabled', productData.gstEnabled);
-      formData.append('gstRate', productData.gstRate);
-      
-      // Discount Fields
-      formData.append('discountEnabled', productData.discountEnabled);
-      formData.append('discountType', productData.discountType);
-      formData.append('discountValue', productData.discountValue || "0");
-      
-      // Add features as JSON string
-      const filteredFeatures = productData.features.filter(f => f.trim() !== "");
-      formData.append('features', JSON.stringify(filteredFeatures));
-      
-      // Add metaTags as JSON string
-      const filteredMetaTags = productData.metaTags.filter(m => m.trim() !== "");
-      formData.append('metaTags', JSON.stringify(filteredMetaTags));
-      
-      // Add existing images (that weren't removed)
-      formData.append('existingImages', JSON.stringify(existingImages));
-      
-      // Add removed images
-      formData.append('removedImages', JSON.stringify(removedImages));
-      
-      // Add new images
-      imageFiles.forEach(file => {
-        formData.append('images', file);
-      });
-
-      // Make API call
-      const response = await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/admin/update/products/${id}`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            'Authorization': `${localStorage.getItem("token")}`,
+  try {
+    // Create FormData for multipart/form-data
+    const formData = new FormData();
+    
+    // Add all product data
+    formData.append('category', productData.category);
+    formData.append('title', productData.title);
+    formData.append('badge', productData.badge || "");
+    formData.append('description', productData.description);
+    formData.append('price', productData.price);
+    formData.append('oldPrice', productData.oldPrice || "");
+    formData.append('color', productData.color || "");
+    formData.append('stock', productData.stock || "0");
+    
+    // GST Fields
+    formData.append('gstEnabled', productData.gstEnabled);
+    formData.append('gstRate', productData.gstRate);
+    
+    // Discount Fields
+    formData.append('discountEnabled', productData.discountEnabled);
+    formData.append('discountType', productData.discountType);
+    formData.append('discountValue', productData.discountValue || "0");
+    
+    // Add features as JSON string
+    const filteredFeatures = productData.features.filter(f => f.trim() !== "");
+    formData.append('features', JSON.stringify(filteredFeatures));
+    
+    // Add metaTags as JSON string
+    const filteredMetaTags = productData.metaTags.filter(m => m.trim() !== "");
+    formData.append('metaTags', JSON.stringify(filteredMetaTags));
+    
+    // Track which original images are being kept
+    const keptOriginalImages = [];
+    const croppedImagesToUpload = [];
+    const croppedMapping = [];
+    
+    // Process existing images
+    existingImages.forEach((image, index) => {
+      // Check if this image is a blob URL (cropped version)
+      if (image.startsWith('blob:')) {
+        // Find which original image this cropped version belongs to
+        for (const [originalUrl, croppedData] of Object.entries(croppedExistingImagesMap)) {
+          if (croppedData.previewUrl === image) {
+            croppedImagesToUpload.push(croppedData.file);
+            croppedMapping.push({
+              originalUrl: originalUrl,
+              fileIndex: croppedImagesToUpload.length - 1
+            });
+            break;
           }
         }
-      );
-      
-      if (response.data.success) {
-        toast.success("Product updated successfully!");
-        navigate('/admindashboard/products/list');
       } else {
-        throw new Error(response.data.message || "Update failed");
+        // This is an original image URL - check if it was cropped
+        if (croppedExistingImagesMap[image]) {
+          // This image was cropped, so we don't include the original
+          // The cropped version will replace it
+          // Don't add to keptOriginalImages
+        } else {
+          // This is an original image that hasn't been cropped
+          keptOriginalImages.push(image);
+        }
       }
-      
-    } catch (error) {
-      console.error("Error updating product:", error);
-      toast.error(error?.response?.data?.error || error?.response?.data?.message || "Failed to update product");
-    } finally {
-      setIsSubmitting(false);
+    });
+    
+    // Send original images that are kept (not removed and not cropped)
+    formData.append('existingImages', JSON.stringify(keptOriginalImages));
+    
+    // Handle removed images
+    formData.append('removedImages', JSON.stringify(removedImages));
+    
+    // Upload cropped images as separate files with mapping
+    croppedImagesToUpload.forEach(file => {
+      formData.append('croppedImages', file);
+    });
+    formData.append('croppedImagesMapping', JSON.stringify(croppedMapping));
+    
+    // Add new images
+    imageFiles.forEach(file => {
+      formData.append('images', file);
+    });
+
+    // Make API call
+    const response = await axios.put(
+      `${import.meta.env.VITE_BASE_URL}/api/admin/update/products/${id}`,
+      formData,
+      {
+        withCredentials: true,
+        headers: {
+          'Authorization': `${localStorage.getItem("token")}`,
+        }
+      }
+    );
+    
+    if (response.data.success) {
+      toast.success("Product updated successfully!");
+      navigate('/admindashboard/products/list');
+    } else {
+      throw new Error(response.data.message || "Update failed");
     }
-  };
+    
+  } catch (error) {
+    console.error("Error updating product:", error);
+    toast.error(error?.response?.data?.error || error?.response?.data?.message || "Failed to update product");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   // Cleanup preview URLs on component unmount
   useEffect(() => {
     return () => {
-      previewImages.forEach(url => URL.revokeObjectURL(url));
+      previewImages.forEach(url => {
+        if (url && url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
+      // Clean up cropped existing image blob URLs
+      existingImages.forEach(url => {
+        if (url && url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
     };
   }, []);
 
@@ -771,7 +978,7 @@ const AdminEditProduct = () => {
                   className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600"
                 />
                 <p className="text-xs text-gray-500 mt-2">
-                  You can select multiple images at once. Drag and drop to reorder. First image will be the main product image.
+                  You can select multiple images at once. Drag and drop to reorder. Click on any image to crop. First image will be the main product image.
                 </p>
 
                 {/* Existing Images Gallery */}
@@ -788,7 +995,8 @@ const AdminEditProduct = () => {
                           onDragStart={(e) => handleDragStart(e, index, 'existing')}
                           onDragOver={handleDragOver}
                           onDrop={(e) => handleDrop(e, index, 'existing')}
-                          className="relative group"
+                          className="relative group cursor-pointer"
+                          onClick={() => openCropper(index, image, 'existing')}
                         >
                           <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-600 hover:border-cyan-500 transition bg-gray-900">
                             <img
@@ -805,14 +1013,20 @@ const AdminEditProduct = () => {
                             </div>
                             <button
                               type="button"
-                              onClick={() => removeExistingImage(index)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeExistingImage(index);
+                              }}
                               className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition"
                               title="Remove image"
                             >
                               <FiX size={14} />
                             </button>
-                            <div className="absolute bottom-2 left-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition cursor-move">
+                            <div className="absolute bottom-2 left-2 p-1.5 bg-cyan-500/80 hover:bg-cyan-600 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer">
                               <FiImage size={12} />
+                            </div>
+                            <div className="absolute bottom-2 right-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition cursor-move">
+                              <span className="text-xs">⋮⋮</span>
                             </div>
                           </div>
                         </div>
@@ -835,7 +1049,8 @@ const AdminEditProduct = () => {
                           onDragStart={(e) => handleDragStart(e, index, 'new')}
                           onDragOver={handleDragOver}
                           onDrop={(e) => handleDrop(e, index, 'new')}
-                          className="relative group"
+                          className="relative group cursor-pointer"
+                          onClick={() => openCropper(index, preview, 'new')}
                         >
                           <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-green-600 hover:border-cyan-500 transition bg-gray-900">
                             <img
@@ -852,14 +1067,20 @@ const AdminEditProduct = () => {
                             </div>
                             <button
                               type="button"
-                              onClick={() => removeNewImage(index)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeNewImage(index);
+                              }}
                               className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition"
                               title="Remove image"
                             >
                               <FiX size={14} />
                             </button>
-                            <div className="absolute bottom-2 left-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition cursor-move">
+                            <div className="absolute bottom-2 left-2 p-1.5 bg-cyan-500/80 hover:bg-cyan-600 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer">
                               <FiImage size={12} />
+                            </div>
+                            <div className="absolute bottom-2 right-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition cursor-move">
+                              <span className="text-xs">⋮⋮</span>
                             </div>
                           </div>
                         </div>
@@ -923,6 +1144,15 @@ const AdminEditProduct = () => {
           </form>
         </div>
       </div>
+      
+      {/* Image Cropper Modal */}
+      {showCropper && (
+        <ImageCropper 
+          image={originalImage}
+          onCancel={handleCropCancel}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 };

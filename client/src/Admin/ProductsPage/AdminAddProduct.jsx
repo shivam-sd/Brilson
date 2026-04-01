@@ -3,12 +3,18 @@ import { FiPlus, FiTrash2, FiSave, FiX, FiImage } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import imageCompression from "browser-image-compression";
+import ImageCropper from "../../Pages/ProfileComp/EditProfileComp/ImageCropper/CoverImageCropper";
 
 const AdminAddProduct = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
   const [badges, setBadges] = useState([]);
+  const [showCropper, setShowCropper] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(null);
+  const [originalImage, setOriginalImage] = useState(null);
+  const [tempImageUrl, setTempImageUrl] = useState(null);
   
   // Multiple images state
   const [imageFiles, setImageFiles] = useState([]);
@@ -68,11 +74,84 @@ const AdminAddProduct = () => {
     fetchBadges();
   }, []);
 
+  // Open cropper for image
+  const openCropper = (index, imageUrl) => {
+    // Store a copy of the image URL to use in cropper
+    setTempImageUrl(imageUrl);
+    setCurrentImageIndex(index);
+    setOriginalImage(imageUrl);
+    setShowCropper(true);
+  };
+
+  // Handle crop complete
+  const handleCropComplete = async (croppedFile) => {
+    try {
+      setShowCropper(false);
+      
+      const options = {
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+        fileType: 'image/jpeg'
+      };
+      
+      const finalFile = await imageCompression(croppedFile, options);
+      
+      // Update the image at the current index
+      const newImageFiles = [...imageFiles];
+      const newPreviewImages = [...previewImages];
+      
+      // Revoke old preview URL to avoid memory leaks
+      if (previewImages[currentImageIndex]) {
+        URL.revokeObjectURL(previewImages[currentImageIndex]);
+      }
+      
+      // Update with new cropped file
+      newImageFiles[currentImageIndex] = finalFile;
+      const newPreviewUrl = URL.createObjectURL(finalFile);
+      newPreviewImages[currentImageIndex] = newPreviewUrl;
+      
+      setImageFiles(newImageFiles);
+      setPreviewImages(newPreviewImages);
+      
+      toast.success("Image cropped successfully!");
+      
+    } catch (err) {
+      console.error('Crop complete error:', err);
+      toast.error("Error cropping image");
+    } finally {
+      // Clean up
+      if (tempImageUrl) {
+        // Don't revoke the tempImageUrl if it's the same as the current preview
+        if (previewImages[currentImageIndex] !== tempImageUrl) {
+          // Only revoke if it's a temporary URL we created
+          if (tempImageUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(tempImageUrl);
+          }
+        }
+      }
+      setCurrentImageIndex(null);
+      setOriginalImage(null);
+      setTempImageUrl(null);
+    }
+  };
+  
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    
+    // Don't revoke the original image URL because it's still being used in the preview
+    // The original image URL is from previewImages array and should not be revoked here
+    
+    setCurrentImageIndex(null);
+    setOriginalImage(null);
+    setTempImageUrl(null);
+  };
+  
   // Multiple image upload handler
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
-
+    
     // Validate file types and sizes
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif', 'image/avif'];
     const maxSize = 5 * 1024 * 1024; // 5MB
@@ -116,13 +195,17 @@ const AdminAddProduct = () => {
   // Remove image
   const removeImage = (index) => {
     // Revoke the object URL to avoid memory leaks
-    URL.revokeObjectURL(previewImages[index]);
+    if (previewImages[index] && previewImages[index].startsWith('blob:')) {
+      URL.revokeObjectURL(previewImages[index]);
+    }
     
     const newImageFiles = imageFiles.filter((_, i) => i !== index);
     const newPreviewImages = previewImages.filter((_, i) => i !== index);
     
     setImageFiles(newImageFiles);
     setPreviewImages(newPreviewImages);
+    
+    toast.success("Image removed");
   };
   
   // Reorder images (drag and drop)
@@ -155,8 +238,10 @@ const AdminAddProduct = () => {
     
     setImageFiles(newImageFiles);
     setPreviewImages(newPreviewImages);
+    
+    toast.success("Image reordered");
   };
-
+  
   // Handle basic input changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -173,7 +258,7 @@ const AdminAddProduct = () => {
       }));
     }
   };
-
+  
   // Add feature
   const addFeature = () => {
     setProductData((prev) => ({
@@ -181,7 +266,7 @@ const AdminAddProduct = () => {
       features: [...prev.features, ""],
     }));
   };
-
+  
   // Update feature
   const updateFeature = (index, value) => {
     const newFeatures = [...productData.features];
@@ -191,7 +276,7 @@ const AdminAddProduct = () => {
       features: newFeatures,
     }));
   };
-
+  
   // Remove feature
   const removeFeature = (index) => {
     const newFeatures = productData.features.filter((_, i) => i !== index);
@@ -200,7 +285,7 @@ const AdminAddProduct = () => {
       features: newFeatures,
     }));
   };
-
+  
   // Add Meta tags
   const addMetaTags = () => {
     setProductData((prev) => ({
@@ -208,7 +293,7 @@ const AdminAddProduct = () => {
       metaTags: [...prev.metaTags, ""],
     }));
   };
-
+  
   // Update meta tags
   const updateMetaTags = (index, value) => {
     const newMetaTags = [...productData.metaTags];
@@ -218,7 +303,7 @@ const AdminAddProduct = () => {
       metaTags: newMetaTags,
     }));
   };
-
+  
   // Remove meta tags
   const removeMetaTags = (index) => {
     const newMetaTags = productData.metaTags.filter((_, i) => i !== index);
@@ -227,7 +312,7 @@ const AdminAddProduct = () => {
       metaTags: newMetaTags,
     }));
   };
-
+  
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -259,7 +344,7 @@ const AdminAddProduct = () => {
     }
     
     setIsSubmitting(true);
-
+    
     // Prepare data for API
     const formData = new FormData();
     formData.append("title", productData.title.trim());
@@ -284,7 +369,7 @@ const AdminAddProduct = () => {
     imageFiles.forEach((file, index) => {
       formData.append("images", file);
     });
-
+    
     formData.append(
       "features",
       JSON.stringify(productData.features.filter((f) => f.trim()))
@@ -293,7 +378,7 @@ const AdminAddProduct = () => {
       "metaTags",
       JSON.stringify(productData.metaTags.filter((m) => m.trim()))
     );
-
+    
     try {
       const token = localStorage.getItem("token");
       
@@ -307,7 +392,7 @@ const AdminAddProduct = () => {
           }
         }
       );
-
+      
       toast.success("Product added successfully");
       navigate("/admindashboard/products/list");
     } catch (err) {
@@ -317,14 +402,18 @@ const AdminAddProduct = () => {
       setIsSubmitting(false);
     }
   };
-
+  
   // Cleanup preview URLs on component unmount
   useEffect(() => {
     return () => {
-      previewImages.forEach(url => URL.revokeObjectURL(url));
+      previewImages.forEach(url => {
+        if (url && url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
     };
   }, []);
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
@@ -337,7 +426,7 @@ const AdminAddProduct = () => {
             Fill in all product details below
           </p>
         </div>
-
+        
         {/* Form */}
         <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-2xl p-6 md:p-8">
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -358,7 +447,7 @@ const AdminAddProduct = () => {
                   required
                 />
               </div>
-
+              
               {/* Category */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -379,7 +468,7 @@ const AdminAddProduct = () => {
                   ))}
                 </select>
               </div>
-
+              
               {/* Badge */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -399,7 +488,7 @@ const AdminAddProduct = () => {
                   ))}
                 </select>
               </div>
-
+              
               {/* Price */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -417,7 +506,7 @@ const AdminAddProduct = () => {
                   required
                 />
               </div>
-
+              
               {/* Old Price */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -434,7 +523,7 @@ const AdminAddProduct = () => {
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                 />
               </div>
-
+              
               {/* Stock */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -450,7 +539,7 @@ const AdminAddProduct = () => {
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                 />
               </div>
-
+              
               {/* Color */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -466,7 +555,7 @@ const AdminAddProduct = () => {
                 />
               </div>
             </div>
-
+            
             {/* GST Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
@@ -495,7 +584,7 @@ const AdminAddProduct = () => {
                   </label>
                 </div>
               </div>
-
+              
               {productData.gstEnabled === "true" && (
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -515,7 +604,7 @@ const AdminAddProduct = () => {
                 </div>
               )}
             </div>
-
+            
             {/* Discount Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
@@ -544,7 +633,7 @@ const AdminAddProduct = () => {
                   </label>
                 </div>
               </div>
-
+              
               {productData.discountEnabled === "true" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   <div>
@@ -561,7 +650,7 @@ const AdminAddProduct = () => {
                       <option value="fixed">Fixed Amount (₹)</option>
                     </select>
                   </div>
-
+                  
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       {productData.discountType === "percentage" ? "Discount Percentage (%)" : "Discount Amount (₹)"}
@@ -580,7 +669,7 @@ const AdminAddProduct = () => {
                 </div>
               )}
             </div>
-
+            
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -596,7 +685,7 @@ const AdminAddProduct = () => {
                 required
               />
             </div>
-
+            
             {/* Features Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
@@ -611,7 +700,7 @@ const AdminAddProduct = () => {
                   <FiPlus size={16} /> Add Feature
                 </button>
               </div>
-
+              
               <div className="space-y-3">
                 {productData.features.map((feature, index) => (
                   <div key={index} className="flex gap-3">
@@ -636,7 +725,7 @@ const AdminAddProduct = () => {
                 ))}
               </div>
             </div>
-
+            
             {/* Meta Tags Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
@@ -651,7 +740,7 @@ const AdminAddProduct = () => {
                   <FiPlus size={16} /> Add Meta Tags
                 </button>
               </div>
-
+              
               <div className="space-y-3">
                 {productData.metaTags.map((metaTags, index) => (
                   <div key={index} className="flex gap-3">
@@ -676,7 +765,7 @@ const AdminAddProduct = () => {
                 ))}
               </div>
             </div>
-
+            
             {/* Multiple Image Upload Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
@@ -700,9 +789,9 @@ const AdminAddProduct = () => {
                   className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600"
                 />
                 <p className="text-xs text-gray-500 mt-2">
-                  You can select multiple images at once. Drag and drop to reorder. First image will be the main product image.
+                  You can select multiple images at once. Drag and drop to reorder. First image will be the main product image. Click on image to crop.
                 </p>
-
+                
                 {/* Image Preview Grid */}
                 {previewImages.length > 0 && (
                   <div className="mt-6">
@@ -717,7 +806,8 @@ const AdminAddProduct = () => {
                           onDragStart={(e) => handleDragStart(e, index)}
                           onDragOver={handleDragOver}
                           onDrop={(e) => handleDrop(e, index)}
-                          className="relative group"
+                          className="relative group cursor-pointer"
+                          onClick={() => openCropper(index, preview)}
                         >
                           <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-600 hover:border-cyan-500 transition bg-gray-900">
                             <img
@@ -736,15 +826,22 @@ const AdminAddProduct = () => {
                             {/* Remove button */}
                             <button
                               type="button"
-                              onClick={() => removeImage(index)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeImage(index);
+                              }}
                               className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition"
                               title="Remove image"
                             >
                               <FiX size={14} />
                             </button>
-                            {/* Drag handle */}
-                            <div className="absolute bottom-2 left-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition cursor-move">
+                            {/* Crop button */}
+                            <div className="absolute bottom-2 left-2 p-1.5 bg-cyan-500/80 hover:bg-cyan-600 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer">
                               <FiImage size={12} />
+                            </div>
+                            {/* Drag handle */}
+                            <div className="absolute bottom-2 right-2 p-1.5 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition cursor-move">
+                              <span className="text-xs">⋮⋮</span>
                             </div>
                           </div>
                         </div>
@@ -754,7 +851,7 @@ const AdminAddProduct = () => {
                 )}
               </div>
             </div>
-
+            
             {/* Submit Button */}
             <div className="pt-6 border-t border-gray-700">
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -765,7 +862,7 @@ const AdminAddProduct = () => {
                 >
                   Cancel
                 </button>
-
+                
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -779,8 +876,17 @@ const AdminAddProduct = () => {
           </form>
         </div>
       </div>
+      
+      {/* Image Cropper Modal */}
+      {showCropper && (
+        <ImageCropper 
+          image={originalImage}
+          onCancel={handleCropCancel}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
-};
+}; 
 
 export default AdminAddProduct;

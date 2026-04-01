@@ -129,7 +129,7 @@ const ProductCardPreference = () => {
                   <img
                     src={activeImage || product.images?.[0]}
                     alt={product.title}
-                    className="scale-150 w-full h-auto max-h-[280px] sm:max-h-[320px] md:max-h-[380px] lg:max-h-[420px] object-contain cursor-pointer duration-300"
+                    className="w-full h-auto max-h-[280px] sm:max-h-[320px] md:max-h-[380px] lg:max-h-[420px] object-contain cursor-pointer duration-300"
                   />
                 </div>
               </div>

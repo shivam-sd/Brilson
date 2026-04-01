@@ -3,7 +3,7 @@ const CardProfileModel = require("../models/CardProfile");
 const claimCardProfile = async (req, res) => {
   try {
     const userId = req.user;
-    const { slug, tempSessionId } = req.body;
+    const { slug, tempSessionId } = req.body;A
 
     const card = await CardProfileModel.findOne({ slug, tempSessionId });
 

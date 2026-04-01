@@ -132,7 +132,6 @@ const createProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
   try {
-
     const productId = req.params.id;
 
     const existingProduct = await ProductModel.findById(productId);
@@ -148,7 +147,12 @@ const editProduct = async (req, res) => {
       gstRate,
       discountEnabled,
       discountType,
-      discountValue
+      discountValue,
+      existingImages,
+      removedImages,
+      features,
+      metaTags,
+      croppedImagesMapping
     } = req.body;
 
     const updatedData = { ...req.body };
@@ -164,7 +168,6 @@ const editProduct = async (req, res) => {
     ];
 
     const uploadImage = async (file) => {
-
       if (!allowedFormats.includes(file.mimetype)) {
         throw new Error(`Invalid image format: ${file.mimetype}`);
       }
@@ -180,52 +183,127 @@ const editProduct = async (req, res) => {
     };
 
     // IMAGE UPDATE LOGIC
+    let finalImages = [];
+    
+    // Parse existing images (original URLs that are kept)
+    let existingImagesArray = [];
+    if (existingImages) {
+      try {
+        existingImagesArray = typeof existingImages === 'string' 
+          ? JSON.parse(existingImages) 
+          : existingImages;
+      } catch (e) {
+        existingImagesArray = [];
+      }
+    }
+    
+    // Parse removed images
+    let removedImagesArray = [];
+    if (removedImages) {
+      try {
+        removedImagesArray = typeof removedImages === 'string' 
+          ? JSON.parse(removedImages) 
+          : removedImages;
+      } catch (e) {
+        removedImagesArray = [];
+      }
+    }
+    
+    // Parse cropped images mapping
+    let croppedMapping = [];
+    if (croppedImagesMapping) {
+      try {
+        croppedMapping = typeof croppedImagesMapping === 'string'
+          ? JSON.parse(croppedImagesMapping)
+          : croppedImagesMapping;
+      } catch (e) {
+        croppedMapping = [];
+      }
+    }
+    
+    // First, add all existing images that are not removed
+    // These are the original URLs that we're keeping
+    finalImages.push(...existingImagesArray);
+    
+    // Handle cropped images that are being updated
+    // These will replace their original versions in the finalImages array
+    if (req.files && req.files.croppedImages) {
+      let croppedFiles = req.files.croppedImages;
+      
+      // Convert single file to array
+      if (!Array.isArray(croppedFiles)) {
+        croppedFiles = [croppedFiles];
+      }
+      
+      // Process each cropped image
+      for (let i = 0; i < croppedMapping.length; i++) {
+        const mapping = croppedMapping[i];
+        const croppedFile = croppedFiles[i];
+        
+        if (croppedFile && mapping.originalUrl) {
+          // Upload the cropped image
+          const newUrl = await uploadImage(croppedFile);
+          
+          // Find and replace the original URL with the new cropped URL in finalImages
+          const index = finalImages.findIndex(img => img === mapping.originalUrl);
+          if (index !== -1) {
+            finalImages[index] = newUrl;
+          } else {
+            // If not found in finalImages, check if it was removed
+            // If it was removed, we don't want to add it back
+            if (!removedImagesArray.includes(mapping.originalUrl)) {
+              finalImages.push(newUrl);
+            }
+          }
+        }
+      }
+    }
+    
+    // Handle new image uploads
     if (req.files && req.files.images) {
-
       let files = req.files.images;
-
-      // convert single file to array
+      
+      // Convert single file to array
       if (!Array.isArray(files)) {
         files = [files];
       }
-
-      const imagesArray = [];
-
+      
+      // Upload new images
       for (const file of files) {
         const url = await uploadImage(file);
-        imagesArray.push(url);
+        finalImages.push(url);
       }
-
-      updatedData.images = imagesArray;
-
-    } else {
-
-      // keep old images
-      updatedData.images = existingProduct.images;
-
     }
+    
+    // Final cleanup: remove any images that were marked for removal
+    if (removedImagesArray.length > 0) {
+      finalImages = finalImages.filter(img => !removedImagesArray.includes(img));
+    }
+    
+    // Set the final images array
+    updatedData.images = finalImages;
 
     // FEATURES
-    updatedData.features = req.body.features
-      ? JSON.parse(req.body.features)
+    updatedData.features = features
+      ? (typeof features === 'string' ? JSON.parse(features) : features)
       : existingProduct.features;
 
     // META TAGS
-    updatedData.metaTags = req.body.metaTags
-      ? JSON.parse(req.body.metaTags)
+    updatedData.metaTags = metaTags
+      ? (typeof metaTags === 'string' ? JSON.parse(metaTags) : metaTags)
       : existingProduct.metaTags;
 
     // GST
     updatedData.gst = {
       enabled: gstEnabled === "true",
-      rate: Number(gstRate) || existingProduct.gst.rate
+      rate: Number(gstRate) || existingProduct.gst?.rate || 18
     };
 
     // DISCOUNT
     updatedData.discount = {
       enabled: discountEnabled === "true",
-      type: discountType || existingProduct.discount.type,
-      value: Number(discountValue) || existingProduct.discount.value
+      type: discountType || existingProduct.discount?.type || "percentage",
+      value: Number(discountValue) || existingProduct.discount?.value || 0
     };
 
     const updatedProduct = await ProductModel.findByIdAndUpdate(
@@ -244,14 +322,11 @@ const editProduct = async (req, res) => {
     });
 
   } catch (err) {
-
     console.error("Edit Product Error:", err);
-
     return res.status(500).json({
       success: false,
       error: err.message || "Internal Server Error"
     });
-
   }
 };
 
