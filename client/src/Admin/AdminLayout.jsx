@@ -14,6 +14,9 @@ import { BsQrCode } from "react-icons/bs";
 import { RiSecurePaymentFill } from "react-icons/ri";
 import { MdAnalytics } from "react-icons/md";
 import { GrDocumentLocked } from "react-icons/gr";
+import { MdManageAccounts } from "react-icons/md";
+import { FaLuggageCart } from "react-icons/fa";
+
 
 
 const AdminLayout = () => {
@@ -71,7 +74,15 @@ const AdminLayout = () => {
             to="manage-cards"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
-            <FiUsers size={20} /> Manage Cards
+            <MdManageAccounts size={25} /> Manage Cards
+          </NavLink>
+
+
+          <NavLink
+            to="manage-parking-tag"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <FaLuggageCart size={22} /> Manage Parking Tag
           </NavLink>
 
 

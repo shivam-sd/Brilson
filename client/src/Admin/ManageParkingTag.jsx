@@ -103,8 +103,8 @@ const createQR = (url, dotsColor = "#000000", bgColor = "transparent") => {
   });
 };
 
-const ManageCards = () => {
-  const [cards, setCards] = useState([]);
+const ManageParkingTag = () => {
+  const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
@@ -125,7 +125,7 @@ const ManageCards = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalCards, setTotalCards] = useState(0);
+  const [totalTags, setTotalTags] = useState(0);
   const [limit] = useState(100);
   
   // Search state
@@ -133,12 +133,12 @@ const ManageCards = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   /* FETCH WITH PAGINATION & SEARCH */
-  const fetchCards = async (page = 1, search = "") => {
+  const fetchTags = async (page = 1, search = "") => {
     try {
       setLoading(true);
       setIsSearching(!!search);
       
-      const url = `${import.meta.env.VITE_BASE_URL}/api/all/cards?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+      const url = `${import.meta.env.VITE_BASE_URL}/api/all/tags?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
       
       const res = await axios.get(url, { 
         headers: {
@@ -146,50 +146,51 @@ const ManageCards = () => {
         },
       });
       
-      const allCards = res.data.allCards || [];
-      setCards(allCards);
-      console.log("Fetched cards:", res.data);
-      setTotalCards(res.data.totalCards || 0);
+      const allTags = res.data.allTags || [];
+      console.log("Fetched tags:", res.data);
+      setTags(allTags);
+      
+      setTotalTags(res.data.totalTags || 0);
       setTotalPages(res.data.totalPages || 1);
       setCurrentPage(res.data.page || 1);
       
-      const total = res.data.totalCards || 0;
-      const activated = allCards.filter(card => card.isActivated).length;
-      const inactive = allCards.length - activated;
+      const total = res.data.totalTags || 0;
+      const activated = allTags.filter(tag => tag.isActivated).length;
+      const inactive = allTags.length - activated;
       
       setStats({ total, activated, inactive });
       
       // Generate QR images with custom colors
-      const qrPromises = allCards.map(async (card) => {
-        if (card.qrUrl) {
+      const qrPromises = allTags.map(async (tag) => {
+        if (tag.qrUrl) {
           try {
-            const qr = createQR(card.qrUrl, qrDotsColor, qrBgColor);
+            const qr = createQR(tag.qrUrl, qrDotsColor, qrBgColor);
             const finalImageUrl = await addTextToQRImage(
               qr, 
-              card.activationCode, 
-              card.owner?.name || card.profile?.name || '',
+              tag.activationCode, 
+              tag.owner?.name || tag.profile?.ownerName || '',
               textColor,
               qrBgColor
             );
-            return { cardId: card._id, imageUrl: finalImageUrl };
+            return { tagId: tag._id, imageUrl: finalImageUrl };
           } catch (err) {
-            console.error(`Error generating QR for ${card.cardId}:`, err);
-            return { cardId: card._id, imageUrl: null };
+            console.error(`Error generating QR for ${tag._id}:`, err);
+            return { tagId: tag._id, imageUrl: null };
           }
         }
-        return { cardId: card._id, imageUrl: null };
+        return { tagId: tag._id, imageUrl: null };
       });
 
       const qrResults = await Promise.all(qrPromises);
       const qrMap = {};
       qrResults.forEach(result => {
-        qrMap[result.cardId] = result.imageUrl;
+        qrMap[result.tagId] = result.imageUrl;
       });
       setQrImages(qrMap);
 
     } catch (err) {
       console.error(err);
-      setError("Unable to fetch cards");
+      setError("Unable to fetch parking tags");
     } finally {
       setLoading(false);
     }
@@ -197,49 +198,49 @@ const ManageCards = () => {
 
   // Regenerate QR when colors change
   useEffect(() => {
-    if (cards.length > 0) {
+    if (tags.length > 0) {
       regenerateQRCodes();
     }
   }, [qrBgColor, qrDotsColor, textColor]);
 
   const regenerateQRCodes = async () => {
-    const qrPromises = cards.map(async (card) => {
-      if (card.qrUrl) {
+    const qrPromises = tags.map(async (tag) => {
+      if (tag.qrUrl) {
         try {
-          const qr = createQR(card.qrUrl, qrDotsColor, qrBgColor);
+          const qr = createQR(tag.qrUrl, qrDotsColor, qrBgColor);
           const finalImageUrl = await addTextToQRImage(
             qr, 
-            card.activationCode, 
-            card.owner?.name || card.profile?.name || '',
+            tag.activationCode, 
+            tag.owner?.name || tag.profile?.ownerName || '',
             textColor,
             qrBgColor
           );
-          return { cardId: card._id, imageUrl: finalImageUrl };
+          return { tagId: tag._id, imageUrl: finalImageUrl };
         } catch (err) {
-          return { cardId: card._id, imageUrl: null };
+          return { tagId: tag._id, imageUrl: null };
         }
       }
-      return { cardId: card._id, imageUrl: null };
+      return { tagId: tag._id, imageUrl: null };
     });
 
     const qrResults = await Promise.all(qrPromises);
     const qrMap = {};
     qrResults.forEach(result => {
-      qrMap[result.cardId] = result.imageUrl;
+      qrMap[result.tagId] = result.imageUrl;
     });
     setQrImages(qrMap);
   };
 
   // Initial fetch
   useEffect(() => {
-    fetchCards(currentPage, searchQuery);
+    fetchTags(currentPage, searchQuery);
   }, []);
 
   // Handle page change
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      fetchCards(page, searchQuery);
+      fetchTags(page, searchQuery);
     }
   };
 
@@ -247,14 +248,14 @@ const ManageCards = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
-    fetchCards(1, searchQuery);
+    fetchTags(1, searchQuery);
   };
 
   // Clear search
   const handleClearSearch = () => {
     setSearchQuery("");
     setCurrentPage(1);
-    fetchCards(1, "");
+    fetchTags(1, "");
   };
 
   // Generate page numbers
@@ -280,24 +281,24 @@ const ManageCards = () => {
   };
 
   /* GROUP BY DATE */
-  const groupedCards = cards.reduce((acc, card) => {
-    const date = new Date(card.createdAt).toISOString().split("T")[0];
+  const groupedTags = tags.reduce((acc, tag) => {
+    const date = new Date(tag.createdAt).toISOString().split("T")[0];
     if (!acc[date]) acc[date] = [];
-    acc[date].push(card);
+    acc[date].push(tag);
     return acc;
   }, {});
 
-  const filteredGroupedCards = Object.entries(groupedCards).filter(
+  const filteredGroupedTags = Object.entries(groupedTags).filter(
     ([date]) => !selectedDate || date === selectedDate
   );
 
   /* PREVIEW */
-  const previewQR = async (card) => {
-    if (!card.qrUrl) {
-      alert("No QR URL available for this card");
+  const previewQR = async (tag) => {
+    if (!tag.qrUrl) {
+      alert("No QR URL available for this parking tag");
       return;
     }
-    const qr = createQR(card.qrUrl, qrDotsColor, qrBgColor);
+    const qr = createQR(tag.qrUrl, qrDotsColor, qrBgColor);
     const blob = await qr.getRawData("png");
     const imgUrl = URL.createObjectURL(blob);
 
@@ -309,42 +310,42 @@ const ManageCards = () => {
         </div>
         <div style="background:#1a1a2e;padding:15px 30px;border-radius:8px;border:1px solid #333;">
           <p style="color:#888;font-size:14px;margin:0 0 5px 0;">Activation Code</p>
-          <p style="color:#00ff00;font-size:24px;font-weight:bold;margin:0;letter-spacing:2px;">${card.activationCode}</p>
+          <p style="color:#00ff00;font-size:24px;font-weight:bold;margin:0;letter-spacing:2px;">${tag.activationCode}</p>
         </div>
       </body>
     `);
   };
 
-  /* DOWNLOAD SINGLE CARD */
-  const downloadQR = async (card) => {
-    if (!card.qrUrl) {
+  /* DOWNLOAD SINGLE TAG */
+  const downloadQR = async (tag) => {
+    if (!tag.qrUrl) {
       alert("No QR URL available for download");
       return;
     }
     
     try {
-      const qr = createQR(card.qrUrl, qrDotsColor, qrBgColor);
+      const qr = createQR(tag.qrUrl, qrDotsColor, qrBgColor);
       const finalImageUrl = await addTextToQRImage(
         qr, 
-        card.activationCode, 
-        card.owner?.name || card.profile?.name || '',
+        tag.activationCode, 
+        tag.owner?.name || tag.profile?.ownerName || '',
         textColor,
         qrBgColor
       );
       
       const link = document.createElement('a');
       link.href = finalImageUrl;
-      link.download = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.png`;
+      link.download = `parking-tag-${tag.activationCode}-${(tag.owner?.name || tag.profile?.ownerName || 'unknown').replace(/\s+/g, '-')}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       
       URL.revokeObjectURL(finalImageUrl);
 
-      if (!card.isDownloaded) {
+      if (!tag.isDownloaded) {
         try {
           await axios.patch(
-            `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
+            `${import.meta.env.VITE_BASE_URL}/api/tags/${tag._id}/downloaded`,
             {},
             {
               headers: {
@@ -353,9 +354,9 @@ const ManageCards = () => {
             }
           );
 
-          setCards((prev) =>
-            prev.map((c) =>
-              c._id === card._id ? { ...c, isDownloaded: true } : c
+          setTags((prev) =>
+            prev.map((t) =>
+              t._id === tag._id ? { ...t, isDownloaded: true } : t
             )
           );
         } catch (error) {
@@ -368,17 +369,17 @@ const ManageCards = () => {
     }
   };
 
-  /* BULK DOWNLOAD ALL CARDS OF A SPECIFIC DATE */
-  const downloadAllByDate = async (date, cardsList) => {
-    if (!cardsList || cardsList.length === 0) {
-      alert("No cards available for this date");
+  /* BULK DOWNLOAD ALL TAGS OF A SPECIFIC DATE */
+  const downloadAllByDate = async (date, tagsList) => {
+    if (!tagsList || tagsList.length === 0) {
+      alert("No parking tags available for this date");
       return;
     }
 
-    const validCards = cardsList.filter(card => card.qrUrl);
+    const validTags = tagsList.filter(tag => tag.qrUrl);
     
-    if (validCards.length === 0) {
-      alert("No cards with QR available for this date");
+    if (validTags.length === 0) {
+      alert("No tags with QR available for this date");
       return;
     }
 
@@ -386,23 +387,23 @@ const ManageCards = () => {
 
     try {
       const zip = new JSZip();
-      const folderName = `cards-${date}`;
+      const folderName = `parking-tags-${date}`;
       const folder = zip.folder(folderName);
 
-      alert(`Downloading ${validCards.length} cards. Please wait...`);
+      alert(`Downloading ${validTags.length} parking tags. Please wait...`);
 
       const chunkSize = 5;
       const results = [];
 
-      for (let i = 0; i < validCards.length; i += chunkSize) {
-        const chunk = validCards.slice(i, i + chunkSize);
-        const chunkPromises = chunk.map(async (card) => {
+      for (let i = 0; i < validTags.length; i += chunkSize) {
+        const chunk = validTags.slice(i, i + chunkSize);
+        const chunkPromises = chunk.map(async (tag) => {
           try {
-            const qr = createQR(card.qrUrl, qrDotsColor, qrBgColor);
+            const qr = createQR(tag.qrUrl, qrDotsColor, qrBgColor);
             const finalImageUrl = await addTextToQRImage(
               qr, 
-              card.activationCode, 
-              card.owner?.name || card.profile?.name || '',
+              tag.activationCode, 
+              tag.owner?.name || tag.profile?.ownerName || '',
               textColor,
               qrBgColor
             );
@@ -410,15 +411,15 @@ const ManageCards = () => {
             const response = await fetch(finalImageUrl);
             const blob = await response.blob();
 
-            const filename = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.png`;
+            const filename = `parking-tag-${tag.activationCode}-${(tag.owner?.name || tag.profile?.ownerName || 'unknown').replace(/\s+/g, '-')}.png`;
 
             folder.file(filename, blob, { binary: true });
             URL.revokeObjectURL(finalImageUrl);
 
-            return { success: true, card };
+            return { success: true, tag };
           } catch (error) {
-            console.error(`Error processing card ${card.activationCode}:`, error);
-            return { success: false, card };
+            console.error(`Error processing tag ${tag.activationCode}:`, error);
+            return { success: false, tag };
           }
         });
 
@@ -431,7 +432,7 @@ const ManageCards = () => {
 
       const link = document.createElement('a');
       link.href = zipUrl;
-      link.download = `all-cards-${date}.zip`;
+      link.download = `all-parking-tags-${date}.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -445,7 +446,7 @@ const ManageCards = () => {
 
     } catch (error) {
       console.error("Error in bulk download:", error);
-      alert("Error downloading cards. Please try again.");
+      alert("Error downloading parking tags. Please try again.");
     } finally {
       setDownloadingDate(null);
     }
@@ -491,9 +492,9 @@ const ManageCards = () => {
         <span className="font-medium text-gray-300">{totalPages}</span> • 
         Showing <span className="font-medium text-gray-300">{(currentPage - 1) * limit + 1}</span> to{" "}
         <span className="font-medium text-gray-300">
-          {Math.min(currentPage * limit, totalCards)}
+          {Math.min(currentPage * limit, totalTags)}
         </span> of{" "}
-        <span className="font-medium text-gray-300">{totalCards}</span> cards
+        <span className="font-medium text-gray-300">{totalTags}</span> Parking Tags
         {isSearching && (
           <span className="ml-2 text-indigo-400">
             (Search results)
@@ -532,7 +533,7 @@ const ManageCards = () => {
       </div>
       
       <div className="flex items-center gap-2 text-sm">
-        <span className="text-gray-400">Cards per page:</span>
+        <span className="text-gray-400">Tags per page:</span>
         <span className="font-medium text-gray-300">{limit}</span>
       </div>
     </div>
@@ -543,9 +544,9 @@ const ManageCards = () => {
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6">
         <div className="w-full lg:w-auto">
-          <h2 className="text-xl sm:text-2xl md:text-4xl font-bold">Manage NFC Cards</h2>
+          <h2 className="text-xl sm:text-2xl md:text-4xl font-bold">Manage Parking Tags</h2>
           <p className="text-gray-400 mt-1 text-sm sm:text-base">
-            View, track and manage all NFC card profiles
+            View, track and manage all parking tag profiles
             <span className="ml-2 text-indigo-400 font-medium">
               (Page {currentPage} of {totalPages})
             </span>
@@ -619,157 +620,158 @@ const ManageCards = () => {
 
           {/* Create Button */}
           <Link
-            to="/api/cards/bulk"
+            to="/api/tags/bulk"
             className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-5 py-3 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 w-full sm:w-auto group"
           >
             <FiPlus className="text-lg transition-transform duration-300 group-hover:rotate-180" />
-            <span className="font-medium">Create Cards</span>
+            <span className="font-medium">Create Tags</span>
           </Link>
         </div>
       </div>
 
       {/* COLOR PICKER MODAL */}
-      {showColorPicker && (
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center p-4">
-          <div className="absolute top-5 bg-gray-900 rounded-2xl max-w-md w-full border border-gray-700 shadow-2xl p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-white">Customize QR Colors</h3>
-              <button onClick={() => setShowColorPicker(false)} className="text-gray-400 hover:text-white">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              {/* QR Background Color */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">QR Background Color</label>
-                <div className="flex items-center gap-3">
-                  <HexColorPicker color={qrBgColor === 'transparent' ? '#ffffff' : qrBgColor} onChange={(color) => setQrBgColor(color)} />
-                  <div className="flex flex-col gap-2">
-                    <button onClick={() => setQrBgColor("transparent")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700">
-                      Transparent
-                    </button>
-                    <button onClick={() => setQrBgColor("#ffffff")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-white border border-gray-600 rounded"></div>
-                      White
-                    </button>
-                    <button onClick={() => setQrBgColor("#000000")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-black border border-gray-600 rounded"></div>
-                      Black
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* QR Dots Color */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">QR Dots Color</label>
-                <div className="flex items-center gap-3">
-                  <HexColorPicker color={qrDotsColor} onChange={setQrDotsColor} />
-                  <div className="flex flex-col gap-2">
-                    <button onClick={() => setQrDotsColor("#000000")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-black rounded"></div>
-                      Black
-                    </button>
-                    <button onClick={() => setQrDotsColor("#E1C48A")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
-                      Gold
-                    </button>
-                    <button onClick={() => setQrDotsColor("#3B82F6")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                      Blue
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Text Color */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Text Color</label>
-                <div className="flex items-center gap-3">
-                  <HexColorPicker color={textColor} onChange={setTextColor} />
-                  <div className="flex flex-col gap-2">
-                    <button onClick={() => setTextColor("#000000")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-black rounded"></div>
-                      Black
-                    </button>
-                    <button onClick={() => setTextColor("#E1C48A")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
-                      Gold
-                    </button>
-                    <button onClick={() => setTextColor("#ffffff")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-white rounded"></div>
-                      White
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Preview */}
-              <div className="pt-4 border-t border-gray-700">
-                <p className="text-sm text-gray-400 text-center mb-3">Live Preview</p>
-                <div className="bg-gray-800 rounded-lg p-4 flex justify-center">
-                  <div className="w-24 h-24 rounded-lg flex items-center justify-center" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}>
-                    <div className="w-16 h-16 flex items-center justify-center">
-                      <svg viewBox="0 0 100 100" className="w-14 h-14">
-                        <rect x="20" y="20" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="35" y="20" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="50" y="20" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="20" y="35" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="50" y="35" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="20" y="50" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="35" y="50" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="50" y="50" width="10" height="10" fill={qrDotsColor} />
+      {/* COLOR PICKER MODAL */}
+            {showColorPicker && (
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center p-4">
+                <div className="absolute top-5 bg-gray-900 rounded-2xl max-w-md w-full border border-gray-700 shadow-2xl p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-bold text-white">Customize QR Colors</h3>
+                    <button onClick={() => setShowColorPicker(false)} className="text-gray-400 hover:text-white">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                       </svg>
+                    </button>
+                  </div>
+      
+                  <div className="space-y-6">
+                    {/* QR Background Color */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">QR Background Color</label>
+                      <div className="flex items-center gap-3">
+                        <HexColorPicker color={qrBgColor === 'transparent' ? '#ffffff' : qrBgColor} onChange={(color) => setQrBgColor(color)} />
+                        <div className="flex flex-col gap-2">
+                          <button onClick={() => setQrBgColor("transparent")}
+                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700">
+                            Transparent
+                          </button>
+                          <button onClick={() => setQrBgColor("#ffffff")}
+                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                            <div className="w-4 h-4 bg-white border border-gray-600 rounded"></div>
+                            White
+                          </button>
+                          <button onClick={() => setQrBgColor("#000000")}
+                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                            <div className="w-4 h-4 bg-black border border-gray-600 rounded"></div>
+                            Black
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+      
+                    {/* QR Dots Color */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">QR Dots Color</label>
+                      <div className="flex items-center gap-3">
+                        <HexColorPicker color={qrDotsColor} onChange={setQrDotsColor} />
+                        <div className="flex flex-col gap-2">
+                          <button onClick={() => setQrDotsColor("#000000")}
+                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                            <div className="w-4 h-4 bg-black rounded"></div>
+                            Black
+                          </button>
+                          <button onClick={() => setQrDotsColor("#E1C48A")}
+                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                            <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
+                            Gold
+                          </button>
+                          <button onClick={() => setQrDotsColor("#3B82F6")}
+                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                            <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                            Blue
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+      
+                    {/* Text Color */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Text Color</label>
+                      <div className="flex items-center gap-3">
+                        <HexColorPicker color={textColor} onChange={setTextColor} />
+                        <div className="flex flex-col gap-2">
+                          <button onClick={() => setTextColor("#000000")}
+                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                            <div className="w-4 h-4 bg-black rounded"></div>
+                            Black
+                          </button>
+                          <button onClick={() => setTextColor("#E1C48A")}
+                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                            <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
+                            Gold
+                          </button>
+                          <button onClick={() => setTextColor("#ffffff")}
+                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                            <div className="w-4 h-4 bg-white rounded"></div>
+                            White
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+      
+                    {/* Preview */}
+                    <div className="pt-4 border-t border-gray-700">
+                      <p className="text-sm text-gray-400 text-center mb-3">Live Preview</p>
+                      <div className="bg-gray-800 rounded-lg p-4 flex justify-center">
+                        <div className="w-24 h-24 rounded-lg flex items-center justify-center" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}>
+                          <div className="w-16 h-16 flex items-center justify-center">
+                            <svg viewBox="0 0 100 100" className="w-14 h-14">
+                              <rect x="20" y="20" width="10" height="10" fill={qrDotsColor} />
+                              <rect x="35" y="20" width="10" height="10" fill={qrDotsColor} />
+                              <rect x="50" y="20" width="10" height="10" fill={qrDotsColor} />
+                              <rect x="20" y="35" width="10" height="10" fill={qrDotsColor} />
+                              <rect x="50" y="35" width="10" height="10" fill={qrDotsColor} />
+                              <rect x="20" y="50" width="10" height="10" fill={qrDotsColor} />
+                              <rect x="35" y="50" width="10" height="10" fill={qrDotsColor} />
+                              <rect x="50" y="50" width="10" height="10" fill={qrDotsColor} />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-center text-xs mt-2" style={{ color: textColor }}>
+                        Code: ABC123XYZ
+                      </p>
                     </div>
                   </div>
+      
+                  <div className="mt-6 flex gap-3">
+                    <button onClick={() => setShowColorPicker(false)}
+                      className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors">
+                      Close
+                    </button>
+                    <button onClick={() => setShowColorPicker(false)}
+                      className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-lg text-white transition-colors cursor-pointer">
+                      Apply Colors
+                    </button>
+                  </div>
                 </div>
-                <p className="text-center text-xs mt-2" style={{ color: textColor }}>
-                  Code: ABC123XYZ
-                </p>
               </div>
-            </div>
-
-            <div className="mt-6 flex gap-3">
-              <button onClick={() => setShowColorPicker(false)}
-                className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors">
-                Close
-              </button>
-              <button onClick={() => setShowColorPicker(false)}
-                className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-lg text-white transition-colors cursor-pointer">
-                Apply Colors
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+            )}
+      
       {/* STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 md:mb-8">
-        <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50">
+        <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-xs sm:text-sm mb-1">Total Cards</p>
-              <p className="text-2xl sm:text-3xl font-bold">{stats.total}</p>
+              <p className="text-gray-400 text-xs sm:text-sm mb-1">Total Parking Tags</p>
+              <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">{stats.total}</p>
             </div>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-indigo-500/20 flex items-center justify-center">
-              <span className="text-indigo-400 text-base sm:text-lg">📋</span>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-indigo-500/20 flex items-center justify-center animate-pulse">
+              <span className="text-indigo-400 text-base sm:text-lg">🏷️</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50">
+        <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-300">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-400 text-xs sm:text-sm mb-1">Activated</p>
@@ -781,7 +783,7 @@ const ManageCards = () => {
           </div>
         </div>
 
-        <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50 sm:col-span-2 lg:col-span-1">
+        <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-300 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-400 text-xs sm:text-sm mb-1">Inactive</p>
@@ -796,14 +798,14 @@ const ManageCards = () => {
 
       {/* DESKTOP TABLE */}
       <div className="hidden lg:block">
-        <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
+        <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20 backdrop-blur-sm">
           <table className="w-full min-w-full">
             <thead className="bg-gray-800/50 border-b border-gray-700/50">
               <tr>
                 <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
                 <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
                 <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation</th>
+                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation Code</th>
                 <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Created</th>
                 <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">QR</th>
                 <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Preview</th>
@@ -813,17 +815,17 @@ const ManageCards = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-700/30">
-              {filteredGroupedCards.length > 0 ? (
-                filteredGroupedCards.map(([date, list]) => (
+              {filteredGroupedTags.length > 0 ? (
+                filteredGroupedTags.map(([date, list]) => (
                   <React.Fragment key={date}>
                     <tr className="bg-gray-800/30">
                       <td colSpan="9" className="p-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span>📅</span>
+                            <span className="text-lg">📅</span>
                             <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
-                            <span className="ml-2 text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">
-                              {list.length} cards
+                            <span className="ml-2 text-xs bg-gradient-to-r from-indigo-500/20 to-purple-500/20 px-2 py-1 rounded-full text-gray-300">
+                              {list.length} tags
                             </span>
                           </div>
                           <button
@@ -832,7 +834,7 @@ const ManageCards = () => {
                             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                               downloadingDate === date
                                 ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                                : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg cursor-pointer'
+                                : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg transform hover:scale-105 cursor-pointer'
                             }`}
                           >
                             {downloadingDate === date ? (
@@ -851,32 +853,32 @@ const ManageCards = () => {
                       </td>
                     </tr>
 
-                    {list.map((card) => (
-                      <tr key={card._id} className="hover:bg-gray-800/20 transition-colors">
+                    {list.map((tag) => (
+                      <tr key={tag._id} className="hover:bg-gray-800/20 transition-colors duration-200">
                         <td className="p-3">
-                          <input checked={card.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" />
+                          <input checked={tag.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded border-gray-600 bg-gray-700" />
                         </td>
                         <td className="p-3">
-                          <StatusBadge active={card.isActivated} />
+                          <StatusBadge active={tag.isActivated} />
                         </td>
                         <td className="p-3">
-                          <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
-                            {card.owner?.name || "—"}
+                          <span className={`text-sm ${tag.owner?.name ? "text-gray-200 font-medium" : "text-gray-500"}`}>
+                            {tag.owner?.name || "—"}
                           </span>
                         </td>
                         <td className="p-3">
-                          <div className="font-mono text-xs text-indigo-400 max-w-[80px] truncate" title={card.activationCode}>
-                            {card.activationCode}
+                          <div className="font-mono text-sm text-indigo-400 max-w-[120px] truncate" title={tag.activationCode}>
+                            {tag.activationCode}
                           </div>
                         </td>
-                        <td className="p-3 text-gray-400 text-xs">
-                          {new Date(card.activatedAt).toLocaleDateString()}
+                        <td className="p-3 text-gray-400 text-sm">
+                          {new Date(tag.createdAt).toLocaleDateString()}
                         </td>
                         <td className="p-3 text-center">
-                          <div className="w-12 h-12 bg-white p-1.5 rounded-lg flex items-center justify-center mx-auto">
-                            {qrImages[card._id] ? (
+                          <div className="w-12 h-12 bg-white p-1.5 rounded-lg flex items-center justify-center mx-auto shadow-md">
+                            {qrImages[tag._id] ? (
                               <img
-                                src={qrImages[card._id]}
+                                src={qrImages[tag._id]}
                                 alt="QR Code"
                                 className="w-10 h-10"
                                 onError={(e) => {
@@ -891,30 +893,30 @@ const ManageCards = () => {
                         </td>
                         <td className="p-3 text-center">
                           <button
-                            onClick={() => previewQR(card)}
+                            onClick={() => previewQR(tag)}
                             className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 mx-auto ${
-                              !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
+                              !tag.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
-                            disabled={!card.qrUrl}
+                            disabled={!tag.qrUrl}
                           >
                             <FaEye className="w-4 h-4" />
                           </button>
                         </td>
                         <td className="p-3 text-center">
                           <button
-                            onClick={() => downloadQR(card)}
-                            className={`bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition mx-auto ${
-                              !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
+                            onClick={() => downloadQR(tag)}
+                            className={`bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 p-1.5 rounded-lg text-white transition-all duration-200 transform hover:scale-105 mx-auto ${
+                              !tag.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
-                            disabled={!card.qrUrl}
+                            disabled={!tag.qrUrl}
                           >
                             <FaDownload className="w-4 h-4" />
                           </button>
                         </td>
                         <td className="p-3 text-center">
                           <Link 
-                            to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
-                            className="text-indigo-400 hover:text-indigo-300 transition text-xs inline-block"
+                            to={`${import.meta.env.VITE_DOMAIN}/public/profile/${tag.slug}`}
+                            className="text-indigo-400 hover:text-indigo-300 transition text-sm inline-block font-medium hover:underline"
                             target="_blank"
                           >
                             View
@@ -931,7 +933,7 @@ const ManageCards = () => {
                       {searchQuery ? (
                         <>
                           <FiSearch className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                          <p className="text-lg">No cards found for "{searchQuery}"</p>
+                          <p className="text-lg">No parking tags found for "{searchQuery}"</p>
                           <button
                             onClick={handleClearSearch}
                             className="mt-4 text-indigo-400 hover:text-indigo-300 transition-colors"
@@ -942,7 +944,7 @@ const ManageCards = () => {
                       ) : (
                         <>
                           <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                          <p className="text-lg">No cards available</p>
+                          <p className="text-lg">No parking tags available</p>
                         </>
                       )}
                     </div>
@@ -958,7 +960,7 @@ const ManageCards = () => {
 
       {/* TABLET VIEW */}
       <div className="hidden md:block lg:hidden">
-        <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
+        <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20 backdrop-blur-sm">
           <table className="w-full min-w-full">
             <thead className="bg-gray-800/50 border-b border-gray-700/50">
               <tr>
@@ -971,8 +973,8 @@ const ManageCards = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-700/30">
-              {filteredGroupedCards.length > 0 ? (
-                filteredGroupedCards.map(([date, list]) => (
+              {filteredGroupedTags.length > 0 ? (
+                filteredGroupedTags.map(([date, list]) => (
                   <React.Fragment key={date}>
                     <tr className="bg-gray-800/30">
                       <td colSpan="5" className="p-3">
@@ -981,7 +983,7 @@ const ManageCards = () => {
                             <span>📅</span>
                             <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
                             <span className="ml-2 text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">
-                              {list.length} cards
+                              {list.length} tags
                             </span>
                           </div>
                           <button
@@ -1009,30 +1011,30 @@ const ManageCards = () => {
                       </td>
                     </tr>
 
-                    {list.map((card) => (
-                      <tr key={card._id} className="hover:bg-gray-800/20 transition-colors">
+                    {list.map((tag) => (
+                      <tr key={tag._id} className="hover:bg-gray-800/20 transition-colors">
                         <td className="p-3">
-                          <input checked={card.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" />
+                          <input checked={tag.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" />
                         </td>
                         <td className="p-3">
-                          <StatusBadge active={card.isActivated} />
+                          <StatusBadge active={tag.isActivated} />
                         </td>
                         <td className="p-3">
-                          <span className={`text-xs ${card.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
-                            {card.owner?.name || "—"}
+                          <span className={`text-xs ${tag.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
+                            {tag.owner?.name || "—"}
                           </span>
                         </td>
                         <td className="p-3">
-                          <div className="font-mono text-xs text-indigo-400 truncate" title={card.activationCode}>
-                            {card.activationCode}
+                          <div className="font-mono text-xs text-indigo-400 truncate" title={tag.activationCode}>
+                            {tag.activationCode}
                           </div>
                         </td>
                         <td className="p-3">
                           <div className="flex items-center justify-center gap-2">
-                            <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mr-2">
-                              {qrImages[card._id] ? (
+                            <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mr-2 shadow-md">
+                              {qrImages[tag._id] ? (
                                 <img
-                                  src={qrImages[card._id]}
+                                  src={qrImages[tag._id]}
                                   alt="QR Code"
                                   className="w-8 h-8"
                                   onError={(e) => {
@@ -1045,25 +1047,25 @@ const ManageCards = () => {
                               )}
                             </div>
                             <button
-                              onClick={() => previewQR(card)}
+                              onClick={() => previewQR(tag)}
                               className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 ${
-                                !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
+                                !tag.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                               }`}
-                              disabled={!card.qrUrl}
+                              disabled={!tag.qrUrl}
                             >
                               <FaEye className="w-4 h-4" />
                             </button>
                             <button
-                              onClick={() => downloadQR(card)}
-                              className={`bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition ${
-                                !card.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
+                              onClick={() => downloadQR(tag)}
+                              className={`bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 p-1.5 rounded-lg text-white transition ${
+                                !tag.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
                               }`}
-                              disabled={!card.qrUrl}
+                              disabled={!tag.qrUrl}
                             >
                               <FaDownload className="w-4 h-4" />
                             </button>
                             <Link 
-                              to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
+                              to={`${import.meta.env.VITE_DOMAIN}/public/profile/${tag.slug}`}
                               className="text-indigo-400 hover:text-indigo-300 transition text-xs px-2 py-1 border border-indigo-500/50 rounded"
                               target="_blank"
                             >
@@ -1082,12 +1084,12 @@ const ManageCards = () => {
                       {searchQuery ? (
                         <>
                           <FiSearch className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                          <p className="text-lg">No cards found</p>
+                          <p className="text-lg">No tags found</p>
                         </>
                       ) : (
                         <>
                           <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                          <p className="text-lg">No cards available</p>
+                          <p className="text-lg">No parking tags available</p>
                         </>
                       )}
                     </div>
@@ -1103,14 +1105,17 @@ const ManageCards = () => {
 
       {/* MOBILE VIEW */}
       <div className="block md:hidden">
-        {filteredGroupedCards.length > 0 ? (
-          filteredGroupedCards.map(([date, list]) => (
+        {filteredGroupedTags.length > 0 ? (
+          filteredGroupedTags.map(([date, list]) => (
             <div key={date} className="mb-6">
-              <div className="mb-3 p-3 bg-gray-800/30 rounded-lg sticky top-0 z-10">
+              <div className="mb-3 p-3 bg-gray-800/30 rounded-lg sticky top-0 z-10 backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">📅</span>
                     <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
+                    <span className="ml-2 text-xs bg-indigo-500/20 px-2 py-1 rounded-full text-indigo-300">
+                      {list.length} tags
+                    </span>
                   </div>
                   <button
                     onClick={() => downloadAllByDate(date, list)}
@@ -1137,36 +1142,37 @@ const ManageCards = () => {
               </div>
 
               <div className="space-y-3">
-                {list.map((card) => (
-                  <div key={card._id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50">
+                {list.map((tag) => (
+                  <div key={tag._id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-300">
                     <div className="flex items-start justify-between mb-2">
-                      <div>
+                      <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <StatusBadge active={card.isActivated} />
-                          <span className="text-xs text-gray-400">✓ {card.isDownloaded ? 'Downloaded' : 'Not Downloaded'}</span>
+                          <StatusBadge active={tag.isActivated} />
+                          <span className="text-xs text-gray-400">✓ {tag.isDownloaded ? 'Downloaded' : 'Not Downloaded'}</span>
                         </div>
-                        <p className="text-sm font-medium text-white">{card.owner?.name || "—"}</p>
-                        <p className="text-xs text-indigo-400 font-mono mt-1">{card.activationCode}</p>
+                        <p className="text-sm font-medium text-white">{tag.owner?.name || "—"}</p>
+                        <p className="text-xs text-indigo-400 font-mono mt-1">{tag.activationCode}</p>
+                        <p className="text-xs text-gray-500 mt-1">Created: {new Date(tag.createdAt).toLocaleDateString()}</p>
                       </div>
-                      <div className="w-12 h-12 bg-white p-1 rounded-lg">
-                        {qrImages[card._id] ? (
-                          <img src={qrImages[card._id]} alt="QR" className="w-full h-full object-cover" />
+                      <div className="w-14 h-14 bg-white p-1.5 rounded-lg shadow-md ml-3">
+                        {qrImages[tag._id] ? (
+                          <img src={qrImages[tag._id]} alt="QR" className="w-full h-full object-cover" />
                         ) : (
                           <img src="/qr.png" alt="QR" className="w-full h-full" />
                         )}
                       </div>
                     </div>
                     <div className="flex gap-2 mt-2 pt-2 border-t border-gray-700/50">
-                      <button onClick={() => previewQR(card)} disabled={!card.qrUrl}
-                        className="flex-1 py-1.5 bg-blue-500/20 rounded-lg text-blue-400 text-xs flex items-center justify-center gap-1">
+                      <button onClick={() => previewQR(tag)} disabled={!tag.qrUrl}
+                        className="flex-1 py-1.5 bg-blue-500/20 rounded-lg text-blue-400 text-xs flex items-center justify-center gap-1 hover:bg-blue-500/30 transition-colors">
                         <FaEye size={12} /> Preview
                       </button>
-                      <button onClick={() => downloadQR(card)} disabled={!card.qrUrl}
-                        className="flex-1 py-1.5 bg-cyan-500/20 rounded-lg text-cyan-400 text-xs flex items-center justify-center gap-1">
+                      <button onClick={() => downloadQR(tag)} disabled={!tag.qrUrl}
+                        className="flex-1 py-1.5 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg text-cyan-400 text-xs flex items-center justify-center gap-1 hover:from-cyan-500/30 hover:to-blue-500/30 transition-colors">
                         <FaDownload size={12} /> Download
                       </button>
-                      <Link to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`} target="_blank"
-                        className="flex-1 py-1.5 bg-indigo-500/20 rounded-lg text-indigo-400 text-xs flex items-center justify-center gap-1">
+                      <Link to={`${import.meta.env.VITE_DOMAIN}/public/profile/${tag.slug}`} target="_blank"
+                        className="flex-1 py-1.5 bg-indigo-500/20 rounded-lg text-indigo-400 text-xs flex items-center justify-center gap-1 hover:bg-indigo-500/30 transition-colors">
                         View
                       </Link>
                     </div>
@@ -1176,9 +1182,9 @@ const ManageCards = () => {
             </div>
           ))
         ) : (
-          <div className="p-6 text-center bg-gray-800/30 rounded-xl">
+          <div className="p-6 text-center bg-gray-800/30 rounded-xl backdrop-blur-sm">
             <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-            <p className="text-gray-400">No cards available</p>
+            <p className="text-gray-400">No parking tags available</p>
           </div>
         )}
         
@@ -1188,4 +1194,4 @@ const ManageCards = () => {
   );
 };
 
-export default ManageCards;
+export default ManageParkingTag;

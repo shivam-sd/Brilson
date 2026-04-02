@@ -30,7 +30,7 @@ const ReferralDashboard = () => {
           },
         }
       );
-      console.log("Referral Data:", response);
+      // console.log("Referral Data:", response);
       setReferralData(response.data);
     } catch (error) {
       console.error('Error fetching referrals:', error);

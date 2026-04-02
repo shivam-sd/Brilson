@@ -38,7 +38,7 @@ const getAllParkingTagsProfile = async (req, res) => {
       .limit(limit)
       .populate({
         path: "owner",
-        select: "ownerName"
+        select: "name"
       });
 
     return res.status(200).json({

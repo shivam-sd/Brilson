@@ -65,7 +65,7 @@ const AdminPassToProfile = () => {
 
       // Find user's cards array
       const userData = data.find((item) => item.userId === userId);
-      console.log("User Data:", userData);
+      // console.log("User Data:", userData);
 
       if (userData?.cards?.length > 0) {
         setCards(userData.cards);
@@ -326,11 +326,11 @@ const AdminPassToProfile = () => {
                 >
                 
 
-                <button className="hidden lg:flex bg-green-700/20 p-2 rounded-lg cursor-pointer flex items-center justify-center gap-2">
-<FaTags size={20} /> Add Parking Tag</button>
+                <Link to={"/parking-tag/activate"} className="hidden lg:flex bg-green-700/20 p-2 rounded-lg cursor-pointer flex items-center justify-center gap-2">
+<FaTags size={20} /> Add Parking Tag</Link>
 
-<button className="lg:hidden flex text-sm bg-green-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
-<FaTags size={50} /> Add Parking Tag</button>
+<Link to={"/parking-tag/activate"} className="lg:hidden flex text-sm bg-green-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">
+<FaTags size={50} /> Add Parking Tag</Link>
                   
 
                   <Link to={"/card/activate"} replace className="flex text-sm bg-yellow-700/20 p-2 rounded-lg cursor-pointer items-center justify-center gap-2">

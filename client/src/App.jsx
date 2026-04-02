@@ -82,6 +82,10 @@ import ProfileLogoEdit from "./Pages/ProfileComp/EditProfileComp/ProfileLogoEdit
 import ProfileCoverEdit from "./Pages/ProfileComp/EditProfileComp/ProfileCoverEdit";
 import AdminPaymentGateway from "./Admin/AdminPaymentGateway";
 import PaymentSuccess from "./Component/PaymentSuccess";
+import ManageParkingTag from "./Admin/ManageParkingTag";
+import BulkCreateTags from "./Admin/components.jsx/BulkCreateTags";
+import ActivateParkingTag from "./Pages/ActivateParkingTag";
+
 
 
 
@@ -146,6 +150,7 @@ function App() {
           <Route path="/profile/:slug" element={<ProfilePage />} />
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
           <Route path="/card/activate" element={<ActivateCard />} />
+          <Route path="/parking-tag/activate" element={<ActivateParkingTag />} />
 
 
           <Route path="/profile/edit/:id" element={<Layout />}>
@@ -267,6 +272,15 @@ function App() {
             />
 
             <Route
+              path="manage-parking-tag"
+              element={
+                <ProtectedRoute>
+                  <ManageParkingTag />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
               path="selling-overview"
               element={
                 <ProtectedRoute>
@@ -292,6 +306,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <BulkCreateCardsModal />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/api/tags/bulk"
+            element={
+              <ProtectedRoute>
+                <BulkCreateTags />
               </ProtectedRoute>
             }
           />
