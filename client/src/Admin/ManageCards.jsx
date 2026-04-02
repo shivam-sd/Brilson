@@ -140,7 +140,7 @@ const ManageCards = () => {
       
       const url = `${import.meta.env.VITE_BASE_URL}/api/all/cards?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
       
-      const res = await axios.get(url, {
+      const res = await axios.get(url, { 
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },

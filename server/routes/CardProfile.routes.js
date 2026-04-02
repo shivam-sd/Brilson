@@ -17,7 +17,7 @@ const {getLoggedInUserCards, getAllUsersWithTheirCards} = require("../controller
 const authUser = require("../middleware/authUserToken");
 
 
-
+ 
 // admin cretae bulk profile cards
 router.post("/cards/bulk",  bulkCreateCards);
 

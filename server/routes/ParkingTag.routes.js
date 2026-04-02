@@ -7,6 +7,7 @@ const {ActivateParkingTagAPi} = require("../controller/ParkingTag/ActivateParkin
 const checkParkingTagStatus = require("../controller/ParkingTag/CheckParkingTagStatus.controller");
 const claimParkingTagProfile = require("../controller/ParkingTag/ClaimParkingTagProfile.controller");
 const {getParkingTagProfiles, getAllParkingTagsProfile} = require("../controller/ParkingTag/GetTagProfile.controller");
+const markDownloadedOnTag = require("../controller/ParkingTag/MarkDownloadedTag.controller");
 
 
 
@@ -26,9 +27,15 @@ router.get("/claim-tag-profile", userAuth, claimParkingTagProfile);
 
 // GET /api/card/:slug
 router.get("/tag/:slug", getParkingTagProfiles);
+
+
+// Manage Parking Tag Api For Admin Side
+
 // router.get("/card/:id", getCardProfilesByID);
 router.get("/all/tags", getAllParkingTagsProfile);
 
+// mark card downloaded or not
+router.patch("/tags/:id/downloaded", markDownloadedOnTag);
 
 
 module.exports = router;
