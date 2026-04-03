@@ -2,57 +2,85 @@ const mongoose = require("mongoose");
 
 const AddGoogleReviewsSchema = new mongoose.Schema({
 
-  activationCode: {
-    required: true,
-    type: String,
-  },
-  slug: {
-    type: String,
-    unique: true,
-    sparse: true,
-  },
-  isActivated: {
-    type: Boolean,
-    default: false,
-  },
-  qrCode: {
-    type: String,
-  },
-  qrUrl: {
-    type: String,
-    required: true,
-  },
-  isDownloaded: {
-    type: Boolean,
-    default: false,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  activatedAt: Date,
-
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-
-  profile: {
     businessName: {
       type: String,
     },
     googleReviewLink: {
       type: String,
     },
-    logo: {
-      type: String,
-    },
     description: {
       type: String,
     },
-  },
 });
 
 const GoogleReviews = mongoose.model("GoogleReviewa", AddGoogleReviewsSchema);
 
 module.exports = GoogleReviews;
+
+
+
+
+
+
+// const mongoose = require("mongoose");
+
+// const AddGoogleReviewsSchema = new mongoose.Schema({
+
+//   activationCode: {
+//     required: true,
+//     type: String, 
+//   },
+//   slug: {
+//     type: String,
+//     unique: true,
+//     sparse: true,
+//   },
+//   isActivated: {
+//     type: Boolean,
+//     default: false,
+//   },
+//   qrCode: {
+//     type: String,
+//   },
+//   qrUrl: {
+//     type: String,
+//     required: true,
+//   },
+//   isDownloaded: {
+//     type: Boolean,
+//     default: false,
+//   },
+//   createdAt: {
+//     type: Date,
+//     default: Date.now,
+//   },
+//   activatedAt: Date,
+
+//   owner: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: "User",
+//   },
+
+//   profile: {
+//     businessName: {
+//       type: String,
+//     },
+//     googleReviewLink: {
+//       type: String,
+//     },
+//     logo: {
+//       type: String,
+//     },
+//     description: {
+//       type: String,
+//     },
+//   },
+// });
+
+// const GoogleReviews = mongoose.model("GoogleReviewa", AddGoogleReviewsSchema);
+
+// module.exports = GoogleReviews;

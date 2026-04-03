@@ -1,6 +1,6 @@
 const ParkingTagModel = require("../../models/AddParkingTag.model");
 const generateSlug = require("../../utils/generateSlug");
-const UserModel = require("../../models/User.model");
+const UserModel = require("../../models/User.model");  
 
 
 
