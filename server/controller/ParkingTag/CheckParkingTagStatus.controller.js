@@ -12,9 +12,13 @@ const checkParkingTagStatus = async(req,res) => {
             return res.status(404).json({error:"Invalid Parking Tag"});
         }
 
+        console.log("tag found" , tag);
+
         if(!tag.isActivated){
             return res.json({isActivated:tag.isActivated});
         }
+
+        console.log("tag is activated" , tag.isActivated);
 
        return res.status(200).json({
             isActivated:tag.isActivated,

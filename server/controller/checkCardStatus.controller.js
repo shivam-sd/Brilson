@@ -11,7 +11,7 @@ const checkCardStatus = async(req,res) => {
         if(!card){
             return res.status(404).json({error:"Invalid Card"});
         }
-
+            
         if(!card.isActivated){
             return res.json({isActivated:card.isActivated});
         }

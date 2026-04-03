@@ -20,8 +20,9 @@ const bulkCreateParkingTags = async (req, res) => {
             isActivated: false,
 
              // QR me sirf activationCode
-        qrUrl: `${process.env.BASE_URL1}/c/card/${activationCode}`, 
+        qrUrl: `${process.env.BASE_URL1}/c/parking-tag/${activationCode}`, 
         // ye yah check karta ki card activate hai ya nhi agar card activate hai to profile per bhejega agar card activate nhi hai to activation page per bhejega..
+        
         });
     }
 

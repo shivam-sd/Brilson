@@ -85,6 +85,7 @@ import PaymentSuccess from "./Component/PaymentSuccess";
 import ManageParkingTag from "./Admin/ManageParkingTag";
 import BulkCreateTags from "./Admin/components.jsx/BulkCreateTags";
 import ActivateParkingTag from "./Pages/ActivateParkingTag";
+import CheckParkingTagStatus from "./Pages/CheckParkingTagStatus";
 
 
 
@@ -146,6 +147,7 @@ function App() {
           </Route>
 
           <Route path="/c/card/:activationCode" element={<CheckStatusPage />} />
+          <Route path="/c/parking-tag/:activationCode" element={<CheckParkingTagStatus />} />
           <Route path="/admin/passTo/Profile" element={<AdminPassToProfile />} />
           <Route path="/profile/:slug" element={<ProfilePage />} />
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />

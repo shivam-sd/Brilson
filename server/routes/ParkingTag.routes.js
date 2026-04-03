@@ -21,6 +21,7 @@ router.post("/tags/activate", userAuth, ActivateParkingTagAPi);
 // check parking tag status
 router.get("/check/tag/:activationCode", checkParkingTagStatus);
 
+
 // claim parking tag profile
 router.get("/claim-tag-profile", userAuth, claimParkingTagProfile);
 
