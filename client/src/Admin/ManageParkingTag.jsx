@@ -7,79 +7,15 @@ import QRCodeStyling from "qr-code-styling";
 import JSZip from "jszip";
 import { HexColorPicker } from "react-colorful";
 
-/* QR image par text add karne ke liye with custom colors */
-const addTextToQRImage = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
-  try {
-    const blob = await qrCode.getRawData("png");
-    const img = new Image();
-    const imageUrl = URL.createObjectURL(blob);
-    
-    return new Promise((resolve) => {
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        const qrSize = 300;
-        const textHeight = 50;
-        canvas.width = qrSize;
-        canvas.height = qrSize + textHeight;
-        
-        // Clear canvas (transparent or colored background)
-        if (bgColor === 'transparent') {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        } else {
-          ctx.fillStyle = bgColor;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-        
-        // Draw QR code
-        ctx.drawImage(img, 0, 0, qrSize, qrSize);
-        
-        // Border line between QR and text
-        ctx.strokeStyle = '#cccccc';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(20, qrSize + 5);
-        ctx.lineTo(canvas.width - 20, qrSize + 5);
-        ctx.stroke();
-        
-        // Activation Code text with custom color
-        ctx.font = 'bold 18px "Courier New", monospace';
-        ctx.fillStyle = textColor;
-        ctx.textAlign = 'center';
-        ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, qrSize + 35);
-        
-        // Profile name with custom color
-        if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
-          ctx.font = '14px Arial, sans-serif';
-          ctx.fillStyle = textColor;
-          ctx.fillText(profileName, canvas.width / 2, qrSize + 60);
-        }
-        
-        canvas.toBlob((newBlob) => {
-          const finalUrl = URL.createObjectURL(newBlob);
-          resolve(finalUrl);
-        }, 'image/png');
-      };
-      
-      img.src = imageUrl;
-    });
-  } catch (error) {
-    console.error("Error adding text to QR:", error);
-    const blob = await qrCode.getRawData("png");
-    return URL.createObjectURL(blob);
-  }
-};
-
-/* QR with Custom Colors */
-const createQR = (url, dotsColor = "#000000", bgColor = "transparent") => {
+/* SVG QR Code Generator - Higher Quality with Dotted Pattern */
+const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent", size = 800) => {
   const qrData = `${url}`;
   
   return new QRCodeStyling({ 
-    width: 300,
-    height: 300,
+    width: size,
+    height: size,
     data: qrData,
-    type: "png",
+    type: "svg",
     dotsOptions: {
       color: dotsColor,
       type: "dots",
@@ -96,11 +32,189 @@ const createQR = (url, dotsColor = "#000000", bgColor = "transparent") => {
     },
     imageOptions: {
       crossOrigin: "anonymous",
-      margin: 5,
+      margin: 10,
       imageSize: 0.2
     },
     image: "/B.png",
   });
+};
+
+/* Helper function to safely render SVG thumbnail */
+const renderSVGThumbnail = (svgDataUrl, className = "w-10 h-10") => {
+  if (!svgDataUrl || !svgDataUrl.startsWith('data:image/svg')) {
+    return null;
+  }
+  
+  try {
+    const svgString = decodeURIComponent(svgDataUrl.split(',')[1]);
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = svgString;
+    const svgElement = tempDiv.querySelector('svg');
+    
+    if (svgElement) {
+      svgElement.setAttribute('width', '40');
+      svgElement.setAttribute('height', '40');
+      svgElement.setAttribute('viewBox', `0 0 ${svgElement.getAttribute('viewBox')?.split(' ')[2] || '800'} ${svgElement.getAttribute('viewBox')?.split(' ')[3] || '920'}`);
+      
+      const serializer = new XMLSerializer();
+      const modifiedSvgString = serializer.serializeToString(svgElement);
+      
+      return { __html: modifiedSvgString };
+    }
+  } catch (error) {
+    console.error("Error rendering SVG thumbnail:", error);
+  }
+  
+  return null;
+};
+
+/* Add text to SVG QR Code */
+const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
+  try {
+    const svgString = await qrCode.getRawData("svg");
+    const svgText = await svgString.text();
+    
+    const container = document.createElement('div');
+    container.innerHTML = svgText;
+    const svgElement = container.querySelector('svg');
+    
+    if (!svgElement) {
+      throw new Error("No SVG element found");
+    }
+    
+    const originalWidth = parseInt(svgElement.getAttribute('width') || '800');
+    const originalHeight = parseInt(svgElement.getAttribute('height') || '800');
+    const textHeight = 120;
+    const newHeight = originalHeight + textHeight;
+    
+    const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    newSvg.setAttribute("width", originalWidth.toString());
+    newSvg.setAttribute("height", newHeight.toString());
+    newSvg.setAttribute("viewBox", `0 0 ${originalWidth} ${newHeight}`);
+    newSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    
+    if (bgColor !== 'transparent') {
+      const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bgRect.setAttribute("width", "100%");
+      bgRect.setAttribute("height", "100%");
+      bgRect.setAttribute("fill", bgColor);
+      newSvg.appendChild(bgRect);
+    }
+    
+    const qrGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const originalChildren = svgElement.children;
+    for (let i = 0; i < originalChildren.length; i++) {
+      const child = originalChildren[i].cloneNode(true);
+      qrGroup.appendChild(child);
+    }
+    newSvg.appendChild(qrGroup);
+    
+    const lineY = originalHeight + 20;
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", "40");
+    line.setAttribute("y1", lineY.toString());
+    line.setAttribute("x2", (originalWidth - 40).toString());
+    line.setAttribute("y2", lineY.toString());
+    line.setAttribute("stroke", "#cccccc");
+    line.setAttribute("stroke-width", "2");
+    line.setAttribute("stroke-dasharray", "5,5");
+    newSvg.appendChild(line);
+    
+    const codeText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    codeText.setAttribute("x", (originalWidth / 2).toString());
+    codeText.setAttribute("y", (originalHeight + 55).toString());
+    codeText.setAttribute("text-anchor", "middle");
+    codeText.setAttribute("font-family", "Courier New, monospace");
+    codeText.setAttribute("font-size", "32");
+    codeText.setAttribute("font-weight", "bold");
+    codeText.setAttribute("fill", textColor);
+    codeText.textContent = `Code: ${activationCode}`;
+    newSvg.appendChild(codeText);
+    
+    if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
+      const nameText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      nameText.setAttribute("x", (originalWidth / 2).toString());
+      nameText.setAttribute("y", (originalHeight + 95).toString());
+      nameText.setAttribute("text-anchor", "middle");
+      nameText.setAttribute("font-family", "Arial, sans-serif");
+      nameText.setAttribute("font-size", "24");
+      nameText.setAttribute("fill", textColor);
+      nameText.textContent = profileName;
+      newSvg.appendChild(nameText);
+    }
+    
+    const serializer = new XMLSerializer();
+    const svgStringOutput = serializer.serializeToString(newSvg);
+    const dataUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStringOutput);
+    
+    return dataUrl;
+  } catch (error) {
+    console.error("Error creating SVG QR:", error);
+    const blob = await qrCode.getRawData("png");
+    return URL.createObjectURL(blob);
+  }
+};
+
+/* High resolution PNG for compatibility */
+const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
+  try {
+    const blob = await qrCode.getRawData("png");
+    const img = new Image();
+    const imageUrl = URL.createObjectURL(blob);
+    
+    return new Promise((resolve) => {
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        const qrSize = 800;
+        const textHeight = 120;
+        canvas.width = qrSize;
+        canvas.height = qrSize + textHeight;
+        
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        if (bgColor === 'transparent') {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        } else {
+          ctx.fillStyle = bgColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        ctx.drawImage(img, 0, 0, qrSize, qrSize);
+        
+        ctx.strokeStyle = '#cccccc';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(50, qrSize + 15);
+        ctx.lineTo(canvas.width - 50, qrSize + 15);
+        ctx.stroke();
+        
+        ctx.font = 'bold 48px "Courier New", monospace';
+        ctx.fillStyle = textColor;
+        ctx.textAlign = 'center';
+        ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, qrSize + 70);
+        
+        if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
+          ctx.font = '32px Arial, sans-serif';
+          ctx.fillStyle = textColor;
+          ctx.fillText(profileName, canvas.width / 2, qrSize + 115);
+        }
+        
+        canvas.toBlob((newBlob) => {
+          const finalUrl = URL.createObjectURL(newBlob);
+          resolve(finalUrl);
+        }, 'image/png', 1.0);
+      };
+      
+      img.src = imageUrl;
+    });
+  } catch (error) {
+    console.error("Error adding text to high-res PNG:", error);
+    const blob = await qrCode.getRawData("png");
+    return URL.createObjectURL(blob);
+  }
 };
 
 const ManageParkingTag = () => {
@@ -115,6 +229,7 @@ const ManageParkingTag = () => {
   });
   const [qrImages, setQrImages] = useState({});
   const [downloadingDate, setDownloadingDate] = useState(null);
+  const [useSVG, setUseSVG] = useState(true);
   
   // Color customization states
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -160,34 +275,8 @@ const ManageParkingTag = () => {
       
       setStats({ total, activated, inactive });
       
-      // Generate QR images with custom colors
-      const qrPromises = allTags.map(async (tag) => {
-        if (tag.qrUrl) {
-          try {
-            const qr = createQR(tag.qrUrl, qrDotsColor, qrBgColor);
-            const finalImageUrl = await addTextToQRImage(
-              qr, 
-              tag.activationCode, 
-              tag.owner?.name || tag.profile?.ownerName || '',
-              textColor,
-              qrBgColor
-            );
-            return { tagId: tag._id, imageUrl: finalImageUrl };
-          } catch (err) {
-            console.error(`Error generating QR for ${tag._id}:`, err);
-            return { tagId: tag._id, imageUrl: null };
-          }
-        }
-        return { tagId: tag._id, imageUrl: null };
-      });
-
-      const qrResults = await Promise.all(qrPromises);
-      const qrMap = {};
-      qrResults.forEach(result => {
-        qrMap[result.tagId] = result.imageUrl;
-      });
-      setQrImages(qrMap);
-
+      await generateHighQualityQRCodes(allTags);
+      
     } catch (err) {
       console.error(err);
       setError("Unable to fetch parking tags");
@@ -196,27 +285,35 @@ const ManageParkingTag = () => {
     }
   };
 
-  // Regenerate QR when colors change
-  useEffect(() => {
-    if (tags.length > 0) {
-      regenerateQRCodes();
-    }
-  }, [qrBgColor, qrDotsColor, textColor]);
-
-  const regenerateQRCodes = async () => {
-    const qrPromises = tags.map(async (tag) => {
+  // Generate high quality QR codes
+  const generateHighQualityQRCodes = async (tagsList = tags) => {
+    const qrPromises = tagsList.map(async (tag) => {
       if (tag.qrUrl) {
         try {
-          const qr = createQR(tag.qrUrl, qrDotsColor, qrBgColor);
-          const finalImageUrl = await addTextToQRImage(
-            qr, 
-            tag.activationCode, 
-            tag.owner?.name || tag.profile?.ownerName || '',
-            textColor,
-            qrBgColor
-          );
+          const qr = createHighQualityQR(tag.qrUrl, qrDotsColor, qrBgColor, 800);
+          
+          let finalImageUrl;
+          if (useSVG) {
+            finalImageUrl = await addTextToSVG(
+              qr, 
+              tag.activationCode, 
+              tag.owner?.name || tag.profile?.ownerName || '',
+              textColor,
+              qrBgColor
+            );
+          } else {
+            finalImageUrl = await addTextToHighResPNG(
+              qr, 
+              tag.activationCode, 
+              tag.owner?.name || tag.profile?.ownerName || '',
+              textColor,
+              qrBgColor
+            );
+          }
+          
           return { tagId: tag._id, imageUrl: finalImageUrl };
         } catch (err) {
+          console.error(`Error generating QR for ${tag._id}:`, err);
           return { tagId: tag._id, imageUrl: null };
         }
       }
@@ -230,6 +327,13 @@ const ManageParkingTag = () => {
     });
     setQrImages(qrMap);
   };
+
+  // Regenerate QR when colors change or format changes
+  useEffect(() => {
+    if (tags.length > 0) {
+      generateHighQualityQRCodes();
+    }
+  }, [qrBgColor, qrDotsColor, textColor, useSVG]);
 
   // Initial fetch
   useEffect(() => {
@@ -292,31 +396,117 @@ const ManageParkingTag = () => {
     ([date]) => !selectedDate || date === selectedDate
   );
 
-  /* PREVIEW */
+  /* PREVIEW with high quality */
   const previewQR = async (tag) => {
     if (!tag.qrUrl) {
       alert("No QR URL available for this parking tag");
       return;
     }
-    const qr = createQR(tag.qrUrl, qrDotsColor, qrBgColor);
-    const blob = await qr.getRawData("png");
-    const imgUrl = URL.createObjectURL(blob);
+    
+    const qr = createHighQualityQR(tag.qrUrl, qrDotsColor, qrBgColor, 600);
+    let previewUrl;
+    
+    if (useSVG) {
+      previewUrl = await addTextToSVG(
+        qr, 
+        tag.activationCode, 
+        tag.owner?.name || tag.profile?.ownerName || '',
+        textColor,
+        qrBgColor
+      );
+    } else {
+      previewUrl = await addTextToHighResPNG(
+        qr, 
+        tag.activationCode, 
+        tag.owner?.name || tag.profile?.ownerName || '',
+        textColor,
+        qrBgColor
+      );
+    }
 
-    const win = window.open("", "_blank", "width=500,height=550");
+    const win = window.open("", "_blank", "width=800,height=900");
     win.document.write(`
-      <body style="margin:0;background:#0b1220;display:flex;flex-direction:column;justify-content:center;align-items:center;font-family:Arial,sans-serif;padding:20px;">
-        <div style="background:#fff;padding:20px;border-radius:16px;margin-bottom:20px;">
-          <img src="${imgUrl}" style="width:300px;height:300px;" />
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Parking Tag QR - ${tag.activationCode}</title>
+        <style>
+          body {
+            margin: 0;
+            background: #0b1220;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            min-height: 100vh;
+          }
+          .qr-container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+          }
+          .qr-container img, .qr-container svg {
+            max-width: 600px;
+            width: 100%;
+            height: auto;
+          }
+          .info {
+            background: #1a1a2e;
+            padding: 20px 40px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            text-align: center;
+          }
+          .info p {
+            color: #888;
+            font-size: 14px;
+            margin: 0 0 5px 0;
+          }
+          .info h2 {
+            color: #00ff00;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+            letter-spacing: 2px;
+            font-family: monospace;
+          }
+          .quality-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #4ade80;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="qr-container">
+          ${useSVG ? 
+            `<div>${previewUrl.startsWith('data:image/svg') ? 
+              decodeURIComponent(previewUrl.split(',')[1]) : 
+              `<img src="${previewUrl}" alt="QR Code" />`}</div>` : 
+            `<img src="${previewUrl}" alt="QR Code" />`}
         </div>
-        <div style="background:#1a1a2e;padding:15px 30px;border-radius:8px;border:1px solid #333;">
-          <p style="color:#888;font-size:14px;margin:0 0 5px 0;">Activation Code</p>
-          <p style="color:#00ff00;font-size:24px;font-weight:bold;margin:0;letter-spacing:2px;">${tag.activationCode}</p>
+        <div class="info">
+          <p>Activation Code</p>
+          <h2>${tag.activationCode}</h2>
+        </div>
+        <div class="quality-badge">
+          ${useSVG ? '🔷 Vector Quality (SVG)' : '📸 High Resolution PNG'}
         </div>
       </body>
+      </html>
     `);
   };
 
-  /* DOWNLOAD SINGLE TAG */
+  /* DOWNLOAD SINGLE TAG - High Quality */
   const downloadQR = async (tag) => {
     if (!tag.qrUrl) {
       alert("No QR URL available for download");
@@ -324,23 +514,38 @@ const ManageParkingTag = () => {
     }
     
     try {
-      const qr = createQR(tag.qrUrl, qrDotsColor, qrBgColor);
-      const finalImageUrl = await addTextToQRImage(
-        qr, 
-        tag.activationCode, 
-        tag.owner?.name || tag.profile?.ownerName || '',
-        textColor,
-        qrBgColor
-      );
+      const qr = createHighQualityQR(tag.qrUrl, qrDotsColor, qrBgColor, 1200);
+      let finalImageUrl;
+      let fileExtension = useSVG ? 'svg' : 'png';
+      
+      if (useSVG) {
+        finalImageUrl = await addTextToSVG(
+          qr, 
+          tag.activationCode, 
+          tag.owner?.name || tag.profile?.ownerName || '',
+          textColor,
+          qrBgColor
+        );
+      } else {
+        finalImageUrl = await addTextToHighResPNG(
+          qr, 
+          tag.activationCode, 
+          tag.owner?.name || tag.profile?.ownerName || '',
+          textColor,
+          qrBgColor
+        );
+      }
       
       const link = document.createElement('a');
       link.href = finalImageUrl;
-      link.download = `parking-tag-${tag.activationCode}-${(tag.owner?.name || tag.profile?.ownerName || 'unknown').replace(/\s+/g, '-')}.png`;
+      link.download = `parking-tag-${tag.activationCode}-${(tag.owner?.name || tag.profile?.ownerName || 'unknown').replace(/\s+/g, '-')}.${fileExtension}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       
-      URL.revokeObjectURL(finalImageUrl);
+      if (!useSVG) {
+        URL.revokeObjectURL(finalImageUrl);
+      }
 
       if (!tag.isDownloaded) {
         try {
@@ -369,7 +574,7 @@ const ManageParkingTag = () => {
     }
   };
 
-  /* BULK DOWNLOAD ALL TAGS OF A SPECIFIC DATE */
+  /* BULK DOWNLOAD ALL TAGS OF A SPECIFIC DATE - High Quality */
   const downloadAllByDate = async (date, tagsList) => {
     if (!tagsList || tagsList.length === 0) {
       alert("No parking tags available for this date");
@@ -387,34 +592,49 @@ const ManageParkingTag = () => {
 
     try {
       const zip = new JSZip();
-      const folderName = `parking-tags-${date}`;
+      const folderName = `parking-tags-${date}-${useSVG ? 'vector' : 'highres'}`;
       const folder = zip.folder(folderName);
 
-      alert(`Downloading ${validTags.length} parking tags. Please wait...`);
+      alert(`Downloading ${validTags.length} high-quality parking tags. Please wait...`);
 
-      const chunkSize = 5;
+      const chunkSize = 3;
       const results = [];
 
       for (let i = 0; i < validTags.length; i += chunkSize) {
         const chunk = validTags.slice(i, i + chunkSize);
         const chunkPromises = chunk.map(async (tag) => {
           try {
-            const qr = createQR(tag.qrUrl, qrDotsColor, qrBgColor);
-            const finalImageUrl = await addTextToQRImage(
-              qr, 
-              tag.activationCode, 
-              tag.owner?.name || tag.profile?.ownerName || '',
-              textColor,
-              qrBgColor
-            );
-
-            const response = await fetch(finalImageUrl);
-            const blob = await response.blob();
-
-            const filename = `parking-tag-${tag.activationCode}-${(tag.owner?.name || tag.profile?.ownerName || 'unknown').replace(/\s+/g, '-')}.png`;
-
-            folder.file(filename, blob, { binary: true });
-            URL.revokeObjectURL(finalImageUrl);
+            const qr = createHighQualityQR(tag.qrUrl, qrDotsColor, qrBgColor, 1200);
+            let fileExtension = useSVG ? 'svg' : 'png';
+            
+            if (useSVG) {
+              const finalImageUrl = await addTextToSVG(
+                qr, 
+                tag.activationCode, 
+                tag.owner?.name || tag.profile?.ownerName || '',
+                textColor,
+                qrBgColor
+              );
+              
+              const svgString = decodeURIComponent(finalImageUrl.split(',')[1]);
+              const blob = new Blob([svgString], { type: 'image/svg+xml' });
+              const filename = `parking-tag-${tag.activationCode}-${(tag.owner?.name || tag.profile?.ownerName || 'unknown').replace(/\s+/g, '-')}.${fileExtension}`;
+              folder.file(filename, blob);
+            } else {
+              const finalImageUrl = await addTextToHighResPNG(
+                qr, 
+                tag.activationCode, 
+                tag.owner?.name || tag.profile?.ownerName || '',
+                textColor,
+                qrBgColor
+              );
+              
+              const response = await fetch(finalImageUrl);
+              const blob = await response.blob();
+              const filename = `parking-tag-${tag.activationCode}-${(tag.owner?.name || tag.profile?.ownerName || 'unknown').replace(/\s+/g, '-')}.${fileExtension}`;
+              folder.file(filename, blob);
+              URL.revokeObjectURL(finalImageUrl);
+            }
 
             return { success: true, tag };
           } catch (error) {
@@ -432,7 +652,7 @@ const ManageParkingTag = () => {
 
       const link = document.createElement('a');
       link.href = zipUrl;
-      link.download = `all-parking-tags-${date}.zip`;
+      link.download = `all-parking-tags-${date}-${useSVG ? 'vector' : 'highres'}.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -442,7 +662,7 @@ const ManageParkingTag = () => {
       const successful = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
 
-      alert(`Download complete!\nSuccessful: ${successful}\nFailed: ${failed}`);
+      alert(`Download complete!\n✅ Successful: ${successful}\n❌ Failed: ${failed}\n📐 Format: ${useSVG ? 'Vector (SVG)' : 'High Resolution PNG'}\n🔍 Perfect quality, no pixelation!`);
 
     } catch (error) {
       console.error("Error in bulk download:", error);
@@ -539,6 +759,34 @@ const ManageParkingTag = () => {
     </div>
   );
 
+  // Component to render QR thumbnail
+  const QRThumbnail = ({ tagId }) => {
+    const imageData = qrImages[tagId];
+    
+    if (!imageData) {
+      return <img src="/qr.png" alt="QR" className="w-10 h-10" />;
+    }
+    
+    if (useSVG && imageData.startsWith('data:image/svg')) {
+      const svgContent = renderSVGThumbnail(imageData);
+      if (svgContent) {
+        return <div className="w-10 h-10" dangerouslySetInnerHTML={svgContent} />;
+      }
+    }
+    
+    return (
+      <img
+        src={imageData}
+        alt="QR Code"
+        className="w-10 h-10 object-contain"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = "/qr.png";
+        }}
+      />
+    );
+  };
+
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-[100vw] overflow-x-hidden">
       {/* HEADER */}
@@ -554,6 +802,32 @@ const ManageParkingTag = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-center">
+          {/* Quality Toggle Button */}
+          <button
+            onClick={() => setUseSVG(!useSVG)}
+            className={`px-4 py-3 rounded-lg flex items-center gap-2 transition-all cursor-pointer ${
+              useSVG 
+                ? 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600' 
+                : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'
+            } text-white shadow-lg`}
+          >
+            {useSVG ? (
+              <>
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>SVG</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M4 4h16v16H4z M8 8h8v8H8z"/>
+                </svg>
+                <span>PNG</span>
+              </>
+            )}
+          </button>
+
           {/* COLOR CUSTOMIZATION BUTTON */}
           <button
             onClick={() => setShowColorPicker(!showColorPicker)}
@@ -629,134 +903,134 @@ const ManageParkingTag = () => {
         </div>
       </div>
 
+
       {/* COLOR PICKER MODAL */}
-      {/* COLOR PICKER MODAL */}
-            {showColorPicker && (
-              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center p-4">
-                <div className="absolute top-5 bg-gray-900 rounded-2xl max-w-md w-full border border-gray-700 shadow-2xl p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-white">Customize QR Colors</h3>
-                    <button onClick={() => setShowColorPicker(false)} className="text-gray-400 hover:text-white">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                      </svg>
+      {showColorPicker && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+          <div className="bg-gray-900 rounded-2xl max-w-md w-full border border-gray-700 shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-white">Customize QR Colors</h3>
+              <button onClick={() => setShowColorPicker(false)} className="text-gray-400 hover:text-white">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* QR Background Color */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">QR Background Color</label>
+                <div className="flex items-center gap-3">
+                  <HexColorPicker color={qrBgColor === 'transparent' ? '#ffffff' : qrBgColor} onChange={(color) => setQrBgColor(color)} />
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => setQrBgColor("transparent")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700">
+                      Transparent
                     </button>
-                  </div>
-      
-                  <div className="space-y-6">
-                    {/* QR Background Color */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">QR Background Color</label>
-                      <div className="flex items-center gap-3">
-                        <HexColorPicker color={qrBgColor === 'transparent' ? '#ffffff' : qrBgColor} onChange={(color) => setQrBgColor(color)} />
-                        <div className="flex flex-col gap-2">
-                          <button onClick={() => setQrBgColor("transparent")}
-                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700">
-                            Transparent
-                          </button>
-                          <button onClick={() => setQrBgColor("#ffffff")}
-                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                            <div className="w-4 h-4 bg-white border border-gray-600 rounded"></div>
-                            White
-                          </button>
-                          <button onClick={() => setQrBgColor("#000000")}
-                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                            <div className="w-4 h-4 bg-black border border-gray-600 rounded"></div>
-                            Black
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-      
-                    {/* QR Dots Color */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">QR Dots Color</label>
-                      <div className="flex items-center gap-3">
-                        <HexColorPicker color={qrDotsColor} onChange={setQrDotsColor} />
-                        <div className="flex flex-col gap-2">
-                          <button onClick={() => setQrDotsColor("#000000")}
-                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                            <div className="w-4 h-4 bg-black rounded"></div>
-                            Black
-                          </button>
-                          <button onClick={() => setQrDotsColor("#E1C48A")}
-                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                            <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
-                            Gold
-                          </button>
-                          <button onClick={() => setQrDotsColor("#3B82F6")}
-                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                            <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                            Blue
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-      
-                    {/* Text Color */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Text Color</label>
-                      <div className="flex items-center gap-3">
-                        <HexColorPicker color={textColor} onChange={setTextColor} />
-                        <div className="flex flex-col gap-2">
-                          <button onClick={() => setTextColor("#000000")}
-                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                            <div className="w-4 h-4 bg-black rounded"></div>
-                            Black
-                          </button>
-                          <button onClick={() => setTextColor("#E1C48A")}
-                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                            <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
-                            Gold
-                          </button>
-                          <button onClick={() => setTextColor("#ffffff")}
-                            className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                            <div className="w-4 h-4 bg-white rounded"></div>
-                            White
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-      
-                    {/* Preview */}
-                    <div className="pt-4 border-t border-gray-700">
-                      <p className="text-sm text-gray-400 text-center mb-3">Live Preview</p>
-                      <div className="bg-gray-800 rounded-lg p-4 flex justify-center">
-                        <div className="w-24 h-24 rounded-lg flex items-center justify-center" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}>
-                          <div className="w-16 h-16 flex items-center justify-center">
-                            <svg viewBox="0 0 100 100" className="w-14 h-14">
-                              <rect x="20" y="20" width="10" height="10" fill={qrDotsColor} />
-                              <rect x="35" y="20" width="10" height="10" fill={qrDotsColor} />
-                              <rect x="50" y="20" width="10" height="10" fill={qrDotsColor} />
-                              <rect x="20" y="35" width="10" height="10" fill={qrDotsColor} />
-                              <rect x="50" y="35" width="10" height="10" fill={qrDotsColor} />
-                              <rect x="20" y="50" width="10" height="10" fill={qrDotsColor} />
-                              <rect x="35" y="50" width="10" height="10" fill={qrDotsColor} />
-                              <rect x="50" y="50" width="10" height="10" fill={qrDotsColor} />
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-center text-xs mt-2" style={{ color: textColor }}>
-                        Code: ABC123XYZ
-                      </p>
-                    </div>
-                  </div>
-      
-                  <div className="mt-6 flex gap-3">
-                    <button onClick={() => setShowColorPicker(false)}
-                      className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors">
-                      Close
+                    <button onClick={() => setQrBgColor("#ffffff")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-white border border-gray-600 rounded"></div>
+                      White
                     </button>
-                    <button onClick={() => setShowColorPicker(false)}
-                      className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-lg text-white transition-colors cursor-pointer">
-                      Apply Colors
+                    <button onClick={() => setQrBgColor("#000000")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-black border border-gray-600 rounded"></div>
+                      Black
                     </button>
                   </div>
                 </div>
               </div>
-            )}
-      
+
+              {/* QR Dots Color */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">QR Dots Color</label>
+                <div className="flex items-center gap-3">
+                  <HexColorPicker color={qrDotsColor} onChange={setQrDotsColor} />
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => setQrDotsColor("#000000")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-black rounded"></div>
+                      Black
+                    </button>
+                    <button onClick={() => setQrDotsColor("#E1C48A")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
+                      Gold
+                    </button>
+                    <button onClick={() => setQrDotsColor("#3B82F6")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                      Blue
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Text Color */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Text Color</label>
+                <div className="flex items-center gap-3">
+                  <HexColorPicker color={textColor} onChange={setTextColor} />
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => setTextColor("#000000")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-black rounded"></div>
+                      Black
+                    </button>
+                    <button onClick={() => setTextColor("#E1C48A")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
+                      Gold
+                    </button>
+                    <button onClick={() => setTextColor("#ffffff")}
+                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-white rounded"></div>
+                      White
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Preview */}
+              <div className="pt-4 border-t border-gray-700">
+                <p className="text-sm text-gray-400 text-center mb-3">Live Preview</p>
+                <div className="bg-gray-800 rounded-lg p-4 flex justify-center">
+                  <div className="w-32 h-32 rounded-lg flex items-center justify-center" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}>
+                    <div className="w-24 h-24 flex items-center justify-center">
+                      <svg viewBox="0 0 100 100" className="w-20 h-20">
+                        <rect x="20" y="20" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="35" y="20" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="50" y="20" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="20" y="35" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="50" y="35" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="20" y="50" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="35" y="50" width="10" height="10" fill={qrDotsColor} />
+                        <rect x="50" y="50" width="10" height="10" fill={qrDotsColor} />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-center text-xs mt-2" style={{ color: textColor }}>
+                  Code: ABC123XYZ
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <button onClick={() => setShowColorPicker(false)}
+                className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors">
+                Close
+              </button>
+              <button onClick={() => setShowColorPicker(false)}
+                className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-lg text-white transition-colors cursor-pointer">
+                Apply Colors
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 md:mb-8">
         <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-300">
@@ -875,20 +1149,8 @@ const ManageParkingTag = () => {
                           {new Date(tag.createdAt).toLocaleDateString()}
                         </td>
                         <td className="p-3 text-center">
-                          <div className="w-12 h-12 bg-white p-1.5 rounded-lg flex items-center justify-center mx-auto shadow-md">
-                            {qrImages[tag._id] ? (
-                              <img
-                                src={qrImages[tag._id]}
-                                alt="QR Code"
-                                className="w-10 h-10"
-                                onError={(e) => {
-                                  e.target.onerror = null;
-                                  e.target.src = "/qr.png";
-                                }}
-                              />
-                            ) : (
-                              <img src="/qr.png" alt="Demo QR" className="w-10 h-10" />
-                            )}
+                          <div className="w-12 h-12 bg-white p-1.5 rounded-lg flex items-center justify-center mx-auto shadow-md overflow-hidden">
+                            <QRThumbnail tagId={tag._id} />
                           </div>
                         </td>
                         <td className="p-3 text-center">
@@ -1031,20 +1293,8 @@ const ManageParkingTag = () => {
                         </td>
                         <td className="p-3">
                           <div className="flex items-center justify-center gap-2">
-                            <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mr-2 shadow-md">
-                              {qrImages[tag._id] ? (
-                                <img
-                                  src={qrImages[tag._id]}
-                                  alt="QR Code"
-                                  className="w-8 h-8"
-                                  onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = "/qr.png";
-                                  }}
-                                />
-                              ) : (
-                                <img src="/qr.png" alt="Demo QR" className="w-8 h-8" />
-                              )}
+                            <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mr-2 shadow-md overflow-hidden">
+                              <QRThumbnail tagId={tag._id} />
                             </div>
                             <button
                               onClick={() => previewQR(tag)}
@@ -1154,12 +1404,8 @@ const ManageParkingTag = () => {
                         <p className="text-xs text-indigo-400 font-mono mt-1">{tag.activationCode}</p>
                         <p className="text-xs text-gray-500 mt-1">Created: {new Date(tag.createdAt).toLocaleDateString()}</p>
                       </div>
-                      <div className="w-14 h-14 bg-white p-1.5 rounded-lg shadow-md ml-3">
-                        {qrImages[tag._id] ? (
-                          <img src={qrImages[tag._id]} alt="QR" className="w-full h-full object-cover" />
-                        ) : (
-                          <img src="/qr.png" alt="QR" className="w-full h-full" />
-                        )}
+                      <div className="w-14 h-14 bg-white p-1.5 rounded-lg shadow-md ml-3 overflow-hidden">
+                        <QRThumbnail tagId={tag._id} />
                       </div>
                     </div>
                     <div className="flex gap-2 mt-2 pt-2 border-t border-gray-700/50">
