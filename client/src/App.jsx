@@ -152,7 +152,7 @@ function App() {
           <Route path="/profile/:slug" element={<ProfilePage />} />
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
           <Route path="/card/activate" element={<ActivateCard />} />
-          <Route path="/parking-tag/activate" element={<ActivateParkingTag />} />
+           <Route path="/parking-tag/activate" element={<ActivateParkingTag />} />
 
 
           <Route path="/profile/edit/:id" element={<Layout />}>

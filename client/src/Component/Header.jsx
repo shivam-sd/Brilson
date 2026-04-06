@@ -180,47 +180,13 @@ const Header = () => {
               <div className="absolute top-12 right-0 bg-gray-900 border border-white/20 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all min-w-[160px]">
                 <div className="flex flex-col p-2 gap-1 relative">
 
-                  {myCardProfile ? (
+                  {/* {myCardProfile ? (
                     <Link
                       to={`/admin/passTo/Profile`}
                       className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
                     >
                       My Admin
                     </Link>
-//                     <>
-//                     <button
-//     onClick={() => setOpen(prev => !prev)}
-//     className="w-full flex items-center justify-between px-4 py-3 
-//                rounded-xl bg-gray-900/70 border border-white/10 
-//                text-gray-300 hover:text-white transition-all cursor-pointer"
-//   >
-//     <span className="font-medium">My Profiles</span>
-//     {open ? (
-//       <IoArrowForwardCircle size={20} />
-//     ) : (
-//       <IoMdArrowDropdownCircle size={20} />
-//     )}
-//   </button>
-
-//   {/* Dropdown (Mobile) */}
-//   <AnimatePresence>
-//     {open && (
-//       <motion.div
-//         initial={{ opacity: 0, height: 0 }}
-//         animate={{ opacity: 1, height: "auto" }}
-//         exit={{ opacity: 0, height: 0 }}
-//         transition={{ duration: 0.5 }}
-//         className="mt-3 w-48"
-//       >
-//         <UserAllCards
-//           cards={cards}
-//           showAllCards={showAllCards}
-//           setShowAllCards={setShowAllCards}
-//         />
-//       </motion.div>
-//     )}
-//   </AnimatePresence>
-// </>
                   ) : (
                     <button
                       onClick={() =>
@@ -230,7 +196,16 @@ const Header = () => {
                     >
                       My Admin
                     </button>
-                  )}
+                  )} */}
+
+<Link
+                      to={`/admin/passTo/Profile`}
+                      className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
+                    >
+                      My Admin
+                    </Link>
+
+
 
                   <Link to="/orders" className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white flex items-center ">
                     <span>My Orders</span>
@@ -277,7 +252,7 @@ const Header = () => {
                 >
                   <div className="flex flex-col p-2 gap-1">
 
-                    {myCardProfile ? (
+                    {/* {myCardProfile ? (
                       <Link
                         to={`/admin/passTo/Profile`}
                         onClick={() => setMobileProfileOpen(false)}
@@ -285,43 +260,6 @@ const Header = () => {
                       >
                         My Admin
                       </Link>
-
-// <>
-//                       <button
-//     onClick={() => setOpen(prev => !prev)}
-//     className="w-full flex items-center justify-between px-4 py-3 
-//                rounded-xl bg-gray-900/70 border border-white/10 
-//                text-gray-300 hover:text-white transition-all"
-//   >
-//     <span className="font-medium">My Profiles</span>
-//     {open ? (
-//       <IoArrowForwardCircle size={20} />
-//     ) : (
-//       <IoMdArrowDropdownCircle size={20} />
-//     )}
-//   </button>
-
-//   {/* Dropdown (Mobile) */}
-//   <AnimatePresence>
-//     {open && (
-//       <motion.div
-//         initial={{ opacity: 0, height: 0 }}
-//         animate={{ opacity: 1, height: "auto"}}
-//         exit={{ opacity: 0, height: 0 }}
-//         transition={{ duration: 0.3 }}
-//         className="mt-3 w-48"
-//       >
-//         <UserAllCards
-//           cards={cards}
-//           showAllCards={showAllCards}
-//           setShowAllCards={setShowAllCards}
-//         />
-//       </motion.div>
-//     )}
-//   </AnimatePresence>
-// </>
-
-
 
                     ) : (
                       <button
@@ -333,7 +271,16 @@ const Header = () => {
                       >
                         My Admin
                       </button>
-                    )}
+                    )} */}
+
+<Link
+                        to={`/admin/passTo/Profile`}
+                        onClick={() => setMobileProfileOpen(false)}
+                        className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
+                      >
+                        My Admin
+                      </Link>
+
 
                     {/* <Link
                       to="/orders"
