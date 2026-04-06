@@ -127,7 +127,7 @@ const ActivateCard = () => {
       }
 
       toast.success("Card activated successfully");
-      navigate(`/profile/${slug}`);
+      navigate(`/profile/${slug}`, { replace: true });
     } catch (err) {
       console.error("Activation error:", err);
 

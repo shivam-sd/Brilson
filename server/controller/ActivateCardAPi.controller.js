@@ -5,102 +5,7 @@ const UserModel = require("../models/User.model");
 
 /*  ACTIVATE CARD  */
 
-// for single card activation single accont
-
-// const ActivateCardAPi = async (req, res) => {
-//   try {
-//     const userId = req.user;
-//     const { activationCode } = req.body;
-
-//     if (!activationCode) {
-//       return res.status(400).json({
-//         error: "activation code required",
-//       });
-//     }
-
-//     const card = await CardProfileModel.findOne({ activationCode });
-
-//     if (!card) {
-//       return res.status(400).json({
-//         error: "Invalid card details",
-//       });
-//     }
-
-//     if (card.isActivated) {
-//       return res.status(403).json({
-//         error: "This card is already activated",
-//         slug: card.slug,
-//       });
-//     }
-
-//     const user = await UserModel.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({
-//         error: "User not found",
-//       });
-//     }
-
-//     const existingCard = await CardProfileModel.findOne({
-//       owner: userId,
-//       isActivated: true,
-//     });
-
-//     if(existingCard){
-//       return res.status(403).json({error:"you can activate only one card per account! Please use another account to activate more cards."});
-//     }
-
-//     /*  ACTIVATE CARD  */
-//     card.isActivated = true;
-//     card.owner = userId;
-//     card.activatedAt = new Date();
-//     card.tempSessionId = generateSlug(activationCode + Date.now());
-//     card.slug = activationCode;
-
-//     await card.save();
-
-//     /*  ADD CARD TO USER  */
-//     user.myCards.addToSet(card._id);
-
-//     const refferdByUser = await UserModel.findById(user.referredBy);
-
-//     // console.log("Refferd By User:", refferdByUser);
-//     // if(!refferdByUser){
-//     //    return res.status(400).json({
-//     //     error: "Invalid referral details",
-//     //   });
-//     // }
-
-//     // user.activatedCardsCount += 1;
-
-//     /*  FIRST ACTIVATION  GIVE REWARD  */
-//     if (user.referredBy) {
-//       const refferdByUser = await UserModel.findById(user.referredBy);
-
-//       if (refferdByUser) {
-//         user.referralStatus = "completed";
-//         await user.save();
-//       }
-
-//       await distributeActivationCommission(user._id);
-//     } else {
-//       await user.save();
-//       await refferdByUser.save();
-//     }
-
-//     return res.status(200).json({
-//       message: "Card activated successfully",
-//       activationCode: card.activationCode,
-//       slug: card.slug,
-//     });
-//   } catch (err) {
-//     console.error("Activate Card Error:", err);
-//     return res.status(500).json({
-//       error: "Server error",
-//     });
-//   }
-// };
-
-// post multiple card activate singe account
+// for single card activation single account
 
 const ActivateCardAPi = async (req, res) => {
   try {
@@ -135,6 +40,15 @@ const ActivateCardAPi = async (req, res) => {
       });
     }
 
+    const existingCard = await CardProfileModel.findOne({
+      owner: userId,
+      isActivated: true,
+    });
+
+    if(existingCard){
+      return res.status(403).json({error:"you can activate only one card per account! Please use another account to activate more cards."});
+    }
+
     /*  ACTIVATE CARD  */
     card.isActivated = true;
     card.owner = userId;
@@ -147,7 +61,7 @@ const ActivateCardAPi = async (req, res) => {
     /*  ADD CARD TO USER  */
     user.myCards.addToSet(card._id);
 
-    const refferdByUser = await UserModel.findById(user.referredBy);
+    // const refferdByUser = await UserModel.findById(user.referredBy);
 
     // console.log("Refferd By User:", refferdByUser);
     // if(!refferdByUser){
@@ -160,18 +74,17 @@ const ActivateCardAPi = async (req, res) => {
 
     /*  FIRST ACTIVATION  GIVE REWARD  */
     if (user.referredBy) {
+      const refferdByUser = await UserModel.findById(user.referredBy);
 
-  const refferdByUser = await UserModel.findById(user.referredBy);
+      if (refferdByUser) {
+        user.referralStatus = "completed";
+        await user.save();
+      }
 
-  if (refferdByUser) {
-     user.referralStatus = "completed";
-    await user.save();
-  }
-
-  await distributeActivationCommission(user._id);
-} else {
+      await distributeActivationCommission(user._id);
+    } else {
       await user.save();
-      await refferdByUser.save();
+      // await refferdByUser.save();
     }
 
     return res.status(200).json({
@@ -179,7 +92,6 @@ const ActivateCardAPi = async (req, res) => {
       activationCode: card.activationCode,
       slug: card.slug,
     });
-
   } catch (err) {
     console.error("Activate Card Error:", err);
     return res.status(500).json({
@@ -187,6 +99,96 @@ const ActivateCardAPi = async (req, res) => {
     });
   }
 };
+
+
+
+// post multiple card activate singe account
+
+// const ActivateCardAPi = async (req, res) => {
+//   try {
+//     const userId = req.user;
+//     const { activationCode } = req.body;
+
+//     if (!activationCode) {
+//       return res.status(400).json({
+//         error: "activation code required",
+//       });
+//     }
+
+//     const card = await CardProfileModel.findOne({ activationCode });
+
+//     if (!card) {
+//       return res.status(400).json({
+//         error: "Invalid card details",
+//       });
+//     }
+
+//     if (card.isActivated) {
+//       return res.status(403).json({
+//         error: "This card is already activated",
+//         slug: card.slug,
+//       });
+//     }
+
+//     const user = await UserModel.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({
+//         error: "User not found",
+//       });
+//     }
+
+//     /*  ACTIVATE CARD  */
+//     card.isActivated = true;
+//     card.owner = userId;
+//     card.activatedAt = new Date();
+//     card.tempSessionId = generateSlug(activationCode + Date.now());
+//     card.slug = activationCode;
+
+//     await card.save();
+
+//     /*  ADD CARD TO USER  */
+//     user.myCards.addToSet(card._id);
+
+//     const refferdByUser = await UserModel.findById(user.referredBy);
+
+//     // console.log("Refferd By User:", refferdByUser);
+//     // if(!refferdByUser){
+//     //    return res.status(400).json({
+//     //     error: "Invalid referral details",
+//     //   });
+//     // }
+
+//     // user.activatedCardsCount += 1;
+
+//     /*  FIRST ACTIVATION  GIVE REWARD  */
+//     if (user.referredBy) {
+
+//   const refferdByUser = await UserModel.findById(user.referredBy);
+
+//   if (refferdByUser) {
+//      user.referralStatus = "completed";
+//     await user.save();
+//   }
+
+//   await distributeActivationCommission(user._id);
+// } else {
+//       await user.save();
+//       await refferdByUser.save();
+//     }
+
+//     return res.status(200).json({
+//       message: "Card activated successfully",
+//       activationCode: card.activationCode,
+//       slug: card.slug,
+//     });
+
+//   } catch (err) {
+//     console.error("Activate Card Error:", err);
+//     return res.status(500).json({
+//       error: "Server error",
+//     });
+//   }
+// };
 
 
 
