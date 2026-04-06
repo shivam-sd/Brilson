@@ -109,9 +109,9 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     }
     newSvg.appendChild(qrGroup);
     
-    const lineY = originalHeight + 20;
+    const lineY = originalHeight + 40;
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", "40");
+    line.setAttribute("x1", "50");
     line.setAttribute("y1", lineY.toString());
     line.setAttribute("x2", (originalWidth - 40).toString());
     line.setAttribute("y2", lineY.toString());
@@ -122,10 +122,10 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     
     const codeText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     codeText.setAttribute("x", (originalWidth / 2).toString());
-    codeText.setAttribute("y", (originalHeight + 55).toString());
+    codeText.setAttribute("y", (originalHeight + 40).toString());
     codeText.setAttribute("text-anchor", "middle");
     codeText.setAttribute("font-family", "Courier New, monospace");
-    codeText.setAttribute("font-size", "32");
+    codeText.setAttribute("font-size", "70");
     codeText.setAttribute("font-weight", "bold");
     codeText.setAttribute("fill", textColor);
     codeText.textContent = `Code: ${activationCode}`;
@@ -137,7 +137,7 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
       nameText.setAttribute("y", (originalHeight + 95).toString());
       nameText.setAttribute("text-anchor", "middle");
       nameText.setAttribute("font-family", "Arial, sans-serif");
-      nameText.setAttribute("font-size", "24");
+      nameText.setAttribute("font-size", "60");
       nameText.setAttribute("fill", textColor);
       nameText.textContent = profileName;
       newSvg.appendChild(nameText);
@@ -197,7 +197,7 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
         ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, qrSize + 70);
         
         if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
-          ctx.font = '32px Arial, sans-serif';
+          ctx.font = '40px Arial, sans-serif';
           ctx.fillStyle = textColor;
           ctx.fillText(profileName, canvas.width / 2, qrSize + 115);
         }
