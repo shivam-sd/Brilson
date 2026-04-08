@@ -84,9 +84,9 @@ import AdminPaymentGateway from "./Admin/AdminPaymentGateway";
 import PaymentSuccess from "./Component/PaymentSuccess";
 import ManageParkingTag from "./Admin/ManageParkingTag";
 import BulkCreateTags from "./Admin/components.jsx/BulkCreateTags";
-import ActivateParkingTag from "./Pages/ActivateParkingTag";
+import ActivateParkingTag from "./Pages/ParkingTag/ActivateParkingTag";
 import CheckParkingTagStatus from "./Pages/CheckParkingTagStatus";
-
+import ParkingTagProfile from "./Pages/ParkingTag/ParkingTagProfile";
 
 
 
@@ -150,6 +150,7 @@ function App() {
           <Route path="/c/parking-tag/:activationCode" element={<CheckParkingTagStatus />} />
           <Route path="/admin/passTo/Profile" element={<AdminPassToProfile />} />
           <Route path="/profile/:slug" element={<ProfilePage />} />
+          <Route path="/profile/P/:slug" element={<ParkingTagProfile />} />
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
           <Route path="/card/activate" element={<ActivateCard />} />
            <Route path="/parking-tag/activate" element={<ActivateParkingTag />} />

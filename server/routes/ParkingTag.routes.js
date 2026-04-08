@@ -8,7 +8,7 @@ const checkParkingTagStatus = require("../controller/ParkingTag/CheckParkingTagS
 const claimParkingTagProfile = require("../controller/ParkingTag/ClaimParkingTagProfile.controller");
 const {getParkingTagProfiles, getAllParkingTagsProfile} = require("../controller/ParkingTag/GetTagProfile.controller");
 const markDownloadedOnTag = require("../controller/ParkingTag/MarkDownloadedTag.controller");
-
+const {getAllUsersWithTheirCards} = require("../controller/ParkingTag/GetUserWithTheirParkingTag.controller");
 
 
 // admin cretae bulk profile cards
@@ -28,7 +28,7 @@ router.get("/claim-tag-profile", userAuth, claimParkingTagProfile);
 
 // GET /api/card/:slug
 router.get("/tag/:slug", getParkingTagProfiles);
-
+ 
 
 // Manage Parking Tag Api For Admin Side
 
@@ -37,6 +37,8 @@ router.get("/all/tags", getAllParkingTagsProfile);
 
 // mark card downloaded or not
 router.patch("/tags/:id/downloaded", markDownloadedOnTag);
+router.get("/tags/user/:userId",userAuth, getAllUsersWithTheirCards);
+
 
 
 module.exports = router;

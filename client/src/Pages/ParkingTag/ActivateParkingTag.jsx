@@ -129,7 +129,7 @@ const ActivateParkingTag = () => {
       }
       
       toast.success("Parking tag activated successfully");
-      navigate(`/profile/${slug}`, {replace:true});
+      navigate(`/profile/P/${slug}`, {replace:true});
     } catch (err) {
       console.error("Activation error:", err);
 

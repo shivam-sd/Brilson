@@ -1,4 +1,5 @@
 const UserModel = require("../models/User.model");
+const ParkingTagModel = require("../models/AddParkingTag.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const generateReferralCode = require("../utils/generateReferralCode");

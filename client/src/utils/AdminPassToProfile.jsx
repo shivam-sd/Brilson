@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { 
-  FiCopy, FiEye, FiEdit, FiArrowUpRight, FiCheck,
-  FiPlus
+  FiCopy, FiEye, FiEdit, FiCheck, FiPlus
 } from "react-icons/fi";
 import { MdOutlineReviews } from "react-icons/md";
 import { FaTags, FaIdCard } from "react-icons/fa";
 import { 
-  Wallet, TrendingUp, Award, Gift, Users, Shield
+  Wallet, Gift
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Toaster, toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -22,106 +21,22 @@ const AdminPassToProfile = () => {
   const [userId, setUserId] = useState(null);
   const [cards, setCards] = useState([]);
   const [parkingTags, setParkingTags] = useState([]);
-  const [googleReviews, setGoogleReviews] = useState([]);
-  const [token, setToken] = useState(localStorage.getItem("token"));
   const [balance, setBalance] = useState(0);
   
-  // All sections expanded by default - no toggle needed
-  const [expandedSections] = useState({
-    cards: true,
-    parkingTags: true,
-    reviews: true
-  });
+  // Loading states for each section
+  const [loadingCards, setLoadingCards] = useState(true);
+  const [loadingTags, setLoadingTags] = useState(true);
+  const [loadingBalance, setLoadingBalance] = useState(true);
+  const [loadingReferral, setLoadingReferral] = useState(true);
 
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
-  // Fetch user ID
-  const fetchMyActiveCard = async () => {
-    try {
-      if (!token) return;
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/users/my-active-card`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setUserId(res.data.userId);
-    } catch(err) {
-      console.log(err);
-    }
-  };
-
-  // Fetch all cards for user
-  const fetchUserCards = async () => {
-    if (!userId) return;
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/cards/user/${userId}`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const data = res.data?.data || [];
-      const userData = data.find((item) => item.userId === userId);
-      if (userData?.cards?.length > 0) {
-        setCards(userData.cards);
-      } else {
-        setCards([]);
-      }
-    } catch (err) {
-      console.error("Error fetching cards:", err);
-      setCards([]);
-    }
-  };
-
-  // Fetch parking tags
-  const fetchUserParkingTags = async () => {
-    if (!userId) return;
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/tags/user/${userId}`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const data = res.data?.data || [];
-      const userData = data.find((item) => item.userId === userId);
-      if (userData?.tags?.length > 0) {
-        setParkingTags(userData.tags);
-      } else {
-        setParkingTags([]);
-      }
-    } catch (err) {
-      console.error("Error fetching parking tags:", err);
-      setParkingTags([]);
-    }
-  };
-
-  // Fetch Google Reviews
-  const fetchGoogleReviews = async () => {
-    if (!userId) return;
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/reviews/user/${userId}`,
-        {
-          withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const data = res.data?.data || [];
-      setGoogleReviews(data);
-    } catch (err) {
-      console.error("Error fetching reviews:", err);
-      setGoogleReviews([]);
-    }
-  };
-
-  // Get balance and referral code
+  // Fetch balance and referral code
   const fetchBalance = async () => {
+    setLoadingBalance(true);
+    setLoadingReferral(true);
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/users/balance`,
         {
@@ -134,87 +49,194 @@ const AdminPassToProfile = () => {
     } catch (err) {
       setBalance(0);
       console.log(err);
+    } finally {
+      setLoadingBalance(false);
+      setLoadingReferral(false);
+    }
+  };
+
+  // Fetch all cards for user
+  const fetchUserCards = async () => {
+    if (!userId) return;
+    setLoadingCards(true);
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/cards/user/${userId}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log("Cards Response:", res.data);
+      
+      // Handle the response structure
+      let userCards = [];
+      if (res.data?.data && Array.isArray(res.data.data)) {
+        const userData = res.data.data.find((item) => item.userId === userId);
+        userCards = userData?.cards || [];
+      } else if (res.data?.cards && Array.isArray(res.data.cards)) {
+        userCards = res.data.cards;
+      } else if (Array.isArray(res.data)) {
+        userCards = res.data;
+      }
+      
+      setCards(userCards);
+      console.log("Processed Cards:", userCards);
+    } catch (err) {
+      console.error("Error fetching cards:", err);
+      setCards([]);
+    } finally {
+      setLoadingCards(false);
+    }
+  };
+
+  // Fetch parking tags for user
+  const fetchUserParkingTags = async () => {
+    if (!userId) return;
+    setLoadingTags(true);
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/tags/user/${userId}`,
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      // console.log("Parking Tags Response:", res.data);
+      
+      // Handle the response structure similar to cards
+      let userTags = [];
+      if (res.data?.data && Array.isArray(res.data.data)) {
+        const userData = res.data.data.find((item) => item.userId === userId);
+        userTags = userData?.tags || [];
+      } else if (res.data?.tags && Array.isArray(res.data.tags)) {
+        userTags = res.data.tags;
+      } else if (Array.isArray(res.data)) {
+        userTags = res.data;
+      }
+      
+      setParkingTags(userTags);
+      console.log("Processed Parking Tags:", userTags);
+    } catch (err) {
+      console.error("Error fetching parking tags:", err);
+      setParkingTags([]);
+    } finally {
+      setLoadingTags(false);
     }
   };
 
   useEffect(() => {
-    fetchMyActiveCard();
     fetchBalance();
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     if (userId) {
       fetchUserCards();
       fetchUserParkingTags();
-      fetchGoogleReviews();
     }
   }, [userId]);
 
   const copyReferralCode = () => {
     navigator.clipboard.writeText(referralCode);
     setCopied(true);
-    toast.success("Referral code copied to clipboard!");
+    toast.success("Referral code copied!");
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Check if section has active items
-  const hasActiveCards = cards.some(card => card.isActivated);
-  const hasActiveTags = parkingTags.some(tag => tag.isActivated);
-  const hasActiveReviews = googleReviews.some(review => review.isActivated);
+  const hasActiveCards = cards.some(card => card.isActivated === true);
+  const hasActiveTags = parkingTags.some(tag => tag.isActivated === true);
 
-  // Card Item Component - Fixed hover lag
+  // Loading Skeleton Component
+  const LoadingSkeleton = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="relative bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-hidden">
+          <div className="animate-pulse">
+            <div className="flex items-center justify-center mb-3">
+              <div className="w-14 h-14 rounded-full bg-gray-700/50" />
+            </div>
+            <div className="text-center mb-3">
+              <div className="h-5 bg-gray-700/50 rounded-lg w-32 mx-auto mb-2" />
+              <div className="h-3 bg-gray-700/50 rounded-lg w-24 mx-auto" />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="h-3 bg-gray-700/50 rounded w-16" />
+                <div className="h-5 bg-gray-700/50 rounded w-20" />
+              </div>
+            </div>
+            <div className="flex items-center gap-2 mt-4">
+              <div className="flex-1 h-9 bg-gray-700/50 rounded-lg" />
+              <div className="flex-1 h-9 bg-gray-700/50 rounded-lg" />
+            </div>
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-shimmer" />
+        </div>
+      ))}
+    </div>
+  );
+
+  // Card Item Component
   const CardItem = ({ card, index }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, duration: 0.3 }}
-      whileHover={{ y: -4 }}
+      transition={{ delay: index * 0.05 }}
+      whileHover={{ y: -4, scale: 1.02 }}
       className="group"
     >
-      <div className="relative bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-gray-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-hidden hover:border-white/20 transition-all duration-200">
+      <div className="relative bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-gray-800/80 backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-hidden hover:border-cyan-500/30 transition-all duration-300">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-2xl group-hover:opacity-100 opacity-0 transition-opacity" />
+        
         <div className="mb-4">
           <div className="flex items-center justify-center mb-3">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center">
-              <span className="text-xl font-bold text-cyan-300">
-                {card.profile?.name?.charAt(0) || "C"}
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-2 border-cyan-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                {card.profile?.name?.charAt(0) || card.name?.charAt(0) || "C"}
               </span>
             </div>
           </div>
 
           <div className="text-center mb-3">
             <h3 className="text-lg font-bold text-white mb-1 truncate">
-              {card.profile?.name || "Unnamed Card"}
+              {card.profile?.name || card.name || "Unnamed Card"}
             </h3>
             <p className="text-gray-400 text-xs line-clamp-2">
-              {card.profile?.bio || "No Bio"}
+              {card.profile?.bio || card.bio || "No bio added"}
             </p>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-xs">Status:</span>
+              <span className="text-gray-400 text-xs">Status</span>
               <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                 card.isActivated 
                   ? "bg-green-500/20 text-green-400 border border-green-500/30"
                   : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
               }`}>
-                {card.isActivated ? "Activated" : "Inactive"}
+                {card.isActivated ? "Active" : "Inactive"}
               </span>
             </div>
+            {card.activationCode && (
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-xs">Code</span>
+                <span className="text-white text-xs font-mono truncate">{card.activationCode.slice(0, 8)}...</span>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <Link 
             to={`/profile/${card.activationCode}`}
-            className="flex-1 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all flex items-center justify-center gap-1 text-sm"
+            className="flex-1 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
           >
             <FiEye size={14} />
             <span>View</span>
           </Link>
           <Link 
             to={`/profile/edit/${card.activationCode}`}
-            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm"
+            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
           >
             <FiEdit size={14} />
             <span>Edit</span>
@@ -224,63 +246,82 @@ const AdminPassToProfile = () => {
     </motion.div>
   );
 
-  // Parking Tag Item Component - Fixed hover lag
+  // Parking Tag Item Component
   const ParkingTagItem = ({ tag, index }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, duration: 0.3 }}
-      whileHover={{ y: -4 }}
+      transition={{ delay: index * 0.05 }}
+      whileHover={{ y: -4, scale: 1.02 }}
       className="group"
     >
-      <div className="relative bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-gray-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-hidden hover:border-white/20 transition-all duration-200">
+      <div className="relative bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-gray-800/80 backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-hidden hover:border-emerald-500/30 transition-all duration-300">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-green-500/10 rounded-full blur-2xl group-hover:opacity-100 opacity-0 transition-opacity" />
+        
         <div className="mb-4">
           <div className="flex items-center justify-center mb-3">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500/20 to-green-500/20 border border-emerald-500/30 flex items-center justify-center">
-              <FaTags className="text-emerald-400 text-xl" />
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500/20 to-green-500/20 border-2 border-emerald-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <FaTags className="text-emerald-400 text-2xl" />
             </div>
           </div>
 
           <div className="text-center mb-3">
             <h3 className="text-lg font-bold text-white mb-1 truncate">
-              {tag.owner?.name || "Parking Tag"}
+              {tag.name || tag.vehicleNumber || "Parking Tag"}
             </h3>
             <p className="text-gray-400 text-xs">
-              Vehicle: {tag.vehicleNumber || "Not specified"}
+              {tag.vehicleNumber ? `Vehicle: ${tag.vehicleNumber}` : "Vehicle Number not added"}
             </p>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-xs">Status:</span>
+              <span className="text-gray-400 text-xs">Status</span>
               <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                 tag.isActivated 
                   ? "bg-green-500/20 text-green-400 border border-green-500/30"
                   : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
               }`}>
-                {tag.isActivated ? "Activated" : "Inactive"}
+                {tag.isActivated ? "Active" : "Inactive"}
               </span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-xs">Code:</span>
-              <span className="text-white text-xs font-mono truncate">{tag.activationCode}</span>
-            </div>
+            {tag.activationCode && (
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-xs">Code</span>
+                <span className="text-white text-xs font-mono truncate">{tag.activationCode.slice(0, 8)}...</span>
+              </div>
+            )}
+            {tag.tagId && (
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-xs">Tag ID</span>
+                <span className="text-white text-xs font-mono truncate">{tag.tagId.slice(0, 8)}...</span>
+              </div>
+            )}
           </div>
         </div>
 
-        <Link 
-          to={`/parking-tag/${tag.activationCode}`}
-          className="w-full py-2 bg-gradient-to-r from-emerald-500/20 to-green-500/20 border border-emerald-500/30 rounded-lg text-emerald-300 hover:from-emerald-500/30 hover:to-green-500/30 transition-all flex items-center justify-center gap-1 text-sm"
-        >
-          <FiEye size={14} />
-          <span>View Details</span>
-        </Link>
+                <div className="flex items-center gap-2">
+          <Link 
+            to={`/profile/${tag.activationCode}`}
+            className="flex-1 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
+          >
+            <FiEye size={14} />
+            <span>View</span>
+          </Link>
+          <Link 
+            to={`/profile/edit/${tag.activationCode}`}
+            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
+          >
+            <FiEdit size={14} />
+            <span>Edit</span>
+          </Link>
+        </div>
       </div>
     </motion.div>
   );
 
-  // Section Header Component - No toggle button
-  const SectionHeader = ({ icon: Icon, title, count, hasItems, onActivate }) => (
+  // Section Header Component
+  const SectionHeader = ({ icon: Icon, title, count, hasItems, onActivate, loading, buttonText = "Activate Now" }) => (
     <div className="mb-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-3">
@@ -288,18 +329,22 @@ const AdminPassToProfile = () => {
             <Icon className="text-cyan-400" size={24} />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-white">{title}</h3>
-            <p className="text-sm text-gray-400">{count} items • {hasItems ? "Has active items" : "No active items"}</p>
+            <h3 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              {title}
+            </h3>
+            <p className="text-sm text-gray-400">
+              {loading ? "Loading..." : `${count} item${count !== 1 ? 's' : ''} • ${hasItems ? "Has active items" : "No active items"}`}
+            </p>
           </div>
         </div>
         
-        {!hasItems && (
+        {!loading && count === 0 && (
           <button
             onClick={onActivate}
-            className="px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 rounded-xl text-yellow-400 hover:from-yellow-500/30 hover:to-amber-500/30 transition-all flex items-center gap-2 text-sm cursor-pointer"
+            className="px-5 py-2.5 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 rounded-xl text-yellow-400 hover:from-yellow-500/30 hover:to-amber-500/30 transition-all flex items-center gap-2 text-sm font-medium cursor-pointer hover:shadow-lg"
           >
             <FiPlus size={16} />
-            <span>Activate Now</span>
+            <span>{buttonText}</span>
           </button>
         )}
       </div>
@@ -317,145 +362,135 @@ const AdminPassToProfile = () => {
             border: '1px solid rgba(255, 255, 255, 0.1)',
             backdropFilter: 'blur(10px)',
           },
+          duration: 3000,
         }}
       />
 
       <Header />
 
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] text-white py-20">
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] text-white pt-24 pb-12">
         {/* Animated Background */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/3 rounded-full blur-3xl" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/5 rounded-full blur-3xl" />
           
           <div 
-            className="absolute inset-0 opacity-10"
+            className="absolute inset-0 opacity-5"
             style={{
               backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)`,
               backgroundSize: '40px 40px'
             }}
           />
-          
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-cyan-400/30 rounded-full"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, -20, 0],
-                opacity: [0.3, 0.7, 0.3],
-              }}
-              transition={{
-                duration: 3 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-              }}
-            />
-          ))}
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          {/* Referral Section - Top */}
+          {/* Hero Section with Balance & Referral */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.3 }}
-            className="relative mb-12"
+            className="mb-12"
           >
-            <div className="w-full flex flex-col gap-6">
-              {/* Balance Display */}
-              <div className="flex justify-center">
-                <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#E1C48A]/10 to-[#C9A86A]/10 border border-[#E1C48A]/30 rounded-2xl">
-                  <Wallet className="text-[#E1C48A]" size={24} />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Balance Card */}
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 border border-white/10 p-6">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-2xl" />
+                <div className="relative flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
+                    <Wallet className="text-cyan-400" size={28} />
+                  </div>
                   <div>
-                    <p className="text-xs text-gray-400">Available Balance</p>
-                    <p className="font-bold text-2xl text-[#E1C48A]">₹{balance}</p>
+                    <p className="text-sm text-gray-400">Available Balance</p>
+                    {loadingBalance ? (
+                      <div className="h-8 w-32 bg-gray-700/50 rounded-lg animate-pulse mt-1" />
+                    ) : (
+                      <p className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                        ₹{balance}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Referral Card */}
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 border border-white/10">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-yellow-500/10 to-amber-500/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-orange-500/10 to-red-500/10 rounded-full blur-3xl" />
-                
-                <div className="relative p-6">
-                  <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-500/20 to-amber-500/20">
-                        <Gift className="text-yellow-400" size={28} />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-white">Refer & Earn</h3>
-                        <p className="text-gray-400 text-sm">Share your referral code and earn rewards</p>
-                      </div>
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 border border-white/10 p-6">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-yellow-500/10 to-amber-500/10 rounded-full blur-2xl" />
+                <div className="relative flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/30">
+                      <Gift className="text-yellow-400" size={28} />
                     </div>
-
-                    <div className="flex flex-col sm:flex-row items-center gap-3">
-                      <div className="px-5 py-2 rounded-xl bg-gradient-to-r from-yellow-500/10 via-amber-500/10 to-yellow-500/10 border border-yellow-500/30">
-                        <code className="font-mono text-lg font-bold text-yellow-300 tracking-wider">
+                    <div>
+                      <p className="text-sm text-gray-400">Referral Code</p>
+                      {loadingReferral ? (
+                        <div className="h-6 w-40 bg-gray-700/50 rounded-lg animate-pulse mt-1" />
+                      ) : (
+                        <code className="text-xl font-bold text-yellow-300 font-mono">
                           {referralCode}
                         </code>
-                      </div>
-                      <button
-                        onClick={copyReferralCode}
-                        className="px-5 py-2 rounded-xl bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 hover:from-yellow-500/30 hover:to-amber-500/30 transition-all flex items-center gap-2 cursor-pointer"
-                      >
-                        {copied ? (
-                          <>
-                            <FiCheck className="text-green-400" size={18} />
-                            <span className="text-sm">Copied!</span>
-                          </>
-                        ) : (
-                          <>
-                            <FiCopy className="text-yellow-400" size={18} />
-                            <span className="text-sm">Copy Code</span>
-                          </>
-                        )}
-                      </button>
+                      )}
                     </div>
                   </div>
+                  
+                  {!loadingReferral && (
+                    <button
+                      onClick={copyReferralCode}
+                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 hover:from-yellow-500/30 hover:to-amber-500/30 transition-all flex items-center gap-2 cursor-pointer"
+                    >
+                      {copied ? (
+                        <>
+                          <FiCheck className="text-green-400" size={18} />
+                          <span className="text-sm">Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <FiCopy className="text-yellow-400" size={18} />
+                          <span className="text-sm">Copy</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Section 1: Digital Cards - Always Expanded */}
+          {/* Digital Cards Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.3 }}
+            transition={{ delay: 0.1 }}
             className="mb-12"
           >
             <SectionHeader
               icon={FaIdCard}
-              title="Digital Card"
+              title="Digital Cards"
               count={cards.length}
               hasItems={hasActiveCards}
-              onActivate={() => Navigate("/card/activate")}
+              loading={loadingCards}
+              onActivate={() => navigate("/card/activate")}
+              buttonText="Activate Card"
             />
 
-            {cards.length > 0 ? (
+            {loadingCards ? (
+              <LoadingSkeleton />
+            ) : cards.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {cards.map((card, index) => (
                   <CardItem key={card._id || index} card={card} index={index} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-gray-900/30 rounded-2xl border border-white/10">
+              <div className="text-center py-16 bg-gray-900/30 rounded-2xl border border-white/10">
                 <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 flex items-center justify-center">
                   <FaIdCard className="text-gray-500" size={32} />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">No digital cards yet</h3>
-                <p className="text-gray-400 mb-4 text-sm">Create your first digital card to get started</p>
+                <h3 className="text-lg font-bold text-white mb-2">No Digital Cards Yet</h3>
+                <p className="text-gray-400 mb-6 text-sm">Create your first digital card to showcase your profile</p>
                 <Link
                   to="/card/activate"
-                  className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg text-white font-medium hover:from-cyan-600 hover:to-blue-600 transition-all text-sm"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl text-white font-medium hover:from-cyan-600 hover:to-blue-600 transition-all shadow-lg"
                 >
                   <FiPlus size={16} />
                   <span>Activate Card</span>
@@ -464,37 +499,41 @@ const AdminPassToProfile = () => {
             )}
           </motion.div>
 
-          {/* Section 2: Parking Tags - Always Expanded */}
+          {/* Parking Tags Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.3 }}
+            transition={{ delay: 0.2 }}
             className="mb-12"
           >
             <SectionHeader
               icon={FaTags}
-              title="Parking Tag"
+              title="Parking Tags"
               count={parkingTags.length}
               hasItems={hasActiveTags}
-              onActivate={() => Navigate("/parking-tag/activate")}
+              loading={loadingTags}
+              onActivate={() => navigate("/parking-tag/activate")}
+              buttonText="Activate Parking Tag"
             />
 
-            {parkingTags.length > 0 ? (
+            {loadingTags ? (
+              <LoadingSkeleton />
+            ) : parkingTags.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {parkingTags.map((tag, index) => (
                   <ParkingTagItem key={tag._id || index} tag={tag} index={index} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-gray-900/30 rounded-2xl border border-white/10">
+              <div className="text-center py-16 bg-gray-900/30 rounded-2xl border border-white/10">
                 <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 flex items-center justify-center">
                   <FaTags className="text-gray-500" size={32} />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">No parking tags yet</h3>
-                <p className="text-gray-400 mb-4 text-sm">Activate a parking tag for your vehicle</p>
+                <h3 className="text-lg font-bold text-white mb-2">No Parking Tags Yet</h3>
+                <p className="text-gray-400 mb-6 text-sm">Activate a parking tag for convenient parking access</p>
                 <Link
                   to="/parking-tag/activate"
-                  className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg text-white font-medium hover:from-emerald-600 hover:to-green-600 transition-all text-sm"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl text-white font-medium hover:from-emerald-600 hover:to-green-600 transition-all shadow-lg"
                 >
                   <FiPlus size={16} />
                   <span>Activate Parking Tag</span>
@@ -503,46 +542,69 @@ const AdminPassToProfile = () => {
             )}
           </motion.div>
 
-          {/* Section 3: Google Reviews - Always Expanded */}
+          {/* Google Reviews Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.3 }}
+            transition={{ delay: 0.3 }}
             className="mb-12"
           >
-            {/* <SectionHeader
-              icon={MdOutlineReviews}
-              title="Google Reviews"
-              count={googleReviews.length}
-              hasItems={hasActiveReviews}
-              onActivate={() => toast.loading("Google Reviews feature coming soon!")}
-            /> */}
-
-            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 rounded-2xl border border-white/10 p-6">
-              <div className="text-center py-6">
-                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-red-500/20 to-orange-500/20 border border-red-500/30 flex items-center justify-center">
-                  <MdOutlineReviews className="text-red-400" size={32} />
+            <div className="mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/20 border border-red-500/30">
+                  <MdOutlineReviews className="text-red-400" size={24} />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">Google Reviews</h3>
-              
-                <button
-                  className="mt-5 inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg text-white font-medium hover:from-red-600 hover:to-orange-600 transition-all text-sm cursor-pointer"
-                  onClick={() => toast.info("Google Reviews feature coming soon!")}
-                >
-                  <MdOutlineReviews size={16} />
-                  <span>Connect Google Reviews</span>
-                </button>
+                <div>
+                  <h3 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    Google Reviews
+                  </h3>
+                  <p className="text-sm text-gray-400">Coming soon • Share your feedback</p>
+                </div>
               </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 rounded-2xl border border-white/10 p-12 text-center">
+              <div className="w-24 h-24 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-red-500/20 to-orange-500/20 border border-red-500/30 flex items-center justify-center">
+                <MdOutlineReviews className="text-red-400" size={40} />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Google Reviews Integration</h3>
+              <p className="text-gray-400 mb-6 max-w-md mx-auto">
+                Connect your Google My Business account to display and manage customer reviews directly from your dashboard
+              </p>
+              <button
+                onClick={() => toast.info("Google Reviews feature coming soon! Stay tuned for updates.")}
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl text-white font-medium hover:from-red-600 hover:to-orange-600 transition-all shadow-lg cursor-pointer"
+              >
+                <MdOutlineReviews size={18} />
+                <span>Coming Soon</span>
+              </button>
             </div>
           </motion.div>
 
-          {/* Referral Dashboard - Bottom (Original Style) */}
-          <ReferralDashboard />
+          {/* Referral Dashboard */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <ReferralDashboard />
+          </motion.div>
           
         </div>
       </div>
 
       <Footer />
+
+      <style jsx>{`
+        @keyframes shimmer {
+          100% {
+            transform: translateX(100%);
+          }
+        }
+        .animate-shimmer {
+          animation: shimmer 2s infinite;
+        }
+      `}</style>
     </>
   );
 };
