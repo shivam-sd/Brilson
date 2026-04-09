@@ -102,7 +102,7 @@ const AdminPassToProfile = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      // console.log("Parking Tags Response:", res.data);
+      console.log("Parking Tags Response:", res.data.data);
       
       // Handle the response structure similar to cards
       let userTags = [];
@@ -267,10 +267,10 @@ const AdminPassToProfile = () => {
 
           <div className="text-center mb-3">
             <h3 className="text-lg font-bold text-white mb-1 truncate">
-              {tag.name || tag.vehicleNumber || "Parking Tag"}
+              {tag.profile.ownerName || "Parking Tag"}
             </h3>
             <p className="text-gray-400 text-xs">
-              {tag.vehicleNumber ? `Vehicle: ${tag.vehicleNumber}` : "Vehicle Number not added"}
+              {tag.profile.vehicleNumber ? `Vehicle: ${tag.profile.vehicleNumber}` : "Vehicle Number not added"}
             </p>
           </div>
 
@@ -302,14 +302,14 @@ const AdminPassToProfile = () => {
 
                 <div className="flex items-center gap-2">
           <Link 
-            to={`/profile/${tag.activationCode}`}
+            to={`/profile/P/${tag.activationCode}`}
             className="flex-1 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
           >
             <FiEye size={14} />
             <span>View</span>
           </Link>
           <Link 
-            to={`/profile/edit/${tag.activationCode}`}
+            to={`/profile/P/edit/${tag.activationCode}`}
             className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
           >
             <FiEdit size={14} />

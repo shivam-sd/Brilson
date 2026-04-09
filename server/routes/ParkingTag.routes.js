@@ -3,7 +3,7 @@ const router = express.Router();
 const adminAuth = require("../middleware/authAdminToken");
 const userAuth = require("../middleware/authUserToken");
 const bulkCreateParkingTags = require("../controller/ParkingTag/AdminBulkTagCreate.controller");
-const {ActivateParkingTagAPi} = require("../controller/ParkingTag/ActivateParkingTag.controller");
+const {ActivateParkingTagAPi, EditParkingTagProfile} = require("../controller/ParkingTag/ActivateParkingTag.controller");
 const checkParkingTagStatus = require("../controller/ParkingTag/CheckParkingTagStatus.controller");
 const claimParkingTagProfile = require("../controller/ParkingTag/ClaimParkingTagProfile.controller");
 const {getParkingTagProfiles, getAllParkingTagsProfile} = require("../controller/ParkingTag/GetTagProfile.controller");
@@ -28,7 +28,9 @@ router.get("/claim-tag-profile", userAuth, claimParkingTagProfile);
 
 // GET /api/card/:slug
 router.get("/tag/:slug", getParkingTagProfiles);
+router.get("/tag/profile/:slug", getParkingTagProfiles);
  
+router.put("/tag/:id/edit", userAuth, EditParkingTagProfile);
 
 // Manage Parking Tag Api For Admin Side
 

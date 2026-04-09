@@ -165,7 +165,7 @@ const ActivateParkingTagAPi = async (req, res) => {
 
 
 const EditParkingTagProfile = async (req, res) => {
-  try {
+  try {   
     const { id } = req.params;
     const userId = req.user;
 
@@ -176,13 +176,13 @@ const EditParkingTagProfile = async (req, res) => {
       updateFields[`profile.${key}`] = req.body[key];
     });
 
-    const card = await CardProfileModel.findOneAndUpdate(
-      { _id: id, owner: userId },
+    const tag = await ParkingTagModel.findOneAndUpdate(
+      { activationCode: id, owner: userId },
       { $set: updateFields },
       { new: true, runValidators: true }
     );
 
-    if (!card) {
+    if (!tag) {
       return res.status(403).json({
         error: "You are not allowed to edit this profile",
       });
@@ -190,11 +190,11 @@ const EditParkingTagProfile = async (req, res) => {
 
     res.json({
       message: "Profile updated successfully",
-      card,
+      profile:tag.profile,
     });
 
   } catch (err) {
-    console.log("Error in Edit Card Profile", err);
+    console.log("Error in Edit Parking Tag Profile", err);
     res.status(500).json({
       error: "Server Error",
     });

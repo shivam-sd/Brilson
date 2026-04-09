@@ -7,7 +7,7 @@ import { Camera, Loader2, X, Check, Upload } from "lucide-react";
 import imageCompression from "browser-image-compression";
 import ImageCropper from "./ProfileComp/EditProfileComp/ImageCropper/ImageCropper"; 
 import CoverImageCropper from "./ProfileComp/EditProfileComp/ImageCropper/CoverImageCropper";
-
+ 
 const EditProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();

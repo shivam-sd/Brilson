@@ -87,6 +87,7 @@ import BulkCreateTags from "./Admin/components.jsx/BulkCreateTags";
 import ActivateParkingTag from "./Pages/ParkingTag/ActivateParkingTag";
 import CheckParkingTagStatus from "./Pages/CheckParkingTagStatus";
 import ParkingTagProfile from "./Pages/ParkingTag/ParkingTagProfile";
+import EditParkingTagProfile from "./Pages/ParkingTag/EditParkingTagProfile";
 
 
 
@@ -152,6 +153,7 @@ function App() {
           <Route path="/profile/:slug" element={<ProfilePage />} />
           <Route path="/profile/P/:slug" element={<ParkingTagProfile />} />
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
+  <Route path="/profile/P/edit/:slug" element={<EditParkingTagProfile />} />
           <Route path="/card/activate" element={<ActivateCard />} />
            <Route path="/parking-tag/activate" element={<ActivateParkingTag />} />
 
@@ -170,6 +172,7 @@ function App() {
   <Route path="location&review" element={<ProfileEditLocation />} />
   <Route path="resume" element={<ProfileResumeEdit />} />
 </Route>
+
 
   <Route path="/profile/products/add/:id" element={<AddProduct />} />
   <Route path="/profile/products/update/:id" element={<UpdateProduct />} />

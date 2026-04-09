@@ -5,10 +5,10 @@ const ParkingTagModel = require("../../models/AddParkingTag.model");
 const getParkingTagProfiles = async (req, res) => {
   try {
     const { slug } = req.params;
-    const tag = await ParkingTagModel.findOne({ slug }).populate("owner");
+    const tag = await ParkingTagModel.findOne({ slug });
     if (!tag) return res.status(404).json({ error: "Invalid Parking Tag" });
 // console.log(card.profile);
-    res.json({profile:tag.profile, tag:tag});
+    res.json({tag:tag});
   }catch(err){ 
     res.status(500).json({ error: "Internal Server error", err });
   }
