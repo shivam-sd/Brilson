@@ -86,6 +86,12 @@ const userSchema = new mongoose.Schema(
         ref: "ParkingTag",
       },
     ],
+    myGoogleReviews: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "GoogleReview",
+      },
+    ],
 
 //     referralCount: {
 //   type: Number,

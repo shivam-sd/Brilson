@@ -267,10 +267,10 @@ const AdminPassToProfile = () => {
 
           <div className="text-center mb-3">
             <h3 className="text-lg font-bold text-white mb-1 truncate">
-              {tag.profile.ownerName || "Parking Tag"}
+              {tag?.profile?.ownerName || "Parking Tag"}
             </h3>
             <p className="text-gray-400 text-xs">
-              {tag.profile.vehicleNumber ? `Vehicle: ${tag.profile.vehicleNumber}` : "Vehicle Number not added"}
+              {tag?.profile?.vehicleNumber ? `Vehicle: ${tag?.profile?.vehicleNumber}` : "Vehicle Number not added"}
             </p>
           </div>
 

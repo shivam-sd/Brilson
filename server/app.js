@@ -46,6 +46,7 @@ const ProfileResume = require("./routes/ProfileRoutes/ProfileResume");
 const SharePublicProfilerouter = require("./routes/ProfileRoutes/sharePublicProfile.route");
 const profileCoverPhotoRoute = require("./routes/ProfileRoutes/ProfileCover.route");
 const ParkingtagRouter = require("./routes/ParkingTag.routes");
+const GoogleReviewRouter = require("./routes/GoogleReview.routes");
 
 
 // Runtime config
@@ -105,6 +106,7 @@ app.use(fileUpload({
   app.use("/api/payment", PaymentRouter);
   app.use("/api", getCardProfiles);
   app.use("/api", ParkingtagRouter);
+  app.use("/api", GoogleReviewRouter);
   app.use("/api/category", categoryRouter);
   app.use("/api/badges", badgesRouter);
   app.use("/api/config", ConfigRouter);
