@@ -88,7 +88,7 @@ const UpdateResume = () => {
       );
 
       toast.success("Resume updated successfully ✨");
-      navigate(`/profile/edit/${id}`, { replace: true });
+      navigate(`/profile/${id}`, { replace: true });
     } catch (error) {
       toast.error(error?.response?.data?.message || "Update failed");
     } finally {

@@ -139,7 +139,7 @@ const handleCropCancel = () => {
       );
 
       toast.success("Service Added");
-      navigate(`/profile/edit/${id}`, {replace:true});
+      navigate(`/profile/${id}`, {replace:true});
 
     } catch (err) {
       toast.error("Failed to add service");

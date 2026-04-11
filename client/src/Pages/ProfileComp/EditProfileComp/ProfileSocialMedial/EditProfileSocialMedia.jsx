@@ -231,7 +231,7 @@ const Input = ({ label, ...props }) => (
     <label className="text-sm text-gray-400 mb-2 block">{label}</label>
     <input
       {...props}
-      className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white"
+      className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white placeholder:opacity-50"
     />
   </div>
 );

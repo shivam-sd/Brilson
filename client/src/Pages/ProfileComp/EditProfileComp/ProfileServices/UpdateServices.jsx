@@ -184,7 +184,7 @@ const handleCropCancel = () => {
 
       toast.success("Service Updated");
 
-      navigate(`/profile/edit/${res.data.data.activationCode}`, {
+      navigate(`/profile/${res.data.data.activationCode}`, {
         replace: true,
       });
     } catch (err) {

@@ -73,7 +73,7 @@ const AddPaymentDetails = () => {
       );
 
       toast.success("Payment details added successfully");
-        navigate(`/profile/edit/${id}`, {replace:true});
+        navigate(`/profile/${id}`, {replace:true});
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
     } finally {

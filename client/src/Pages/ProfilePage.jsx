@@ -978,13 +978,7 @@ const ProfilePage = () => {
                   <PortfolioProfile activationCode={slug} />
                 </div> */}
 
-                {/* Product */}
-                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
-                  <h3 className="text-2xl font-bold mb-3 text-gray-300">
-                    Products:
-                  </h3>
-                  <ProductsProfile activationCode={slug} />
-                </div>
+                
 
                 {/* Services */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
@@ -992,6 +986,14 @@ const ProfilePage = () => {
                     Services:
                   </h3>
                   <ServicesProfile activationCode={slug} />
+                </div>
+
+                {/* Product */}
+                <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                  <h3 className="text-2xl font-bold mb-3 text-gray-300">
+                    Products:
+                  </h3>
+                  <ProductsProfile activationCode={slug} />
                 </div>
 
                 {/* Gallery */}

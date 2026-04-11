@@ -52,7 +52,7 @@ const AddResume = () => {
       );
 
       toast.success("Resume uploaded successfully ✨");
-      navigate(`/profile/edit/${id}`, { replace: true });
+      navigate(`/profile/${id}`, { replace: true });
       setFile(null);
     } catch (error) {
       toast.error(error?.response?.data?.message || "Upload failed");

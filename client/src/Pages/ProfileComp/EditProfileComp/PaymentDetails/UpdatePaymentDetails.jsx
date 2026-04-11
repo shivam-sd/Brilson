@@ -110,7 +110,7 @@ const UpdatePaymentDetails = () => {
       );
 
       toast.success("Payment details updated successfully");
-      navigate(-1);
+      navigate(`/profile/${id}`, {replace:true});
 
     } catch (err) {
       toast.error(err?.response?.data?.message || "Update failed");

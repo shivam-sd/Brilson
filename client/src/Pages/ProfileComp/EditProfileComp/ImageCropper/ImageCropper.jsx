@@ -108,7 +108,7 @@ const ImageCropper = ({ image, onCancel, onCropComplete }) => {
             </div>
             
             {/* Cropper area */}
-            <div className="relative h-[400px] w-full bg-gray-950">
+            <div className="relative lg:h-[400px] md:h-[400px] h-[370px] w-full bg-gray-950">
               <Cropper
                 image={image}
                 crop={crop}

@@ -144,7 +144,7 @@ setOriginalImage(imageUrl);
 
       setForm({ title: "", description: "", duration: "", price:"", image: null,  });
       setPreview(null);
-      navigate(`/profile/edit/${activationCode}`, {replace:true});
+      navigate(`/profile/${activationCode}`, {replace:true});
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
       console.log(err);
@@ -190,7 +190,7 @@ setOriginalImage(imageUrl);
             <input
               type="file"
               name="image"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/jpg,image/gif,image/webp,image/svg+xml"
               onChange={handleChange}
               className="absolute inset-0 opacity-0 cursor-pointer"
             />

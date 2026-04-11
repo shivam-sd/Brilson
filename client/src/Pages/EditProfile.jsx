@@ -210,8 +210,7 @@ const EditProfile = () => {
       toast.success("Profile photo updated");
       setShowLogoUpdateBtn(false);
       setLogoPreview(null);
-      window.location.reload();
-      
+
     } catch (err) {
       console.error('Upload error:', err);
       toast.error(err?.response?.data?.message || "Upload failed");
@@ -301,7 +300,7 @@ const EditProfile = () => {
       toast.success("Cover photo updated");
       setShowCoverUpdateBtn(false);
       setCoverPreview(null);
-      window.location.reload();
+      
       
     } catch (err) {
       console.error('Upload error:', err);
@@ -386,6 +385,9 @@ const EditProfile = () => {
         }
       );
 
+
+      await uploadCover(); 
+      await uploadLogo();
       await updateCountryCode();
       await updateWaCountryCode();
 
@@ -441,7 +443,7 @@ const EditProfile = () => {
                 />
               </label>
               
-              {/* Cover Update Button */}
+              {/* Cover Update Button
               {showCoverUpdateBtn && (
                 <button
                   onClick={uploadCover}
@@ -460,7 +462,7 @@ const EditProfile = () => {
                     </>
                   )}
                 </button>
-              )}
+              )} */}
             </div>
           </div>
 
@@ -491,7 +493,7 @@ const EditProfile = () => {
                   </label>
                   
                   {/* Update Button */}
-                  {showLogoUpdateBtn && (
+                  {/* {showLogoUpdateBtn && (
                     <button
                       onClick={uploadLogo}
                       disabled={uploadingLogo}
@@ -504,7 +506,7 @@ const EditProfile = () => {
                         <Check size={16} />
                       )}
                     </button>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>

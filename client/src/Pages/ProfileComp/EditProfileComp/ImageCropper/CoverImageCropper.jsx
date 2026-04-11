@@ -12,10 +12,10 @@ const CoverImageCropper = ({ image, onCancel, onCropComplete }) => {
   // Available aspect ratios
   const aspectRatios = [
     { value: 16/9, label: '16:9', icon: '🖥️' },
-    { value: 4/3, label: '4:3', icon: '📱' },
-    { value: 1/1, label: '1:1', icon: '⬛' },
-    { value: 2/3, label: '2:3', icon: '📸' },
-    { value: 21/9, label: '21:9', icon: '🎬' },
+    // { value: 4/3, label: '4:3', icon: '📱' },
+    // { value: 1/1, label: '1:1', icon: '⬛' },
+    // { value: 2/3, label: '2:3', icon: '📸' },
+    // { value: 21/9, label: '21:9', icon: '🎬' },
   ];
 
   const onCropCompleteHandler = useCallback((croppedArea, croppedAreaPixels) => {
@@ -98,7 +98,7 @@ const CoverImageCropper = ({ image, onCancel, onCropComplete }) => {
       <div className="fixed inset-0 z-[9999] overflow-hidden">
         <div className="absolute inset-0 bg-black/90" onClick={onCancel}></div>
         
-        <div className="absolute inset-0 flex justify-center p-4">
+        <div className="absolute inset-0 flex justify-center lg:p-4 md:p-4">
           <div 
             className="relative w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
@@ -118,7 +118,7 @@ const CoverImageCropper = ({ image, onCancel, onCropComplete }) => {
             </div>
             
             {/* Aspect Ratio Selector */}
-            <div className="px-6 py-3 bg-gray-900 border-b border-gray-800">
+            {/* <div className="px-6 py-3 bg-gray-900 border-b border-gray-800">
               <p className="text-sm text-gray-400 mb-3">Aspect Ratio</p>
               <div className="flex flex-wrap gap-2">
                 {aspectRatios.map((ratio) => (
@@ -136,10 +136,10 @@ const CoverImageCropper = ({ image, onCancel, onCropComplete }) => {
                   </button>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Cropper area */}
-            <div className="relative h-[450px] w-full bg-gray-950">
+            <div className="relative lg:h-[450px] md:h-[450px] h-[390px] w-full bg-gray-950">
               <Cropper
                 image={image}
                 crop={crop}

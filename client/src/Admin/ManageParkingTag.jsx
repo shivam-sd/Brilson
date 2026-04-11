@@ -16,6 +16,7 @@ const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent"
     height: size,
     data: qrData,
     type: "svg",
+    margin: 5, // Add margin around QR code
     dotsOptions: {
       color: dotsColor,
       type: "dots",
@@ -68,7 +69,7 @@ const renderSVGThumbnail = (svgDataUrl, className = "w-10 h-10") => {
   return null;
 };
 
-/* Add text to SVG QR Code */
+/* Add text to SVG QR Code - FIXED VERSION */
 const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
   try {
     const svgString = await qrCode.getRawData("svg");
@@ -84,7 +85,9 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     
     const originalWidth = parseInt(svgElement.getAttribute('width') || '800');
     const originalHeight = parseInt(svgElement.getAttribute('height') || '800');
-    const textHeight = 120;
+    
+    // Reduced text area height
+    const textHeight = 100;
     const newHeight = originalHeight + textHeight;
     
     const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -109,37 +112,51 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     }
     newSvg.appendChild(qrGroup);
     
-    const lineY = originalHeight + 40;
+    const centerX = originalWidth / 2;
+    const separatorY = originalHeight + 15;
+    const codeY = originalHeight + 45;
+    const nameY = originalHeight + 75;
+    
+    // Add separator line (thinner)
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", "50");
-    line.setAttribute("y1", lineY.toString());
-    line.setAttribute("x2", (originalWidth - 40).toString());
-    line.setAttribute("y2", lineY.toString());
-    line.setAttribute("stroke", "#cccccc");
-    line.setAttribute("stroke-width", "2");
-    line.setAttribute("stroke-dasharray", "5,5");
+    line.setAttribute("x1", "60");
+    line.setAttribute("y1", separatorY.toString());
+    line.setAttribute("x2", (originalWidth - 60).toString());
+    line.setAttribute("y2", separatorY.toString());
+    line.setAttribute("stroke", textColor);
+    line.setAttribute("stroke-opacity", "0.3");
+    line.setAttribute("stroke-width", "1.5");
+    line.setAttribute("stroke-dasharray", "4,4");
     newSvg.appendChild(line);
     
+    // Add activation code text (smaller font)
     const codeText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    codeText.setAttribute("x", (originalWidth / 2).toString());
-    codeText.setAttribute("y", (originalHeight + 40).toString());
+    codeText.setAttribute("x", centerX.toString());
+    codeText.setAttribute("y", codeY.toString());
     codeText.setAttribute("text-anchor", "middle");
-    codeText.setAttribute("font-family", "Courier New, monospace");
-    codeText.setAttribute("font-size", "70");
+    codeText.setAttribute("font-family", "monospace");
+    codeText.setAttribute("font-size", "30");
     codeText.setAttribute("font-weight", "bold");
     codeText.setAttribute("fill", textColor);
     codeText.textContent = `Code: ${activationCode}`;
     newSvg.appendChild(codeText);
     
+    // Add profile name if exists (smaller font)
     if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
+      let displayName = profileName;
+      if (displayName.length > 25) {
+        displayName = displayName.substring(0, 22) + '...';
+      }
+      
       const nameText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      nameText.setAttribute("x", (originalWidth / 2).toString());
-      nameText.setAttribute("y", (originalHeight + 95).toString());
+      nameText.setAttribute("x", centerX.toString());
+      nameText.setAttribute("y", nameY.toString());
       nameText.setAttribute("text-anchor", "middle");
       nameText.setAttribute("font-family", "Arial, sans-serif");
-      nameText.setAttribute("font-size", "60");
+      nameText.setAttribute("font-size", "25");
       nameText.setAttribute("fill", textColor);
-      nameText.textContent = profileName;
+      nameText.setAttribute("fill-opacity", "0.8");
+      nameText.textContent = displayName;
       newSvg.appendChild(nameText);
     }
     
@@ -155,7 +172,7 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
   }
 };
 
-/* High resolution PNG for compatibility */
+/* High resolution PNG - FIXED VERSION */
 const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
   try {
     const blob = await qrCode.getRawData("png");
@@ -168,7 +185,7 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
         const ctx = canvas.getContext('2d');
         
         const qrSize = 800;
-        const textHeight = 120;
+        const textHeight = 100;
         canvas.width = qrSize;
         canvas.height = qrSize + textHeight;
         
@@ -184,22 +201,33 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
         
         ctx.drawImage(img, 0, 0, qrSize, qrSize);
         
-        ctx.strokeStyle = '#cccccc';
-        ctx.lineWidth = 3;
+        // Separator line
+        ctx.strokeStyle = textColor;
+        ctx.globalAlpha = 0.3;
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(50, qrSize + 15);
-        ctx.lineTo(canvas.width - 50, qrSize + 15);
+        ctx.moveTo(80, qrSize + 15);
+        ctx.lineTo(canvas.width - 80, qrSize + 15);
         ctx.stroke();
+        ctx.globalAlpha = 1;
         
-        ctx.font = 'bold 48px "Courier New", monospace';
+        // Activation Code text
+        ctx.font = 'bold 24px "Courier New", monospace';
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
-        ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, qrSize + 70);
+        ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, qrSize + 55);
         
+        // Profile name
         if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
-          ctx.font = '40px Arial, sans-serif';
+          let displayName = profileName;
+          if (displayName.length > 30) {
+            displayName = displayName.substring(0, 27) + '...';
+          }
+          ctx.font = '18px Arial, sans-serif';
           ctx.fillStyle = textColor;
-          ctx.fillText(profileName, canvas.width / 2, qrSize + 115);
+          ctx.globalAlpha = 0.8;
+          ctx.fillText(displayName, canvas.width / 2, qrSize + 85);
+          ctx.globalAlpha = 1;
         }
         
         canvas.toBlob((newBlob) => {
@@ -216,6 +244,7 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
     return URL.createObjectURL(blob);
   }
 };
+
 
 const ManageParkingTag = () => {
   const [tags, setTags] = useState([]);

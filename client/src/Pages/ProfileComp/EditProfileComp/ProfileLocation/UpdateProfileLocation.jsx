@@ -70,7 +70,7 @@ const UpdateProfileLocation = () => {
 
       toast.success("Location updated successfully");
 
-      navigate(`/profile/edit/${id}`, { replace: true });
+      navigate(`/profile/${id}`, { replace: true });
 
     } catch (err) {
       toast.error(err?.response?.data?.message || "Update failed");

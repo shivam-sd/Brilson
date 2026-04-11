@@ -134,7 +134,7 @@ console.error('Crop complete error:', err);
 
       setForm({ title: "", description: "", duration: "", image: null,  });
       setPreview(null);
-      navigate(`/profile/edit/${res.data.data.activationCode}`, {replace:true});
+      navigate(`/profile/${res.data.data.activationCode}`, {replace:true});
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
       console.log(err);
