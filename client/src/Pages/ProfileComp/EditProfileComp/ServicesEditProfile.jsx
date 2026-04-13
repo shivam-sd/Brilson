@@ -131,8 +131,7 @@ const ServicesEditPortfolio = () => {
           )}
         </>
       ) : (
-        <div>
-        </div>
+          <div className="text-center text-gray-400">No services available</div>
       )}
 
       {/* Layout Manager - Only shows on mobile */}
