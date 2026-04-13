@@ -131,16 +131,7 @@ const ServicesEditPortfolio = () => {
           )}
         </>
       ) : (
-        <div className="text-center py-16">
-          <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl flex items-center justify-center">
-            <Package size={40} className="text-gray-600" />
-          </div>
-          <h3 className="text-xl font-semibold text-gray-300 mb-2">
-            No Services Found
-          </h3>
-          <p className="text-gray-400 mb-6 max-w-md mx-auto">
-            You haven't added any services yet. Start by adding your first service.
-          </p>
+        <div>
         </div>
       )}
 
