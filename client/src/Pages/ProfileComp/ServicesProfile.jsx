@@ -155,15 +155,6 @@ const ServicesProfile = ({ activationCode }) => {
     );
   }
 
-  // No Services State
-  if (services.length === 0) {
-    return (
-      <div className="mb-16 text-center py-12">
-        <div className="text-gray-400">No services available</div>
-      </div>
-    );
-  }
-
   // Desktop View (Always Grid/Flex)
   if (!isMobile) {
     return (
