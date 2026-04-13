@@ -50,3 +50,69 @@
   min-height: 100%;
   -webkit-overflow-scrolling:touch;
 }
+
+
+/* Hide scrollbar for carousel */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Mobile Responsive Improvements */
+@media (max-width: 768px) {
+  .service-card {
+    margin: 0 auto;
+  }
+}
+
+/* Service Carousel Styles */
+.service-carousel {
+  padding-bottom: 2.5rem !important;
+}
+
+.service-carousel .swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+}
+
+.service-carousel .swiper-pagination-bullet-active {
+  background: #E1C48A;
+}
+
+.service-carousel .swiper-button-prev,
+.service-carousel .swiper-button-next {
+  color: #E1C48A;
+  background: rgba(0, 0, 0, 0.5);
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  backdrop-filter: blur(4px);
+}
+
+.service-carousel .swiper-button-prev:after,
+.service-carousel .swiper-button-next:after {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.service-carousel .swiper-button-prev:hover,
+.service-carousel .swiper-button-next:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .service-carousel .swiper-button-prev,
+  .service-carousel .swiper-button-next {
+    display: none;
+  }
+}
+
+/* Smooth scrolling for mobile */
+.service-carousel .swiper-slide {
+  height: auto;
+}
