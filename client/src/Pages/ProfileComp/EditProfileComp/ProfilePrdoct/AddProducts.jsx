@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Upload, Loader2, Plus, ImageIcon } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import imageCompression from "browser-image-compression";
 import ImageCropper from "../ImageCropper/ImageCropper";

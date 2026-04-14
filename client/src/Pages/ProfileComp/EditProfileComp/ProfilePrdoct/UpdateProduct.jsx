@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Upload, Loader2, Plus, ImageIcon } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import ImageCropper from "../ImageCropper/ImageCropper";
@@ -264,7 +264,8 @@ setOriginalImage(imageUrl);
           onCropComplete={handleCropComplete}
         />
       )}
-
+      
+<Toaster position="top-right" reverseOrder={false} />
 
     </div>
   );

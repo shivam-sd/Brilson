@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Loader2, Plus, X, Image as ImgIcon } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import ImageCropper from "../ImageCropper/ImageCropper";
 import imageCompression from "browser-image-compression";
@@ -274,6 +274,8 @@ const handleCropCancel = () => {
   
   </>)
 }
+
+<Toaster position="top-right" reverseOrder={false} />
 
     </div>
   );
