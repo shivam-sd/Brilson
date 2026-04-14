@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Loader2, Image as ImgIcon } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
+import ImageCropper from "../ImageCropper/ImageCropper";
+import imageCompression from "browser-image-compression";
 
 const AddPaymentDetails = () => {
-    const {id} = useParams();
+  const { id } = useParams();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [originalImage, setOriginalImage] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [finalFile, setFinalFile] = useState(null);
 
   const [form, setForm] = useState({
     upi: "",
@@ -31,8 +36,49 @@ const AddPaymentDetails = () => {
     if (!file) return;
 
     setForm({ ...form, image: file });
+    const imageUrl = URL.createObjectURL(file);
+    setOriginalImage(imageUrl);
     setPreview(URL.createObjectURL(file));
+    setShowCropper(true);
   };
+
+  const handleCropComplete = async (croppedFile) => {
+    try {
+      setShowCropper(false);
+
+      const option = {
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+        fileType: "image/jpeg",
+      };
+
+      const finalFile = await imageCompression(croppedFile, option);
+      setFinalFile(finalFile);
+
+      const previewUrl = URL.createObjectURL(finalFile);
+      setPreview(previewUrl);
+
+      if (originalImage) {
+        URL.revokeObjectURL(originalImage);
+      }
+
+      console.log("final Iamge Size", finalFile.size / 1024, "KB");
+      console.log("final image type", finalFile.type);
+    } catch (err) {
+      console.error("Crop complete error:", err);
+      toast.error("Error cropping image");
+    }
+  };
+
+
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    if(originalImage){
+      URL.revokeObjectURL(originalImage);
+    }
+  }
+
 
   // Submit
   const handleSubmit = async (e) => {
@@ -53,11 +99,11 @@ const AddPaymentDetails = () => {
           bankHolderName: form.bankHolderName,
           accountNumber: form.accountNumber,
           ifscCode: form.ifscCode,
-        })
+        }),
       );
 
       if (form.image) {
-        fd.append("image", form.image);
+        fd.append("image", finalFile);
       }
 
       await axios.post(
@@ -69,13 +115,14 @@ const AddPaymentDetails = () => {
             "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
-        }
+        },
       );
 
       toast.success("Payment details added successfully");
-        navigate(`/profile/${id}`, {replace:true});
+      navigate(`/profile/${id}`, { replace: true });
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed");
+      toast.error(err?.response?.data?.message);
+      // console.log(err.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -104,12 +151,7 @@ const AddPaymentDetails = () => {
               Upload QR Image
             </div>
           )}
-          <input
-            type="file"
-            hidden
-            accept="image/*"
-            onChange={handleImage}
-          />
+          <input type="file" hidden accept="image/*" onChange={handleImage} />
         </label>
 
         {/* UPI */}
@@ -184,6 +226,18 @@ const AddPaymentDetails = () => {
           box-shadow: 0 0 0 1px #10b981;
         }
       `}</style>
+
+      {
+  showCropper && (<>
+  
+  <ImageCropper 
+  image={originalImage}
+  onCancel={handleCropCancel}
+  onCropComplete={handleCropComplete}
+  />
+  
+  </>)
+}
     </div>
   );
 };

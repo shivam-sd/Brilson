@@ -45,12 +45,13 @@ const addPaymentDetails = async (req, res) => {
         "image/jpg",
         "image/gif",
         "image/webp",
+        "image/svg+xml"
       ];
 
       if (!allowedFormats.includes(file.mimetype)) {
         return res.status(400).json({
           message:
-            "Only JPEG, PNG, JPG, GIF, and WEBP formats are allowed",
+            "Only JPEG, PNG, JPG, GIF, WEBP, and SVG formats are allowed",
         });
       }
 
@@ -124,12 +125,13 @@ const updatePaymentDetails = async (req, res) => {
         "image/jpg",
         "image/gif",
         "image/webp",
+        "image/svg+xml"
       ];
 
       if (!allowedFormats.includes(file.mimetype)) {
         return res.status(400).json({
           message:
-            "Only JPEG, PNG, JPG, GIF, and WEBP formats are allowed",
+            "Only JPEG, PNG, JPG, GIF, WEBP, and SVG formats are allowed",
         });
       }
 

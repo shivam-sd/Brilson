@@ -66,7 +66,7 @@ const token = localStorage.getItem('token');
             {/* Image */}
             <img
               src={item.image}
-              alt={item.title}
+              alt={`Gallery Image ${index + 1}`}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
             
@@ -76,8 +76,6 @@ const token = localStorage.getItem('token');
               
               {/* Bottom Info */}
               <div className="absolute bottom-0 left-0 right-0 p-4">
-                <h4 className="text-white font-bold text-sm mb-1">{item.title}</h4>
-                <p className="text-gray-300 text-xs mb-2">{item.description}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400 text-xs">{new Date(item.date).toLocaleString()}</span>
                 </div>

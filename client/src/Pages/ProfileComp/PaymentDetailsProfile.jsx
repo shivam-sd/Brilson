@@ -38,10 +38,10 @@ const PaymentDetailsProfile = ({ activationCode }) => {
     toast.success("UPI ID Copied");
   };
 
-  const maskAccount = (acc) => {
-    if (!acc) return "-";
-    return "XXXXXX" + acc.slice(-4);
-  };
+  // const maskAccount = (acc) => {
+  //   if (!acc) return "-";
+  //   return "XXXXXX" + acc.slice(-4);
+  // };
 
   if (loading) {
     return (
@@ -195,7 +195,7 @@ const PaymentDetailsProfile = ({ activationCode }) => {
                 <div>
                   <p className="text-gray-400 text-xs sm:text-sm">Account Number</p>
                   <p className="text-white font-medium text-sm sm:text-base">
-                    {maskAccount(paymentData.paymentDetails.accountNumber)}
+                    {paymentData.paymentDetails.accountNumber}
                   </p>
                 </div>
 

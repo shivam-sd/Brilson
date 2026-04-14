@@ -101,14 +101,7 @@ const GalleryEditProfile = () => {
 
   {/* INFO SECTION */}
   <div className="p-3">
-    <h4 className="text-white font-semibold truncate">
-      {item.title}
-    </h4>
-
-    <p className="text-xs text-gray-400 line-clamp-2">
-      {item.description}
-    </p>
-
+    
     <p className="text-[11px] text-gray-500 mt-1">
       {new Date(item.date).toLocaleDateString()}
     </p>

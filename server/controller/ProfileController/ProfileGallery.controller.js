@@ -5,7 +5,7 @@ const CardProfileModel = require("../../models/CardProfile");
 
 const addProfileGallery = async (req, res) => {
     try{
-        const {activationCode, title, description} = req.body;
+        const {activationCode} = req.body;
 
         const userId = req.user;
         
@@ -41,8 +41,6 @@ const addProfileGallery = async (req, res) => {
             cardId:card._id,
             owner:userId,
             activationCode,
-            title,
-            description,
             image:imageUrl
         });
 
@@ -60,7 +58,6 @@ const addProfileGallery = async (req, res) => {
 const updateGallery = async (req, res) => {
   try {
     const { galleryId } = req.params; 
-    const { title, description } = req.body;
 
     // Find gallery
     const gallery = await profileGalleryModel.findById(galleryId);
@@ -103,8 +100,6 @@ const updateGallery = async (req, res) => {
     }
 
     // Update fields
-    gallery.title = title || gallery.title;
-    gallery.description = description || gallery.description;
     gallery.image = imageUrl;
 
     await gallery.save();

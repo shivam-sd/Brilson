@@ -12,8 +12,6 @@ const AddGallery = () => {
   const token = localStorage.getItem("token");
 
   const [form, setForm] = useState({
-    title: "",
-    description: "",
     activationCode: id,
     image: null,
   });
@@ -86,15 +84,13 @@ console.error('Crop complete error:', err);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.title.trim()) return toast.error("Title required");
+    if (!form.image) return toast.error("Image required");
 
     try {
       setLoading(true);
 
       const fd = new FormData();
       fd.append("activationCode", form.activationCode);
-      fd.append("title", form.title);
-      fd.append("description", form.description);
       if (form.image) fd.append("image", FinalFile);
 
       const res = await axios.post(
@@ -107,7 +103,7 @@ console.error('Crop complete error:', err);
 
       toast.success("Gallery Item Added");
 
-      setForm({ title: "", description: "", duration: "", image: null,  });
+      setForm({ activationCode: id, image: null });
       setPreview(null);
       navigate(`/profile/${id}`, {replace:true});
     } catch (err) {
@@ -161,24 +157,6 @@ console.error('Crop complete error:', err);
             />
           </div>
         </label>
-
-        {/* Inputs */}
-        <input
-          name="title"
-          value={form.title}
-          onChange={handleChange}
-          placeholder="Gallery Item Title"
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
-        />
-
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          placeholder="Gallery Item Description"
-          rows={4}
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
-        />
 
 
         {/* Button */}
