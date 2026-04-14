@@ -74,7 +74,6 @@ const renderSVGThumbnail = (svgDataUrl, className = "w-10 h-10") => {
 };
 
 /* Add text to SVG QR Code */
-/* Add text to SVG QR Code - Fixed for proper sizing and spacing */
 const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
   try {
     // Get SVG string from QR code
@@ -147,7 +146,7 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     codeText.setAttribute("y", codeY.toString());
     codeText.setAttribute("text-anchor", "middle");
     codeText.setAttribute("font-family", "monospace");
-    codeText.setAttribute("font-size", "30"); // Reduced from 30
+    codeText.setAttribute("font-size", "45"); // Reduced from 30
     codeText.setAttribute("font-weight", "bold");
     codeText.setAttribute("fill", textColor);
     codeText.textContent = `Code: ${activationCode}`;
@@ -167,7 +166,7 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
       nameText.setAttribute("y", nameY.toString());
       nameText.setAttribute("text-anchor", "middle");
       nameText.setAttribute("font-family", "Arial, sans-serif");
-      nameText.setAttribute("font-size", "25"); // Reduced from 30
+      nameText.setAttribute("font-size", "30"); // Reduced from 30
       nameText.setAttribute("fill", textColor);
       nameText.setAttribute("fill-opacity", "0.8");
       nameText.textContent = displayName;
@@ -188,7 +187,7 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
   }
 };
 
-/* High resolution PNG fallback for compatibility */
+
 /* High resolution PNG fallback with proper text sizing */
 const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
   try {
@@ -233,7 +232,7 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
         ctx.globalAlpha = 1;
         
         // Activation Code text - smaller font
-        ctx.font = 'bold 28px "Courier New", monospace';
+        ctx.font = 'bold 35px "Courier New", monospace';
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, qrSize + 55);
@@ -244,7 +243,7 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
           if (displayName.length > 30) {
             displayName = displayName.substring(0, 27) + '...';
           }
-          ctx.font = '22px Arial, sans-serif';
+          ctx.font = '28px Arial, sans-serif';
           ctx.fillStyle = textColor;
           ctx.globalAlpha = 0.8;
           ctx.fillText(displayName, canvas.width / 2, qrSize + 90);
