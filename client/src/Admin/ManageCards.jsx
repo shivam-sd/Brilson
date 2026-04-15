@@ -125,8 +125,8 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     // Calculate positions relative to original width
     const centerX = originalWidth / 2;
     const separatorY = originalHeight + 30; // Reduced from 80
-    const codeY = originalHeight + 70; // Reduced from 45
-    const nameY = originalHeight + 105; // Reduced from 85
+    const codeY = originalHeight + 90; // Reduced from 45
+    const nameY = originalHeight + 125; // Reduced from 85
     
     // Add separator line (thinner, lighter)
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
