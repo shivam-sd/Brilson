@@ -16,7 +16,7 @@ const CheckParkingTagStatus = () => {
         );
 console.log(res);
         if (res.data?.isActivated) {
-          navigate(`/profile/${activationCode}`, { replace: true });
+          navigate(`/profile/P/public/${activationCode}`, { replace: true });
         } else {
           navigate(`/parking-tag/activate`, { replace: true });
         }

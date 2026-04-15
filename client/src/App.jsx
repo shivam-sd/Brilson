@@ -88,6 +88,7 @@ import ActivateParkingTag from "./Pages/ParkingTag/ActivateParkingTag";
 import CheckParkingTagStatus from "./Pages/CheckParkingTagStatus";
 import ParkingTagProfile from "./Pages/ParkingTag/ParkingTagProfile";
 import EditParkingTagProfile from "./Pages/ParkingTag/EditParkingTagProfile";
+import ParkingTagPublicProfile from "./Pages/ParkingTag/ParkingTagPublicProfile"
 
 
 
@@ -152,6 +153,7 @@ function App() {
           <Route path="/admin/passTo/Profile" element={<AdminPassToProfile />} />
           <Route path="/profile/:slug" element={<ProfilePage />} />
           <Route path="/profile/P/:slug" element={<ParkingTagProfile />} />
+          <Route path="/profile/P/public/:slug" element={<ParkingTagPublicProfile />} />
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
   <Route path="/profile/P/edit/:slug" element={<EditParkingTagProfile />} />
           <Route path="/card/activate" element={<ActivateCard />} />

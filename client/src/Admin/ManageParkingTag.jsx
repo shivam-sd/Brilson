@@ -87,7 +87,7 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     const originalHeight = parseInt(svgElement.getAttribute('height') || '800');
     
     // Reduced text area height
-    const textHeight = 100;
+    const textHeight = 140;
     const newHeight = originalHeight + textHeight;
     
     const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -113,9 +113,9 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     newSvg.appendChild(qrGroup);
     
     const centerX = originalWidth / 2;
-    const separatorY = originalHeight + 15;
-    const codeY = originalHeight + 45;
-    const nameY = originalHeight + 75;
+    const separatorY = originalHeight + 30;
+    const codeY = originalHeight + 85;
+    const nameY = originalHeight + 120;
     
     // Add separator line (thinner)
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -127,7 +127,7 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     line.setAttribute("stroke-opacity", "0.3");
     line.setAttribute("stroke-width", "1.5");
     line.setAttribute("stroke-dasharray", "4,4");
-    newSvg.appendChild(line);
+    // newSvg.appendChild(line);
     
     // Add activation code text (smaller font)
     const codeText = document.createElementNS("http://www.w3.org/2000/svg", "text");

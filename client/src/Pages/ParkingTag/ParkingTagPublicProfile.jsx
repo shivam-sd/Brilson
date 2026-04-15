@@ -22,7 +22,7 @@ import axios from "axios";
 import Header from "../../Component/Header";
 import Footer from "../../Component/Footer";
 
-const ParkingTagProfile = () => {
+const ParkingTagPublicProfile = () => {
   const { slug } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -402,4 +402,4 @@ const ParkingTagProfile = () => {
   );
 };
 
-export default ParkingTagProfile;
+export default ParkingTagPublicProfile;

@@ -4,7 +4,7 @@ import { Upload, Loader2, Plus, ImageIcon } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import ImageCropper from "../ImageCropper/ImageCropper";
+import ImageCropper from "../ImageCropper/OtherCropper";
 import imageCompression from "browser-image-compression";
 
 const UpdateProduct = () => {

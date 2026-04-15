@@ -4,7 +4,7 @@ import { Upload, Loader2, Plus, ImageIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import imageCompression from "browser-image-compression";
-import ImageCropper from "../ImageCropper/ImageCropper";
+import ImageCropper from "../ImageCropper/OtherCropper";
 
 const AddGallery = () => {
   const { id } = useParams();

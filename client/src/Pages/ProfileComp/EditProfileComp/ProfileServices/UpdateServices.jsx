@@ -3,7 +3,7 @@ import axios from "axios";
 import { Loader2, Plus, X, Image as ImgIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
-import ImageCropper from "../ImageCropper/ImageCropper";
+import ImageCropper from "../ImageCropper/OtherCropper";
 import imageCompression from "browser-image-compression";
 
 const UpdateServices = () => {

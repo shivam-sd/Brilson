@@ -94,7 +94,7 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     const originalHeight = parseInt(svgElement.getAttribute('height') || '800');
     
     // Calculate new dimensions with text area (smaller text area)
-    const textAreaHeight = 100; // Reduced from 140
+    const textAreaHeight = 140; // Reduced from 140
     const newHeight = originalHeight + textAreaHeight;
     
     // Create new SVG with larger viewBox
@@ -124,9 +124,9 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     
     // Calculate positions relative to original width
     const centerX = originalWidth / 2;
-    const separatorY = originalHeight + 15; // Reduced from 80
-    const codeY = originalHeight + 45; // Reduced from 45
-    const nameY = originalHeight + 80; // Reduced from 85
+    const separatorY = originalHeight + 30; // Reduced from 80
+    const codeY = originalHeight + 70; // Reduced from 45
+    const nameY = originalHeight + 105; // Reduced from 85
     
     // Add separator line (thinner, lighter)
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -134,7 +134,7 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     line.setAttribute("y1", separatorY.toString());
     line.setAttribute("x2", (originalWidth - 60).toString());
     line.setAttribute("y2", separatorY.toString());
-    line.setAttribute("stroke", textColor);
+    // line.setAttribute("stroke", textColor);
     line.setAttribute("stroke-opacity", "0.3");
     line.setAttribute("stroke-width", "1.5");
     line.setAttribute("stroke-dasharray", "4,4");
