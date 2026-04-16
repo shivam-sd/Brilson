@@ -16,7 +16,7 @@ const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent"
     height: size,
     data: qrData,
     type: "svg",
-    margin: 5, // Add margin around QR code
+    margin: 5,
     dotsOptions: {
       color: dotsColor,
       type: "dots",
@@ -86,7 +86,6 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     const originalWidth = parseInt(svgElement.getAttribute('width') || '800');
     const originalHeight = parseInt(svgElement.getAttribute('height') || '800');
     
-    // Reduced text area height
     const textHeight = 140;
     const newHeight = originalHeight + textHeight;
     
@@ -117,7 +116,6 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     const codeY = originalHeight + 90;
     const nameY = originalHeight + 125;
     
-    // Add separator line (thinner)
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", "60");
     line.setAttribute("y1", separatorY.toString());
@@ -127,9 +125,7 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     line.setAttribute("stroke-opacity", "0.3");
     line.setAttribute("stroke-width", "1.5");
     line.setAttribute("stroke-dasharray", "4,4");
-    // newSvg.appendChild(line);
     
-    // Add activation code text (smaller font)
     const codeText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     codeText.setAttribute("x", centerX.toString());
     codeText.setAttribute("y", codeY.toString());
@@ -141,7 +137,6 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     codeText.textContent = `Code: ${activationCode}`;
     newSvg.appendChild(codeText);
     
-    // Add profile name if exists (smaller font)
     if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
       let displayName = profileName;
       if (displayName.length > 25) {
@@ -201,7 +196,6 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
         
         ctx.drawImage(img, 0, 0, qrSize, qrSize);
         
-        // Separator line
         ctx.strokeStyle = textColor;
         ctx.globalAlpha = 0.3;
         ctx.lineWidth = 1.5;
@@ -211,13 +205,11 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
         ctx.stroke();
         ctx.globalAlpha = 1;
         
-        // Activation Code text
         ctx.font = 'bold 35px "Courier New", monospace';
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, qrSize + 55);
         
-        // Profile name
         if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
           let displayName = profileName;
           if (displayName.length > 30) {
@@ -245,7 +237,6 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
   }
 };
 
-
 const ManageParkingTag = () => {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -260,23 +251,19 @@ const ManageParkingTag = () => {
   const [downloadingDate, setDownloadingDate] = useState(null);
   const [useSVG, setUseSVG] = useState(true);
   
-  // Color customization states
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [qrBgColor, setQrBgColor] = useState("transparent");
   const [qrDotsColor, setQrDotsColor] = useState("#000000");
   const [textColor, setTextColor] = useState("#000000");
   
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalTags, setTotalTags] = useState(0);
   const [limit] = useState(100);
   
-  // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
-  /* FETCH WITH PAGINATION & SEARCH */
   const fetchTags = async (page = 1, search = "") => {
     try {
       setLoading(true);
@@ -291,7 +278,6 @@ const ManageParkingTag = () => {
       });
       
       const allTags = res.data.allTags || [];
-      console.log("Fetched tags:", res.data);
       setTags(allTags);
       
       setTotalTags(res.data.totalTags || 0);
@@ -314,7 +300,6 @@ const ManageParkingTag = () => {
     }
   };
 
-  // Generate high quality QR codes
   const generateHighQualityQRCodes = async (tagsList = tags) => {
     const qrPromises = tagsList.map(async (tag) => {
       if (tag.qrUrl) {
@@ -357,19 +342,16 @@ const ManageParkingTag = () => {
     setQrImages(qrMap);
   };
 
-  // Regenerate QR when colors change or format changes
   useEffect(() => {
     if (tags.length > 0) {
       generateHighQualityQRCodes();
     }
   }, [qrBgColor, qrDotsColor, textColor, useSVG]);
 
-  // Initial fetch
   useEffect(() => {
     fetchTags(currentPage, searchQuery);
   }, []);
 
-  // Handle page change
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -377,21 +359,18 @@ const ManageParkingTag = () => {
     }
   };
 
-  // Handle search
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
     fetchTags(1, searchQuery);
   };
 
-  // Clear search
   const handleClearSearch = () => {
     setSearchQuery("");
     setCurrentPage(1);
     fetchTags(1, "");
   };
 
-  // Generate page numbers
   const getPageNumbers = () => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
@@ -413,7 +392,6 @@ const ManageParkingTag = () => {
     return pageNumbers;
   };
 
-  /* GROUP BY DATE */
   const groupedTags = tags.reduce((acc, tag) => {
     const date = new Date(tag.createdAt).toISOString().split("T")[0];
     if (!acc[date]) acc[date] = [];
@@ -425,7 +403,6 @@ const ManageParkingTag = () => {
     ([date]) => !selectedDate || date === selectedDate
   );
 
-  /* PREVIEW with high quality */
   const previewQR = async (tag) => {
     if (!tag.qrUrl) {
       alert("No QR URL available for this parking tag");
@@ -535,7 +512,6 @@ const ManageParkingTag = () => {
     `);
   };
 
-  /* DOWNLOAD SINGLE TAG - High Quality */
   const downloadQR = async (tag) => {
     if (!tag.qrUrl) {
       alert("No QR URL available for download");
@@ -603,7 +579,6 @@ const ManageParkingTag = () => {
     }
   };
 
-  /* BULK DOWNLOAD ALL TAGS OF A SPECIFIC DATE - High Quality */
   const downloadAllByDate = async (date, tagsList) => {
     if (!tagsList || tagsList.length === 0) {
       alert("No parking tags available for this date");
@@ -701,7 +676,6 @@ const ManageParkingTag = () => {
     }
   };
 
-  /* LOADING */
   if (loading) {
     return (
       <div className="min-h-[60vh] flex justify-center items-center">
@@ -710,7 +684,6 @@ const ManageParkingTag = () => {
     );
   }
 
-  /* ERROR */
   if (error) {
     return (
       <div className="text-center text-red-400 p-8">
@@ -720,7 +693,6 @@ const ManageParkingTag = () => {
     );
   }
 
-  /* STATUS BADGE */
   const StatusBadge = ({ active }) => (
     <span
       className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
@@ -733,25 +705,24 @@ const ManageParkingTag = () => {
     </span>
   );
 
-  /* PAGINATION COMPONENT */
   const Pagination = () => (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-2 py-4 bg-gray-800/30 rounded-lg">
-      <div className="text-sm text-gray-400">
+      <div className="text-sm text-gray-400 text-center sm:text-left">
         Page <span className="font-medium text-gray-300">{currentPage}</span> of{" "}
         <span className="font-medium text-gray-300">{totalPages}</span> • 
         Showing <span className="font-medium text-gray-300">{(currentPage - 1) * limit + 1}</span> to{" "}
         <span className="font-medium text-gray-300">
           {Math.min(currentPage * limit, totalTags)}
         </span> of{" "}
-        <span className="font-medium text-gray-300">{totalTags}</span> Parking Tags
+        <span className="font-medium text-gray-300">{totalTags}</span>
         {isSearching && (
-          <span className="ml-2 text-indigo-400">
+          <span className="ml-2 text-indigo-400 block sm:inline mt-1 sm:mt-0">
             (Search results)
           </span>
         )}
       </div>
       
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 flex-wrap justify-center">
         <button onClick={() => handlePageChange(1)} disabled={currentPage === 1}
           className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronsLeft size={18} />
@@ -763,7 +734,7 @@ const ManageParkingTag = () => {
         
         {getPageNumbers().map((pageNum, index) => (
           <button key={index} onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
-            className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg text-sm font-medium ${
+            className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-sm font-medium ${
               currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
               pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
             }`} disabled={pageNum === '...'}>
@@ -780,26 +751,20 @@ const ManageParkingTag = () => {
           <FiChevronsRight size={18} />
         </button>
       </div>
-      
-      <div className="flex items-center gap-2 text-sm">
-        <span className="text-gray-400">Tags per page:</span>
-        <span className="font-medium text-gray-300">{limit}</span>
-      </div>
     </div>
   );
 
-  // Component to render QR thumbnail
   const QRThumbnail = ({ tagId }) => {
     const imageData = qrImages[tagId];
     
     if (!imageData) {
-      return <img src="/qr.png" alt="QR" className="w-10 h-10" />;
+      return <img src="/qr.png" alt="QR" className="w-8 h-8 sm:w-10 sm:h-10" />;
     }
     
     if (useSVG && imageData.startsWith('data:image/svg')) {
       const svgContent = renderSVGThumbnail(imageData);
       if (svgContent) {
-        return <div className="w-10 h-10" dangerouslySetInnerHTML={svgContent} />;
+        return <div className="w-8 h-8 sm:w-10 sm:h-10" dangerouslySetInnerHTML={svgContent} />;
       }
     }
     
@@ -807,7 +772,7 @@ const ManageParkingTag = () => {
       <img
         src={imageData}
         alt="QR Code"
-        className="w-10 h-10 object-contain"
+        className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
         onError={(e) => {
           e.target.onerror = null;
           e.target.src = "/qr.png";
@@ -817,24 +782,24 @@ const ManageParkingTag = () => {
   };
 
   return (
-    <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-[100vw] overflow-x-hidden">
-      {/* HEADER */}
+    <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-full overflow-x-hidden">
+      {/* HEADER - Responsive */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6">
-        <div className="w-full lg:w-auto">
-          <h2 className="text-xl sm:text-2xl md:text-4xl font-bold">Manage Parking Tags</h2>
-          <p className="text-gray-400 mt-1 text-sm sm:text-base">
+        <div className="w-full lg:w-auto text-center lg:text-left">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">Manage Parking Tags</h2>
+          <p className="text-gray-400 mt-1 text-xs sm:text-sm">
             View, track and manage all parking tag profiles
-            <span className="ml-2 text-indigo-400 font-medium">
+            <span className="ml-2 text-indigo-400 font-medium block sm:inline mt-1 sm:mt-0">
               (Page {currentPage} of {totalPages})
             </span>
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-center">
+        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-stretch sm:items-center">
           {/* Quality Toggle Button */}
           <button
             onClick={() => setUseSVG(!useSVG)}
-            className={`px-4 py-3 rounded-lg flex items-center gap-2 transition-all cursor-pointer ${
+            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer text-sm sm:text-base ${
               useSVG 
                 ? 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600' 
                 : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'
@@ -842,14 +807,14 @@ const ManageParkingTag = () => {
           >
             {useSVG ? (
               <>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
                 <span>SVG</span>
               </>
             ) : (
               <>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M4 4h16v16H4z M8 8h8v8H8z"/>
                 </svg>
                 <span>PNG</span>
@@ -860,12 +825,13 @@ const ManageParkingTag = () => {
           {/* COLOR CUSTOMIZATION BUTTON */}
           <button
             onClick={() => setShowColorPicker(!showColorPicker)}
-            className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center gap-2 text-white hover:shadow-lg transition-all cursor-pointer"
+            className="px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center gap-2 text-white hover:shadow-lg transition-all cursor-pointer text-sm sm:text-base"
           >
-            <div className="w-4 h-4 rounded-full border border-white" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}></div>
-            <div className="w-4 h-4 rounded-full border border-white" style={{ backgroundColor: qrDotsColor }}></div>
-            <div className="w-4 h-4 rounded-full border border-white" style={{ backgroundColor: textColor }}></div>
-            <span>Customize Colors</span>
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-white" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}></div>
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-white" style={{ backgroundColor: qrDotsColor }}></div>
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-white" style={{ backgroundColor: textColor }}></div>
+            <span className="hidden xs:inline">Customize</span>
+            <span className="xs:hidden">Colors</span>
           </button>
 
           {/* SEARCH BAR */}
@@ -875,19 +841,19 @@ const ManageParkingTag = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by owner or activation code..."
-                className="bg-gray-900/60 backdrop-blur border-0 pl-10 pr-10 py-3 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white border-b-2 border-transparent focus:border-indigo-400"
+                placeholder="Search..."
+                className="bg-gray-900/60 backdrop-blur border-0 pl-9 pr-8 py-2.5 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white text-sm"
               />
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                <FiSearch className="text-gray-400" size={18} />
+                <FiSearch className="text-gray-400" size={14} />
               </div>
               {searchQuery && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                   </svg>
                 </button>
@@ -896,26 +862,15 @@ const ManageParkingTag = () => {
           </form>
 
           {/* Date Picker */}
-          <div className="relative w-full sm:w-56">
+          <div className="relative w-full sm:w-auto">
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-gray-900/60 backdrop-blur border-0 pl-4 pr-10 py-3 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white border-b-2 border-transparent focus:border-indigo-400"
+              className="bg-gray-900/60 backdrop-blur border-0 pl-3 pr-8 py-2.5 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white text-sm"
             />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
-              {selectedDate && (
-                <button
-                  onClick={() => setSelectedDate("")}
-                  className="text-gray-400 hover:text-white transition-colors p-1"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                  </svg>
-                </button>
-              )}
-              <div className="w-px h-4 bg-gray-700" />
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
             </div>
@@ -924,14 +879,13 @@ const ManageParkingTag = () => {
           {/* Create Button */}
           <Link
             to="/api/tags/bulk"
-            className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-5 py-3 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 w-full sm:w-auto group"
+            className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg text-sm sm:text-base w-full sm:w-auto"
           >
-            <FiPlus className="text-lg transition-transform duration-300 group-hover:rotate-180" />
-            <span className="font-medium">Create Tags</span>
+            <FiPlus className="text-base transition-transform duration-300 group-hover:rotate-180" />
+            <span>Create Tags</span>
           </Link>
         </div>
       </div>
-
 
       {/* COLOR PICKER MODAL */}
       {showColorPicker && (
@@ -947,12 +901,11 @@ const ManageParkingTag = () => {
             </div>
 
             <div className="space-y-6">
-              {/* QR Background Color */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">QR Background Color</label>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-center gap-3">
                   <HexColorPicker color={qrBgColor === 'transparent' ? '#ffffff' : qrBgColor} onChange={(color) => setQrBgColor(color)} />
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-row sm:flex-col gap-2 mt-3 sm:mt-0">
                     <button onClick={() => setQrBgColor("transparent")}
                       className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700">
                       Transparent
@@ -971,12 +924,11 @@ const ManageParkingTag = () => {
                 </div>
               </div>
 
-              {/* QR Dots Color */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">QR Dots Color</label>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-center gap-3">
                   <HexColorPicker color={qrDotsColor} onChange={setQrDotsColor} />
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-row sm:flex-col gap-2 mt-3 sm:mt-0">
                     <button onClick={() => setQrDotsColor("#000000")}
                       className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
                       <div className="w-4 h-4 bg-black rounded"></div>
@@ -996,12 +948,11 @@ const ManageParkingTag = () => {
                 </div>
               </div>
 
-              {/* Text Color */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Text Color</label>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-center gap-3">
                   <HexColorPicker color={textColor} onChange={setTextColor} />
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-row sm:flex-col gap-2 mt-3 sm:mt-0">
                     <button onClick={() => setTextColor("#000000")}
                       className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
                       <div className="w-4 h-4 bg-black rounded"></div>
@@ -1021,7 +972,6 @@ const ManageParkingTag = () => {
                 </div>
               </div>
 
-              {/* Preview */}
               <div className="pt-4 border-t border-gray-700">
                 <p className="text-sm text-gray-400 text-center mb-3">Live Preview</p>
                 <div className="bg-gray-800 rounded-lg p-4 flex justify-center">
@@ -1060,60 +1010,146 @@ const ManageParkingTag = () => {
         </div>
       )}
 
-      {/* STATS CARDS */}
+      {/* STATS CARDS - Responsive Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 md:mb-8">
-        <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-300">
+        <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-xs sm:text-sm mb-1">Total Parking Tags</p>
-              <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">{stats.total}</p>
+              <p className="text-gray-400 text-xs mb-1">Total Tags</p>
+              <p className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">{stats.total}</p>
             </div>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-indigo-500/20 flex items-center justify-center animate-pulse">
-              <span className="text-indigo-400 text-base sm:text-lg">🏷️</span>
+            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
+              <span className="text-indigo-400 text-lg">🏷️</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-300">
+        <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-xs sm:text-sm mb-1">Activated</p>
-              <p className="text-2xl sm:text-3xl font-bold text-green-400">{stats.activated}</p>
+              <p className="text-gray-400 text-xs mb-1">Activated</p>
+              <p className="text-2xl font-bold text-green-400">{stats.activated}</p>
             </div>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-              <span className="text-green-400 text-base sm:text-lg">✓</span>
+            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+              <span className="text-green-400 text-lg">✓</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-gray-800/50 rounded-xl p-4 sm:p-5 md:p-6 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-300 sm:col-span-2 lg:col-span-1">
+        <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 backdrop-blur-sm sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-xs sm:text-sm mb-1">Inactive</p>
-              <p className="text-2xl sm:text-3xl font-bold text-yellow-400">{stats.inactive}</p>
+              <p className="text-gray-400 text-xs mb-1">Inactive</p>
+              <p className="text-2xl font-bold text-yellow-400">{stats.inactive}</p>
             </div>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-yellow-500/20 flex items-center justify-center">
-              <span className="text-yellow-400 text-base sm:text-lg">⏸</span>
+            <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
+              <span className="text-yellow-400 text-lg">⏸</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* DESKTOP TABLE */}
+      {/* MOBILE VIEW - Optimized for small screens */}
+      <div className="block lg:hidden">
+        {filteredGroupedTags.length > 0 ? (
+          filteredGroupedTags.map(([date, list]) => (
+            <div key={date} className="mb-6">
+              <div className="mb-3 p-3 bg-gray-800/30 rounded-lg sticky top-0 z-10 backdrop-blur-sm">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">📅</span>
+                    <span className="font-medium text-gray-300 text-sm">{new Date(date).toLocaleDateString("en-GB")}</span>
+                    <span className="text-xs bg-indigo-500/20 px-2 py-0.5 rounded-full text-indigo-300">
+                      {list.length}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => downloadAllByDate(date, list)}
+                    disabled={downloadingDate === date}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium w-full sm:w-auto justify-center ${
+                      downloadingDate === date
+                        ? 'bg-gray-600 cursor-not-allowed opacity-50'
+                        : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
+                    }`}
+                  >
+                    {downloadingDate === date ? (
+                      <>
+                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Downloading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiDownloadCloud size={12} />
+                        <span>Download All ({list.length})</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {list.map((tag) => (
+                  <div key={tag._id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <StatusBadge active={tag.isActivated} />
+                          <span className="text-xs text-gray-400">✓ {tag.isDownloaded ? 'Downloaded' : 'Not Downloaded'}</span>
+                        </div>
+                        <p className="text-sm font-medium text-white truncate">{tag.owner?.name || "—"}</p>
+                        <p className="text-xs text-indigo-400 font-mono mt-1 break-all">{tag.activationCode}</p>
+                        <p className="text-xs text-gray-500 mt-1">Created: {new Date(tag.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      <div className="flex-shrink-0">
+                        <div className="w-14 h-14 bg-white p-1.5 rounded-lg shadow-md overflow-hidden">
+                          <QRThumbnail tagId={tag._id} />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-3 pt-2 border-t border-gray-700/50">
+                      <button onClick={() => previewQR(tag)} disabled={!tag.qrUrl}
+                        className="flex-1 py-1.5 bg-blue-500/20 rounded-lg text-blue-400 text-xs flex items-center justify-center gap-1">
+                        <FaEye size={12} /> Preview
+                      </button>
+                      <button onClick={() => downloadQR(tag)} disabled={!tag.qrUrl}
+                        className="flex-1 py-1.5 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg text-cyan-400 text-xs flex items-center justify-center gap-1">
+                        <FaDownload size={12} /> Download
+                      </button>
+                      <Link to={`${import.meta.env.VITE_DOMAIN}/profile/P/public/${tag.slug}`} target="_blank"
+                        className="flex-1 py-1.5 bg-indigo-500/20 rounded-lg text-indigo-400 text-xs flex items-center justify-center gap-1">
+                        View
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="p-6 text-center bg-gray-800/30 rounded-xl">
+            <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
+            <p className="text-gray-400 text-sm">No parking tags available</p>
+          </div>
+        )}
+        
+        {totalPages > 1 && <Pagination />}
+      </div>
+
+      {/* DESKTOP/TABLET TABLE VIEW - Hidden on mobile */}
       <div className="hidden lg:block">
-        <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20 backdrop-blur-sm">
-          <table className="w-full min-w-full">
+        <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
+          <table className="w-full min-w-[800px]">
             <thead className="bg-gray-800/50 border-b border-gray-700/50">
               <tr>
-                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation Code</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Created</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">QR</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Preview</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Download</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Profile</th>
+                <th className="p-3 text-left text-xs font-medium text-gray-300">✓</th>
+                <th className="p-3 text-left text-xs font-medium text-gray-300">Status</th>
+                <th className="p-3 text-left text-xs font-medium text-gray-300">Owner</th>
+                <th className="p-3 text-left text-xs font-medium text-gray-300">Activation Code</th>
+                <th className="p-3 text-left text-xs font-medium text-gray-300">Created</th>
+                <th className="p-3 text-center text-xs font-medium text-gray-300">QR</th>
+                <th className="p-3 text-center text-xs font-medium text-gray-300">Preview</th>
+                <th className="p-3 text-center text-xs font-medium text-gray-300">Download</th>
+                <th className="p-3 text-center text-xs font-medium text-gray-300">Profile</th>
               </tr>
             </thead>
 
@@ -1123,31 +1159,31 @@ const ManageParkingTag = () => {
                   <React.Fragment key={date}>
                     <tr className="bg-gray-800/30">
                       <td colSpan="9" className="p-3">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            <span className="text-lg">📅</span>
+                            <span className="text-base">📅</span>
                             <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
-                            <span className="ml-2 text-xs bg-gradient-to-r from-indigo-500/20 to-purple-500/20 px-2 py-1 rounded-full text-gray-300">
+                            <span className="text-xs bg-gradient-to-r from-indigo-500/20 to-purple-500/20 px-2 py-1 rounded-full text-gray-300">
                               {list.length} tags
                             </span>
                           </div>
                           <button
                             onClick={() => downloadAllByDate(date, list)}
                             disabled={downloadingDate === date}
-                            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${
                               downloadingDate === date
                                 ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                                : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg transform hover:scale-105 cursor-pointer'
+                                : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg'
                             }`}
                           >
                             {downloadingDate === date ? (
                               <>
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                 <span>Downloading...</span>
                               </>
                             ) : (
                               <>
-                                <FiDownloadCloud size={16} />
+                                <FiDownloadCloud size={14} />
                                 <span>Download All ({list.length})</span>
                               </>
                             )}
@@ -1157,7 +1193,7 @@ const ManageParkingTag = () => {
                     </tr>
 
                     {list.map((tag) => (
-                      <tr key={tag._id} className="hover:bg-gray-800/20 transition-colors duration-200">
+                      <tr key={tag._id} className="hover:bg-gray-800/20 transition-colors">
                         <td className="p-3">
                           <input checked={tag.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded border-gray-600 bg-gray-700" />
                         </td>
@@ -1165,30 +1201,28 @@ const ManageParkingTag = () => {
                           <StatusBadge active={tag.isActivated} />
                         </td>
                         <td className="p-3">
-                          <span className={`text-sm ${tag.owner?.name ? "text-gray-200 font-medium" : "text-gray-500"}`}>
+                          <span className="text-sm truncate block max-w-[150px]" title={tag.owner?.name}>
                             {tag.owner?.name || "—"}
                           </span>
                         </td>
                         <td className="p-3">
-                          <div className="font-mono text-sm text-indigo-400 max-w-[120px] truncate" title={tag.activationCode}>
+                          <div className="font-mono text-sm text-indigo-400 truncate max-w-[120px]" title={tag.activationCode}>
                             {tag.activationCode}
                           </div>
                         </td>
-                        <td className="p-3 text-gray-400 text-sm">
+                        <td className="p-3 text-gray-400 text-sm whitespace-nowrap">
                           {new Date(tag.createdAt).toLocaleDateString()}
                         </td>
                         <td className="p-3 text-center">
-                          <div className="w-12 h-12 bg-white p-1.5 rounded-lg flex items-center justify-center mx-auto shadow-md overflow-hidden">
+                          <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mx-auto shadow-md">
                             <QRThumbnail tagId={tag._id} />
                           </div>
                         </td>
                         <td className="p-3 text-center">
                           <button
                             onClick={() => previewQR(tag)}
-                            className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 mx-auto ${
-                              !tag.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
                             disabled={!tag.qrUrl}
+                            className="text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50"
                           >
                             <FaEye className="w-4 h-4" />
                           </button>
@@ -1196,18 +1230,16 @@ const ManageParkingTag = () => {
                         <td className="p-3 text-center">
                           <button
                             onClick={() => downloadQR(tag)}
-                            className={`bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 p-1.5 rounded-lg text-white transition-all duration-200 transform hover:scale-105 mx-auto ${
-                              !tag.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
                             disabled={!tag.qrUrl}
+                            className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 p-1.5 rounded-lg text-white transition-all"
                           >
-                            <FaDownload className="w-4 h-4" />
+                            <FaDownload className="w-3 h-3 sm:w-4 sm:h-4" />
                           </button>
                         </td>
                         <td className="p-3 text-center">
                           <Link 
-                            to={`${import.meta.env.VITE_DOMAIN}/public/profile/${tag.slug}`}
-                            className="text-indigo-400 hover:text-indigo-300 transition text-sm inline-block font-medium hover:underline"
+                            to={`${import.meta.env.VITE_DOMAIN}/profile/P/public/${tag.slug}`}
+                            className="text-indigo-400 hover:text-indigo-300 transition text-xs font-medium hover:underline"
                             target="_blank"
                           >
                             View
@@ -1221,23 +1253,8 @@ const ManageParkingTag = () => {
                 <tr>
                   <td colSpan="9" className="p-6 text-center">
                     <div className="text-gray-400">
-                      {searchQuery ? (
-                        <>
-                          <FiSearch className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                          <p className="text-lg">No parking tags found for "{searchQuery}"</p>
-                          <button
-                            onClick={handleClearSearch}
-                            className="mt-4 text-indigo-400 hover:text-indigo-300 transition-colors"
-                          >
-                            Clear search
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                          <p className="text-lg">No parking tags available</p>
-                        </>
-                      )}
+                      <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
+                      <p className="text-sm">No parking tags available</p>
                     </div>
                   </td>
                 </tr>
@@ -1245,223 +1262,6 @@ const ManageParkingTag = () => {
             </tbody>
           </table>
         </div>
-        
-        {totalPages > 1 && <Pagination />}
-      </div>
-
-      {/* TABLET VIEW */}
-      <div className="hidden md:block lg:hidden">
-        <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20 backdrop-blur-sm">
-          <table className="w-full min-w-full">
-            <thead className="bg-gray-800/50 border-b border-gray-700/50">
-              <tr>
-                <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">✓</th>
-                <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Status</th>
-                <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Owner</th>
-                <th className="p-2 text-left text-xs font-medium text-gray-300 whitespace-nowrap">Activation</th>
-                <th className="p-2 text-center text-xs font-medium text-gray-300 whitespace-nowrap">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-gray-700/30">
-              {filteredGroupedTags.length > 0 ? (
-                filteredGroupedTags.map(([date, list]) => (
-                  <React.Fragment key={date}>
-                    <tr className="bg-gray-800/30">
-                      <td colSpan="5" className="p-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span>📅</span>
-                            <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
-                            <span className="ml-2 text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">
-                              {list.length} tags
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => downloadAllByDate(date, list)}
-                            disabled={downloadingDate === date}
-                            className={`flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
-                              downloadingDate === date
-                                ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                                : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
-                            }`}
-                          >
-                            {downloadingDate === date ? (
-                              <>
-                                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                <span>...</span>
-                              </>
-                            ) : (
-                              <>
-                                <FiDownloadCloud size={12} />
-                                <span>All ({list.length})</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-
-                    {list.map((tag) => (
-                      <tr key={tag._id} className="hover:bg-gray-800/20 transition-colors">
-                        <td className="p-3">
-                          <input checked={tag.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" />
-                        </td>
-                        <td className="p-3">
-                          <StatusBadge active={tag.isActivated} />
-                        </td>
-                        <td className="p-3">
-                          <span className={`text-xs ${tag.owner?.name ? "text-gray-200" : "text-gray-500"}`}>
-                            {tag.owner?.name || "—"}
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <div className="font-mono text-xs text-indigo-400 truncate" title={tag.activationCode}>
-                            {tag.activationCode}
-                          </div>
-                        </td>
-                        <td className="p-3">
-                          <div className="flex items-center justify-center gap-2">
-                            <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mr-2 shadow-md overflow-hidden">
-                              <QRThumbnail tagId={tag._id} />
-                            </div>
-                            <button
-                              onClick={() => previewQR(tag)}
-                              className={`text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50 ${
-                                !tag.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                              }`}
-                              disabled={!tag.qrUrl}
-                            >
-                              <FaEye className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => downloadQR(tag)}
-                              className={`bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 p-1.5 rounded-lg text-white transition ${
-                                !tag.qrUrl ? 'opacity-50 cursor-not-allowed' : ''
-                              }`}
-                              disabled={!tag.qrUrl}
-                            >
-                              <FaDownload className="w-4 h-4" />
-                            </button>
-                            <Link 
-                              to={`${import.meta.env.VITE_DOMAIN}/public/profile/${tag.slug}`}
-                              className="text-indigo-400 hover:text-indigo-300 transition text-xs px-2 py-1 border border-indigo-500/50 rounded"
-                              target="_blank"
-                            >
-                              Profile
-                            </Link>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </React.Fragment>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="p-6 text-center">
-                    <div className="text-gray-400">
-                      {searchQuery ? (
-                        <>
-                          <FiSearch className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                          <p className="text-lg">No tags found</p>
-                        </>
-                      ) : (
-                        <>
-                          <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                          <p className="text-lg">No parking tags available</p>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        
-        {totalPages > 1 && <Pagination />}
-      </div>
-
-      {/* MOBILE VIEW */}
-      <div className="block md:hidden">
-        {filteredGroupedTags.length > 0 ? (
-          filteredGroupedTags.map(([date, list]) => (
-            <div key={date} className="mb-6">
-              <div className="mb-3 p-3 bg-gray-800/30 rounded-lg sticky top-0 z-10 backdrop-blur-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">📅</span>
-                    <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
-                    <span className="ml-2 text-xs bg-indigo-500/20 px-2 py-1 rounded-full text-indigo-300">
-                      {list.length} tags
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => downloadAllByDate(date, list)}
-                    disabled={downloadingDate === date}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
-                      downloadingDate === date
-                        ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                        : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
-                    }`}
-                  >
-                    {downloadingDate === date ? (
-                      <>
-                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>...</span>
-                      </>
-                    ) : (
-                      <>
-                        <FiDownloadCloud size={12} />
-                        <span>All {list.length}</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {list.map((tag) => (
-                  <div key={tag._id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50 backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-300">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <StatusBadge active={tag.isActivated} />
-                          <span className="text-xs text-gray-400">✓ {tag.isDownloaded ? 'Downloaded' : 'Not Downloaded'}</span>
-                        </div>
-                        <p className="text-sm font-medium text-white">{tag.owner?.name || "—"}</p>
-                        <p className="text-xs text-indigo-400 font-mono mt-1">{tag.activationCode}</p>
-                        <p className="text-xs text-gray-500 mt-1">Created: {new Date(tag.createdAt).toLocaleDateString()}</p>
-                      </div>
-                      <div className="w-14 h-14 bg-white p-1.5 rounded-lg shadow-md ml-3 overflow-hidden">
-                        <QRThumbnail tagId={tag._id} />
-                      </div>
-                    </div>
-                    <div className="flex gap-2 mt-2 pt-2 border-t border-gray-700/50">
-                      <button onClick={() => previewQR(tag)} disabled={!tag.qrUrl}
-                        className="flex-1 py-1.5 bg-blue-500/20 rounded-lg text-blue-400 text-xs flex items-center justify-center gap-1 hover:bg-blue-500/30 transition-colors">
-                        <FaEye size={12} /> Preview
-                      </button>
-                      <button onClick={() => downloadQR(tag)} disabled={!tag.qrUrl}
-                        className="flex-1 py-1.5 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg text-cyan-400 text-xs flex items-center justify-center gap-1 hover:from-cyan-500/30 hover:to-blue-500/30 transition-colors">
-                        <FaDownload size={12} /> Download
-                      </button>
-                      <Link to={`${import.meta.env.VITE_DOMAIN}/public/profile/${tag.slug}`} target="_blank"
-                        className="flex-1 py-1.5 bg-indigo-500/20 rounded-lg text-indigo-400 text-xs flex items-center justify-center gap-1 hover:bg-indigo-500/30 transition-colors">
-                        View
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="p-6 text-center bg-gray-800/30 rounded-xl backdrop-blur-sm">
-            <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-            <p className="text-gray-400">No parking tags available</p>
-          </div>
-        )}
         
         {totalPages > 1 && <Pagination />}
       </div>

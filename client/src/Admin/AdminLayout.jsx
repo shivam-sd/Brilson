@@ -27,9 +27,9 @@ const AdminLayout = () => {
 
       {/* MOBILE TOPBAR */}
       <div className="md:hidden w-full fixed top-0 left-0 bg-[#151822] px-5 py-4 flex justify-between items-center z-50 border-b border-white/10">
-        <h1 className="text-2xl font-bold">
+        <h2 className="text-2xl font-bold">
           Brilson <span className="text-cyan-400">Admin</span>
-        </h1>
+        </h2>
         <button onClick={() => setOpen(true)}>
           <FiMenu size={26} className="text-white" />
         </button>
@@ -129,92 +129,118 @@ const AdminLayout = () => {
         </nav>
 
         <div className="mt-auto">
-          <button className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition">
+          {/* <button className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition">
             <FiLogOut size={20} /> Logout
-          </button>
+          </button> */}
         </div>
       </aside>
 
       {/* MOBILE SIDEBAR DRAWER */}
       <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-[#151822] z-50 p-8 flex flex-col transition-transform duration-300 md:hidden ${
+        className={`fixed top-0 left-0 h-full w-72 bg-[#151822] z-50 p-8 flex flex-col transition-transform duration-300 overflow-auto md:hidden ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex justify-between items-center mb-10">
-          <h1 className="text-2xl font-bold">
+          <h2 className="text-2xl font-bold">
             Brilson <span className="text-cyan-400">Admin</span>
-          </h1>
+          </h2>
           <button onClick={() => setOpen(false)}>
             <FiX size={26} className="text-white" />
           </button>
         </div>
 
         {/* MOBILE MENU */}
-        <nav className="flex flex-col gap-6 text-xl">
-          <NavLink
+        <nav className="flex flex-col gap-6 text-lg">
+         <NavLink
             to="/admindashboard"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <FiHome size={20} /> Dashboard
           </NavLink>
 
           <NavLink
             to="products/list"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <FiPackage size={20} /> Products
           </NavLink>
 
           <NavLink
             to="orders/list"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <FiShoppingBag size={20} /> Orders
           </NavLink>
 
           <NavLink
             to="customers/list"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <FiUsers size={20} /> Customers
           </NavLink>
-
 
           <NavLink
             to="manage-cards"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
-            <FiUsers size={20} /> Manage Cards
+            <MdManageAccounts size={25} /> Manage Cards
           </NavLink>
 
 
-           <NavLink
+          <NavLink
+            to="manage-parking-tag"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <FaLuggageCart size={22} /> Manage Parking Tag
+          </NavLink>
+
+
+
+          <NavLink
+            to="selling-overview"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <MdAnalytics size={20} /> Selling Overview
+          </NavLink>
+
+          
+          <NavLink
             to="orders/invoices"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <GrDocumentLocked size={20} /> Orders invoices
           </NavLink>
 
-    
+          <NavLink
+            to="landing/page/content"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <FiSettings size={20} /> Landing Page Content
+          </NavLink>
 
-          {/* <NavLink
-            to="/settings"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400"
+
+          <NavLink
+            to="payment/gateway/isactive"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <RiSecurePaymentFill size={20} /> Payment Gateway
+          </NavLink>
+
+
+          <NavLink
+            to="setting/config"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <FiSettings size={20} /> Settings
-          </NavLink> */}
+          </NavLink>
+        
         </nav>
 
         <div className="mt-auto">
-          <button className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition cursor-pointer">
+          {/* <button className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition cursor-pointer">
             <FiLogOut size={20} /> Logout
-          </button>
+          </button> */}
         </div>
       </aside>
 
