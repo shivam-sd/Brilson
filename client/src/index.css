@@ -39,8 +39,6 @@
 }
 
 
-
-
 * {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -56,7 +54,7 @@ scroll-behavior: smooth;
 
 .motion-fix {
   transform: translateZ(0);
-} */
+} 
 
 .app-loader {
   min-height: 100%;

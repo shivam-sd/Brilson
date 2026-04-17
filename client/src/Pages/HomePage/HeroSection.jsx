@@ -19,6 +19,8 @@ const HeroSection = () => {
   const [homePageContent, setHomePageContentData] = useState('');
   const [heroSectionFeatures, setHeroSectionFeatures] = useState([]);
 
+  
+
 
 useEffect(() => {
   const fetchHomePageContent = async () => {
@@ -41,7 +43,7 @@ useEffect(() => {
 
 
   return (
-    <section className="scroll-box relative w-full pt-28 pb-20 bg-gradient-to-b from-black via-gray-950 to-black text-white overflow-hidden py-12">
+    <section className="relative w-full pt-28 pb-20 bg-gradient-to-b from-black via-gray-950 to-black text-white overflow-hidden py-12">
 
       {/*  BACKGROUND LAYERS  */}
       <div className="absolute inset-0 pointer-events-none">
@@ -50,7 +52,7 @@ useEffect(() => {
         <motion.div
           animate={{ x: [0, 120, 0], y: [0, 60, 0] }}
           transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
-          className="scroll-box absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"
         />
 
         <motion.div

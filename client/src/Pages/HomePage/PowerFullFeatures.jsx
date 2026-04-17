@@ -23,6 +23,8 @@ const PowerFullFeatures = () => {
 const [feature, setFeature] = useState([]);
 const [subHeading, SetsubHeading] = useState('');
 
+
+
 useEffect(() => {
   const fetchPowerFullFeatureData = async () => {
     try{

@@ -36,6 +36,8 @@ const HowToUse = () => {
     subHeading: "Simple steps to create, share and manage your digital identity."
   });
   
+
+  
   useEffect(() => {
     const fetchHowToUseData = async () => {
       try {

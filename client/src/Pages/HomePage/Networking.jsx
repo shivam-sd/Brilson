@@ -7,6 +7,7 @@ const Networking = () => {
 
   const [data, setData] = useState('');
   const [feature, setFeatures] = useState([]);
+  
 
 useEffect(() => {
   const fetchData = async () => {

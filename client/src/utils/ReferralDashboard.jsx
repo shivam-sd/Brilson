@@ -15,21 +15,6 @@ const ReferralDashboard = () => {
   const [dateFilter, setDateFilter] = useState('');
 
 
-
-//   const isMobile = window.innerWidth < 768;
-
-//   if(isMobile){
-//     <>
-//     <motion.div 
-//      className="motion-fix"
-//   initial={isMobile ? false : { opacity: 0 }}
-//   animate={isMobile ? false : { opacity: 1 }}
-// ></motion.div>
-//     </>
-//   }
-
-
-
   useEffect(() => {
     fetchReferrals();
   }, []);

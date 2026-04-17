@@ -13,6 +13,7 @@ import "swiper/css/pagination";
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
+  
 
   // Predefined color gradients for cards
   const colorGradients = [
