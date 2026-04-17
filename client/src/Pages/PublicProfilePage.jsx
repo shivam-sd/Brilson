@@ -402,7 +402,6 @@ const contact = {
             background: 'linear-gradient(135deg, #0a0a0f 0%, #0f1117 100%)',
             color: '#fff',
             border: '1px solid rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(10px)',
           },
         }} 
       />
@@ -425,7 +424,7 @@ const contact = {
         </div>
 
         {/* Public Profile Header */}
-        <div className="sticky top-0 z-50 backdrop-blur-xl border-b border-white/10">
+        <div className="sticky top-0 z-50 border-b border-white/10">
           <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 lg:py-4 md:py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -694,8 +693,7 @@ const contact = {
                     mb-5 
                     flex items-center gap-3 
                     shadow-lg 
-                    bg-gradient-to-r from-slate-900 to-slate-950
-                    backdrop-blur-md"
+                    bg-gradient-to-r from-slate-900 to-slate-950"
                                   >
                                     <IoLocationOutline
                                       size={22}

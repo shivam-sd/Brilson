@@ -14,6 +14,22 @@ const ReferralDashboard = () => {
   const [selectedDate, setSelectedDate] = useState('all');
   const [dateFilter, setDateFilter] = useState('');
 
+
+
+  const isMobile = window.innerWidth < 768;
+
+  if(isMobile){
+    <>
+    <motion.div 
+     className="motion-fix"
+  initial={isMobile ? false : { opacity: 0 }}
+  animate={isMobile ? false : { opacity: 1 }}
+></motion.div>
+    </>
+  }
+
+
+
   useEffect(() => {
     fetchReferrals();
   }, []);
@@ -107,7 +123,7 @@ const ReferralDashboard = () => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-700/50 shadow-xl">
+      <div className="bg-[#0f172a] rounded-2xl p-6 border border-gray-700/50 shadow-xl">
         <div className="flex items-center justify-center py-8">
           <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
@@ -119,9 +135,10 @@ const ReferralDashboard = () => {
     <div className='mx-auto max-w-10/12'>
 
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mt-14 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-700/50 shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+    className="motion-fix"
+      initial={{ opacity: 0 }}
+animate={{ opacity: 1 }}
+      className="mt-14 bg-[#0f172a] rounded-2xl border border-gray-700/50 shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300"
       >
       {/* Header with glow effect */}
       <div className="relative px-5 py-4 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border-b border-gray-700/50">
@@ -155,6 +172,7 @@ const ReferralDashboard = () => {
       <div className="p-4">
         <div className="grid grid-cols-3 gap-2">
           <motion.div 
+          className="motion-fix"
             whileHover={{ y: -2 }}
             className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-xl p-3 border border-gray-700/50"
           >
@@ -167,6 +185,7 @@ const ReferralDashboard = () => {
           </motion.div>
 
           <motion.div 
+          className="motion-fix"
             whileHover={{ y: -2 }}
             className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-xl p-3 border border-gray-700/50"
             >
@@ -179,6 +198,7 @@ const ReferralDashboard = () => {
           </motion.div>
 
           <motion.div 
+          className="motion-fix"
             whileHover={{ y: -2 }}
             className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-xl p-3 border border-gray-700/50"
             >
@@ -196,17 +216,16 @@ const ReferralDashboard = () => {
         <AnimatePresence>
           {expanded && (
             <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+className="motion-fix"
+           initial={{ opacity: 0 }}
+animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="mt-4 space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar"
+            className="mt-4 space-y-3 max-h-[300px] overflow-y-scroll pr-1 custom-scrollbar"
             >
               {Object.entries(dateGroups).length > 0 ? (
                   Object.entries(dateGroups).map(([date, refs]) => (
-                      <motion.div
+                      <div
                       key={date}
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
                       className="bg-gray-800/30 rounded-xl border border-gray-700/30 overflow-hidden"
                   >
                     <div className="px-3 py-2 bg-gray-800/50 flex items-center justify-between">
@@ -221,10 +240,8 @@ const ReferralDashboard = () => {
                     
                     <div className="divide-y divide-gray-700/30">
                       {refs.map((ref, idx) => (
-                          <motion.div
+                          <div
                           key={idx}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
                           transition={{ delay: idx * 0.05 }}
                           className="px-3 py-2 flex items-center justify-between hover:bg-gray-700/20 transition-colors"
                           >
@@ -237,10 +254,10 @@ const ReferralDashboard = () => {
                             </span>
                           </div>
                           <StatusBadge status={ref.referralStatus} />
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
-                  </motion.div>
+                  </div>
                 ))
               ) : (
                 <div className="text-center py-6 px-4 bg-gray-800/20 rounded-xl border border-gray-700/30">
