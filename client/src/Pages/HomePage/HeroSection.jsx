@@ -47,15 +47,13 @@ useEffect(() => {
       <div className="absolute inset-0 pointer-events-none">
 
         {/* Floating Orbs */}
-        <motion.div
-          animate={{ x: [0, 120, 0], y: [0, 60, 0] }}
-          transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+        <div
+        
           className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"
         />
 
-        <motion.div
-          animate={{ x: [0, -120, 0], y: [0, -60, 0] }}
-          transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+        <div
+     
           className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl"
         />
 
@@ -72,9 +70,7 @@ useEffect(() => {
       <div className="relative max-w-6xl mx-auto px-6 text-center">
 
         {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           transition={{ duration: 0.6 }}
           className="flex justify-center mb-8"
         >
@@ -84,13 +80,11 @@ useEffect(() => {
               {homePageContent.badgeText}
             </span>
           </div> */}
-        </motion.div>
+        </div>
         {/* FUTURE OF NETWORKING */}
 
         {/* Heading */}
-        <motion.h1
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
+        <h1
           transition={{ duration: 0.7 }}
           className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-6"
         >
@@ -103,7 +97,7 @@ useEffect(() => {
             {homePageContent.headingPrimary}
             {/* Digitally Elevated */}
           </span>
-        </motion.h1>
+        </h1>
 
         {/* Subheading */}
         <motion.p
@@ -123,9 +117,7 @@ useEffect(() => {
         </motion.p>
 
         {/* Card */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+        <div
           transition={{ duration: 0.8 }}
           className="max-w-2xl mx-auto mb-12"
         >
@@ -135,7 +127,7 @@ useEffect(() => {
               <CardUI />
             
           </div>
-        </motion.div>
+        </div>
 
 
         {/* CTA */}

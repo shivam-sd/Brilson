@@ -307,16 +307,15 @@ const Header = () => {
 
           {/* LOGO */}
         <Link to="/">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
+          <div
+           
             className="flex items-center text-white text-2xl font-semibold ml-8"
           >
             {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
                          <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
                 Brilson
               </div>
-          </motion.div>
+          </div>
         </Link>
 
 
