@@ -43,6 +43,11 @@
   * {
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+}
+
+  /* * {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   transform: translateZ(0);
@@ -50,16 +55,13 @@
 
 .motion-fix {
   transform: translateZ(0);
-}
-
+} */
 
 .app-loader {
   min-height: 100%;
   -webkit-overflow-scrolling:touch;
 }
-.custom-scrollbar {
-  -webkit-overflow-scrolling: touch;
-}
+
 
 /* Hide scrollbar for carousel */
 .hide-scrollbar::-webkit-scrollbar {
