@@ -19,8 +19,6 @@ const HeroSection = () => {
   const [homePageContent, setHomePageContentData] = useState('');
   const [heroSectionFeatures, setHeroSectionFeatures] = useState([]);
 
-  
-
 
 useEffect(() => {
   const fetchHomePageContent = async () => {

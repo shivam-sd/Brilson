@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import Lottie from "lottie-react";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -35,8 +34,6 @@ const HowToUse = () => {
     heading: "How to Use Smart Card",
     subHeading: "Simple steps to create, share and manage your digital identity."
   });
-  
-
   
   useEffect(() => {
     const fetchHowToUseData = async () => {
@@ -85,11 +82,10 @@ const HowToUse = () => {
   const otherSteps = guide.filter((_, index) => index >= 2);
 
   return (
-    <section className="scroll-box w-full bg-[#0a0a0a] text-white py-24 px-4 md:px-6 overflow-hidden">
+    <section className="w-full bg-[#0a0a0a] text-white py-24 px-4 md:px-6 overflow-hidden">
       {/* Heading */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
+      <div
+       
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
         className="max-w-3xl mx-auto text-center mb-16 md:mb-24"
@@ -100,15 +96,13 @@ const HowToUse = () => {
         <p className="text-gray-400 text-base md:text-lg">
           {info.subHeading}
         </p>
-      </motion.div>
+      </div>
 
       {/* VIDEO STEPS SECTION */}
       <div className="max-w-6xl mx-auto space-y-20 md:space-y-24">
         {videoSteps.map((step, index) => (
-          <motion.div
+          <div
             key={index}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className={`flex flex-col ${
@@ -175,17 +169,17 @@ const HowToUse = () => {
                 {step.description || "Description will appear here."}
               </p>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
       {/* LOTTIE STEPS SECTION */}
       <div className="max-w-6xl mx-auto space-y-20 md:space-y-24 mt-20 md:mt-24">
         {otherSteps.map((step, index) => (
-          <motion.div
+          <div
             key={index + videoSteps.length}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            
+           
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className={`flex flex-col ${
@@ -264,15 +258,13 @@ const HowToUse = () => {
                 {step.description || defaultLottieSteps[index]?.desc || "Description will appear here."}
               </p>
             </div>
-          </motion.div>
+          </div>
         ))}
 
         {/* Show default Lottie steps if no otherSteps - Same size */}
         {otherSteps.length === 0 && defaultLottieSteps.map((step, index) => (
-          <motion.div
+          <div
             key={`default-${index}`}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className={`flex flex-col ${
@@ -305,14 +297,12 @@ const HowToUse = () => {
                 {step.desc}
               </p>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
       {/* BENEFITS SECTION */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
+      <div
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
         className="max-w-6xl mx-auto mt-20 md:mt-32 text-center"
@@ -328,16 +318,15 @@ const HowToUse = () => {
             "Eco Friendly",
             "Secure & Editable",
           ].map((benefit, i) => (
-            <motion.div
+            <div
               key={i}
-              whileHover={{ scale: 1.05 }}
               className="bg-[#111] p-6 md:p-8 rounded-2xl shadow-lg"
             >
               <h4 className="font-semibold text-base md:text-lg">{benefit}</h4>
-            </motion.div>
+            </div>
           ))}
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };

@@ -23,8 +23,6 @@ const PowerFullFeatures = () => {
 const [feature, setFeature] = useState([]);
 const [subHeading, SetsubHeading] = useState('');
 
-
-
 useEffect(() => {
   const fetchPowerFullFeatureData = async () => {
     try{
@@ -85,7 +83,7 @@ const features = [
 ];
 
   return (
-    <section className="scroll-box relative w-full lg:py-16 bg-[#0b0f12] text-white overflow-hidden py-12">
+    <section className="relative w-full lg:py-16 bg-[#0b0f12] text-white overflow-hidden py-12">
 
       {/* Glow Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#00eaff11,transparent_65%)] opacity-40"></div>
@@ -117,7 +115,7 @@ const features = [
         <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 
           {feature.map((item, index) => (
-            <motion.div
+            <div
               key={index}
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -139,7 +137,7 @@ const features = [
               <p className="text-gray-400 text-sm mt-3 leading-relaxed">
                 {item.description}
               </p>
-            </motion.div>
+            </div>
           ))}
 
         </div>

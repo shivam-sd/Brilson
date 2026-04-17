@@ -3,19 +3,19 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const cards = [
   {
-    src: "/b_hero1.png",
+    src: "/b_hero1.webp",
     scale: "lg:scale-140 md:scale-150 scale-140"
   },
   {
-    src: "/b_hero2.png",
+    src: "/b_hero2.webp",
     scale: "lg:scale-150 md:scale-150 scale-150"
   },
   {
-    src: "/b_hero3.png",
+    src: "/b_hero3.webp",
     scale: "lg:scale-150 md:scale-150 scale-150"
   },
   {
-    src: "/b_hero4.png",
+    src: "/b_hero4.webp",
     scale: "lg:scale-150 md:scale-150 scale-165"
   }
 ];
