@@ -67,7 +67,7 @@ const Testimonials = () => {
 
   if (loading) {
     return (
-      <section className="relative w-full py-28 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
+      <section className="scroll-box relative w-full py-28 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 backdrop-blur-sm mb-6">

@@ -83,7 +83,7 @@ const HowToUse = () => {
   const otherSteps = guide.filter((_, index) => index >= 2);
 
   return (
-    <section className="w-full bg-[#0a0a0a] text-white py-24 px-4 md:px-6 overflow-hidden">
+    <section className="scroll-box w-full bg-[#0a0a0a] text-white py-24 px-4 md:px-6 overflow-hidden">
       {/* Heading */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}

@@ -32,7 +32,7 @@ const CardShowcase = () => {
   }, []);
 
   return (
-    <div className="w-full flex justify-center py-10">
+    <div className="scroll-box w-full flex justify-center py-10">
       <div className="relative">
 
         <div className="absolute inset-0 rounded-3xl blur-2xl scale-105" />

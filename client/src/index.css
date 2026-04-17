@@ -40,18 +40,19 @@
 
 
 
-  * {
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-}
 
-  /* * {
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  backface-visibility: hidden;
+* {
   -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   transform: translateZ(0);
 }
+
+
+.scroll-box{
+-webkit-overflow-scrolling: touch;
+scroll-behavior: smooth;
+}
+
 
 .motion-fix {
   transform: translateZ(0);
