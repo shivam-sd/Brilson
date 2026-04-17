@@ -42,9 +42,9 @@
 
   * {
   -webkit-overflow-scrolling: touch;
-  -webkit-backface-visibility: hidden;
   scroll-behavior: smooth;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   transform: translateZ(0);
 }
 
