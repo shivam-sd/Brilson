@@ -143,9 +143,6 @@ const PublicProfilePage = () => {
         } catch (error) {
           console.log('Sharing cancelled');
         }
-      } else {
-        navigator.clipboard.writeText(window.location.href);
-        toast.success('Profile link copied!');
       }
     };
 

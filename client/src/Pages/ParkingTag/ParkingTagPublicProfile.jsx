@@ -70,10 +70,7 @@ const ParkingTagPublicProfile = () => {
       } catch (error) {
         console.log("Sharing cancelled");
       }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Profile link copied!");
-    }
+    } 
   };
 
   // Custom Parking Tag Loader
