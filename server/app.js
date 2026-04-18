@@ -137,7 +137,7 @@ app.use(fileUpload({
     res.status(200).json({ message: "Welcome To Brilson" });
   });
 
-  app.listen(PORT, () => {
+  app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`);
   });
 })();
