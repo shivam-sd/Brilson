@@ -165,7 +165,7 @@ const ParkingTagProfile = () => {
           ))}
         </div>
 
-        <div className="relative z-10 flex items-center justify-center p-6 min-h-screen pt-24 pb-12">
+        <div className="relative z-10 flex items-center justify-center py-6 px-4 min-h-screen pt-24 pb-12">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -173,7 +173,7 @@ const ParkingTagProfile = () => {
             className="max-w-md w-full"
           >
             {/* Main Card */}
-            <div className="bg-white/10 backdrop-blur-xl shadow-2xl shadow-black cursor-pointer rounded-3xl p-6 border border-white/70 ">
+            <div className="bg-white/10 backdrop-blur-xl shadow-2xl shadow-black cursor-pointer rounded-3xl py-6 px-3 border border-white/70 ">
               {/* Header Section with Avatar */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -234,7 +234,7 @@ const ParkingTagProfile = () => {
                       <Car size={14} className="text-cyan-400" />
                       Vehicle Number
                     </span>
-                    <span className="text-white text-sm tracking-widest font-Playfair font-extrabold">
+                    <span className="text-white text-sm tracking-widest font-Playfair font-extrabold ">
                       {profile.vehicleNumber || "Not Added"}
                     </span>
                   </div>
