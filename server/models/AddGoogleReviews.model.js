@@ -52,4 +52,4 @@ const AddGoogleReviewsSchema = new mongoose.Schema({
 
 const GoogleReviews = mongoose.model("GoogleReview", AddGoogleReviewsSchema);
 
-module.exports = GoogleReviews;
+module.exports = GoogleReviews; 

@@ -2,7 +2,7 @@ const ParkingTagModel = require("../../models/AddParkingTag.model");
 
 
 const markDownloadedOnTag  = async(req,res) => {
-    try{
+    try{ 
         const {id} = req.params;
         console.log(id);
         await ParkingTagModel.findByIdAndUpdate(id, 

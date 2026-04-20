@@ -18,10 +18,10 @@ const getParkingTagProfiles = async (req, res) => {
 const getAllParkingTagsProfile = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 40;
+    const limit = parseInt(req.query.limit) || 40; 
     const search = req.query.search || "";
     const skip = (page - 1) * limit;
-
+ 
     //  Search condition
     const searchQuery = {
       $or: [

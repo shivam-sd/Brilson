@@ -11,34 +11,36 @@ const markDownloadedOnTag = require("../controller/ParkingTag/MarkDownloadedTag.
 const {getAllUsersWithTheirCards} = require("../controller/ParkingTag/GetUserWithTheirParkingTag.controller");
 
 
-// admin cretae bulk profile cards
-router.post("/tags/bulk",  bulkCreateParkingTags);
+// admin cretae bulk profile cards ✅
+router.post("/tags/bulk",  bulkCreateParkingTags); 
 
-// activate parking tag api
+// activate parking tag api ✅
 router.post("/tags/activate", userAuth, ActivateParkingTagAPi);
 
 
-// check parking tag status
+// check parking tag status ✅
 router.get("/check/tag/:activationCode", checkParkingTagStatus);
 
 
-// claim parking tag profile
+// claim parking tag profile 
 router.get("/claim-tag-profile", userAuth, claimParkingTagProfile);
 
 
-// GET /api/card/:slug
+// GET /api/card/:slug ✅
 router.get("/tag/:slug", getParkingTagProfiles);
 router.get("/tag/profile/:slug", getParkingTagProfiles);
  
+//✅
 router.put("/tag/:id/edit", userAuth, EditParkingTagProfile);
 
 // Manage Parking Tag Api For Admin Side
 
-// router.get("/card/:id", getCardProfilesByID);
+// router.get("/card/:id", getCardProfilesByID);  ✅
 router.get("/all/tags", getAllParkingTagsProfile);
 
-// mark card downloaded or not
+// mark card downloaded or not ✅
 router.patch("/tags/:id/downloaded", markDownloadedOnTag);
+
 router.get("/tags/user/:userId",userAuth, getAllUsersWithTheirCards);
 
 
