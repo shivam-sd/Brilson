@@ -167,7 +167,7 @@ const ActivateParkingTagAPi = async (req, res) => {
 const EditParkingTagProfile = async (req, res) => {
   try {   
     const { id } = req.params;
-    const userId = req.user;
+    const userId = req.user; 
 
     const updateFields = {};
 

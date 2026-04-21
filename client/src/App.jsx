@@ -89,6 +89,8 @@ import CheckParkingTagStatus from "./Pages/CheckParkingTagStatus";
 import ParkingTagProfile from "./Pages/ParkingTag/ParkingTagProfile";
 import EditParkingTagProfile from "./Pages/ParkingTag/EditParkingTagProfile";
 import ParkingTagPublicProfile from "./Pages/ParkingTag/ParkingTagPublicProfile"
+import ManageGoogleReviews from "./Admin/ManageGoogleReviews";
+import BulkCreateGoogleReviews from "./Admin/components.jsx/BulkCreateGoogleReviews";
 
 
 
@@ -280,6 +282,15 @@ function App() {
             />
 
             <Route
+              path="manage-google-reviews"
+              element={
+                <ProtectedRoute>
+                  <ManageGoogleReviews />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
               path="manage-parking-tag"
               element={
                 <ProtectedRoute>
@@ -314,6 +325,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <BulkCreateCardsModal />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/api/google-reviews/bulk"
+            element={
+              <ProtectedRoute>
+                <BulkCreateGoogleReviews />
               </ProtectedRoute>
             }
           />

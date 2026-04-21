@@ -86,6 +86,14 @@ const AdminLayout = () => {
           </NavLink>
 
 
+          <NavLink
+            to="manage-google-reviews"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <FaLuggageCart size={22} /> Manage Google Reviews
+          </NavLink>
+
+
 
           <NavLink
             to="selling-overview"
@@ -194,6 +202,14 @@ const AdminLayout = () => {
           >
             <FaLuggageCart size={22} /> Manage Parking Tag
           </NavLink>
+
+
+          <NavLink
+            to="manage-google-reviews"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <FaLuggageCart size={22} /> Manage Google Reviews
+                      </NavLink>
 
 
 

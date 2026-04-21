@@ -28,6 +28,7 @@ router.get("/claim-tag-profile", userAuth, claimParkingTagProfile);
 
 // GET /api/card/:slug ✅
 router.get("/tag/:slug", getParkingTagProfiles);
+
 router.get("/tag/profile/:slug", getParkingTagProfiles);
  
 //✅

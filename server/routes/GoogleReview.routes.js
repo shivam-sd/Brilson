@@ -8,6 +8,7 @@ const getSingleGoogleReviewProfile = require("../controller/GoogleReviews/GetSim
 const GetAllGoogleReviewProfiles = require("../controller/GoogleReviews/getAllGoogleReviewProfile.controller");
 const getAllUsersWithTheirReviews = require("../controller/GoogleReviews/getAllUsersWithTheirReviews");
 const { checkGoogleReview } = require("../controller/GoogleReviews/CheckGoogleReviewStatus.controller");
+const EditGoogleReviewsProfile = require("../controller/GoogleReviews/EditGoogleReviewCardProfile.controller");
 
 
 // admin cretae bulk profile cards
@@ -15,6 +16,9 @@ router.post("/google-review/card/bulk",  bulkCreateGoogleReviews);
 
 // activate google review api
 router.post("/google-review/card/activate", userAuth, ActivateGoogleReview);
+
+// edit google reviews profile
+router.put("/google-reviews/:id/edit", userAuth, EditGoogleReviewsProfile);
 
 // check parking tag status 
 router.get("/check/google-reviews/:activationCode", checkGoogleReview);
