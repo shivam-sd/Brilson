@@ -1,11 +1,11 @@
 import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import { HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider } from "react-helmet-async"; 
 const HomePage = React.lazy(() => import("./HomePage"));
 import ReactLenis from "lenis/react";
 import HowitWorks from "./Pages/HowitWorks";
 import BestSeller from "./Component/BestSeller";
-import PersonalCard from "./Component/PersonalCards";
+import PersonalCard from "./Component/PersonalCards"; 
 import BusinessCard from "./Component/BusinessCards";
 import Pricing from "./Pages/Pricing";
 import LoginPage from "./Component/LoginPage";
@@ -85,6 +85,7 @@ import PaymentSuccess from "./Component/PaymentSuccess";
 import ManageParkingTag from "./Admin/ManageParkingTag";
 import BulkCreateTags from "./Admin/components.jsx/BulkCreateTags";
 import ActivateParkingTag from "./Pages/ParkingTag/ActivateParkingTag";
+import ActivateGoogleReview from "./Pages/GoogleReviews.jsx/ActivateGoogleReview";
 import CheckParkingTagStatus from "./Pages/CheckParkingTagStatus";
 import ParkingTagProfile from "./Pages/ParkingTag/ParkingTagProfile";
 import EditParkingTagProfile from "./Pages/ParkingTag/EditParkingTagProfile";
@@ -97,24 +98,26 @@ import BulkCreateGoogleReviews from "./Admin/components.jsx/BulkCreateGoogleRevi
 function App() {
   return (
     <>
-    <HelmetProvider>
+    
       <div>
+        <HelmetProvider>
+
         <Routes>
           <Route
             path="/"
             element={
               <ReactLenis
-                root
-                options={{
-                  lerp: 0.1,
-                  duration: 1.2,
-                  orientation: "vertical",
-                  gestureOrientation: "vertical",
-                  smoothWheel: true,
-                  wheelMultiplier: 1,
-                  smoothTouch: true,
-                  touchMultiplier: 2,
-                }}
+              root
+              options={{
+                lerp: 0.1,
+                duration: 1.2,
+                orientation: "vertical",
+                gestureOrientation: "vertical",
+                smoothWheel: true,
+                wheelMultiplier: 1,
+                smoothTouch: true,
+                touchMultiplier: 2,
+              }}
               >
                 <Master />
               </ReactLenis>
@@ -160,6 +163,7 @@ function App() {
   <Route path="/profile/P/edit/:slug" element={<EditParkingTagProfile />} />
           <Route path="/card/activate" element={<ActivateCard />} />
            <Route path="/parking-tag/activate" element={<ActivateParkingTag />} />
+           <Route path="/google-reviews/activate" element={<ActivateGoogleReview />} />
 
 
           <Route path="/profile/edit/:id" element={<Layout />}>
@@ -225,7 +229,7 @@ function App() {
                   <AdminProducts />
                 </ProtectedRoute>
               }
-            />
+              />
             <Route
               path="customers/list"
               element={
@@ -233,7 +237,7 @@ function App() {
                   <AdminCustomers />
                 </ProtectedRoute>
               }
-            />
+              />
 
             <Route
               path="landing/page/content"
@@ -252,7 +256,7 @@ function App() {
                   <AdminPaymentGateway />
                 </ProtectedRoute>
               }
-            />
+              />
 
 
             <Route
@@ -262,7 +266,7 @@ function App() {
                   <AdminConfig />
                 </ProtectedRoute>
               }
-            />
+              />
 
             <Route
               path="orders/list"
@@ -279,7 +283,7 @@ function App() {
                   <ManageCards />
                 </ProtectedRoute>
               }
-            />
+              />
 
             <Route
               path="manage-google-reviews"
@@ -288,7 +292,7 @@ function App() {
                   <ManageGoogleReviews />
                 </ProtectedRoute>
               }
-            />
+              />
 
             <Route
               path="manage-parking-tag"
@@ -297,7 +301,7 @@ function App() {
                   <ManageParkingTag />
                 </ProtectedRoute>
               }
-            />
+              />
 
             <Route
               path="selling-overview"
@@ -306,7 +310,7 @@ function App() {
                   <SellingOverview />
                 </ProtectedRoute>
               }
-            />
+              />
 
 
             <Route
@@ -316,7 +320,7 @@ function App() {
                   <AdminInvoices />
                 </ProtectedRoute>
               }
-            />
+              />
 
             {/* <Route path='settings' element={<Settings />} /> */}
           </Route>
@@ -327,7 +331,7 @@ function App() {
                 <BulkCreateCardsModal />
               </ProtectedRoute>
             }
-          />
+            />
 
           <Route
             path="/api/google-reviews/bulk"
@@ -336,7 +340,7 @@ function App() {
                 <BulkCreateGoogleReviews />
               </ProtectedRoute>
             }
-          />
+            />
 
           <Route
             path="/api/tags/bulk"
@@ -345,7 +349,7 @@ function App() {
                 <BulkCreateTags />
               </ProtectedRoute>
             }
-          />
+            />
           {/* Products Route */}
           <Route
             path="/admin/add/products"
@@ -362,7 +366,7 @@ function App() {
                 <AdminEditProduct />
               </ProtectedRoute>
             }
-          />
+            />
 
           {/* add dynamic categories */}
           <Route
@@ -372,7 +376,7 @@ function App() {
                 <AdminCategories />
               </ProtectedRoute>
             }
-          />
+            />
 
           {/* add dynamic badegs */}
           <Route
@@ -382,7 +386,7 @@ function App() {
                 <AdminBadges />
               </ProtectedRoute>
             }
-          />
+            />
 
           {/* landing Page */}
 
@@ -401,7 +405,7 @@ function App() {
                 <PowerFullFeatures />
               </ProtectedRoute>
             }
-          />
+            />
           <Route
             path="/admin/landing/howtouse"
             element={
@@ -409,7 +413,7 @@ function App() {
                 <HowToUseAdmin />
               </ProtectedRoute>
             }
-          />
+            />
           <Route
             path="/admin/landing/testimonials"
             element={
@@ -417,7 +421,7 @@ function App() {
                 <Testimonials />
               </ProtectedRoute>
             }
-          />
+            />
           <Route
             path="/admin/landing/transform/network"
             element={
@@ -425,7 +429,7 @@ function App() {
                 <TransformNetworkAdmin />
               </ProtectedRoute>
             }
-          />
+            />
           <Route
             path="/admin/landing/footer"
             element={
@@ -433,13 +437,14 @@ function App() {
                 <FooterAdmin />
               </ProtectedRoute>
             }
-          />
+            />
 
           {/* error Page */}
           <Route path="*" element={<ErrorPage />} />
         </Routes>
+            </HelmetProvider>
       </div>
-      </HelmetProvider>
+      
     </>
   );
 }

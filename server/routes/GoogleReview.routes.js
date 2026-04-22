@@ -15,7 +15,7 @@ const EditGoogleReviewsProfile = require("../controller/GoogleReviews/EditGoogle
 router.post("/google-review/card/bulk",  bulkCreateGoogleReviews);
 
 // activate google review api
-router.post("/google-review/card/activate", userAuth, ActivateGoogleReview);
+router.post("/google-review/activate", userAuth, ActivateGoogleReview);
 
 // edit google reviews profile
 router.put("/google-reviews/:id/edit", userAuth, EditGoogleReviewsProfile);
