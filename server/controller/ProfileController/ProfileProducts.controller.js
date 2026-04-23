@@ -9,7 +9,7 @@ const addProduct = async (req, res) => {
 
     // Find card
     const card = await CardProfile.findOne({ activationCode });
-    console.log("Card found:", card);
+    // console.log("Card found:", card);
 
     if (!card) {
       return res.status(404).json({ message: "Card not found" });
@@ -142,7 +142,7 @@ const getProducts = async (req, res) => {
     if (!Products.length) {
       return res.status(404).json({ message: "No products found for this activation code" });
     }
-    console.log("Products found:", Products);
+    // console.log("Products found:", Products);
 
     res.json({
       success: true,

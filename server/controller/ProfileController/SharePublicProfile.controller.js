@@ -7,15 +7,16 @@ const sharePublicProfile = async (req, res) => {
 
     const userAgent = req.headers["user-agent"] || "";
 
-    const isBot = /facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot/i.test(userAgent);
+    const isBot = /facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|Slackbot|Discordbot/i
+    (userAgent);
 
     const profile = await CardProfile.findOne({ slug });
     const image = await ProfilePhoto.findOne({activationCode:slug});
 
-    console.log(profile?.profile?.name);
-    console.log(profile.profile.bio);
+    // console.log(profile?.profile?.name);
+    // console.log(profile.profile.bio);
 
-    console.log(image);
+    // console.log(image);
 
     if (!profile) {
       return res.send("Profile not found");
@@ -29,23 +30,20 @@ const sharePublicProfile = async (req, res) => {
         <!DOCTYPE html>
         <html>
         <head>
-          <title>${profile?.profile?.name}</title>
-          <meta property="og:title" content="${profile?.profile?.name}" />
-          <meta property="og:description" content="${profile.profile.bio}" />
-          <meta property="og:image" content="${image.image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm1ayfwR-KXU_ZmSpKEX9sc1Xoqv1PHDQkbQ&s"}" />
+          <title>${profile?.profile?.name || "Brilson's Profile"}</title>
+          <meta property="og:title" content="${profile?.profile?.name || "Brilson's Profile"}" />
+          <meta property="og:description" content="${profile?.profile?.bio || "View Profile On Brilson"}" />
+          <meta property="og:image" content="${image?.image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm1ayfwR-KXU_ZmSpKEX9sc1Xoqv1PHDQkbQ&s"}" />
           <meta property="og:url" content="https://brilson.in/public/profile/${slug}" />
           <meta property="og:type" content="website" />
         </head>
         <body>
-          <script>
-            window.location.href = "https://brilson.in/public/profile/${slug}";
-          </script>
         </body>
         </html>
       `);
     }
 
-res.redirect(`https://brilson.in/public/profile/${slug}`)
+res.redirect(`https://brilson.in/public/profile/${slug}`);
 
     }catch(err){
         res.status(500).json({error:"Internal Server Error", err});

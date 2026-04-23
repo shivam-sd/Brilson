@@ -123,13 +123,13 @@ const PublicProfilePage = () => {
 
 
 
-  const copyText = (text) => {
-    if (!text) return;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    toast.success("Copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
-  };
+  // const copyText = (text) => {
+  //   if (!text) return;
+  //   navigator.clipboard.writeText(text);
+  //   setCopied(true);
+  //   toast.success("Copied to clipboard!");
+  //   setTimeout(() => setCopied(false), 2000);
+  // };
 
 
   const handleShare = async () => {
@@ -138,7 +138,7 @@ const PublicProfilePage = () => {
           await navigator.share({
             // title: `${profileData.name}'s Profile`,
             // text: profileData.bio || `Connect with ${profileData.name}`,
-            url: `https://brilson.in/public/profile/${slug}`,
+            url: `https://api.brilson.in/public/profile/${slug}`,
           });
         } catch (error) {
           console.log('Sharing cancelled');
@@ -170,15 +170,15 @@ const PublicProfilePage = () => {
 };
 
 
-    const handleDownloadQr = (url) => {
-  if (!url) return;
+//     const handleDownloadQr = (url) => {
+//   if (!url) return;
 
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "payment-qr.png";
-  link.target = "_blank"
-  link.click();
-};
+//   const link = document.createElement("a");
+//   link.href = url;
+//   link.download = "payment-qr.png";
+//   link.target = "_blank"
+//   link.click();
+// };
 
 
 
@@ -313,85 +313,18 @@ const PublicProfilePage = () => {
 
 
 // set Contact Data for the csv 
-const contact = {
-  name:profileData.name,
-  phone:profileData.phone,
-  email:profileData.email,
-  company:profileData.company,
-  website:profileData.website,
-}
-
-
-
-// if(profileData){
-//     return(<>
-//   <html>
-//   <head>
-//     <title>${profileData.name}</title>
-
-//     <meta property="og:title" content={profileData.name} />
-//     <meta property="og:image" content={logo} />
-//     <meta property="og:url" content={`https://brilson.in/public/profile/${slug}`} />
-//     <meta property="og:type" content="website" />
-
-//     <meta name="twitter:card" content="summary_large_image" />
-//   </head>
-//   <body>
-//     <script>
-//       {window.location.href = `https://brilson.in/public/profile/${slug}`};
-//     </script>
-//   </body>
-//   </html>
-//     </>)
-//   }
-
+// const contact = {
+//   name:profileData.name,
+//   phone:profileData.phone,
+//   email:profileData.email,
+//   company:profileData.company,
+//   website:profileData.website,
+// }
 
 
 
   return (
     <>
-
-<Helmet>
-      {/* Basic Meta Tags */}
-      <title>{profileData.name ? `${profileData.name}'s Profile | Brilson` : 'Profile | Brilson'}</title>
-      <meta 
-        name="description" 
-        content={profileData.about || profileData.bio || `Connect with ${profileData.name} on Brilson`} 
-      />
-      
-      {/* Open Graph Meta Tags Facebook, WhatsApp, LinkedIn */}
-      <meta property="og:title" content={`${profileData.name}'s Profile | Brilson`} />
-      <meta 
-        property="og:description" 
-        content={profileData.about || profileData.bio || `Connect with ${profileData.name}`} 
-      />
-      <meta property="og:image" content={logo || 'https://brilson.in/default-og-image.jpg'} />
-      <meta property="og:url" content={`https://brilson.in/public/profile/${slug}`} />
-      <meta property="og:type" content="profile" />
-      <meta property="og:site_name" content="Brilson" />
-      
-      {/* Twitter Card Tags */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={`${profileData.name}'s Profile | Brilson`} />
-      <meta 
-        name="twitter:description" 
-        content={profileData.about || profileData.bio || `Connect with ${profileData.name}`} 
-      />
-      <meta name="twitter:image" content={logo || 'https://brilson.in/default-og-image.jpg'} />
-      
-      {/* Additional SEO Tags */}
-      <meta name="keywords" content={`${profileData.name}, ${profileData.title}, ${profileData.company}, digital business card, brilson`} />
-      <meta name="author" content={profileData.name} />
-      <meta name="robots" content="index, follow" />
-      <link rel="canonical" href={`https://brilson.in/public/profile/${slug}`} />
-      
-      {/* WhatsApp Specific - ye additional meta tags helpful hain */}
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content={`${profileData.name}'s profile picture`} />
-    </Helmet>
-
-
       <Toaster 
         position="top-right" 
         toastOptions={{
