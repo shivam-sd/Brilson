@@ -45,7 +45,7 @@ const sharePublicProfile = async (req, res) => {
       `);
     }
 
-res.redirect([200] `https://brilson.in/public/profile/${slug}`)
+res.redirect(`https://brilson.in/public/profile/${slug}`)
 
     }catch(err){
         res.status(500).json({error:"Internal Server Error", err});
