@@ -7,8 +7,7 @@ const sharePublicProfile = async (req, res) => {
 
     const userAgent = req.headers["user-agent"] || "";
 
-    const isBot = /facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|Slackbot|Discordbot/i
-    (userAgent);
+    const isBot = /facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot/i.test(userAgent);
 
     const profile = await CardProfile.findOne({ slug });
     const image = await ProfilePhoto.findOne({activationCode:slug});
