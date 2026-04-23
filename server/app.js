@@ -130,6 +130,7 @@ app.use(fileUpload({
   app.use("/api/profile/resume", ProfileResume);
   app.use("/api/profile-cover", profileCoverPhotoRoute);
   app.use("/api", ServiceLayoutRouter);
+app.use("/", SharePublicProfilerouter);
 
   
 

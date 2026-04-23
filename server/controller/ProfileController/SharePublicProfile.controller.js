@@ -3,48 +3,51 @@ const ProfilePhoto = require("../../models/ProfileModel/ProfileLogo.Model");
 
 const sharePublicProfile = async (req, res) => {
     try{
-        const {slug} = req.params;
-        const activationCode = slug;
+           const { slug } = req.params;
 
-        const ProfileName = await CardProfile.findOne({slug});
-        if (!ProfileName) return res.status(404).send("Profile Name Not found");
+    const userAgent = req.headers["user-agent"] || "";
 
-        console.log(ProfileName.profile.name);
-        
-        const Profile = await ProfilePhoto.findOne({activationCode});
-        if(!Profile) return res.status(404).send("Profile Photo Not Found");
+    const isBot = /facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot/i.test(userAgent);
 
-        console.log(Profile.image);
-        
+    const profile = await CardProfile.findOne({ slug });
+    const image = await ProfilePhoto.findOne({activationCode:slug});
 
-        // <meta property="og:description" content="${profile.bio || "Digital Card on Brilson"}" />
+    console.log(profile);
+    console.log(image);
+
+    if (!profile) {
+      return res.send("Profile not found");
+    }
+
+    console.log(isBot)
+
+    //  BOT (WhatsApp preview)
+    if (isBot) {
+      return res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>${profile.name}</title>
+          <meta property="og:title" content="${profile.name}" />
+          <meta property="og:description" content="${profile.bio}" />
+          <meta property="og:image" content="${image.image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm1ayfwR-KXU_ZmSpKEX9sc1Xoqv1PHDQkbQ&s"}" />
+          <meta property="og:url" content="https://brilson.in/public/profile/${slug}" />
+          <meta property="og:type" content="website" />
+        </head>
+        <body>
+          <script>
+            window.location.href = "https://brilson.in/public/profile/${slug}";
+          </script>
+        </body>
+        </html>
+      `);
+    }
 
 
-         res.send(`
-
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>${ProfileName.profile.name}</title>
-
-    <meta property="og:title" content="${ProfileName.profile.name}" />
-    <meta property="og:image" content="${Profile.image}" />
-    <meta property="og:url" content="https://brilson.in/public/profile/${activationCode}" />
-    <meta property="og:type" content="website" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-  </head>
-  <body>
-    <script>
-      window.location.href = "https://brilson.in/public/profile/${activationCode}";
-    </script>
-  </body>
-  </html>
-
-  `);
 
     }catch(err){
-        res.status(500).json({error:"Internal Server Error"});
+        res.status(500).json({error:"Internal Server Error", err});
+        console.log(err)
     }
 }
 

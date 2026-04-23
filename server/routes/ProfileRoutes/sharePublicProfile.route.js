@@ -3,7 +3,7 @@ const { sharePublicProfile } = require("../../controller/ProfileController/Share
 const router = express.Router();
 
 
-router.get("/profile/:slug", sharePublicProfile);
+router.get("/public/profile/:slug", sharePublicProfile); 
 
 
 module.exports = router;
