@@ -94,6 +94,7 @@ import ManageGoogleReviews from "./Admin/ManageGoogleReviews";
 import BulkCreateGoogleReviews from "./Admin/components.jsx/BulkCreateGoogleReviews";
 import GoogleReviewProfile from "./Pages/GoogleReviews.jsx/GoogleReviewProfile";
 import GoogleReviewsPublicProfile from "./Pages/GoogleReviews.jsx/GoogleReviewsPublicProfile";
+import CheckGoogleReviewStatus from "./Pages/CheckGoogleReviewStatus";
 
 
 
@@ -157,6 +158,9 @@ function App() {
 
           <Route path="/c/card/:activationCode" element={<CheckStatusPage />} />
           <Route path="/c/parking-tag/:activationCode" element={<CheckParkingTagStatus />} />
+
+          <Route path="/c/google-review/:activationCode" element={<CheckGoogleReviewStatus />} />
+          
           <Route path="/admin/passTo/Profile" element={<AdminPassToProfile />} />
           <Route path="/profile/:slug" element={<ProfilePage />} />
           <Route path="/profile/P/:slug" element={<ParkingTagProfile />} />

@@ -16,7 +16,7 @@ const bulkCreateGoogleReviews = async (req, res) => {
         const activationCode = generateActivationCode();
 
         GoogleReviews.push({
-            activationCode,
+            activationCode, 
             isActivated: false,
 
              // QR me sirf activationCode

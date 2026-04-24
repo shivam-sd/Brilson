@@ -3,22 +3,22 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
 
-const CheckParkingTagStatus = () => {
+const CheckGoogleReviewStatus = () => {
   const { activationCode } = useParams();
   const navigate = useNavigate();
           console.log("activation code" , activationCode)
 
-  useEffect(() => { 
+  useEffect(() => {
     const CheckStatus = async () => {
       try { 
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/check/tag/${activationCode}`
+          `${import.meta.env.VITE_BASE_URL}/api/check/google-reviews/${activationCode}`
         );
 console.log(res);
         if (res.data?.isActivated) {
-          navigate(`/profile/P/public/${activationCode}`, { replace: true });
+          navigate(`/profile/google-review/public/${activationCode}`, { replace: true });
         } else {
-          navigate(`/parking-tag/activate`, { replace: true });
+          navigate(`/google-reviews/activate`, { replace: true });
         }
       } catch (err) {
         console.log(err);
@@ -48,7 +48,7 @@ console.log(res);
 
         {/* TEXT */}
         <h1 className="text-2xl font-bold text-white mt-8">
-          Verifying your Parking Tag
+          Verifying your Google Reviews
         </h1>
         <p className="text-gray-400 mt-2">
           Please wait while we securely fetch your profile
@@ -69,4 +69,4 @@ console.log(res);
   );
 };
 
-export default CheckParkingTagStatus;
+export default CheckGoogleReviewStatus;

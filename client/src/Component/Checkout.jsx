@@ -387,7 +387,7 @@ fetchGateway()
                   <input
                     value={address.name}
                     onChange={(e) => setAddress({ ...address, name: e.target.value })}
-                    placeholder="John Doe"
+                    placeholder="Enter Your Full Name"
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
                     required
                   />
@@ -398,7 +398,7 @@ fetchGateway()
                   <input
                     value={address.phone}
                     onChange={(e) => setAddress({ ...address, phone: e.target.value })}
-                    placeholder="9876543210"
+                    placeholder="Enter Your Mobile No."
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
                     required
                   />
@@ -410,7 +410,7 @@ fetchGateway()
                     type="email"
                     value={address.email}
                     onChange={(e) => setAddress({ ...address, email: e.target.value })}
-                    placeholder="john@example.com"
+                    placeholder="Enter Your Email"
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
                   />
                 </div>
@@ -420,7 +420,7 @@ fetchGateway()
                   <input
                     value={address.city}
                     onChange={(e) => setAddress({ ...address, city: e.target.value })}
-                    placeholder="Mumbai"
+                    placeholder="Enter Your City"
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
                     required
                   />
@@ -431,7 +431,7 @@ fetchGateway()
                   <input
                     value={address.state}
                     onChange={(e) => setAddress({ ...address, state: e.target.value })}
-                    placeholder="Maharashtra"
+                    placeholder="Enter Your State"
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
                     required
                   />
@@ -442,7 +442,7 @@ fetchGateway()
                   <input
                     value={address.pincode}
                     onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
-                    placeholder="400001"
+                    placeholder="Enter Pin-Code"
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
                     required
                   />
