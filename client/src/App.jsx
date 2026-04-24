@@ -92,6 +92,8 @@ import EditParkingTagProfile from "./Pages/ParkingTag/EditParkingTagProfile";
 import ParkingTagPublicProfile from "./Pages/ParkingTag/ParkingTagPublicProfile"
 import ManageGoogleReviews from "./Admin/ManageGoogleReviews";
 import BulkCreateGoogleReviews from "./Admin/components.jsx/BulkCreateGoogleReviews";
+import GoogleReviewProfile from "./Pages/GoogleReviews.jsx/GoogleReviewProfile";
+import GoogleReviewsPublicProfile from "./Pages/GoogleReviews.jsx/GoogleReviewsPublicProfile";
 
 
 
@@ -159,6 +161,10 @@ function App() {
           <Route path="/profile/:slug" element={<ProfilePage />} />
           <Route path="/profile/P/:slug" element={<ParkingTagProfile />} />
           <Route path="/profile/P/public/:slug" element={<ParkingTagPublicProfile />} />
+
+          <Route path="/profile/google-review/:slug" element={<GoogleReviewProfile />} />
+          <Route path="/profile/google-review/public/:slug" element={<GoogleReviewsPublicProfile />} />
+
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
   <Route path="/profile/P/edit/:slug" element={<EditParkingTagProfile />} />
           <Route path="/card/activate" element={<ActivateCard />} />

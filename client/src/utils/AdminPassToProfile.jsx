@@ -397,16 +397,16 @@ const AdminPassToProfile = () => {
             </h3>
             <p className="text-gray-400 text-xs line-clamp-2">
               {review.profile?.googleReviewLink ? (
-                <a 
-                  href={review.profile.googleReviewLink} 
+                <Link 
+                  to={review.profile.googleReviewLink} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-red-400 hover:text-red-300 truncate block"
+                  className="text-green-500 hover:text-red-300 truncate block"
                 >
                   {review.profile.googleReviewLink.length > 40 
                     ? `${review.profile.googleReviewLink.substring(0, 40)}...` 
                     : review.profile.googleReviewLink}
-                </a>
+                </Link>
               ) : "No review link added"}
             </p>
           </div>
@@ -433,7 +433,7 @@ const AdminPassToProfile = () => {
 
         <div className="flex items-center gap-2">
           <Link 
-            to={`/google-reviews/view/${review.activationCode}`}
+            to={`/profile/google-review/${review.activationCode}`}
             className="flex-1 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
           >
             <FiEye size={14} />
@@ -744,7 +744,7 @@ const AdminPassToProfile = () => {
           animation: shimmer 2s infinite;
         }
       `}</style>
-    </>
+    </> 
   );
 };
 

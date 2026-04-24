@@ -1217,7 +1217,7 @@ const ManageGoogleReviews = () => {
                         </td>
                         <td className="p-3 text-center">
                           <Link 
-                            to={`${import.meta.env.VITE_DOMAIN}/public/google-review/${review.slug}`}
+                            to={`/profile/google-review/public/${review.slug}`}
                             className="text-indigo-400 hover:text-indigo-300 transition text-xs font-medium hover:underline"
                             target="_blank"
                           >

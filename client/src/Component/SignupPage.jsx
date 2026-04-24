@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, Phone } from "lucide-react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, Toaster } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { VscReferences } from "react-icons/vsc";
 import { FiEyeOff } from "react-icons/fi";
@@ -54,7 +54,7 @@ const SignupPage = () => {
       setOtpSent(true);
       toast.success("OTP sent successfully to your phone");
     } catch (err) {
-      console.log(err)
+      console.log(err.response.data.message)
       toast.error(err.response?.data?.message || "Failed to send OTP");
     } finally {
       setOtpLoading(false);
@@ -173,7 +173,14 @@ const SignupPage = () => {
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#050505] via-[#0b0c10] to-[#050505] px-4 py-10">
+    <>
+    <Toaster position="top-right" toastOptions={{
+    style: {
+      zIndex: 999999,  
+      marginTop:100
+    }
+  }} />
+    <div className="w-full flex items-center justify-center bg-gradient-to-br from-[#050505] via-[#0b0c10] to-[#050505] px-4 py-10 z-50">
       <motion.div
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -203,7 +210,7 @@ const SignupPage = () => {
                 placeholder="John Doe"
                 required
                 className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
-              />
+                />
             </div>
           </div>
 
@@ -211,16 +218,16 @@ const SignupPage = () => {
           {/* <div>
             <label className="text-gray-300 text-sm">Email *</label>
             <div className="mt-2 flex items-center bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus-within:border-cyan-500">
-              <Mail className="w-5 h-5 text-gray-400" />
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="you@example.com"
-                required
-                className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
-              />
+            <Mail className="w-5 h-5 text-gray-400" />
+            <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="you@example.com"
+            required
+            className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
+            />
             </div>
           </div> */}
 
@@ -239,14 +246,14 @@ const SignupPage = () => {
                   required
                   maxLength="10"
                   className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
-                />
+                  />
               </div>
               <button
                 type="button"
                 onClick={handleSendOTP}
                 disabled={otpLoading || otpSent}
                 className={`ml-2 text-sm px-4 py-2 rounded-lg transition-all ${otpSent ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 active:scale-95'}`}
-              >
+                >
                 {otpLoading ? "Sending..." : otpSent ? "Sent" : "Send OTP"}
               </button>
             </div>
@@ -264,14 +271,14 @@ const SignupPage = () => {
                       placeholder="Enter 6-digit OTP"
                       maxLength="6"
                       className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500"
-                    />
+                      />
                   </div>
                   <button
                     type="button"
                     onClick={handleVerifyOTP}
                     disabled={verifyLoading || isVerified}
                     className={`ml-2 text-sm px-4 py-3 rounded-lg transition-all ${isVerified ? 'bg-green-700 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 active:scale-95'}`}
-                  >
+                    >
                     {verifyLoading ? "Verifying..." : isVerified ? "Verified ✓" : "Verify"}
                   </button>
                 </div>
@@ -320,7 +327,7 @@ const SignupPage = () => {
                 placeholder="Confirm your password"
                 required
                 className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
-              />
+                />
             <div className="cursor-pointer" onClick={handleSeePassword1}>
               {
                 seePassword1 ? <> <FiEye /> </> : <> <FiEyeOff /> </>
@@ -342,7 +349,7 @@ const SignupPage = () => {
                 onChange={handleChange}
                 placeholder="Referral Code"
                 className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
-              />
+                />
             </div>
           </div>
 
@@ -387,6 +394,7 @@ const SignupPage = () => {
 
       </motion.div>
     </div>
+          </>
   );
 };
 

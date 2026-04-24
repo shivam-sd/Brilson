@@ -162,7 +162,6 @@ const EditParkingTagProfile = () => {
 
   return (
     <>
-    <Header />
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -172,9 +171,10 @@ const EditParkingTagProfile = () => {
             border: '1px solid rgba(255, 255, 255, 0.1)',
           },
         }}
-      />
+      /> 
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-10 px-4 mt-15">
+        <Header />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-20 px-4 ">
         {/* Animated Background */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 right-10 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />

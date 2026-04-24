@@ -53,9 +53,9 @@ const ActionPopupParkingTag = ({ number }) => {
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 opacity-20 rounded-3xl blur-xl" />
                 
                 {/* Header with Close Button */}
-                <div className="relative p-6 pb-0">
+                <div className="relative p-6 pb-0 cursor-pointer" onClick={onClose}>
                   <button
-                    onClick={onClose}
+                    
                     className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-200 group cursor-pointer"
                   >
                     <X size={20} className="text-gray-400 group-hover:text-white transition-colors" />

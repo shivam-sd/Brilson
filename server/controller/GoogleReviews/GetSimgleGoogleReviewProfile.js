@@ -13,7 +13,7 @@ const getSingleGoogleReviewProfile = async(req,res) => {
             return res.status(404).json({error:"Profile Not Found"});
         }
 
-        res.status(200).json({message:"Profile Found", googleReview});
+        res.status(200).json({message:"Profile Found", profile:googleReview?.profile, slug:googleReview?.slug});
 
     }catch(err){
         console.log("from get single Google review Profile",err);
