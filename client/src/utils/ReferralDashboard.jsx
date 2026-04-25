@@ -117,10 +117,10 @@ const ReferralDashboard = () => {
   }
 
   return (
-    <div className='mx-auto max-w-10/12'>
+    <div className='profile mx-auto max-w-10/12'>
 
     <motion.div 
-    className="motion-fix"
+    className="motion-fix profile"
       initial={{ opacity: 0 }}
 animate={{ opacity: 1 }}
       className="mt-14 bg-[#0f172a] rounded-2xl border border-gray-700/50 shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300"
@@ -157,7 +157,7 @@ animate={{ opacity: 1 }}
       <div className="p-4">
         <div className="grid grid-cols-3 gap-2">
           <motion.div 
-          className="motion-fix"
+          className="motion-fix profile"
             whileHover={{ y: -2 }}
             className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-xl p-3 border border-gray-700/50"
           >

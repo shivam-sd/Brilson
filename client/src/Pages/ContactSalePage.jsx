@@ -13,9 +13,9 @@ const handleSubmit = async (e) => {
   setResult("Sending....");
   const formData = new FormData(e.target);
   
-  formData.append("access_key", "997fa1ac-8b53-47a0-a76e-aea138e5f89b");
+  formData.append("access_key", import.meta.env.VITE_CONTACT_FORM_ACCESS_KEY);
 
-  const response = await fetch("https://api.web3forms.com/submit", {
+  const response = await fetch(import.meta.env.VITE_CONTACT_SUBMIT_API, {
     method:"POST",
     body: formData
   });
@@ -64,12 +64,12 @@ const handleSubmit = async (e) => {
           transition={{ duration: 0.6 }}
           className="bg-white/5 border border-white/10 p-10 rounded-2xl backdrop-blur-xl shadow-xl"
         >
-          <h3 className="text-2xl font-semibold mb-6">Send us a message</h3>
+          <h3 className="text-2xl font-semibold mb-6 text-center uppercase tracking-widest font-Playfair">Send us a message</h3>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
 
 {/* subject */}
-<input type="text" name="subject" className="hidden" value={"New Submittion Form Brilson"} />
+<input type="text" name="subject" className="hidden" value={"New Submittion Form Brilson"}  />
 
             {/* Name */}
             <div>
@@ -78,7 +78,7 @@ const handleSubmit = async (e) => {
                 type="text"
                 placeholder="Enter your name"
                 name="Full Name"
-                className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none"
+                className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none placeholder:opacity-40"
               />
             </div>
 
@@ -89,7 +89,7 @@ const handleSubmit = async (e) => {
                 type="email"
                 placeholder="Enter your email"
                 name="email"
-                className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none"
+                className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none placeholder:opacity-40"
               />
             </div>
 
@@ -100,7 +100,7 @@ const handleSubmit = async (e) => {
                 type="text"
                 placeholder="Enter your phone"
                 name="phone"
-                className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none"
+                className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none placeholder:opacity-40"
               />
             </div>
 
@@ -111,14 +111,14 @@ const handleSubmit = async (e) => {
                 rows="5"
                 placeholder="Tell us how we can help you..."
                 name="message"
-                className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none"
+                className="w-full mt-2 p-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500 outline-none placeholder:opacity-40"
               ></textarea>
             </div>
 
             <p>{result}</p>
             {/* Submit Button */}
             <button
-              className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl shadow-[0_0_20px_rgba(0,255,255,0.4)] transition duration-300"
+              className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl shadow-[0_0_20px_rgba(0,255,255,0.4)] transition duration-300 cursor-pointer"
             >
               Submit Request
             </button>
@@ -137,24 +137,24 @@ const handleSubmit = async (e) => {
             <div className="flex items-start gap-5">
               <FiMail size={35} className="text-cyan-400" />
               <div>
-                <h4 className="text-lg font-semibold">Email Us</h4>
-                <p className="text-gray-400">hello@brilson.com</p>
+                <h4 className="text-lg font-semibold tracking-widest font-Playfair">Email Us</h4>
+                <p className="text-gray-400 tracking-widest font-Playfair">hello@brilson.com</p>
               </div>
             </div>
 
             <div className="flex items-start gap-5">
               <FiPhone size={35} className="text-cyan-400" />
               <div>
-                <h4 className="text-lg font-semibold">Call Sales</h4>
-                <p className="text-gray-400">+91 98765 43210</p>
+                <h4 className="text-lg font-semibold tracking-widest font-Playfair">Call Sales</h4>
+                <p className="text-gray-400 tracking-widest font-Playfair">+91 98765 43210</p>
               </div>
             </div>
 
             <div className="flex items-start gap-5">
               <FiMapPin size={35} className="text-cyan-400" />
               <div>
-                <h4 className="text-lg font-semibold">Office Address</h4>
-                <p className="text-gray-400">Indira Nagar, Lucknow, India</p>
+                <h4 className="text-lg font-semibold tracking-widest font-Playfair">Office Address</h4>
+                <p className="text-gray-400 tracking-widest font-Playfair">Jaipur, Rajasthan, India</p>
               </div>
             </div>
           </div>

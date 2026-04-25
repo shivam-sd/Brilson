@@ -440,7 +440,7 @@ const AdminPassToProfile = () => {
             <span>View</span>
           </Link>
           <Link 
-            to={`/google-reviews/edit/${review.activationCode}`}
+            to={`/profile/google-reviewsss/edit/${review.activationCode}`}
             className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
           >
             <FiEdit size={14} />

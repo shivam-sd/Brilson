@@ -365,9 +365,9 @@ fetchGateway()
           >
             ← Back to Cart
           </button>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent uppercase">
             Checkout
-          </h1>
+          </h2>
           <p className="text-gray-400 mt-2">Complete your purchase</p>
         </div>
 
@@ -388,7 +388,7 @@ fetchGateway()
                     value={address.name}
                     onChange={(e) => setAddress({ ...address, name: e.target.value })}
                     placeholder="Enter Your Full Name"
-                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
                     required
                   />
                 </div>
@@ -399,7 +399,7 @@ fetchGateway()
                     value={address.phone}
                     onChange={(e) => setAddress({ ...address, phone: e.target.value })}
                     placeholder="Enter Your Mobile No."
-                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
                     required
                   />
                 </div>
@@ -411,7 +411,7 @@ fetchGateway()
                     value={address.email}
                     onChange={(e) => setAddress({ ...address, email: e.target.value })}
                     placeholder="Enter Your Email"
-                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
                   />
                 </div>
 
@@ -421,7 +421,7 @@ fetchGateway()
                     value={address.city}
                     onChange={(e) => setAddress({ ...address, city: e.target.value })}
                     placeholder="Enter Your City"
-                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
                     required
                   />
                 </div>
@@ -432,7 +432,7 @@ fetchGateway()
                     value={address.state}
                     onChange={(e) => setAddress({ ...address, state: e.target.value })}
                     placeholder="Enter Your State"
-                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
                     required
                   />
                 </div>
@@ -443,7 +443,7 @@ fetchGateway()
                     value={address.pincode}
                     onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
                     placeholder="Enter Pin-Code"
-                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition"
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
                     required
                   />
                 </div>

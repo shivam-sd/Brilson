@@ -387,7 +387,7 @@ const ProfilePage = () => {
         }}
       />
 
-      <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 text-white bg-transparent">
+      <div className="profile bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 text-white bg-transparent">
         {/* Background Effects */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#E1C48A]/5 rounded-full blur-3xl" />
@@ -503,7 +503,7 @@ const ProfilePage = () => {
               </div>
 
               {/* Quick Contact Buttons */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+              <div className="profile grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
                 <ContactButton
                   icon={<Phone />}
                   label="Call"
@@ -534,21 +534,21 @@ const ProfilePage = () => {
 
               <button
                 onClick={handleShare}
-                className="lg:hidden md:hidden p-2 w-full flex items-center justify-center gap-3 bg-gradient-to-l to-slate-900 from-slate-950 border-2 border-white/10 rounded-lg mb-5"
+                className="profile lg:hidden md:hidden p-2 w-full flex items-center justify-center gap-3 bg-gradient-to-l to-slate-900 from-slate-950 border-2 border-white/10 rounded-lg mb-5"
               >
                 <CiShare2 size={24} className="text-yellow-400 font-bold" />{" "}
                 <span className="text-lg">Share Profile</span>
               </button>
 
               {/* Sections */}
-              <div className="space-y-12">
+              <div className="profile space-y-12">
                 {/* CONNECT Section */}
 
-                <div className="lg:flex hidden flex-col p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
+                <div className="profile lg:flex hidden flex-col p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold text-gray-300 mb-4">
                     Connect
                   </h3>
-                  <div className="lg:grid hidden grid-cols-6 items-center justify-between gap-4">
+                  <div className="profile lg:grid hidden grid-cols-6 items-center justify-between gap-4">
                     {profileData.website ? (
                       <>
                         <SocialLink
@@ -708,7 +708,7 @@ const ProfilePage = () => {
                 </div>
 
                 <div
-                  className="w-full 
+                  className="profile w-full 
   border border-white/10 
   p-4 
   rounded-xl 

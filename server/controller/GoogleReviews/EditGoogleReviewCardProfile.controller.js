@@ -20,7 +20,7 @@ try{
     )
 
 
-    if(!GoogleReviewsModel){
+    if(!googleReviews){
         return res.status(400).json({
             error:"You are not allowed to edit this profile"
         });

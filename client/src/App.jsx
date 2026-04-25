@@ -95,6 +95,7 @@ import BulkCreateGoogleReviews from "./Admin/components.jsx/BulkCreateGoogleRevi
 import GoogleReviewProfile from "./Pages/GoogleReviews.jsx/GoogleReviewProfile";
 import GoogleReviewsPublicProfile from "./Pages/GoogleReviews.jsx/GoogleReviewsPublicProfile";
 import CheckGoogleReviewStatus from "./Pages/CheckGoogleReviewStatus";
+import EditGoogleReviewsProfile from "./Pages/GoogleReviews.jsx/EditGoogleReviewProfile";
 
 
 
@@ -171,6 +172,7 @@ function App() {
 
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
   <Route path="/profile/P/edit/:slug" element={<EditParkingTagProfile />} />
+  <Route path="/profile/google-review/edit/:slug" element={<EditGoogleReviewsProfile />} />
           <Route path="/card/activate" element={<ActivateCard />} />
            <Route path="/parking-tag/activate" element={<ActivateParkingTag />} />
            <Route path="/google-reviews/activate" element={<ActivateGoogleReview />} />
