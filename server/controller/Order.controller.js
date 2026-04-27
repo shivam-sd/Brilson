@@ -1,6 +1,7 @@
 const OrderModel = require("../models/Order.model");
 const CartModel = require("../models/Cart.model");
 const ProductModel = require("../models/Product.model");
+const mongoose = require("mongoose");
 
 
 
@@ -186,9 +187,45 @@ const allOrders = async (req, res) => {
 };
 
 
+const GetOrderDetails = async (req,res) => {
+  try{
+    const userId = req.user;
+    const {orderId} = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(orderId)){
+      return res.status(400).json({ error: "Invalid Order ID" });
+    }
+
+    const orderDetails = await OrderModel.findOne({userId, _id:orderId});
+
+    if(!orderDetails){
+      return res.status(404).json({error:"Order Details Not Found"});
+    }
+
+    res.status(200).send({message:"Order Details",
+      data:{
+              address:orderDetails?.address,
+      items:orderDetails?.items,
+      amount:orderDetails?.amount,
+      totalAmount:orderDetails?.totalAmount,
+      paymentStatus:orderDetails?.status,
+      orderStatus:orderDetails?.orderStatus,
+      } 
+    });
+
+
+  }catch(err){
+    console.log("error from get order details", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+
+
 module.exports = {
   orderCreate,
   getOrderProduct,
   updateOrderStatus,
-  allOrders
+  allOrders,
+  GetOrderDetails
 }

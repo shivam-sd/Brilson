@@ -379,15 +379,10 @@ const AdminPassToProfile = () => {
         <div className="mb-4">
           <div className="flex items-center justify-center mb-3">
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500/20 to-orange-500/20 border-2 border-red-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-              {review.profile?.brandLogo ? (
-                <img 
-                  src={review.profile.brandLogo} 
-                  alt={review.profile?.brandName || "Brand"} 
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-              ) : (
+              
+              
                 <MdOutlineReviews className="text-red-400 text-2xl" />
-              )}
+              
             </div>
           </div>
 
@@ -440,7 +435,7 @@ const AdminPassToProfile = () => {
             <span>View</span>
           </Link>
           <Link 
-            to={`/profile/google-reviewsss/edit/${review.activationCode}`}
+            to={`/profile/google-review/edit/${review.activationCode}`}
             className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
           >
             <FiEdit size={14} />

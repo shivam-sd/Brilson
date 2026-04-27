@@ -1,4 +1,5 @@
 const GoogleReviewsModel = require("../../models/AddGoogleReviews.model");
+const cloudinary = require("cloudinary").v2;
 
 
 const EditGoogleReviewsProfile = async (req,res) => {

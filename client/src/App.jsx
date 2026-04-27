@@ -172,7 +172,7 @@ function App() {
 
           <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
   <Route path="/profile/P/edit/:slug" element={<EditParkingTagProfile />} />
-  <Route path="/profile/google-review/edit/:slug" element={<EditGoogleReviewsProfile />} />
+  <Route path="/profile/google-review/edit/:activationCode" element={<EditGoogleReviewsProfile />} />
           <Route path="/card/activate" element={<ActivateCard />} />
            <Route path="/parking-tag/activate" element={<ActivateParkingTag />} />
            <Route path="/google-reviews/activate" element={<ActivateGoogleReview />} />

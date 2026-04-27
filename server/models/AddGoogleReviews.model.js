@@ -38,9 +38,6 @@ const AddGoogleReviewsSchema = new mongoose.Schema({
   },
 
   profile: {
-    brandLogo:{
-      type:String,
-    },
     brandName: {
       type: String,
     },
