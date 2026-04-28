@@ -17,7 +17,7 @@ router.put("/orders/update/orderStatus", authAdminToken, updateOrderStatus);
 
 // order details
 
-router.get("/order/details/:orderId", authUser, GetOrderDetails);
+router.get("/order/details/:orderId", GetOrderDetails);
 
 
 

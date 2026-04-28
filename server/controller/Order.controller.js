@@ -196,8 +196,8 @@ const GetOrderDetails = async (req,res) => {
       return res.status(400).json({ error: "Invalid Order ID" });
     }
 
-    const orderDetails = await OrderModel.findOne({userId, _id:orderId});
-
+    const orderDetails = await OrderModel.findOne({ _id:orderId});
+console.log(orderDetails)
     if(!orderDetails){
       return res.status(404).json({error:"Order Details Not Found"});
     }

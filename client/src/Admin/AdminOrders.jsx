@@ -4,9 +4,11 @@ import { motion } from "framer-motion";
 import { FiUser, FiCalendar } from "react-icons/fi";
 import { FaDownload } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const AdminOrders = () => {
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -205,6 +207,7 @@ const AdminOrders = () => {
                 <tr
                   key={order._id}
                   className="border-t border-white/10 hover:bg-white/5"
+                  onClick={() => navigate(`/admin/orders/detils/${order._id}`)}
                 >
                   <td className="p-4">{order._id}</td>
                   <td className="p-4">{order.address?.name}</td>

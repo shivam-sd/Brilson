@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { toast } from "react-toastify";
+import useCart from "./hooks/useCart";
 import {
   FiTruck,
   FiShield,
@@ -23,6 +24,8 @@ const ProductCardPreference = () => {
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
   const [activeImage, setActiveImage] = useState("");
+
+  const {addToCart} = useCart();
 
   /* FETCH PRODUCT */
   useEffect(() => {
@@ -49,44 +52,50 @@ const ProductCardPreference = () => {
   }, [id]);
 
   /* ADD TO CART */
-  const addToCart = async () => {
-    if (!product || addingToCart) return;
 
-    setAddingToCart(true);
-    const token = localStorage.getItem("token");
+const handleAddtoCart = async () => {
+  await addToCart(product);
+  
+}
 
-    try {
-      if (token) {
-        await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/api/cart/add`,
-          { productId: product._id, quantity: 1 },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } else {
-        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-        const index = cart.findIndex(i => i.productId === product._id);
+  // const addToCart = async () => {
+  //   if (!product || addingToCart) return;
 
-        if (index >= 0) cart[index].quantity += 1;
-        else {
-          cart.push({
-            productId: product._id,
-            title: product.title,
-            price: product.price,
-            image: product.images?.[0],
-            quantity: 1,
-          });
-        }
+  //   setAddingToCart(true);
+  //   const token = localStorage.getItem("token");
+
+  //   try {
+  //     if (token) {
+  //       await axios.post(
+  //         `${import.meta.env.VITE_BASE_URL}/api/cart/add`,
+  //         { productId: product._id, quantity: 1 },
+  //         { headers: { Authorization: `Bearer ${token}` } }
+  //       );
+  //     } else {
+  //       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  //       const index = cart.findIndex(i => i.productId === product._id);
+
+  //       if (index >= 0) cart[index].quantity += 1;
+  //       else {
+  //         cart.push({
+  //           productId: product._id,
+  //           title: product.title,
+  //           price: product.price,
+  //           image: product.images?.[0],
+  //           quantity: 1,
+  //         });
+  //       }
         
-        localStorage.setItem("cart", JSON.stringify(cart));
-      }
+  //       localStorage.setItem("cart", JSON.stringify(cart));
+  //     }
       
-      toast.success("Added to cart 🛒");
-    } catch {
-      toast.error("Failed to add to cart");
-    } finally {
-      setAddingToCart(false);
-    }
-  };
+  //     toast.success("Added to cart 🛒");
+  //   } catch {
+  //     toast.error("Failed to add to cart");
+  //   } finally {
+  //     setAddingToCart(false);
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -215,7 +224,7 @@ const ProductCardPreference = () => {
               {/* ACTION BUTTON */}
               <div className="flex items-center justify-center pt-2 sm:pt-4">
                 <button
-                  onClick={addToCart}
+                  onClick={handleAddtoCart}
                   disabled={addingToCart}
                   className="w-full sm:w-72 py-2.5 sm:py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-bold text-base sm:text-lg disabled:opacity-50 cursor-pointer hover:scale-105 duration-300 active:scale-95 transition-all"
                 >

@@ -96,6 +96,7 @@ import GoogleReviewProfile from "./Pages/GoogleReviews.jsx/GoogleReviewProfile";
 import GoogleReviewsPublicProfile from "./Pages/GoogleReviews.jsx/GoogleReviewsPublicProfile";
 import CheckGoogleReviewStatus from "./Pages/CheckGoogleReviewStatus";
 import EditGoogleReviewsProfile from "./Pages/GoogleReviews.jsx/EditGoogleReviewProfile";
+import AdminOrderDetails from "./Admin/AdminOrderDetails";
 
 
 
@@ -136,8 +137,6 @@ function App() {
               }
             />
 
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
             <Route path="/how-it-works" element={<HowitWorks />} />
             <Route path="/products" element={<OurSmartCard />} />
             <Route path="/bestseller-card" element={<BestSeller />} />
@@ -288,6 +287,10 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+
+
+
             <Route
               path="manage-cards"
               element={
@@ -362,6 +365,8 @@ function App() {
               </ProtectedRoute>
             }
             />
+
+
           {/* Products Route */}
           <Route
             path="/admin/add/products"
@@ -389,6 +394,8 @@ function App() {
               </ProtectedRoute>
             }
             />
+
+         
 
           {/* add dynamic badegs */}
           <Route
@@ -450,6 +457,19 @@ function App() {
               </ProtectedRoute>
             }
             />
+
+
+               <Route
+              path="/admin/orders/detils/:orderId"
+              element={
+                <ProtectedRoute>
+                  <AdminOrderDetails />
+                </ProtectedRoute>
+              }
+            />
+
+<Route path="/login" element={<LoginPage />} />
+<Route path="/signup" element={<SignupPage />} />
 
           {/* error Page */}
           <Route path="*" element={<ErrorPage />} />

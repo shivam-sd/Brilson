@@ -16,6 +16,7 @@ import { MdAnalytics } from "react-icons/md";
 import { GrDocumentLocked } from "react-icons/gr";
 import { MdManageAccounts } from "react-icons/md";
 import { FaLuggageCart } from "react-icons/fa";
+import { MdReviews } from "react-icons/md";
 
 
 
@@ -90,7 +91,7 @@ const AdminLayout = () => {
             to="manage-google-reviews"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
-            <FaLuggageCart size={22} /> Manage Google Reviews
+            <MdReviews size={22} /> Manage Google Reviews
           </NavLink>
 
 
@@ -208,7 +209,7 @@ const AdminLayout = () => {
             to="manage-google-reviews"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
-            <FaLuggageCart size={22} /> Manage Google Reviews
+            <MdReviews size={22} /> Manage Google Reviews
                       </NavLink>
 
 

@@ -9,12 +9,16 @@ import axios from "axios";
 import LogoSection from "./LogoSection";
 import {BookCheck} from "lucide-react";
 import {useNavigate} from "react-router-dom";
+import useCart from "../Pages/hooks/useCart";
 
 
 // import UserAllCards from "./UserAllCards";
 
 const Header = () => {
-  const [cartCount, setCartCount] = useState(0);
+
+const { cartCount } = useCart();
+
+  // const [cartCount, setCartCount] = useState(0);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [myCardProfile, setMyCardProfile] = useState(null);
   const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
@@ -57,13 +61,13 @@ const Header = () => {
             withCredentials: true,
           }
         );
-        setCartCount(res.data.cartItems?.length || 0);
+        // setCartCount(res.data.cartItems?.length || 0);
       } else {
         const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
-        setCartCount(localCart.length);
+        // setCartCount(localCart.length);
       }
     } catch {
-      setCartCount(0);
+      // setCartCount(0);
     }
   };
 
@@ -86,14 +90,14 @@ const Header = () => {
   };
 
   useEffect(() => {
-    getCartCount();
+    // getCartCount();
     fetchMyActiveCard();
   }, [token]);
 
   useEffect(() => {
-    const handleCartUpdate = () => getCartCount();
-    window.addEventListener("cartUpdate", handleCartUpdate);
-    return () => window.removeEventListener("cartUpdate", handleCartUpdate);
+    // const handleCartUpdate = () => getCartCount();
+    // window.addEventListener("cartUpdate", handleCartUpdate);
+    // return () => window.removeEventListener("cartUpdate", handleCartUpdate);
   }, []);
 
   /* LOGOUT */
@@ -119,7 +123,7 @@ const Header = () => {
     localStorage.removeItem("token");
     setToken(null);
     setMyCardProfile(null);
-    setCartCount(0);
+    // setCartCount(0);
     setMobileProfileOpen(false);
   }
 };
@@ -156,7 +160,7 @@ const Header = () => {
           <Link to="/your-items" className="relative text-2xl text-gray-300 hover:text-white">
             <LuShoppingCart />
             {cartCount > 0 && (
-              <span className="absolute -top-3 -right-3 w-6 h-6 bg-cyan-500 text-white rounded-full text-sm flex items-center justify-center font-bold">
+              <span className="absolute -top-3 -right-3 w-6 h-6 bg-red-500 text-white rounded-full text-sm flex items-center justify-center font-bold">
                 {cartCount}
               </span>
             )}
@@ -325,7 +329,7 @@ const Header = () => {
           <Link to="/your-items" className="relative text-2xl text-white">
             <LuShoppingCart size={28} />
             {cartCount > 0 && (
-              <span className="absolute -top-3 -right-3 w-6 h-6 bg-cyan-500 text-white rounded-full text-sm flex items-center justify-center font-bold">
+              <span className="absolute -top-3 -right-3 w-6 h-6 bg-red-500 text-white rounded-full text-sm flex items-center justify-center font-bold">
                 {cartCount}
               </span>
             )}
