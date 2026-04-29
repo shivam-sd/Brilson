@@ -48,6 +48,7 @@ const profileCoverPhotoRoute = require("./routes/ProfileRoutes/ProfileCover.rout
 const ParkingtagRouter = require("./routes/ParkingTag.routes");
 const GoogleReviewRouter = require("./routes/GoogleReview.routes");
 const ServiceLayoutRouter = require("./routes/ServiceLayout.routes");
+const authRoutesResetPassword = require("./routes/auth.routes")
 
 
 // Runtime config
@@ -131,6 +132,7 @@ app.use(fileUpload({
   app.use("/api/profile-cover", profileCoverPhotoRoute);
   app.use("/api", ServiceLayoutRouter);
 app.use("/", SharePublicProfilerouter);
+app.use("/api/auth", authRoutesResetPassword);
 
   
 
