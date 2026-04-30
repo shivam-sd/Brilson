@@ -76,7 +76,7 @@ const verifyResetOTP = async (req, res) => {
       { expiresIn: "10m" }
     );
 
-    // 🔥 OTP clear 
+    //  OTP clear 
     user.otp = null;
     user.otpExpiry = null;
     await user.save();

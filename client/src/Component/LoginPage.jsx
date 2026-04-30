@@ -186,13 +186,25 @@ const LoginPage = () => {
           </motion.button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-gray-800">
+        <div className="lg:flex items-center justify-center gap-20 mt-8 pt-6 border-t border-gray-800 hidden">
+<Link className="text-sm mb-3 text-cyan-400 hover:underline" to={"/users/forgot-password/brilson"}>Forgot Password</Link>
           <p className="text-center text-gray-400 text-sm mb-3">
             Don't have an account?{" "}
             <Link to="/signup" className="text-cyan-400 hover:underline font-medium">
               Create One
             </Link>
           </p>
+        </div>
+
+        {/* for the mobile */}
+        <div className="flex items-center justify-center mt-8 pt-6 border-t border-gray-800 flex-col">
+          <p className="text-center text-gray-400 text-sm mb-3">
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-cyan-400 hover:underline font-medium">
+              Create One
+            </Link>
+          </p>
+<Link className="text-sm mb-3 text-cyan-400 hover:underline" to={"/users/forgot-password/brilson"}>Forgot Password</Link>
         </div>
       </motion.div>
     </div>

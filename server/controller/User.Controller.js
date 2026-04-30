@@ -146,26 +146,6 @@ const UserLogin = async (req, res) => {
 
 
 
-const ForgotPassword = async (req, res) => {
-  try{
-    const {phone} = req.body;
-
-const checkEmailValid = await UserModel.findOne({phone});
-
-if(!phone){
-  return res.status(404).json({error:"User Not Found!"});
-}
-
-console.log("user found", checkEmailValid);
-
-
-  }catch(err){
-    console.log("Error From Forgot Passowrd", err);
-    res.status(500).json({error:err});
-  }
-}
-
-
 
 
 
@@ -246,7 +226,6 @@ const userlogout = async (req, res) => {
 module.exports = {
   UserRegister,
   UserLogin,
-  ForgotPassword,
   findLoggedInUser,
   getMyActiveCard,
   userlogout

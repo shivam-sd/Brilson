@@ -97,6 +97,9 @@ import GoogleReviewsPublicProfile from "./Pages/GoogleReviews.jsx/GoogleReviewsP
 import CheckGoogleReviewStatus from "./Pages/CheckGoogleReviewStatus";
 import EditGoogleReviewsProfile from "./Pages/GoogleReviews.jsx/EditGoogleReviewProfile";
 import AdminOrderDetails from "./Admin/AdminOrderDetails";
+import ForgotPassword from "./Pages/ForgotPassword/ForgotPassword";
+import VerifyResetOtp from "./Pages/ForgotPassword/VerifyResetOtp";
+import ResetPassword from "./Pages/ForgotPassword/ResetPassword";
 
 
 
@@ -470,6 +473,9 @@ function App() {
 
 <Route path="/login" element={<LoginPage />} />
 <Route path="/signup" element={<SignupPage />} />
+<Route path="/users/forgot-password/brilson" element={<ForgotPassword />} />
+<Route path="/users/verify-otp/brilson" element={<VerifyResetOtp />} />
+<Route path="/users/reset-password/brilson" element={<ResetPassword />} />
 
           {/* error Page */}
           <Route path="*" element={<ErrorPage />} />

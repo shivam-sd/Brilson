@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -213,24 +213,51 @@ const ProductCardPreference = () => {
                 </div>
               )}
 
-              {/* ACTION BUTTON */}
-              <div className="flex items-center justify-center pt-2 sm:pt-4">
-                <button
-                  onClick={handleAddtoCart}
-                  disabled={addingToCart}
-                  className="w-full sm:w-80 py-3 sm:py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-bold text-base sm:text-lg disabled:opacity-50 cursor-pointer hover:scale-105 duration-300 active:scale-95 transition-all shadow-lg shadow-cyan-500/20"
-                >
-                  {addingToCart ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Adding...
-                    </span>
-                  ) : (
-                    "Add to Cart"
-                  )}
-                </button>
-              </div>
-              
+              {/* ACTION BUTTONS */}
+<div className="fixed bottom-[-20px] left-0 right-0 z-50 lg:relative lg:bottom-auto lg:left-auto lg:right-auto bg-gradient-to-b from-transparent to-black/80 lg:bg-transparent p-4 lg:p-0 pt-8 lg:pt-2">
+  <div className="flex flex-row sm:flex-row gap-3 sm:gap-4 max-w-7xl mx-auto lg:max-w-none">
+    {/* Add to Cart Button */}
+    <motion.button
+      onClick={handleAddtoCart}
+      disabled={addingToCart}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className="flex-1 py-3.5 sm:py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-white text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2"
+    >
+      {addingToCart ? (
+        <>
+          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <span>Adding...</span>
+        </>
+      ) : (
+        <>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <span>ADD TO CART</span>
+        </>
+      )}
+    </motion.button>
+
+    {/* Buy Now Button */}
+    <Link
+      to={'/your-items'}
+      className="flex-1 py-3.5 sm:py-4 px-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl font-bold text-white text-base sm:text-lg transition-all duration-300 shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 text-center"
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 15v6" />
+      </svg>
+      <span>BUY NOW</span>
+    </Link>
+  </div>
+</div>
+
+{/* Add spacing at bottom on mobile to prevent content hiding behind fixed buttons */}
+<div className="lg:hidden h-24" />
+
+
+
+
               <div className="flex justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-400 pt-2">
                 <span className="flex gap-1 items-center"><FiShield size={14} /> Secure Checkout</span>
                 <span className="flex gap-1 items-center"><FiGlobe size={14} /> Worldwide Shipping</span>

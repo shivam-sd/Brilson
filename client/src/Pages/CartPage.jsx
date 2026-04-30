@@ -313,9 +313,10 @@ const CartPage = () => {
             >
               <FiArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" /> Continue Shopping
             </Link>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+            <h2
+             className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
               Your Shopping Cart
-            </h1>
+            </h2>
             <p className="text-gray-400 mt-2 text-sm sm:text-base">
               {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
             </p>
