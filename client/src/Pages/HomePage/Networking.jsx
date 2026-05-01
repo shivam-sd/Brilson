@@ -64,7 +64,7 @@ useEffect(() => {
          <Link
   to="/products"
   className="group relative inline-flex items-center gap-2
-  px-10 py-3 md:px-15 md:py-3 rounded-full
+  px-10 md:px-15 md:py-3 rounded-full
   text-white font-semibold overflow-hidden
   bg-gradient-to-r from-cyan-500 to-blue-600
   border border-white/20 hover:bg-black
