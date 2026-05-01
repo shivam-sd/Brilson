@@ -65,7 +65,7 @@ useEffect(() => {
   to="/products"
   className="group relative inline-flex items-center gap-2
   px-10 md:px-15 md:py-3 rounded-full
-  text-white font-semibold overflow-hidden
+  text-white lg:font-semibold md:font-semibold text-sm overflow-hidden
   bg-gradient-to-r from-cyan-500 to-blue-600
   border border-white/20 hover:bg-black
   shadow-[0_10px_20px_rgba(0,0,0,0.25)]
