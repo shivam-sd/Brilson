@@ -222,7 +222,7 @@ const ProductCardPreference = () => {
       disabled={addingToCart}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className="flex-1 py-3.5 sm:py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-white text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2"
+      className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer"
     >
       {addingToCart ? (
         <>
@@ -231,7 +231,7 @@ const ProductCardPreference = () => {
         </>
       ) : (
         <>
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
           </svg>
           <span>ADD TO CART</span>
@@ -242,9 +242,9 @@ const ProductCardPreference = () => {
     {/* Buy Now Button */}
     <Link
       to={'/your-items'}
-      className="flex-1 py-3.5 sm:py-4 px-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl font-bold text-white text-base sm:text-lg transition-all duration-300 shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 text-center"
+      className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg transition-all duration-300 shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 text-center"
     >
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 15v6" />
       </svg>
       <span>BUY NOW</span>

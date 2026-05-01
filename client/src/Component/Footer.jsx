@@ -120,7 +120,7 @@ const Footer = () => {
               <MdLocationOn className="text-lg" /> {Contact.address}
             </li>
             <li className="flex items-center gap-3 hover:text-blue-400 cursor-pointer duration-200">
-              <LucideBadgeHelp className="text-lg" /> {Contact.Link}
+              {/* <LucideBadgeHelp className="text-lg" /> {Contact.Link} */}
             </li>
           </ul>
         </div>

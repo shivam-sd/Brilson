@@ -227,9 +227,25 @@ const { cartCount } = useCart();
             </div>
           )}
 
-          <Link to="/get-card" className="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white">
-            Get Your Card
-          </Link>
+
+<Link
+  to="/get-card"
+  className="group inline-flex items-center gap-2 px-6 py-3 rounded-full
+  text-white font-medium relative overflow-hidden
+  bg-[linear-gradient(135deg,#06b6d4,#3b82f6,#6366f1,#3b82f6,#06b6d4)]
+  bg-[length:300%]
+  shadow-[0_20px_10px_-15px_rgba(0,0,0,0.4)]
+  transition-all duration-300 hover:scale-105"
+  
+  style={{
+    textShadow: "2px 2px 3px rgba(136,0,136,0.5)",
+    backgroundPosition: "left center"
+  }}
+>
+
+  {/* Text */}
+  <span>Get Your Card</span>
+</Link>
         </div>
 
         {/* MOBILE ACTIONS */}

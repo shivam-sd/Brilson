@@ -61,13 +61,47 @@ useEffect(() => {
 
         {/* CTA Buttons */}
         <div className="flex gap-5 mt-3">
-          <Link to={'/products'} className="px-5 py-2 md:px-7 md:py-3 bg-blue-400 text-black font-bold rounded-lg shadow-lg hover:scale-105 duration-300 hover:shadow-cyan-500/40 cursor-pointer">
-            Start Now
-          </Link>
+         <Link
+  to="/products"
+  className="group relative inline-flex items-center gap-2
+  px-10 py-3 md:px-15 md:py-3 rounded-full
+  text-white font-semibold overflow-hidden
+  bg-gradient-to-r from-cyan-500 to-blue-600
+  border border-white/20 hover:bg-black
+  shadow-[0_10px_20px_rgba(0,0,0,0.25)]
+  transition-all duration-300 hover:scale-105 hover:border-white/20"
+>
 
-          <Link to={'/contact-sale'} className="px-5 py-2 md:px-7 md:py-3 border border-blue-400 text-white rounded-lg hover:bg-blue-500/20 duration-300 hover:scale-105 cursor-pointer">
-            Contact Sales
-          </Link>
+  {/* ✨ Shine Sweep */}
+  <span className="pointer-events-none absolute inset-0">
+    <span className="absolute top-0 left-[-120px] h-full w-[100px]
+      bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.8),transparent)]
+      opacity-60
+      group-hover:animate-[shine_1.2s_ease-out]"
+    />
+  </span>
+
+  {/* Text */}
+  <span className="relative z-10">Start Now</span>
+
+</Link>
+
+          <Link
+  to="/contact-sale"
+  className="group inline-flex items-center justify-center
+  w-[160px] h-[55px] 
+  rounded-full border-2 border-blue-500
+  text-white font-medium text-base
+  transition-all duration-300
+  bg-transparent
+  hover:bg-blue-500 hover:text-white
+  hover:scale-105"
+>
+  <span className="transition-all duration-300 group-hover:text-white group-hover:scale-110">
+    Contact Sales
+  </span>
+</Link>
+          
         </div>
 
         {/* Bottom Info */}

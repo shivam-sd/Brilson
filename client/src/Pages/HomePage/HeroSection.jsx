@@ -133,18 +133,65 @@ useEffect(() => {
         {/* CTA */}
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
           <Link
-            to="/products"
-            className="px-10 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl font-semibold shadow-xl hover:scale-105 transition flex items-center justify-center gap-3"
-          >
-            Shop Now <ArrowRight />
-          </Link>
+  to="/products"
+  className="group inline-flex items-center justify-center px-8 py-4 rounded-full
+  bg-red-600 border-[4px] border-red-700
+  shadow-[inset_6px_6px_10px_rgba(255,255,255,0.4),inset_-6px_-6px_10px_rgba(0,0,0,0.4),2px_2px_10px_rgba(0,0,0,0.3),-2px_-2px_10px_rgba(255,255,255,0.2)]
+  transition-all duration-200 active:scale-95"
+>
+  {/* Text split into letters */}
+  <span className="flex gap-[2px] text-xl font-extrabold text-red-200">
+    {"SHOP NOW".split("").map((char, i) => (
+      <span
+        key={i}
+        className="inline-block transition-transform duration-300 group-hover:-translate-y-2"
+        style={{ transitionDelay: `${i * 80}ms` }}
+      >
+        {char === " " ? "\u00A0" : char}
+      </span>
+    ))}
+  </span>
 
-          <Link
-            to="/how-it-works"
-            className="px-10 py-4 border border-white/20 rounded-xl hover:bg-white/10 transition"
-          >
-            See How It Works
-          </Link>
+  {/* Arrow */}
+  <ArrowRight className="ml-3 text-red-200 transition-transform duration-300 group-hover:translate-x-2" />
+</Link>
+
+
+
+
+          <Link to="/how-it-works" className="relative inline-block group">
+
+  {/* 🌈 Gradient Base */}
+  <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#8d49fd] via-[#7f56f3] to-[#5691f3] shadow-[0_4px_12px_rgba(9,12,60,0.25),0_2px_8px_rgba(9,12,60,0.2)]"></div>
+
+  {/* ✨ Top Shine */}
+  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[6px] bg-white/60 blur-md opacity-70 rounded-full"></div>
+
+  {/* 🧊 Button Content */}
+  <div className="relative z-10 px-10 py-4 rounded-2xl text-white font-medium text-sm tracking-wide
+    backdrop-blur-xl border border-white/10
+    flex items-center justify-center
+    overflow-hidden transition duration-300 group-hover:-translate-y-1"
+    
+    style={{
+      boxShadow: `
+        inset 0 1px 1px rgba(233,209,255,0.25),
+        inset 0 -1px 3px rgba(137,222,246,0.25)
+      `
+    }}
+  >
+
+    {/* ✨ Inner Shine Layer */}
+    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent opacity-40"></div>
+
+    {/* Text */}
+    <span className="relative z-10 text-lg text-gray-200 font-semibold">See How It Works</span>
+
+    {/* Bottom Glow */}
+    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[110px] h-[6px] bg-cyan-300/60 blur-md opacity-70 rounded-full transition group-hover:scale-125"></div>
+
+  </div>
+</Link>
         </div>
         
 
