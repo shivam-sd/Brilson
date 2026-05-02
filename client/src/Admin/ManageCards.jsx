@@ -8,7 +8,7 @@ import JSZip from "jszip";
 import { HexColorPicker } from "react-colorful";
 
 
-/* SVG QR Code Generator - Higher Quality with Dotted Pattern */
+/* SVG QR Code Generator  Higher Quality with Dotted Pattern */
 const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent", size = 800) => {
   const qrData = `${url}`;
   
@@ -40,136 +40,16 @@ const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent"
   });
 };
 
-/* Helper function to safely render SVG thumbnail */
-const renderSVGThumbnail = (svgDataUrl, className = "w-10 h-10") => {
-  if (!svgDataUrl || !svgDataUrl.startsWith('data:image/svg')) {
+/* Helper function to safely render PNG thumbnail */
+const renderPNGThumbnail = (pngDataUrl, className = "w-10 h-10") => {
+  if (!pngDataUrl || !pngDataUrl.startsWith('data:image/png') && !pngDataUrl.startsWith('blob:')) {
     return null;
   }
   
-  try {
-    const svgString = decodeURIComponent(svgDataUrl.split(',')[1]);
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = svgString;
-    const svgElement = tempDiv.querySelector('svg');
-    
-    if (svgElement) {
-      svgElement.setAttribute('width', '40');
-      svgElement.setAttribute('height', '40');
-      svgElement.setAttribute('viewBox', `0 0 ${svgElement.getAttribute('viewBox')?.split(' ')[2] || '800'} ${svgElement.getAttribute('viewBox')?.split(' ')[3] || '920'}`);
-      
-      const serializer = new XMLSerializer();
-      const modifiedSvgString = serializer.serializeToString(svgElement);
-      
-      return { __html: modifiedSvgString };
-    }
-  } catch (error) {
-    console.error("Error rendering SVG thumbnail:", error);
-  }
-  
-  return null;
+  return pngDataUrl;
 };
 
-/* Add text to SVG QR Code */
-const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
-  try {
-    const svgString = await qrCode.getRawData("svg");
-    const svgText = await svgString.text();
-    
-    const container = document.createElement('div');
-    container.innerHTML = svgText;
-    const svgElement = container.querySelector('svg');
-    
-    if (!svgElement) {
-      throw new Error("No SVG element found");
-    }
-    
-    const originalWidth = parseInt(svgElement.getAttribute('width') || '800');
-    const originalHeight = parseInt(svgElement.getAttribute('height') || '800');
-    
-    const textAreaHeight = 140;
-    const newHeight = originalHeight + textAreaHeight;
-    
-    const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    newSvg.setAttribute("width", originalWidth.toString());
-    newSvg.setAttribute("height", newHeight.toString());
-    newSvg.setAttribute("viewBox", `0 0 ${originalWidth} ${newHeight}`);
-    newSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    
-    if (bgColor !== 'transparent') {
-      const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      bgRect.setAttribute("width", "100%");
-      bgRect.setAttribute("height", "100%");
-      bgRect.setAttribute("fill", bgColor);
-      newSvg.appendChild(bgRect);
-    }
-    
-    const qrGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    const originalChildren = svgElement.children;
-    for (let i = 0; i < originalChildren.length; i++) {
-      const child = originalChildren[i].cloneNode(true);
-      qrGroup.appendChild(child);
-    }
-    newSvg.appendChild(qrGroup);
-    
-    const centerX = originalWidth / 2;
-    const separatorY = originalHeight + 30;
-    const codeY = originalHeight + 90;
-    const nameY = originalHeight + 125;
-    
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", "60");
-    line.setAttribute("y1", separatorY.toString());
-    line.setAttribute("x2", (originalWidth - 60).toString());
-    line.setAttribute("y2", separatorY.toString());
-    line.setAttribute("stroke-opacity", "0.3");
-    line.setAttribute("stroke-width", "1.5");
-    line.setAttribute("stroke-dasharray", "4,4");
-    newSvg.appendChild(line);
-    
-    const codeText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    codeText.setAttribute("x", centerX.toString());
-    codeText.setAttribute("y", codeY.toString());
-    codeText.setAttribute("text-anchor", "middle");
-    codeText.setAttribute("font-family", "monospace");
-    codeText.setAttribute("font-size", "45");
-    codeText.setAttribute("font-weight", "bold");
-    codeText.setAttribute("fill", textColor);
-    codeText.textContent = `Code: ${activationCode}`;
-    newSvg.appendChild(codeText);
-    
-    if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
-      const maxNameLength = 25;
-      let displayName = profileName;
-      if (displayName.length > maxNameLength) {
-        displayName = displayName.substring(0, maxNameLength - 3) + '...';
-      }
-      
-      const nameText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      nameText.setAttribute("x", centerX.toString());
-      nameText.setAttribute("y", nameY.toString());
-      nameText.setAttribute("text-anchor", "middle");
-      nameText.setAttribute("font-family", "Arial, sans-serif");
-      nameText.setAttribute("font-size", "30");
-      nameText.setAttribute("fill", textColor);
-      nameText.setAttribute("fill-opacity", "0.8");
-      nameText.textContent = displayName;
-      newSvg.appendChild(nameText);
-    }
-    
-    const serializer = new XMLSerializer();
-    const svgStringOutput = serializer.serializeToString(newSvg);
-    const dataUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStringOutput);
-    
-    return dataUrl;
-  } catch (error) {
-    console.error("Error creating SVG QR:", error);
-    const blob = await qrCode.getRawData("png");
-    return URL.createObjectURL(blob);
-  }
-};
-
-
-/* High resolution PNG fallback with proper text sizing */
+/* High resolution PNG with proper text sizing */
 const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
   try {
     const blob = await qrCode.getRawData("png");
@@ -251,7 +131,7 @@ const ManageCards = () => {
   });
   const [qrImages, setQrImages] = useState({});
   const [downloadingDate, setDownloadingDate] = useState(null);
-  const [useSVG, setUseSVG] = useState(true);
+  const [useSVG, setUseSVG] = useState(false);
   
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [qrBgColor, setQrBgColor] = useState("transparent");
@@ -307,24 +187,13 @@ const ManageCards = () => {
         try {
           const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 800);
           
-          let finalImageUrl;
-          if (useSVG) {
-            finalImageUrl = await addTextToSVG(
-              qr, 
-              card.activationCode, 
-              card.owner?.name || card.profile?.name || '',
-              textColor,
-              qrBgColor
-            );
-          } else {
-            finalImageUrl = await addTextToHighResPNG(
-              qr, 
-              card.activationCode, 
-              card.owner?.name || card.profile?.name || '',
-              textColor,
-              qrBgColor
-            );
-          }
+          const finalImageUrl = await addTextToHighResPNG(
+            qr, 
+            card.activationCode, 
+            card.owner?.name || card.profile?.name || '',
+            textColor,
+            qrBgColor
+          );
           
           return { cardId: card._id, imageUrl: finalImageUrl };
         } catch (err) {
@@ -347,7 +216,7 @@ const ManageCards = () => {
     if (cards.length > 0) {
       generateHighQualityQRCodes();
     }
-  }, [qrBgColor, qrDotsColor, textColor, useSVG]);
+  }, [qrBgColor, qrDotsColor, textColor]);
 
   useEffect(() => {
     fetchCards(currentPage, searchQuery);
@@ -411,25 +280,13 @@ const ManageCards = () => {
     }
     
     const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 600);
-    let previewUrl;
-    
-    if (useSVG) {
-      previewUrl = await addTextToSVG(
-        qr, 
-        card.activationCode, 
-        card.owner?.name || card.profile?.name || '',
-        textColor,
-        qrBgColor
-      );
-    } else {
-      previewUrl = await addTextToHighResPNG(
-        qr, 
-        card.activationCode, 
-        card.owner?.name || card.profile?.name || '',
-        textColor,
-        qrBgColor
-      );
-    }
+    const previewUrl = await addTextToHighResPNG(
+      qr, 
+      card.activationCode, 
+      card.owner?.name || card.profile?.name || '',
+      textColor,
+      qrBgColor
+    );
 
     const win = window.open("", "_blank", "width=800,height=900");
     win.document.write(`
@@ -456,7 +313,7 @@ const ManageCards = () => {
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             margin-bottom: 30px;
           }
-          .qr-container img, .qr-container svg {
+          .qr-container img {
             max-width: 600px;
             width: 100%;
             height: auto;
@@ -495,18 +352,14 @@ const ManageCards = () => {
       </head>
       <body>
         <div class="qr-container">
-          ${useSVG ? 
-            `<div>${previewUrl.startsWith('data:image/svg') ? 
-              decodeURIComponent(previewUrl.split(',')[1]) : 
-              `<img src="${previewUrl}" alt="QR Code" />`}</div>` : 
-            `<img src="${previewUrl}" alt="QR Code" />`}
+          <img src="${previewUrl}" alt="QR Code" />
         </div>
         <div class="info">
           <p>Activation Code</p>
           <h2>${card.activationCode}</h2>
         </div>
         <div class="quality-badge">
-          ${useSVG ? '🔷 Vector Quality (SVG)' : '📸 High Resolution PNG'}
+          📸 High Resolution PNG
         </div>
       </body>
       </html>
@@ -521,37 +374,22 @@ const ManageCards = () => {
     
     try {
       const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 1200);
-      let finalImageUrl;
-      let fileExtension = useSVG ? 'svg' : 'png';
-      
-      if (useSVG) {
-        finalImageUrl = await addTextToSVG(
-          qr, 
-          card.activationCode, 
-          card.owner?.name || card.profile?.name || '',
-          textColor,
-          qrBgColor
-        );
-      } else {
-        finalImageUrl = await addTextToHighResPNG(
-          qr, 
-          card.activationCode, 
-          card.owner?.name || card.profile?.name || '',
-          textColor,
-          qrBgColor
-        );
-      }
+      const finalImageUrl = await addTextToHighResPNG(
+        qr, 
+        card.activationCode, 
+        card.owner?.name || card.profile?.name || '',
+        textColor,
+        qrBgColor
+      );
       
       const link = document.createElement('a');
       link.href = finalImageUrl;
-      link.download = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.${fileExtension}`;
+      link.download = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       
-      if (!useSVG) {
-        URL.revokeObjectURL(finalImageUrl);
-      }
+      URL.revokeObjectURL(finalImageUrl);
 
       if (!card.isDownloaded) {
         try {
@@ -597,7 +435,7 @@ const ManageCards = () => {
 
     try {
       const zip = new JSZip();
-      const folderName = `cards-${date}-${useSVG ? 'vector' : 'highres'}`;
+      const folderName = `cards-${date}-highres`;
       const folder = zip.folder(folderName);
 
       alert(`Downloading ${validCards.length} high-quality cards. Please wait...`);
@@ -610,36 +448,19 @@ const ManageCards = () => {
         const chunkPromises = chunk.map(async (card) => {
           try {
             const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 1200);
-            let fileExtension = useSVG ? 'svg' : 'png';
+            const finalImageUrl = await addTextToHighResPNG(
+              qr, 
+              card.activationCode, 
+              card.owner?.name || card.profile?.name || '',
+              textColor,
+              qrBgColor
+            );
             
-            if (useSVG) {
-              finalImageUrl = await addTextToSVG(
-                qr, 
-                card.activationCode, 
-                card.owner?.name || card.profile?.name || '',
-                textColor,
-                qrBgColor
-              );
-              
-              const svgString = decodeURIComponent(finalImageUrl.split(',')[1]);
-              const blob = new Blob([svgString], { type: 'image/svg+xml' });
-              const filename = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.${fileExtension}`;
-              folder.file(filename, blob);
-            } else {
-              finalImageUrl = await addTextToHighResPNG(
-                qr, 
-                card.activationCode, 
-                card.owner?.name || card.profile?.name || '',
-                textColor,
-                qrBgColor
-              );
-              
-              const response = await fetch(finalImageUrl);
-              const blob = await response.blob();
-              const filename = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.${fileExtension}`;
-              folder.file(filename, blob);
-              URL.revokeObjectURL(finalImageUrl);
-            }
+            const response = await fetch(finalImageUrl);
+            const blob = await response.blob();
+            const filename = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.png`;
+            folder.file(filename, blob);
+            URL.revokeObjectURL(finalImageUrl);
 
             return { success: true, card };
           } catch (error) {
@@ -657,7 +478,7 @@ const ManageCards = () => {
 
       const link = document.createElement('a');
       link.href = zipUrl;
-      link.download = `all-cards-${date}-${useSVG ? 'vector' : 'highres'}.zip`;
+      link.download = `all-cards-${date}-highres.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -667,7 +488,7 @@ const ManageCards = () => {
       const successful = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
 
-      alert(`Download complete!\n✅ Successful: ${successful}\n❌ Failed: ${failed}\n📐 Format: ${useSVG ? 'Vector (SVG)' : 'High Resolution PNG'}\n🔍 Perfect quality, no pixelation!`);
+      alert(`Download complete!\n✅ Successful: ${successful}\n❌ Failed: ${failed}\n📐 Format: High Resolution PNG\n🔍 Perfect quality, no pixelation!`);
 
     } catch (error) {
       console.error("Error in bulk download:", error);
@@ -762,13 +583,6 @@ const ManageCards = () => {
       return <img src="/qr.png" alt="QR" className="w-8 h-8 sm:w-10 sm:h-10" />;
     }
     
-    if (useSVG && imageData.startsWith('data:image/svg')) {
-      const svgContent = renderSVGThumbnail(imageData);
-      if (svgContent) {
-        return <div className="w-8 h-8 sm:w-10 sm:h-10" dangerouslySetInnerHTML={svgContent} />;
-      }
-    }
-    
     return (
       <img
         src={imageData}
@@ -797,32 +611,6 @@ const ManageCards = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-stretch sm:items-center">
-          {/* Quality Toggle Button */}
-          <button
-            onClick={() => setUseSVG(!useSVG)}
-            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer text-sm sm:text-base ${
-              useSVG 
-                ? 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600' 
-                : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'
-            } text-white shadow-lg`}
-          >
-            {useSVG ? (
-              <>
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-                <span>SVG</span>
-              </>
-            ) : (
-              <>
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M4 4h16v16H4z M8 8h8v8H8z"/>
-                </svg>
-                <span>PNG</span>
-              </>
-            )}
-          </button>
-
           {/* COLOR CUSTOMIZATION BUTTON */}
           <button
             onClick={() => setShowColorPicker(!showColorPicker)}
