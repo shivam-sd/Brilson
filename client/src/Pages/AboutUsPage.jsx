@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Rocket, 
-  Users, 
+  Users,  
   Target, 
   Award, 
   Globe, 

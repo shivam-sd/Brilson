@@ -100,6 +100,7 @@ import AdminOrderDetails from "./Admin/AdminOrderDetails";
 import ForgotPassword from "./Pages/ForgotPassword/ForgotPassword";
 import VerifyResetOtp from "./Pages/ForgotPassword/VerifyResetOtp";
 import ResetPassword from "./Pages/ForgotPassword/ResetPassword";
+import HelpCenter from "./Pages/HelpCenter";
 
 
 
@@ -153,6 +154,7 @@ function App() {
             <Route path="/orders" element={<Orders />} />
             <Route path="/get-card" element={<GetYourCard />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/help-center" element={<HelpCenter />} />
             <Route path="/terms-conditions" element={<TermsConditionsPage />} />
             <Route path="/refund-policy" element={<RefundPolicyPage />} />
             <Route path="/about-us" element={<AboutUsPage />} />

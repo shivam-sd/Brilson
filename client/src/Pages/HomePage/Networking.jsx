@@ -93,8 +93,7 @@ useEffect(() => {
   rounded-full border-2 border-blue-500
   text-white font-medium text-base
   transition-all duration-300
-  bg-transparent
-  hover:bg-blue-500 hover:text-white
+  bg-transparent hover:text-white
   hover:scale-105"
 >
   <span className="transition-all duration-300 group-hover:text-white group-hover:scale-110">

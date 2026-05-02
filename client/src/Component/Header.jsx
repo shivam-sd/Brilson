@@ -230,11 +230,9 @@ const { cartCount } = useCart();
 
 <Link
   to="/get-card"
-  className="group inline-flex items-center gap-2 px-6 py-3 rounded-full
-  text-white font-medium relative overflow-hidden
-  bg-[linear-gradient(135deg,#06b6d4,#3b82f6,#6366f1,#3b82f6,#06b6d4)]
-  bg-[length:300%]
-  shadow-[0_20px_10px_-15px_rgba(0,0,0,0.4)]
+  className="group inline-flex items-center gap-2 px-6 py-2 rounded-full
+  text-white font-medium relative overflow-hidden border
+border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-500/40  shadow-gray-800 shadow-lg
   transition-all duration-300 hover:scale-105"
   
   style={{
