@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Rocket, 
@@ -26,9 +26,147 @@ import {
   Cpu
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const AboutUsPage = () => {
   const [activeSection, setActiveSection] = useState('story');
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Default data (will be shown if API returns no data)
+  const defaultData = {
+    hero: {
+      title: "Redefining",
+      subtitle: "Digital Networking",
+      description: "BRILSON is more than a platform—it's a movement. We're building the future of professional connections with cutting-edge technology and human-centric design.",
+      primaryButton: { text: "Join Our Community", link: "/join" },
+      secondaryButton: { text: "Watch Demo", link: "/demo" }
+    },
+    stats: [
+      { value: '10K+', label: 'Active Users', icon: 'Users', color: 'from-blue-500/20 to-cyan-500/20' },
+      { value: '99.9%', label: 'Uptime', icon: 'Shield', color: 'from-purple-500/20 to-pink-500/20' },
+      { value: '4.9', label: 'Rating', icon: 'Star', color: 'from-yellow-500/20 to-amber-500/20' }
+    ],
+    journey: [
+      { year: '2022', event: 'BRILSON Founded', icon: '🚀' },
+      { year: '2023', event: 'First 1000 Users', icon: '👥' },
+      { year: '2024', event: 'International Launch', icon: '🌍' },
+      { year: '2024', event: 'Mobile App Release', icon: '📱' }
+    ],
+    mission: {
+      title: "Our Mission",
+      description: "To democratize professional networking by making it accessible, intelligent, and meaningful for everyone, everywhere.",
+      points: [
+        'Break down barriers in professional connections',
+        'Leverage AI for smarter networking',
+        'Create value for every interaction',
+        'Foster global professional communities'
+      ]
+    },
+    vision: {
+      title: "Our Vision",
+      description: "To become the world's most trusted platform for professional growth and meaningful business connections.",
+      goals: [
+        { year: "By 2025", text: "Serve 1 million professionals worldwide" },
+        { year: "By 2027", text: "Launch AI-powered career mentorship" }
+      ]
+    },
+    values: [
+      {
+        title: 'Innovation First',
+        description: 'Pushing boundaries in digital networking',
+        icon: 'Rocket',
+        color: 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10'
+      },
+      {
+        title: 'Customer Centric',
+        description: 'Your success is our priority',
+        icon: 'Heart',
+        color: 'bg-gradient-to-br from-red-500/10 to-pink-500/10'
+      },
+      {
+        title: 'Excellence',
+        description: 'Striving for perfection in everything',
+        icon: 'Award',
+        color: 'bg-gradient-to-br from-yellow-500/10 to-amber-500/10'
+      },
+      {
+        title: 'Growth Mindset',
+        description: 'Always learning, always improving',
+        icon: 'TrendingUp',
+        color: 'bg-gradient-to-br from-green-500/10 to-emerald-500/10'
+      }
+    ],
+    team: [
+      {
+        name: 'Alex Morgan',
+        role: 'CEO & Founder',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+        description: 'Visionary leader with 15+ years in tech'
+      },
+      {
+        name: 'Sarah Chen',
+        role: 'CTO',
+        image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop',
+        description: 'Tech expert with AI/ML specialization'
+      },
+      {
+        name: 'David Park',
+        role: 'Head of Product',
+        image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop',
+        description: 'Product genius with user-first approach'
+      },
+      {
+        name: 'Maria Garcia',
+        role: 'Head of Marketing',
+        image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop',
+        description: 'Growth hacker with proven track record'
+      }
+    ],
+    testimonial: {
+      text: "BRILSON has transformed how our company connects with clients. The platform's intuitive design and powerful features have increased our networking efficiency by 300%.",
+      author: "Michael Rodriguez",
+      designation: "CEO",
+      company: "TechGrowth Inc."
+    }
+  };
+
+  // Icon mapping function
+  const getIconComponent = (iconName, size = 24) => {
+    const icons = {
+      Users: <Users size={size} />,
+      Shield: <Shield size={size} />,
+      Star: <Star size={size} />,
+      Rocket: <Rocket className="text-blue-400" size={size} />,
+      Heart: <Heart className="text-red-400" size={size} />,
+      Award: <Award className="text-yellow-400" size={size} />,
+      TrendingUp: <TrendingUp className="text-green-400" size={size} />
+    };
+    return icons[iconName] || <Rocket size={size} />;
+  };
+
+  // API CALL
+  const fetchAbout = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/about/get`);
+      console.log("API Response:", res.data);
+      if (res.data.success && res.data.data) {
+        // Merge API data with defaults (to ensure all fields exist)
+        setData({ ...defaultData, ...res.data.data });
+      } else {
+        setData(defaultData);
+      }
+    } catch (err) {
+      console.error("Error fetching about page data:", err);
+      setData(defaultData);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAbout();
+  }, []);
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -38,72 +176,22 @@ const AboutUsPage = () => {
     }
   };
 
-  const stats = [
-    { value: '10K+', label: 'Active Users', icon: <Users size={24} />, color: 'from-blue-500/20 to-cyan-500/20' },
-    { value: '99.9%', label: 'Uptime', icon: <Shield size={24} />, color: 'from-purple-500/20 to-pink-500/20' },
-    { value: '4.9', label: 'Rating', icon: <Star size={24} />, color: 'from-yellow-500/20 to-amber-500/20' }
-  ];
+  // Use data from API or default
+  const stats = data?.stats || defaultData.stats;
+  const values = data?.values || defaultData.values;
+  const team = data?.team || defaultData.team;
+  const milestones = data?.journey || defaultData.journey;
 
-  const values = [
-    {
-      title: 'Innovation First',
-      description: 'Pushing boundaries in digital networking',
-      icon: <Rocket className="text-blue-400" size={24} />,
-      color: 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10'
-    },
-    {
-      title: 'Customer Centric',
-      description: 'Your success is our priority',
-      icon: <Heart className="text-red-400" size={24} />,
-      color: 'bg-gradient-to-br from-red-500/10 to-pink-500/10'
-    },
-    {
-      title: 'Excellence',
-      description: 'Striving for perfection in everything',
-      icon: <Award className="text-yellow-400" size={24} />,
-      color: 'bg-gradient-to-br from-yellow-500/10 to-amber-500/10'
-    },
-    {
-      title: 'Growth Mindset',
-      description: 'Always learning, always improving',
-      icon: <TrendingUp className="text-green-400" size={24} />,
-      color: 'bg-gradient-to-br from-green-500/10 to-emerald-500/10'
-    }
-  ];
-
-  const team = [
-    {
-      name: 'Alex Morgan',
-      role: 'CEO & Founder',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-      description: 'Visionary leader with 15+ years in tech'
-    },
-    {
-      name: 'Sarah Chen',
-      role: 'CTO',
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w-400&h=400&fit=crop',
-      description: 'Tech expert with AI/ML specialization'
-    },
-    {
-      name: 'David Park',
-      role: 'Head of Product',
-      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop',
-      description: 'Product genius with user-first approach'
-    },
-    {
-      name: 'Maria Garcia',
-      role: 'Head of Marketing',
-      image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop',
-      description: 'Growth hacker with proven track record'
-    }
-  ];
-
-  const milestones = [
-    { year: '2022', event: 'BRILSON Founded', icon: '🚀' },
-    { year: '2023', event: 'First 1000 Users', icon: '👥' },
-    { year: '2024', event: 'International Launch', icon: '🌍' },
-    { year: '2024', event: 'Mobile App Release', icon: '📱' }
-  ];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#E1C48A] mx-auto mb-4"></div>
+          <p className="text-gray-300">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 text-white overflow-hidden">
@@ -148,32 +236,33 @@ const AboutUsPage = () => {
             >
               <h2 className="text-5xl md:text-6xl font-bold mb-6">
                 <span className="bg-gradient-to-r from-white via-[#E1C48A] to-white bg-clip-text text-transparent">
-                  Redefining
+                  {data?.hero?.title || defaultData.hero.title}
                 </span>
                 <br />
-                <span className="text-white">Digital Networking</span>
+                <span className="text-white">{data?.hero?.subtitle || defaultData.hero.subtitle}</span>
               </h2>
 
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                BRILSON is more than a platform—it's a movement. We're building the future 
-                of professional connections with cutting-edge technology and human-centric design.
+                {data?.hero?.description || defaultData.hero.description}
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <motion.button
+                <motion.a
+                  href={data?.hero?.primaryButton?.link || defaultData.hero.primaryButton.link}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                  className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold shadow-lg hover:shadow-xl transition-shadow cursor-pointer inline-block"
                 >
-                  Join Our Community
-                </motion.button>
-                <motion.button
+                  {data?.hero?.primaryButton?.text || defaultData.hero.primaryButton.text}
+                </motion.a>
+                <motion.a
+                  href={data?.hero?.secondaryButton?.link || defaultData.hero.secondaryButton.link}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-3 rounded-xl bg-gradient-to-r from-white/10 to-transparent border border-white/10 hover:border-[#E1C48A]/40 transition-colors cursor-pointer"
+                  className="px-8 py-3 rounded-xl bg-gradient-to-r from-white/10 to-transparent border border-white/10 hover:border-[#E1C48A]/40 transition-colors cursor-pointer inline-block"
                 >
-                  Watch Demo
-                </motion.button>
+                  {data?.hero?.secondaryButton?.text || defaultData.hero.secondaryButton.text}
+                </motion.a>
               </div>
             </motion.div>
 
@@ -254,11 +343,11 @@ const AboutUsPage = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -5 }}
-                className={`p-6 rounded-2xl bg-gradient-to-br ${stat.color} border border-white/10 backdrop-blur-sm cursor-pointer`}
+                className={`p-6 rounded-2xl bg-gradient-to-br ${stat.color || 'from-white/10 to-transparent'} border border-white/10 backdrop-blur-sm cursor-pointer`}
               >
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-xl bg-white/10">
-                    {stat.icon}
+                    {stat.icon ? getIconComponent(stat.icon, 24) : <Users size={24} />}
                   </div>
                   <div>
                     <div className="text-3xl font-bold text-white">{stat.value}</div>
@@ -310,7 +399,7 @@ const AboutUsPage = () => {
                     <div className="p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 backdrop-blur-sm">
                       <div className="text-5xl mb-4">{milestone.icon}</div>
                       <h3 className="text-2xl font-bold text-white mb-2">{milestone.year}</h3>
-                      <p className="text-gray-300">{milestone.event}</p>
+                      <p className="text-gray-300">{milestone.event || milestone.title}</p>
                     </div>
                   </div>
 
@@ -344,19 +433,13 @@ const AboutUsPage = () => {
                 <div className="p-4 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500">
                   <Target className="text-white" size={28} />
                 </div>
-                <h3 className="text-3xl font-bold text-white">Our Mission</h3>
+                <h3 className="text-3xl font-bold text-white">{data?.mission?.title || defaultData.mission.title}</h3>
               </div>
               <p className="text-lg text-gray-300 leading-relaxed mb-6">
-                To democratize professional networking by making it accessible, intelligent, 
-                and meaningful for everyone, everywhere.
+                {data?.mission?.description || defaultData.mission.description}
               </p>
               <ul className="space-y-4">
-                {[
-                  'Break down barriers in professional connections',
-                  'Leverage AI for smarter networking',
-                  'Create value for every interaction',
-                  'Foster global professional communities'
-                ].map((item, index) => (
+                {(data?.mission?.points || defaultData.mission.points).map((item, index) => (
                   <li key={index} className="flex items-center gap-3">
                     <CheckCircle className="text-green-400" size={20} />
                     <span className="text-gray-300">{item}</span>
@@ -376,21 +459,18 @@ const AboutUsPage = () => {
                 <div className="p-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500">
                   <Globe className="text-white" size={28} />
                 </div>
-                <h3 className="text-3xl font-bold text-white">Our Vision</h3>
+                <h3 className="text-3xl font-bold text-white">{data?.vision?.title || defaultData.vision.title}</h3>
               </div>
               <p className="text-lg text-gray-300 leading-relaxed mb-6">
-                To become the world's most trusted platform for professional growth and 
-                meaningful business connections.
+                {data?.vision?.description || defaultData.vision.description}
               </p>
               <div className="space-y-6">
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <h4 className="font-semibold text-[#E1C48A] mb-2">By 2025</h4>
-                  <p className="text-gray-300">Serve 1 million professionals worldwide</p>
-                </div>
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <h4 className="font-semibold text-[#E1C48A] mb-2">By 2027</h4>
-                  <p className="text-gray-300">Launch AI-powered career mentorship</p>
-                </div>
+                {(data?.vision?.goals || defaultData.vision.goals).map((goal, index) => (
+                  <div key={index} className="p-4 rounded-xl bg-white/5 border border-white/10">
+                    <h4 className="font-semibold text-[#E1C48A] mb-2">{goal.year}</h4>
+                    <p className="text-gray-300">{goal.text}</p>
+                  </div>
+                ))}
               </div>
             </motion.div>
           </div>
@@ -425,11 +505,11 @@ const AboutUsPage = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -10, scale: 1.02 }}
-                className={`p-6 rounded-2xl ${value.color} border border-white/10 backdrop-blur-sm`}
+                className={`p-6 rounded-2xl ${value.color || 'bg-gradient-to-br from-white/10 to-transparent'} border border-white/10 backdrop-blur-sm`}
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className="p-3 rounded-xl bg-white/10">
-                    {value.icon}
+                    {value.icon ? getIconComponent(value.icon, 24) : <Rocket size={24} />}
                   </div>
                   <h3 className="text-xl font-bold text-white">{value.title}</h3>
                 </div>
@@ -509,22 +589,23 @@ const AboutUsPage = () => {
 
             <div className="text-center">
               <p className="text-2xl md:text-3xl text-gray-300 italic mb-8 leading-relaxed">
-                "BRILSON has transformed how our company connects with clients. The platform's 
-                intuitive design and powerful features have increased our networking efficiency 
-                by 300%."
+                "{data?.testimonial?.text || defaultData.testimonial.text}"
               </p>
               <div className="flex items-center justify-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#E1C48A] to-[#C9A86A]" />
                 <div>
-                  <h4 className="font-bold text-white">Michael Rodriguez</h4>
-                  <p className="text-gray-400">CEO, TechGrowth Inc.</p>
+                  <h4 className="font-bold text-white">{data?.testimonial?.author || defaultData.testimonial.author}</h4>
+                  <p className="text-gray-400">
+                    {data?.testimonial?.designation || defaultData.testimonial.designation}
+                    {data?.testimonial?.company && `, ${data.testimonial.company}`}
+                  </p>
                 </div>
               </div>
             </div>
           </motion.div>
         </div>
       </section>
-      </div>
+    </div>
   );
 };
 

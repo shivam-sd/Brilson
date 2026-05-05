@@ -8,8 +8,8 @@ import JSZip from "jszip";
 import { HexColorPicker } from "react-colorful";
 
 
-/* SVG QR Code Generator  Higher Quality with Dotted Pattern */
-const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent", size = 800) => {
+/* Ultra High Resolution PNG Generator - 4000px for no pixelation */
+const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent", size = 4000) => {
   const qrData = `${url}`;
   
   return new QRCodeStyling({ 
@@ -17,7 +17,7 @@ const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent"
     height: size,
     data: qrData,
     type: "svg",
-    margin: 5,
+    margin: 10,
     dotsOptions: {
       color: dotsColor,
       type: "dots",
@@ -26,43 +26,38 @@ const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent"
       type: "extra-rounded",
     },
     cornersDotOptions: {
-      type: "dot",
+      type: "rounded",
     },
     backgroundOptions: {
       color: bgColor,
     },
     imageOptions: {
       crossOrigin: "anonymous",
-      margin: 10,
-      imageSize: 0.2
+      margin: 20,
+      imageSize: 0.25
     },
     image: "/B.png",
   });
 };
 
-/* Helper function to safely render PNG thumbnail */
-const renderPNGThumbnail = (pngDataUrl, className = "w-10 h-10") => {
-  if (!pngDataUrl || !pngDataUrl.startsWith('data:image/png') && !pngDataUrl.startsWith('blob:')) {
-    return null;
-  }
-  
-  return pngDataUrl;
-};
-
-/* High resolution PNG with proper text sizing */
-const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
+/* Ultra High Resolution PNG with Text - Increased Height and Gaps */
+const addTextToUltraHighResPNG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
   try {
-    const blob = await qrCode.getRawData("png");
+    const svgString = await qrCode.getRawData("svg");
+    const svgText = await svgString.text();
+    
     const img = new Image();
-    const imageUrl = URL.createObjectURL(blob);
+    const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+    const svgUrl = URL.createObjectURL(svgBlob);
     
     return new Promise((resolve) => {
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        const qrSize = 800;
-        const textHeight = 100;
+        const qrSize = 4000;
+        // INCREASED TEXT AREA HEIGHT - More gap between QR and text
+        const textHeight = 500;
         canvas.width = qrSize;
         canvas.height = qrSize + textHeight;
         
@@ -78,29 +73,51 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
         
         ctx.drawImage(img, 0, 0, qrSize, qrSize);
         
+        // === GAP CONTROL - Increased spacing ===
+        // Line 1: 120px gap from QR (instead of 60px)
+        const line1Y = qrSize + 120;
+        // Activation Code position
+        const codeY = qrSize + 200;
+        // Line 2: Below activation code
+        const line2Y = qrSize + 300;
+        // Profile name position
+        const nameY = qrSize + 380;
+        
+        // Draw first separator line
         ctx.strokeStyle = textColor;
         ctx.globalAlpha = 0.3;
-        ctx.lineWidth = 1.5;
+        // ctx.lineWidth = 8;
         ctx.beginPath();
-        ctx.moveTo(80, qrSize + 15);
-        ctx.lineTo(canvas.width - 80, qrSize + 15);
+        ctx.moveTo(200, line1Y);
+        // ctx.lineTo(canvas.width - 200, line1Y);
         ctx.stroke();
-        ctx.globalAlpha = 1;
         
-        ctx.font = 'bold 35px "Courier New", monospace';
+        // Draw activation code
+        ctx.font = 'bold 140px "Courier New", monospace';
         ctx.fillStyle = textColor;
+        ctx.globalAlpha = 1;
         ctx.textAlign = 'center';
-        ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, qrSize + 55);
+        ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, codeY);
         
+        // Draw second separator line
+        ctx.strokeStyle = textColor;
+        ctx.globalAlpha = 0.3;
+        // ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(200, line2Y);
+        // ctx.lineTo(canvas.width - 200, line2Y);
+        ctx.stroke();
+        
+        // Draw profile name if exists
         if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
           let displayName = profileName;
-          if (displayName.length > 30) {
-            displayName = displayName.substring(0, 27) + '...';
+          if (displayName.length > 35) {
+            displayName = displayName.substring(0, 32) + '...';
           }
-          ctx.font = '28px Arial, sans-serif';
+          ctx.font = '120px Arial, sans-serif';
           ctx.fillStyle = textColor;
           ctx.globalAlpha = 0.8;
-          ctx.fillText(displayName, canvas.width / 2, qrSize + 90);
+          ctx.fillText(displayName, canvas.width / 2, nameY);
           ctx.globalAlpha = 1;
         }
         
@@ -108,14 +125,77 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
           const finalUrl = URL.createObjectURL(newBlob);
           resolve(finalUrl);
         }, 'image/png', 1.0);
+        
+        URL.revokeObjectURL(svgUrl);
       };
       
-      img.src = imageUrl;
+      img.src = svgUrl;
     });
   } catch (error) {
-    console.error("Error adding text to high-res PNG:", error);
+    console.error("Error creating ultra high-res PNG:", error);
     const blob = await qrCode.getRawData("png");
     return URL.createObjectURL(blob);
+  }
+};
+
+/* Thumbnail ke liye chota PNG - Updated with better spacing */
+const generateThumbnailPNG = async (qrCode, activationCode, profileName, textColor, bgColor) => {
+  try {
+    const svgString = await qrCode.getRawData("svg");
+    const svgText = await svgString.text();
+    const img = new Image();
+    const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    
+    return new Promise((resolve) => {
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        const qrSize = 200;
+        const textHeight = 80;
+        canvas.width = qrSize;
+        canvas.height = qrSize + textHeight;
+        
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        if (bgColor === 'transparent') {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        } else {
+          ctx.fillStyle = bgColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        ctx.drawImage(img, 0, 0, qrSize, qrSize);
+        
+        // Thumbnail text with gap
+        ctx.font = 'bold 12px monospace';
+        ctx.fillStyle = textColor;
+        ctx.textAlign = 'center';
+        ctx.fillText(activationCode.substring(0, 10), canvas.width / 2, qrSize + 30);
+        
+        if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
+          let shortName = profileName.substring(0, 12);
+          ctx.font = '10px Arial';
+          ctx.fillStyle = textColor;
+          ctx.globalAlpha = 0.7;
+          ctx.fillText(shortName, canvas.width / 2, qrSize + 55);
+          ctx.globalAlpha = 1;
+        }
+        
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          resolve(url);
+        }, 'image/png', 0.9);
+        
+        URL.revokeObjectURL(svgUrl);
+      };
+      img.src = svgUrl;
+    });
+  } catch (error) {
+    console.error("Error creating thumbnail:", error);
+    resolve(null);
   }
 };
 
@@ -131,7 +211,6 @@ const ManageCards = () => {
   });
   const [qrImages, setQrImages] = useState({});
   const [downloadingDate, setDownloadingDate] = useState(null);
-  const [useSVG, setUseSVG] = useState(false);
   
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [qrBgColor, setQrBgColor] = useState("transparent");
@@ -171,7 +250,7 @@ const ManageCards = () => {
       
       setStats({ total, activated, inactive });
       
-      await generateHighQualityQRCodes(allCards);
+      await generateQRCodes(allCards);
       
     } catch (err) {
       console.error(err);
@@ -181,21 +260,20 @@ const ManageCards = () => {
     }
   };
 
-  const generateHighQualityQRCodes = async (cardsList = cards) => {
+  const generateQRCodes = async (cardsList = cards) => {
     const qrPromises = cardsList.map(async (card) => {
       if (card.qrUrl) {
         try {
-          const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 800);
-          
-          const finalImageUrl = await addTextToHighResPNG(
-            qr, 
-            card.activationCode, 
+          const thumbnailQR = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 400);
+          const thumbnailUrl = await generateThumbnailPNG(
+            thumbnailQR,
+            card.activationCode,
             card.owner?.name || card.profile?.name || '',
             textColor,
             qrBgColor
           );
           
-          return { cardId: card._id, imageUrl: finalImageUrl };
+          return { cardId: card._id, imageUrl: thumbnailUrl };
         } catch (err) {
           console.error(`Error generating QR for ${card.cardId}:`, err);
           return { cardId: card._id, imageUrl: null };
@@ -214,7 +292,7 @@ const ManageCards = () => {
 
   useEffect(() => {
     if (cards.length > 0) {
-      generateHighQualityQRCodes();
+      generateQRCodes();
     }
   }, [qrBgColor, qrDotsColor, textColor]);
 
@@ -279,8 +357,8 @@ const ManageCards = () => {
       return;
     }
     
-    const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 600);
-    const previewUrl = await addTextToHighResPNG(
+    const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 2000);
+    const previewUrl = await addTextToUltraHighResPNG(
       qr, 
       card.activationCode, 
       card.owner?.name || card.profile?.name || '',
@@ -288,7 +366,7 @@ const ManageCards = () => {
       qrBgColor
     );
 
-    const win = window.open("", "_blank", "width=800,height=900");
+    const win = window.open("", "_blank", "width=1200,height=1400");
     win.document.write(`
       <!DOCTYPE html>
       <html>
@@ -314,7 +392,7 @@ const ManageCards = () => {
             margin-bottom: 30px;
           }
           .qr-container img {
-            max-width: 600px;
+            max-width: 800px;
             width: 100%;
             height: auto;
           }
@@ -342,11 +420,22 @@ const ManageCards = () => {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(0,0,0,0.7);
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 12px;
+            background: rgba(0,0,0,0.8);
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 13px;
             color: #4ade80;
+            font-weight: bold;
+          }
+          .resolution-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #fbbf24;
           }
         </style>
       </head>
@@ -359,7 +448,10 @@ const ManageCards = () => {
           <h2>${card.activationCode}</h2>
         </div>
         <div class="quality-badge">
-          📸 High Resolution PNG
+          📸 ULTRA HD PNG (2000x2000)
+        </div>
+        <div class="resolution-badge">
+          🔍 Zoom in - Minimal pixelation at 400% zoom
         </div>
       </body>
       </html>
@@ -373,8 +465,8 @@ const ManageCards = () => {
     }
     
     try {
-      const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 1200);
-      const finalImageUrl = await addTextToHighResPNG(
+      const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 4000);
+      const finalImageUrl = await addTextToUltraHighResPNG(
         qr, 
         card.activationCode, 
         card.owner?.name || card.profile?.name || '',
@@ -435,20 +527,20 @@ const ManageCards = () => {
 
     try {
       const zip = new JSZip();
-      const folderName = `cards-${date}-highres`;
+      const folderName = `cards-${date}-ultra-hd-4000px`;
       const folder = zip.folder(folderName);
 
-      alert(`Downloading ${validCards.length} high-quality cards. Please wait...`);
+      alert(`📥 Generating ${validCards.length} ULTRA HD PNGs (4000x4000px)...\nFile size will be larger but ZOOM WON'T BREAK THE QR!`);
 
-      const chunkSize = 3;
+      const chunkSize = 2;
       const results = [];
 
       for (let i = 0; i < validCards.length; i += chunkSize) {
         const chunk = validCards.slice(i, i + chunkSize);
         const chunkPromises = chunk.map(async (card) => {
           try {
-            const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 1200);
-            const finalImageUrl = await addTextToHighResPNG(
+            const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 4000);
+            const finalImageUrl = await addTextToUltraHighResPNG(
               qr, 
               card.activationCode, 
               card.owner?.name || card.profile?.name || '',
@@ -478,7 +570,7 @@ const ManageCards = () => {
 
       const link = document.createElement('a');
       link.href = zipUrl;
-      link.download = `all-cards-${date}-highres.zip`;
+      link.download = `all-cards-${date}-4000px-ultra-hd.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -488,7 +580,7 @@ const ManageCards = () => {
       const successful = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
 
-      alert(`Download complete!\n✅ Successful: ${successful}\n❌ Failed: ${failed}\n📐 Format: High Resolution PNG\n🔍 Perfect quality, no pixelation!`);
+      alert(`✅ Download Complete!\n\n📦 Successful: ${successful}\n❌ Failed: ${failed}\n📐 Resolution: 4000x4000px (ULTRA HD)\n🎯 Format: PNG\n🔍 Even at 400% zoom, QR remains readable!\n💾 File size is larger but quality is MAXIMUM!`);
 
     } catch (error) {
       console.error("Error in bulk download:", error);
@@ -598,7 +690,7 @@ const ManageCards = () => {
 
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-full overflow-x-hidden">
-      {/* HEADER - Responsive */}
+      {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6">
         <div className="w-full lg:w-auto text-center lg:text-left">
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">Manage NFC Cards</h2>
@@ -611,7 +703,6 @@ const ManageCards = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-stretch sm:items-center">
-          {/* COLOR CUSTOMIZATION BUTTON */}
           <button
             onClick={() => setShowColorPicker(!showColorPicker)}
             className="px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center gap-2 text-white hover:shadow-lg transition-all cursor-pointer text-sm sm:text-base"
@@ -623,7 +714,6 @@ const ManageCards = () => {
             <span className="xs:hidden">Colors</span>
           </button>
 
-          {/* SEARCH BAR */}
           <form onSubmit={handleSearch} className="relative w-full sm:w-56">
             <div className="relative">
               <input
@@ -650,7 +740,6 @@ const ManageCards = () => {
             </div>
           </form>
 
-          {/* Date Picker */}
           <div className="relative w-full sm:w-auto">
             <input
               type="date"
@@ -665,7 +754,6 @@ const ManageCards = () => {
             </div>
           </div>
 
-          {/* Create Button */}
           <Link
             to="/api/cards/bulk"
             className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg text-sm sm:text-base w-full sm:w-auto"
@@ -695,19 +783,12 @@ const ManageCards = () => {
                 <div className="flex flex-col sm:flex-row items-center gap-3">
                   <HexColorPicker color={qrBgColor === 'transparent' ? '#ffffff' : qrBgColor} onChange={(color) => setQrBgColor(color)} />
                   <div className="flex flex-row sm:flex-col gap-2 mt-3 sm:mt-0">
-                    <button onClick={() => setQrBgColor("transparent")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700">
-                      Transparent
+                    <button onClick={() => setQrBgColor("transparent")} className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700">Transparent</button>
+                    <button onClick={() => setQrBgColor("#ffffff")} className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-white border border-gray-600 rounded"></div>White
                     </button>
-                    <button onClick={() => setQrBgColor("#ffffff")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-white border border-gray-600 rounded"></div>
-                      White
-                    </button>
-                    <button onClick={() => setQrBgColor("#000000")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-black border border-gray-600 rounded"></div>
-                      Black
+                    <button onClick={() => setQrBgColor("#000000")} className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-black border border-gray-600 rounded"></div>Black
                     </button>
                   </div>
                 </div>
@@ -718,20 +799,14 @@ const ManageCards = () => {
                 <div className="flex flex-col sm:flex-row items-center gap-3">
                   <HexColorPicker color={qrDotsColor} onChange={setQrDotsColor} />
                   <div className="flex flex-row sm:flex-col gap-2 mt-3 sm:mt-0">
-                    <button onClick={() => setQrDotsColor("#000000")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-black rounded"></div>
-                      Black
+                    <button onClick={() => setQrDotsColor("#000000")} className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-black rounded"></div>Black
                     </button>
-                    <button onClick={() => setQrDotsColor("#E1C48A")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
-                      Gold
+                    <button onClick={() => setQrDotsColor("#E1C48A")} className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>Gold
                     </button>
-                    <button onClick={() => setQrDotsColor("#3B82F6")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                      Blue
+                    <button onClick={() => setQrDotsColor("#3B82F6")} className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-blue-500 rounded"></div>Blue
                     </button>
                   </div>
                 </div>
@@ -742,27 +817,21 @@ const ManageCards = () => {
                 <div className="flex flex-col sm:flex-row items-center gap-3">
                   <HexColorPicker color={textColor} onChange={setTextColor} />
                   <div className="flex flex-row sm:flex-col gap-2 mt-3 sm:mt-0">
-                    <button onClick={() => setTextColor("#000000")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-black rounded"></div>
-                      Black
+                    <button onClick={() => setTextColor("#000000")} className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-black rounded"></div>Black
                     </button>
-                    <button onClick={() => setTextColor("#E1C48A")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
-                      Gold
+                    <button onClick={() => setTextColor("#E1C48A")} className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>Gold
                     </button>
-                    <button onClick={() => setTextColor("#ffffff")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-white rounded"></div>
-                      White
+                    <button onClick={() => setTextColor("#ffffff")} className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-white rounded"></div>White
                     </button>
                   </div>
                 </div>
               </div>
 
               <div className="pt-4 border-t border-gray-700">
-                <p className="text-sm text-gray-400 text-center mb-3">Live Preview</p>
+                <p className="text-sm text-gray-400 text-center mb-3">Live Preview (4000px Ultra HD PNG)</p>
                 <div className="bg-gray-800 rounded-lg p-4 flex justify-center">
                   <div className="w-32 h-32 rounded-lg flex items-center justify-center" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}>
                     <div className="w-24 h-24 flex items-center justify-center">
@@ -779,66 +848,41 @@ const ManageCards = () => {
                     </div>
                   </div>
                 </div>
-                <p className="text-center text-xs mt-2" style={{ color: textColor }}>
-                  Code: ABC123XYZ
-                </p>
+                <p className="text-center text-xs mt-2" style={{ color: textColor }}>Code: ABC123XYZ</p>
               </div>
             </div>
 
             <div className="mt-6 flex gap-3">
-              <button onClick={() => setShowColorPicker(false)}
-                className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors">
-                Close
-              </button>
-              <button onClick={() => setShowColorPicker(false)}
-                className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-lg text-white transition-colors cursor-pointer">
-                Apply Colors
-              </button>
+              <button onClick={() => setShowColorPicker(false)} className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors">Close</button>
+              <button onClick={() => setShowColorPicker(false)} className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-lg text-white transition-colors cursor-pointer">Apply Colors</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* STATS CARDS - Responsive Grid */}
+      {/* STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 md:mb-8">
         <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-xs mb-1">Total Cards</p>
-              <p className="text-2xl font-bold">{stats.total}</p>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
-              <span className="text-indigo-400 text-lg">📋</span>
-            </div>
+            <div><p className="text-gray-400 text-xs mb-1">Total Cards</p><p className="text-2xl font-bold">{stats.total}</p></div>
+            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center"><span className="text-indigo-400 text-lg">📋</span></div>
           </div>
         </div>
-
         <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-xs mb-1">Activated</p>
-              <p className="text-2xl font-bold text-green-400">{stats.activated}</p>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-              <span className="text-green-400 text-lg">✓</span>
-            </div>
+            <div><p className="text-gray-400 text-xs mb-1">Activated</p><p className="text-2xl font-bold text-green-400">{stats.activated}</p></div>
+            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center"><span className="text-green-400 text-lg">✓</span></div>
           </div>
         </div>
-
         <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-xs mb-1">Inactive</p>
-              <p className="text-2xl font-bold text-yellow-400">{stats.inactive}</p>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
-              <span className="text-yellow-400 text-lg">⏸</span>
-            </div>
+            <div><p className="text-gray-400 text-xs mb-1">Inactive</p><p className="text-2xl font-bold text-yellow-400">{stats.inactive}</p></div>
+            <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center"><span className="text-yellow-400 text-lg">⏸</span></div>
           </div>
         </div>
       </div>
 
-      {/* MOBILE VIEW - Optimized for small screens */}
+      {/* MOBILE VIEW */}
       <div className="block lg:hidden">
         {filteredGroupedCards.length > 0 ? (
           filteredGroupedCards.map(([date, list]) => (
@@ -848,34 +892,14 @@ const ManageCards = () => {
                   <div className="flex items-center gap-2">
                     <span className="text-base">📅</span>
                     <span className="font-medium text-gray-300 text-sm">{new Date(date).toLocaleDateString("en-GB")}</span>
-                    <span className="text-xs bg-gray-700 px-2 py-0.5 rounded-full text-gray-300">
-                      {list.length}
-                    </span>
+                    <span className="text-xs bg-gray-700 px-2 py-0.5 rounded-full text-gray-300">{list.length}</span>
                   </div>
-                  <button
-                    onClick={() => downloadAllByDate(date, list)}
-                    disabled={downloadingDate === date}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium w-full sm:w-auto justify-center ${
-                      downloadingDate === date
-                        ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                        : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
-                    }`}
-                  >
-                    {downloadingDate === date ? (
-                      <>
-                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Downloading...</span>
-                      </>
-                    ) : (
-                      <>
-                        <FiDownloadCloud size={12} />
-                        <span>Download All ({list.length})</span>
-                      </>
-                    )}
+                  <button onClick={() => downloadAllByDate(date, list)} disabled={downloadingDate === date}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium w-full sm:w-auto justify-center ${downloadingDate === date ? 'bg-gray-600 cursor-not-allowed opacity-50' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'}`}>
+                    {downloadingDate === date ? (<><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Downloading...</span></>) : (<><FiDownloadCloud size={12} /><span>Download All ({list.length})</span></>)}
                   </button>
                 </div>
               </div>
-
               <div className="space-y-3">
                 {list.map((card) => (
                   <div key={card._id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50">
@@ -889,24 +913,13 @@ const ManageCards = () => {
                         <p className="text-xs text-indigo-400 font-mono mt-1 break-all">{card.activationCode}</p>
                       </div>
                       <div className="flex-shrink-0">
-                        <div className="w-14 h-14 bg-white p-1.5 rounded-lg shadow-md overflow-hidden">
-                          <QRThumbnail cardId={card._id} />
-                        </div>
+                        <div className="w-14 h-14 bg-white p-1.5 rounded-lg shadow-md overflow-hidden"><QRThumbnail cardId={card._id} /></div>
                       </div>
                     </div>
                     <div className="flex gap-2 mt-3 pt-2 border-t border-gray-700/50">
-                      <button onClick={() => previewQR(card)} disabled={!card.qrUrl}
-                        className="flex-1 py-1.5 bg-blue-500/20 rounded-lg text-blue-400 text-xs flex items-center justify-center gap-1">
-                        <FaEye size={12} /> Preview
-                      </button>
-                      <button onClick={() => downloadQR(card)} disabled={!card.qrUrl}
-                        className="flex-1 py-1.5 bg-cyan-500/20 rounded-lg text-cyan-400 text-xs flex items-center justify-center gap-1">
-                        <FaDownload size={12} /> Download
-                      </button>
-                      <Link to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`} target="_blank"
-                        className="flex-1 py-1.5 bg-indigo-500/20 rounded-lg text-indigo-400 text-xs flex items-center justify-center gap-1">
-                        View
-                      </Link>
+                      <button onClick={() => previewQR(card)} disabled={!card.qrUrl} className="flex-1 py-1.5 bg-blue-500/20 rounded-lg text-blue-400 text-xs flex items-center justify-center gap-1"><FaEye size={12} /> Preview</button>
+                      <button onClick={() => downloadQR(card)} disabled={!card.qrUrl} className="flex-1 py-1.5 bg-cyan-500/20 rounded-lg text-cyan-400 text-xs flex items-center justify-center gap-1"><FaDownload size={12} /> Download</button>
+                      <Link to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`} target="_blank" className="flex-1 py-1.5 bg-indigo-500/20 rounded-lg text-indigo-400 text-xs flex items-center justify-center gap-1">View</Link>
                     </div>
                   </div>
                 ))}
@@ -914,143 +927,44 @@ const ManageCards = () => {
             </div>
           ))
         ) : (
-          <div className="p-6 text-center bg-gray-800/30 rounded-xl">
-            <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-            <p className="text-gray-400 text-sm">No cards available</p>
-          </div>
+          <div className="p-6 text-center bg-gray-800/30 rounded-xl"><FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" /><p className="text-gray-400 text-sm">No cards available</p></div>
         )}
-        
         {totalPages > 1 && <Pagination />}
       </div>
 
-      {/* DESKTOP/TABLET TABLE VIEW - Hidden on mobile */}
+      {/* DESKTOP/TABLET TABLE VIEW */}
       <div className="hidden lg:block">
         <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
           <table className="w-full min-w-[800px]">
             <thead className="bg-gray-800/50 border-b border-gray-700/50">
-              <tr>
-                <th className="p-3 text-left text-xs font-medium text-gray-300">✓</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300">Status</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300">Owner</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300">Activation</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300">Created</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300">QR</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300">Preview</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300">Download</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300">Profile</th>
-              </tr>
+              <tr><th className="p-3 text-left text-xs font-medium text-gray-300">✓</th><th className="p-3 text-left text-xs font-medium text-gray-300">Status</th><th className="p-3 text-left text-xs font-medium text-gray-300">Owner</th><th className="p-3 text-left text-xs font-medium text-gray-300">Activation</th><th className="p-3 text-left text-xs font-medium text-gray-300">Created</th><th className="p-3 text-center text-xs font-medium text-gray-300">QR</th><th className="p-3 text-center text-xs font-medium text-gray-300">Preview</th><th className="p-3 text-center text-xs font-medium text-gray-300">Download</th><th className="p-3 text-center text-xs font-medium text-gray-300">Profile</th></tr>
             </thead>
-
             <tbody className="divide-y divide-gray-700/30">
               {filteredGroupedCards.length > 0 ? (
                 filteredGroupedCards.map(([date, list]) => (
                   <React.Fragment key={date}>
-                    <tr className="bg-gray-800/30">
-                      <td colSpan="9" className="p-3">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <span>📅</span>
-                            <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
-                            <span className="text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">
-                              {list.length} cards
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => downloadAllByDate(date, list)}
-                            disabled={downloadingDate === date}
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${
-                              downloadingDate === date
-                                ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                                : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg'
-                            }`}
-                          >
-                            {downloadingDate === date ? (
-                              <>
-                                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                <span>Downloading...</span>
-                              </>
-                            ) : (
-                              <>
-                                <FiDownloadCloud size={14} />
-                                <span>Download All ({list.length})</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-
+                    <tr className="bg-gray-800/30"><td colSpan="9" className="p-3"><div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2"><div className="flex items-center gap-2"><span>📅</span><span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span><span className="text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">{list.length} cards</span></div><button onClick={() => downloadAllByDate(date, list)} disabled={downloadingDate === date} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${downloadingDate === date ? 'bg-gray-600 cursor-not-allowed opacity-50' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg'}`}>{downloadingDate === date ? (<><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Downloading...</span></>) : (<><FiDownloadCloud size={14} /><span>Download All ({list.length})</span></>)}</button></div></td></tr>
                     {list.map((card) => (
                       <tr key={card._id} className="hover:bg-gray-800/20 transition-colors">
-                        <td className="p-3">
-                          <input checked={card.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" />
-                        </td>
-                        <td className="p-3">
-                          <StatusBadge active={card.isActivated} />
-                        </td>
-                        <td className="p-3">
-                          <span className="text-sm truncate block max-w-[150px]" title={card.owner?.name}>
-                            {card.owner?.name || "—"}
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <div className="font-mono text-sm text-indigo-400 truncate max-w-[100px]" title={card.activationCode}>
-                            {card.activationCode}
-                          </div>
-                        </td>
-                        <td className="p-3 text-gray-400 text-sm whitespace-nowrap">
-                          {new Date(card.activatedAt).toLocaleDateString()}
-                        </td>
-                        <td className="p-3 text-center">
-                          <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mx-auto shadow-md">
-                            <QRThumbnail cardId={card._id} />
-                          </div>
-                        </td>
-                        <td className="p-3 text-center">
-                          <button
-                            onClick={() => previewQR(card)}
-                            disabled={!card.qrUrl}
-                            className="text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50"
-                          >
-                            <FaEye className="w-4 h-4" />
-                          </button>
-                        </td>
-                        <td className="p-3 text-center">
-                          <button
-                            onClick={() => downloadQR(card)}
-                            disabled={!card.qrUrl}
-                            className="bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition-all"
-                          >
-                            <FaDownload className="w-3 h-3 sm:w-4 sm:h-4" />
-                          </button>
-                        </td>
-                        <td className="p-3 text-center">
-                          <Link 
-                            to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
-                            className="text-indigo-400 hover:text-indigo-300 transition text-xs font-medium hover:underline"
-                            target="_blank"
-                          >
-                            View
-                          </Link>
-                        </td>
+                        <td className="p-3"><input checked={card.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" /></td>
+                        <td className="p-3"><StatusBadge active={card.isActivated} /></td>
+                        <td className="p-3"><span className="text-sm truncate block max-w-[150px]" title={card.owner?.name}>{card.owner?.name || "—"}</span></td>
+                        <td className="p-3"><div className="font-mono text-sm text-indigo-400 truncate max-w-[100px]" title={card.activationCode}>{card.activationCode}</div></td>
+                        <td className="p-3 text-gray-400 text-sm whitespace-nowrap">{new Date(card.activatedAt).toLocaleDateString()}</td>
+                        <td className="p-3 text-center"><div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mx-auto shadow-md"><QRThumbnail cardId={card._id} /></div></td>
+                        <td className="p-3 text-center"><button onClick={() => previewQR(card)} disabled={!card.qrUrl} className="text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50"><FaEye className="w-4 h-4" /></button></td>
+                        <td className="p-3 text-center"><button onClick={() => downloadQR(card)} disabled={!card.qrUrl} className="bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition-all"><FaDownload className="w-3 h-3 sm:w-4 sm:h-4" /></button></td>
+                        <td className="p-3 text-center"><Link to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`} className="text-indigo-400 hover:text-indigo-300 transition text-xs font-medium hover:underline" target="_blank">View</Link></td>
                       </tr>
                     ))}
                   </React.Fragment>
                 ))
               ) : (
-                <tr>
-                  <td colSpan="9" className="p-6 text-center">
-                    <div className="text-gray-400">
-                      <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
-                      <p className="text-sm">No cards available</p>
-                    </div>
-                  </td>
-                </tr>
+                <tr><td colSpan="9" className="p-6 text-center"><div className="text-gray-400"><FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" /><p className="text-sm">No cards available</p></div></td></tr>
               )}
             </tbody>
           </table>
         </div>
-        
         {totalPages > 1 && <Pagination />}
       </div>
     </div>

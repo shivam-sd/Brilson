@@ -101,6 +101,7 @@ import ForgotPassword from "./Pages/ForgotPassword/ForgotPassword";
 import VerifyResetOtp from "./Pages/ForgotPassword/VerifyResetOtp";
 import ResetPassword from "./Pages/ForgotPassword/ResetPassword";
 import HelpCenter from "./Pages/HelpCenter";
+import AboutPageAdmin from "./Admin/LandingPage/AboutPageAdmin";
 
 
 
@@ -451,6 +452,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <TransformNetworkAdmin />
+              </ProtectedRoute>
+            }
+            />
+
+          <Route
+            path="/admin/landing/about-page"
+            element={
+              <ProtectedRoute>
+                <AboutPageAdmin />
               </ProtectedRoute>
             }
             />
