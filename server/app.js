@@ -50,6 +50,7 @@ const GoogleReviewRouter = require("./routes/GoogleReview.routes");
 const ServiceLayoutRouter = require("./routes/ServiceLayout.routes");
 const authRoutesResetPassword = require("./routes/auth.routes");
 const AboutPageRouter = require("./routes/FooterSection/AboutPage.Routes");
+const PrivacyPolicyRouter = require("./routes/FooterSection/PrivacyPolicy.route");
 
 
 // Runtime config
@@ -135,7 +136,7 @@ app.use(fileUpload({
 app.use("/", SharePublicProfilerouter);
 app.use("/api/auth", authRoutesResetPassword);
 app.use("/api/about", AboutPageRouter);
-
+app.use("/api/privacy-policy", PrivacyPolicyRouter);
   
 
   app.get("/", (req, res) => {

@@ -86,7 +86,7 @@ const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#0
     const originalWidth = parseInt(svgElement.getAttribute('width') || '800');
     const originalHeight = parseInt(svgElement.getAttribute('height') || '800');
     
-    const textHeight = 140;
+    const textHeight = 160;
     const newHeight = originalHeight + textHeight;
     
     const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -196,7 +196,7 @@ const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColo
           if (displayName.length > 30) {
             displayName = displayName.substring(0, 27) + '...';
           }
-          ctx.font = '28px Arial, sans-serif';
+          ctx.font = '35px Arial, sans-serif';
           ctx.fillStyle = textColor;
           ctx.globalAlpha = 0.8;
           ctx.fillText(displayName, canvas.width / 2, qrSize + 85);

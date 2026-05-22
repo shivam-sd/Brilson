@@ -57,7 +57,7 @@ const addTextToUltraHighResPNG = async (qrCode, activationCode, profileName, tex
         
         const qrSize = 4000;
         // INCREASED TEXT AREA HEIGHT - More gap between QR and text
-        const textHeight = 500;
+        const textHeight = 900;
         canvas.width = qrSize;
         canvas.height = qrSize + textHeight;
         
@@ -75,13 +75,13 @@ const addTextToUltraHighResPNG = async (qrCode, activationCode, profileName, tex
         
         // === GAP CONTROL - Increased spacing ===
         // Line 1: 120px gap from QR (instead of 60px)
-        const line1Y = qrSize + 120;
+        const line1Y = qrSize + 150;
         // Activation Code position
-        const codeY = qrSize + 200;
+        const codeY = qrSize + 300;
         // Line 2: Below activation code
-        const line2Y = qrSize + 300;
+        const line2Y = qrSize + 350;
         // Profile name position
-        const nameY = qrSize + 380;
+        const nameY = qrSize + 550;
         
         // Draw first separator line
         ctx.strokeStyle = textColor;
@@ -93,7 +93,7 @@ const addTextToUltraHighResPNG = async (qrCode, activationCode, profileName, tex
         ctx.stroke();
         
         // Draw activation code
-        ctx.font = 'bold 140px "Courier New", monospace';
+        ctx.font = 'bold 180px "Courier New", monospace';
         ctx.fillStyle = textColor;
         ctx.globalAlpha = 1;
         ctx.textAlign = 'center';
@@ -114,7 +114,7 @@ const addTextToUltraHighResPNG = async (qrCode, activationCode, profileName, tex
           if (displayName.length > 35) {
             displayName = displayName.substring(0, 32) + '...';
           }
-          ctx.font = '120px Arial, sans-serif';
+          ctx.font = '160px Arial, sans-serif';
           ctx.fillStyle = textColor;
           ctx.globalAlpha = 0.8;
           ctx.fillText(displayName, canvas.width / 2, nameY);
