@@ -18,14 +18,11 @@ import { MdManageAccounts } from "react-icons/md";
 import { FaLuggageCart } from "react-icons/fa";
 import { MdReviews } from "react-icons/md";
 
-
-
 const AdminLayout = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[#0D0F17] text-white relative">
-
+    <div className="flex h-screen bg-[#0D0F17] text-white overflow-hidden">
       {/* MOBILE TOPBAR */}
       <div className="md:hidden w-full fixed top-0 left-0 bg-[#151822] px-5 py-4 flex justify-between items-center z-50 border-b border-white/10">
         <h2 className="text-2xl font-bold">
@@ -37,8 +34,8 @@ const AdminLayout = () => {
       </div>
 
       {/* SIDEBAR FOR DESKTOP */}
-      <aside className="relative z-50 w-72 bg-[#151822] border-r border-white/10 px-6 py-10 hidden md:flex flex-col">
-        <h2 className="text-4xl font-extrabold tracking-wide mb-10">
+      <aside className="relative z-50 w-72 bg-[#151822] border-r border-white/10 px-6 py-10 hidden md:flex flex-col h-full overflow-y-auto">
+        <h2 className="text-3xl font-extrabold tracking-wide mb-10">
           Brilson <span className="text-cyan-400">Admin</span>
         </h2>
 
@@ -78,14 +75,12 @@ const AdminLayout = () => {
             <MdManageAccounts size={25} /> Manage Cards
           </NavLink>
 
-
           <NavLink
             to="manage-parking-tag"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <FaLuggageCart size={22} /> Manage Parking Tag
           </NavLink>
-
 
           <NavLink
             to="manage-google-reviews"
@@ -94,8 +89,6 @@ const AdminLayout = () => {
             <MdReviews size={22} /> Manage Google Reviews
           </NavLink>
 
-
-
           <NavLink
             to="selling-overview"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
@@ -103,7 +96,6 @@ const AdminLayout = () => {
             <MdAnalytics size={20} /> Selling Overview
           </NavLink>
 
-          
           <NavLink
             to="orders/invoices"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
@@ -118,7 +110,6 @@ const AdminLayout = () => {
             <FiSettings size={20} /> Landing Page Content
           </NavLink>
 
-
           <NavLink
             to="payment/gateway/isactive"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
@@ -126,15 +117,12 @@ const AdminLayout = () => {
             <RiSecurePaymentFill size={20} /> Payment Gateway
           </NavLink>
 
-
           <NavLink
             to="setting/config"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <FiSettings size={20} /> Settings
           </NavLink>
-
-
         </nav>
 
         <div className="mt-auto">
@@ -160,10 +148,11 @@ const AdminLayout = () => {
         </div>
 
         {/* MOBILE MENU */}
-        <nav className="flex flex-col gap-6 text-lg">
-         <NavLink
+        <nav className="flex flex-col gap-6 text-[14px]">
+          <NavLink
             to="/admindashboard"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <FiHome size={20} /> Dashboard
           </NavLink>
@@ -171,6 +160,7 @@ const AdminLayout = () => {
           <NavLink
             to="products/list"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <FiPackage size={20} /> Products
           </NavLink>
@@ -178,6 +168,7 @@ const AdminLayout = () => {
           <NavLink
             to="orders/list"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <FiShoppingBag size={20} /> Orders
           </NavLink>
@@ -185,6 +176,7 @@ const AdminLayout = () => {
           <NavLink
             to="customers/list"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <FiUsers size={20} /> Customers
           </NavLink>
@@ -192,39 +184,39 @@ const AdminLayout = () => {
           <NavLink
             to="manage-cards"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <MdManageAccounts size={25} /> Manage Cards
           </NavLink>
 
-
           <NavLink
             to="manage-parking-tag"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <FaLuggageCart size={22} /> Manage Parking Tag
           </NavLink>
 
-
           <NavLink
             to="manage-google-reviews"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <MdReviews size={22} /> Manage Google Reviews
-                      </NavLink>
-
-
+          </NavLink>
 
           <NavLink
             to="selling-overview"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <MdAnalytics size={20} /> Selling Overview
           </NavLink>
 
-          
           <NavLink
             to="orders/invoices"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <GrDocumentLocked size={20} /> Orders invoices
           </NavLink>
@@ -232,26 +224,26 @@ const AdminLayout = () => {
           <NavLink
             to="landing/page/content"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <FiSettings size={20} /> Landing Page Content
           </NavLink>
 
-
           <NavLink
             to="payment/gateway/isactive"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <RiSecurePaymentFill size={20} /> Payment Gateway
           </NavLink>
 
-
           <NavLink
             to="setting/config"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
           >
             <FiSettings size={20} /> Settings
           </NavLink>
-        
         </nav>
 
         <div className="mt-auto">
@@ -261,16 +253,17 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 px-4 sm:px-6 md:px-10 py-20 md:py-10 w-full">
+      {/* MAIN CONTENT - SCROLLABLE AREA */}
+      <main className="flex-1 flex flex-col h-full overflow-hidden">
         {/* TOPBAR (DESKTOP) */}
-        <div className="hidden md:flex justify-between items-center mb-10">
+        <div className="hidden md:flex justify-between items-center px-4 sm:px-6 md:px-10 py-4 bg-[#0D0F17] border-b border-white/10">
           <h2 className="text-3xl font-bold">Admin Panel</h2>
-          {/* <div className="w-10 h-10 rounded-full bg-cyan-400"></div> */}
         </div>
 
-        {/* PAGE CONTENT */}
-        <Outlet />
+        {/* SCROLLABLE PAGE CONTENT */}
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-10 py-6">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { FiPlus, FiAlertCircle, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiSearch, FiDownloadCloud } from "react-icons/fi";
 import { FaDownload, FaEye } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -56,7 +56,6 @@ const addTextToUltraHighResPNG = async (qrCode, activationCode, profileName, tex
         const ctx = canvas.getContext('2d');
         
         const qrSize = 4000;
-        // INCREASED TEXT AREA HEIGHT - More gap between QR and text
         const textHeight = 900;
         canvas.width = qrSize;
         canvas.height = qrSize + textHeight;
@@ -73,48 +72,35 @@ const addTextToUltraHighResPNG = async (qrCode, activationCode, profileName, tex
         
         ctx.drawImage(img, 0, 0, qrSize, qrSize);
         
-        // === GAP CONTROL - Increased spacing ===
-        // Line 1: 120px gap from QR (instead of 60px)
         const line1Y = qrSize + 150;
-        // Activation Code position
-        const codeY = qrSize + 300;
-        // Line 2: Below activation code
-        const line2Y = qrSize + 350;
-        // Profile name position
-        const nameY = qrSize + 550;
+        const codeY = qrSize + 350;
+        const line2Y = qrSize + 400;
+        const nameY = qrSize + 700;
         
-        // Draw first separator line
         ctx.strokeStyle = textColor;
         ctx.globalAlpha = 0.3;
-        // ctx.lineWidth = 8;
         ctx.beginPath();
         ctx.moveTo(200, line1Y);
-        // ctx.lineTo(canvas.width - 200, line1Y);
         ctx.stroke();
         
-        // Draw activation code
-        ctx.font = 'bold 180px "Courier New", monospace';
+        ctx.font = 'bold 300px "Courier New", monospace';
         ctx.fillStyle = textColor;
         ctx.globalAlpha = 1;
         ctx.textAlign = 'center';
         ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, codeY);
         
-        // Draw second separator line
         ctx.strokeStyle = textColor;
         ctx.globalAlpha = 0.3;
-        // ctx.lineWidth = 8;
         ctx.beginPath();
         ctx.moveTo(200, line2Y);
-        // ctx.lineTo(canvas.width - 200, line2Y);
         ctx.stroke();
         
-        // Draw profile name if exists
         if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
           let displayName = profileName;
           if (displayName.length > 35) {
             displayName = displayName.substring(0, 32) + '...';
           }
-          ctx.font = '160px Arial, sans-serif';
+          ctx.font = '250px Arial, sans-serif';
           ctx.fillStyle = textColor;
           ctx.globalAlpha = 0.8;
           ctx.fillText(displayName, canvas.width / 2, nameY);
@@ -169,7 +155,6 @@ const generateThumbnailPNG = async (qrCode, activationCode, profileName, textCol
         
         ctx.drawImage(img, 0, 0, qrSize, qrSize);
         
-        // Thumbnail text with gap
         ctx.font = 'bold 12px monospace';
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
@@ -211,6 +196,7 @@ const ManageCards = () => {
   });
   const [qrImages, setQrImages] = useState({});
   const [downloadingDate, setDownloadingDate] = useState(null);
+  const [generatingQR, setGeneratingQR] = useState(false);
   
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [qrBgColor, setQrBgColor] = useState("transparent");
@@ -224,11 +210,70 @@ const ManageCards = () => {
   
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  
+  const isGeneratingRef = useRef(false);
+  const currentPageRef = useRef(currentPage);
+
+  // Sirf current page ke cards ke liye QR generate karein
+  const generateQRCodesForCurrentPage = useCallback(async (cardsList) => {
+    if (!cardsList || cardsList.length === 0) return;
+    if (isGeneratingRef.current) return;
+    
+    isGeneratingRef.current = true;
+    setGeneratingQR(true);
+    
+    const qrMap = {};
+    
+    // Chunk size 5 - ek saath 5 QR generate honge
+    const chunkSize = 5;
+    
+    for (let i = 0; i < cardsList.length; i += chunkSize) {
+      // Check if we're still on the same page
+      if (currentPageRef.current !== currentPage) {
+        console.log("Page changed, stopping QR generation");
+        break;
+      }
+      
+      const chunk = cardsList.slice(i, i + chunkSize);
+      
+      await Promise.all(chunk.map(async (card) => {
+        if (card.qrUrl && !qrImages[card._id]) {
+          try {
+            const thumbnailQR = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 400);
+            const thumbnailUrl = await generateThumbnailPNG(
+              thumbnailQR,
+              card.activationCode,
+              card.owner?.name || card.profile?.name || '',
+              textColor,
+              qrBgColor
+            );
+            
+            qrMap[card._id] = thumbnailUrl;
+          } catch (err) {
+            console.error(`Error generating QR for ${card._id}:`, err);
+            qrMap[card._id] = null;
+          }
+        } else {
+          qrMap[card._id] = null;
+        }
+      }));
+      
+      // Update UI with current batch
+      setQrImages(prev => ({ ...prev, ...qrMap }));
+      
+      // Small delay to prevent UI freezing
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    
+    isGeneratingRef.current = false;
+    setGeneratingQR(false);
+  }, [qrDotsColor, qrBgColor, textColor, currentPage]);
 
   const fetchCards = async (page = 1, search = "") => {
     try {
       setLoading(true);
       setIsSearching(!!search);
+      currentPageRef.current = page;
       
       const url = `${import.meta.env.VITE_BASE_URL}/api/all/cards?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
       
@@ -250,7 +295,11 @@ const ManageCards = () => {
       
       setStats({ total, activated, inactive });
       
-      await generateQRCodes(allCards);
+      // Clear previous page QR images
+      setQrImages({});
+      
+      // Generate QR codes for current page only
+      await generateQRCodesForCurrentPage(allCards);
       
     } catch (err) {
       console.error(err);
@@ -260,39 +309,11 @@ const ManageCards = () => {
     }
   };
 
-  const generateQRCodes = async (cardsList = cards) => {
-    const qrPromises = cardsList.map(async (card) => {
-      if (card.qrUrl) {
-        try {
-          const thumbnailQR = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 400);
-          const thumbnailUrl = await generateThumbnailPNG(
-            thumbnailQR,
-            card.activationCode,
-            card.owner?.name || card.profile?.name || '',
-            textColor,
-            qrBgColor
-          );
-          
-          return { cardId: card._id, imageUrl: thumbnailUrl };
-        } catch (err) {
-          console.error(`Error generating QR for ${card.cardId}:`, err);
-          return { cardId: card._id, imageUrl: null };
-        }
-      }
-      return { cardId: card._id, imageUrl: null };
-    });
-
-    const qrResults = await Promise.all(qrPromises);
-    const qrMap = {};
-    qrResults.forEach(result => {
-      qrMap[result.cardId] = result.imageUrl;
-    });
-    setQrImages(qrMap);
-  };
-
+  // Color change par sirf current page ke QR regenerate karein
   useEffect(() => {
-    if (cards.length > 0) {
-      generateQRCodes();
+    if (cards.length > 0 && !loading) {
+      setQrImages({});
+      generateQRCodesForCurrentPage(cards);
     }
   }, [qrBgColor, qrDotsColor, textColor]);
 
@@ -301,21 +322,28 @@ const ManageCards = () => {
   }, []);
 
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
       setCurrentPage(page);
+      currentPageRef.current = page;
+      setQrImages({}); // Clear old QR images
       fetchCards(page, searchQuery);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
+    currentPageRef.current = 1;
+    setQrImages({});
     fetchCards(1, searchQuery);
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
     setCurrentPage(1);
+    currentPageRef.current = 1;
+    setQrImages({});
     fetchCards(1, "");
   };
 
@@ -634,6 +662,11 @@ const ManageCards = () => {
             (Search results)
           </span>
         )}
+        {generatingQR && (
+          <span className="ml-2 text-yellow-400 block sm:inline mt-1 sm:mt-0">
+            (Generating QR codes...)
+          </span>
+        )}
       </div>
       
       <div className="flex items-center gap-1 flex-wrap justify-center">
@@ -764,7 +797,7 @@ const ManageCards = () => {
         </div>
       </div>
 
-      {/* COLOR PICKER MODAL */}
+      {/* COLOR PICKER MODAL - Same as before */}
       {showColorPicker && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-center p-4">
           <div className="bg-gray-900 rounded-2xl max-w-md w-full border border-gray-700 shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
