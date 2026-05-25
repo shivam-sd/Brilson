@@ -724,7 +724,7 @@ const ManageCards = () => {
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-full overflow-x-hidden">
       {/* HEADER */}
-      <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6">
+      <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6 mt-11">
         <div className="w-full lg:w-auto text-center lg:text-left">
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">Manage NFC Cards</h2>
           <p className="text-gray-400 mt-1 text-xs sm:text-sm">

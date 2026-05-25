@@ -74,8 +74,21 @@ if (getConfig().cloudinary) {
 
 app.use("/public", SharePublicProfilerouter);
 
-app.use(express.static(path.join(__dirname, "dist")));
 
+
+app.use((req, res, next) => {
+  res.setHeader("Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate");
+
+    res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
+  next();
+
+})
+
+
+app.use(express.static(path.join(__dirname, "dist")));
 
   // Middlewares
   app.use(express.json());

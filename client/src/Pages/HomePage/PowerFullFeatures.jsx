@@ -32,7 +32,8 @@ useEffect(() => {
       setFeature(data.features);
       // console.log(res.data.data);
     }catch(err){
-      toast.error(err.response?.data.error || "Internal Issue Fetch PowerFull Data!")
+      // toast.error(err.response?.data.error || "Internal Issue Fetch PowerFull Data!")
+      console.log(err);
     }
   }
   fetchPowerFullFeatureData();

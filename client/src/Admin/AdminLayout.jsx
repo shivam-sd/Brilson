@@ -72,8 +72,15 @@ const AdminLayout = () => {
             to="manage-cards"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
-            <MdManageAccounts size={25} /> Manage Cards
+            <MdManageAccounts size={25} /> Manage Cards (QR)
           </NavLink>
+
+          {/* <NavLink
+            to="manage-cards/card"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+          >
+            <MdManageAccounts size={25} /> Manage Cards (CARD)
+          </NavLink> */}
 
           <NavLink
             to="manage-parking-tag"
@@ -186,8 +193,16 @@ const AdminLayout = () => {
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
             onClick={() => setOpen(false)}
           >
-            <MdManageAccounts size={25} /> Manage Cards
+            <MdManageAccounts size={25} /> Manage Cards (QR)
           </NavLink>
+
+          {/* <NavLink
+            to="manage-cards/card"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            onClick={() => setOpen(false)}
+          >
+            <MdManageAccounts size={25} /> Manage Cards (CARD)
+          </NavLink> */}
 
           <NavLink
             to="manage-parking-tag"

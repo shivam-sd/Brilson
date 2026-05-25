@@ -26,6 +26,7 @@ import AdminLayout from "./Admin/AdminLayout";
 import AdminAddProduct from "./Admin/ProductsPage/AdminAddProduct";
 import AdminEditProduct from "./Admin/ProductsPage/AdminEditProducts";
 import ManageCards from "./Admin/ManageCards";
+import ManageNFCCards from "./Admin/ManageNFCCard";
 import BulkCreateCardsModal from "./Admin/components.jsx/BulkCreateCardsModal";
 import ProtectedRoute from "./Admin/components.jsx/ProtectedRoute";
 import ActivateCard from "./Pages/ActivateCard";
@@ -302,6 +303,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ManageCards />
+                </ProtectedRoute>
+              }
+              />
+
+            <Route
+              path="manage-cards/card"
+              element={
+                <ProtectedRoute>
+                  <ManageNFCCards />
                 </ProtectedRoute>
               }
               />

@@ -17,7 +17,7 @@ const ChooseYourCard = () => {
           `${import.meta.env.VITE_BASE_URL}/api/admin/all/products`
         );
         
-        console.log("Products API Response:", res.data);
+        // console.log("Products API Response:", res.data);
         
         if (res.data?.allProducts && Array.isArray(res.data.allProducts)) {
           setProducts(res.data.allProducts);

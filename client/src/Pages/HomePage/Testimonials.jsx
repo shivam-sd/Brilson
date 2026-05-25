@@ -54,8 +54,8 @@ const Testimonials = () => {
           setTestimonials([]);
         }
       } catch (err) {
-        // console.error("Error fetching testimonials:", err);
-        toast.error("Failed to load testimonials");
+        console.error("Error fetching testimonials:", err);
+        // toast.error("Failed to load testimonials");
       } finally {
         setLoading(false);
       }

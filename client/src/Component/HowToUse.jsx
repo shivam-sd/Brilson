@@ -51,7 +51,7 @@ const HowToUse = () => {
         
       } catch(err) {
         console.error("Error fetching data:", err);
-        toast.error(err.response?.data?.err || "Internal Server Error");
+        // toast.error(err.response?.data?.err || "Internal Server Error");
       }
     };
     

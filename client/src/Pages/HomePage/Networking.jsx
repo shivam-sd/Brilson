@@ -21,7 +21,8 @@ useEffect(() => {
       setFeatures(features);
 
     }catch(err){
-      toast.error("Internal Server Error");
+      // toast.error("Internal Server Error");
+      console.log(err);
     }
   }
 
