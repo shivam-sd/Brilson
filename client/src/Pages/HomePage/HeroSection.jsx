@@ -137,8 +137,7 @@ useEffect(() => {
           <Link
   to="/products"
   className="group inline-flex items-center justify-center px-7 py-4 rounded-full
-  bg-blue-600 border-[4px] border-blue-700
-  shadow-[inset_6px_6px_10px_rgba(255,255,255,0.4),inset_-6px_-6px_10px_rgba(0,0,0,0.4),2px_2px_10px_rgba(0,0,0,0.3),-2px_-2px_10px_rgba(255,255,255,0.2)]
+  border-2 border-white/20 
   transition-all duration-200 active:scale-95"
 >
   {/* Text split into letters */}
@@ -164,8 +163,7 @@ useEffect(() => {
           <Link
   to="/how-it-works"
   className="group inline-flex items-center justify-center px-8 py-4 rounded-full
-  bg-blue-600 border-[4px] border-blue-700
-  shadow-[inset_6px_6px_10px_rgba(255,255,255,0.4),inset_-6px_-6px_10px_rgba(0,0,0,0.4),2px_2px_10px_rgba(0,0,0,0.3),-2px_-2px_10px_rgba(255,255,255,0.2)]
+ border-2 border-white/20
   transition-all duration-200 active:scale-95"
 >
   {/* Text split into letters */}
@@ -193,9 +191,7 @@ useEffect(() => {
         <div className="lg:hidden flex sm:flex-row justify-center gap-2 mb-16">
           <Link
   to="/products"
-  className="px-5 py-4 rounded-full
-  bg-blue-600 border-[4px] border-blue-700
-  
+  className="px-5 py-4 rounded-full border-2 border-white/20
   transition-all duration-200 active:scale-95"
 >
   {/* Text split into letters */}
@@ -219,8 +215,7 @@ useEffect(() => {
 
           <Link
   to="/how-it-works"
-  className="px-6 py-4 rounded-full
-  bg-blue-600 border-[4px] border-blue-700
+  className="px-6 py-4 rounded-full border-2 border-white/20
   transition-all duration-200 active:scale-95"
 >
 {/* Text split into letters */}

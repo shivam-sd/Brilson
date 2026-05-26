@@ -602,32 +602,17 @@ const CartPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden"
                   >
-                    <button
-                      onClick={() => setIsSummaryExpanded(!isSummaryExpanded)}
-                      className="w-full px-4 py-4 flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-3">
-                        <FiShoppingCart className="text-cyan-400" />
-                        <span className="font-bold">Order Summary</span>
-                        <span className="px-2 py-1 bg-cyan-500/10 text-cyan-400 rounded-full text-xs">
-                          ₹{total.toLocaleString()}
-                        </span>
-                      </div>
-                      {isSummaryExpanded ? (
-                        <FiChevronUp className="text-gray-400" />
-                      ) : (
-                        <FiChevronDown className="text-gray-400" />
-                      )}
-                    </button>
+                    
 
                     <AnimatePresence>
-                      {isSummaryExpanded && (
+                      
                         <motion.div
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
-                          className="px-4 pb-4"
+                          className="px-4 pb-4 p-2"
                         >
+                          <span className="font-bold text-xl">Order Summary</span>
                           <div className="space-y-3 pt-3 border-t border-white/10">
                             <div className="flex justify-between items-center">
                               <span className="text-gray-400">Subtotal</span>
@@ -701,7 +686,7 @@ const CartPage = () => {
                             </Link>
                           </div>
                         </motion.div>
-                      )}
+                    
                     </AnimatePresence>
                   </motion.div>
                 ) : (

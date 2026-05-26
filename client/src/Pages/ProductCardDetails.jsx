@@ -242,6 +242,7 @@ const ProductCardPreference = () => {
     {/* Buy Now Button */}
     <Link
       to={'/your-items'}
+      onClick={handleAddtoCart}
       className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg transition-all duration-300 shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 text-center"
     >
       <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
