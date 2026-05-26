@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { FiPlus, FiAlertCircle, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiSearch, FiDownloadCloud } from "react-icons/fi";
 import { FaDownload, FaEye } from "react-icons/fa";
+import { FiEye } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import QRCodeStyling from "qr-code-styling";
