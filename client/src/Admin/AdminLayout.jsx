@@ -75,12 +75,12 @@ const AdminLayout = () => {
             <MdManageAccounts size={25} /> Manage Cards (QR)
           </NavLink>
 
-          {/* <NavLink
+          <NavLink
             to="manage-cards/card"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
           >
             <MdManageAccounts size={25} /> Manage Cards (CARD)
-          </NavLink> */}
+          </NavLink>
 
           <NavLink
             to="manage-parking-tag"
