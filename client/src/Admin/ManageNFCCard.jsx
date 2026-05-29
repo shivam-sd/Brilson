@@ -6,6 +6,11 @@ import axios from "axios";
 import QRCodeStyling from "qr-code-styling";
 import JSZip from "jszip";
 import { HexColorPicker } from "react-colorful";
+import html2canvas from "html2canvas-pro";
+import NFCCardDesign from "./ManageNFCCard/NFCCardDesign";
+import CardPreviewModal from "./ManageNFCCard/CardPreviewModel";
+
+
 
 /* High Quality QR Generator for Card */
 const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent", size = 800) => {
@@ -31,7 +36,8 @@ const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent"
   });
 };
 
-/* NFC Card Generator - Exact match with UI Preview */
+
+/* NFC Card Generator - EXACT design as per your image */
 const generateNFCCard = async (
   activationCode,
   profileName,
@@ -45,111 +51,85 @@ const generateNFCCard = async (
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   
-  // Card dimensions (360:210 ratio)
+  // Card dimensions (credit card ratio)
   const cardWidth = size;
-  const cardHeight = Math.round(size / 1.714);
+  const cardHeight = Math.round(size / 1.6);
   canvas.width = cardWidth;
   canvas.height = cardHeight;
   
-  // Draw card background
+  // Card background
   ctx.fillStyle = cardBgColor;
   ctx.fillRect(0, 0, cardWidth, cardHeight);
   
-  // Draw gold border
+  // Gold border
   ctx.strokeStyle = "#E1C48A";
   ctx.lineWidth = Math.max(2, size / 600);
   ctx.strokeRect(size * 0.02, size * 0.02, cardWidth - (size * 0.04), cardHeight - (size * 0.04));
   
-  // Draw inner subtle border
-  ctx.strokeStyle = "rgba(225, 196, 138, 0.3)";
-  ctx.lineWidth = 1;
-  ctx.strokeRect(size * 0.03, size * 0.03, cardWidth - (size * 0.06), cardHeight - (size * 0.06));
-  
-  // Top Left - Brilson Logo (Gold circle with B)
-  const logoSize = Math.min(cardWidth * 0.1, 50);
+  // === B Logo (Top Left) ===
+  const logoSize = Math.min(cardWidth * 0.12, 60);
   const logoX = cardWidth * 0.05;
   const logoY = cardHeight * 0.08;
   
-  // Gold circle
   ctx.fillStyle = "#E1C48A";
   ctx.beginPath();
   ctx.arc(logoX + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
   ctx.fill();
   
-  // B letter in dark color
-  ctx.font = `bold ${Math.floor(logoSize * 0.55)}px "Poppins", Arial`;
   ctx.fillStyle = "#0a0a1a";
+  ctx.font = `bold ${Math.floor(logoSize * 0.6)}px Arial`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText("B", logoX + logoSize/2, logoY + logoSize/2);
   
-  // BRILSON text in gold
-  ctx.font = `bold ${Math.min(cardHeight * 0.055, 20)}px "Poppins", Arial`;
+  // === BRILSON text ===
   ctx.fillStyle = "#E1C48A";
+  ctx.font = `bold ${Math.min(cardHeight * 0.09, 32)}px Arial`;
   ctx.textAlign = "left";
-  ctx.fillText("BRILSON", logoX + logoSize + 12, logoY + logoSize * 0.65);
+  ctx.fillText("BRILSON", logoX + logoSize + 15, logoY + logoSize * 0.7);
   
-  // Divider line (gold)
-  ctx.beginPath();
-  ctx.moveTo(cardWidth * 0.05, logoY + logoSize + cardHeight * 0.025);
-  ctx.lineTo(cardWidth * 0.4, logoY + logoSize + cardHeight * 0.025);
-  ctx.strokeStyle = "#E1C48A";
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-  
-  // Profile Name - FIXED: Properly draw profile name
-  const nameY = logoY + logoSize + cardHeight * 0.065;
-  if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '' && profileName !== 'undefined') {
-    let displayName = profileName;
-    const maxNameLength = 18;
-    if (displayName.length > maxNameLength) {
-      displayName = displayName.substring(0, maxNameLength - 3) + '...';
-    }
-    ctx.font = `bold ${Math.min(cardHeight * 0.048, 18)}px "Poppins", Arial`;
-    ctx.fillStyle = cardTextColor;
-    ctx.fillText(displayName, cardWidth * 0.05, nameY);
-  } else {
-    // Default text if no profile name
-    ctx.font = `bold ${Math.min(cardHeight * 0.048, 18)}px "Poppins", Arial`;
-    ctx.fillStyle = cardTextColor + "80";
-    ctx.fillText("Card Owner", cardWidth * 0.05, nameY);
-  }
-  
-  // "PROFESSIONAL CARD" text (gold)
-  const professionalY = cardHeight * 0.72;
-  ctx.font = `${Math.min(cardHeight * 0.04, 14)}px "Poppins", Arial`;
+  // === NFC (Top Right) ===
   ctx.fillStyle = "#E1C48A";
-  ctx.fillText("PROFESSIONAL CARD", cardWidth * 0.05, professionalY);
+  ctx.font = `bold ${Math.min(cardHeight * 0.07, 24)}px Arial`;
+  ctx.textAlign = "right";
+  ctx.fillText("NFC", cardWidth - (cardWidth * 0.05), cardHeight * 0.12);
   
-  // "SMARTCARD" text
-  ctx.font = `${Math.min(cardHeight * 0.035, 11)}px Arial`;
-  ctx.fillStyle = cardTextColor + "80";
-  ctx.fillText("SMARTCARD", cardWidth * 0.05, professionalY + cardHeight * 0.035);
+  // === PROFESSIONAL CARD ===
+  ctx.fillStyle = "#E1C48A";
+  ctx.font = `${Math.min(cardHeight * 0.05, 18)}px Arial`;
+  ctx.textAlign = "left";
+  ctx.fillText("PROFESSIONAL CARD", cardWidth * 0.05, cardHeight * 0.38);
   
-  // Activation Code (bottom left) - FIXED: Properly draw activation code
-  const codeY = cardHeight - (cardHeight * 0.08);
-  ctx.font = `${Math.min(cardHeight * 0.04, 12)}px "Courier New", monospace`;
-  ctx.fillStyle = cardTextColor + "99";
-  // Format activation code to show properly
-  let displayCode = activationCode;
-  if (displayCode && displayCode.length > 16) {
-    displayCode = displayCode.substring(0, 14) + '...';
+  // === Profile Name ===
+  let displayName = "John Doe";
+  if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '' && profileName !== 'undefined') {
+    displayName = profileName;
+    if (displayName.length > 22) {
+      displayName = displayName.substring(0, 19) + '...';
+    }
   }
-
-  ctx.fillText(displayCode || "XXXX-XXXX-XXXX", cardWidth * 0.05, codeY);
-  console.log("Drawing Activation Code:", displayCode);
+  ctx.fillStyle = cardTextColor;
+  ctx.font = `bold ${Math.min(cardHeight * 0.06, 22)}px Arial`;
+  ctx.fillText(displayName, cardWidth * 0.05, cardHeight * 0.48);
   
-  // QR Code (bottom right)
-  const qrSize = Math.min(cardHeight * 0.3, 80);
+  // === ACTIVATION CODE: label ===
+  ctx.fillStyle = cardTextColor + "99";
+  ctx.font = `${Math.min(cardHeight * 0.035, 12)}px Arial`;
+  ctx.fillText("ACTIVATION CODE:", cardWidth * 0.05, cardHeight * 0.82);
+  
+  // === Activation Code ===
+  let displayCode = activationCode || "K3Y-A1B2-C3D4-E5F6";
+  ctx.fillStyle = cardTextColor;
+  ctx.font = `bold ${Math.min(cardHeight * 0.045, 16)}px "Courier New"`;
+  ctx.fillText(displayCode, cardWidth * 0.05, cardHeight * 0.9);
+  
+  // === QR Code (Right side) ===
+  const qrSize = Math.min(cardHeight * 0.32, 100);
   const qrX = cardWidth - qrSize - (cardWidth * 0.05);
-  const qrY = cardHeight - qrSize - (cardHeight * 0.06);
+  const qrY = (cardHeight - qrSize) / 2;
   
-  // Generate QR code
-  const safeSlug = activationCode;
-  const profileUrl = `${import.meta.env.VITE_DOMAIN}/`;
+  const profileUrl = `${import.meta.env.VITE_DOMAIN || window.location.origin}/public/profile/${profileSlug || activationCode}`;
   const qrCode = createHighQualityQR(profileUrl, qrDotsColor, qrBgColor, qrSize * 4);
-
-  console.log("Generating QR for URL:", profileSlug);
   
   const qrSvgString = await qrCode.getRawData("svg");
   const qrSvgText = await qrSvgString.text();
@@ -159,41 +139,27 @@ const generateNFCCard = async (
   
   await new Promise((resolve) => {
     qrImg.onload = () => {
-      // Draw white background for QR
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(qrX - 4, qrY - 4, qrSize + 8, qrSize + 8);
+      ctx.fillRect(qrX - 5, qrY - 5, qrSize + 10, qrSize + 10);
       
-      // Draw gold border around QR
       ctx.strokeStyle = "#E1C48A";
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(qrX - 4, qrY - 4, qrSize + 8, qrSize + 8);
+      ctx.lineWidth = 2;
+      ctx.strokeRect(qrX - 5, qrY - 5, qrSize + 10, qrSize + 10);
       
       ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
       resolve();
     };
+    qrImg.onerror = () => resolve();
     qrImg.src = qrUrl;
-    if (qrImg.complete) resolve();
   });
   
   URL.revokeObjectURL(qrUrl);
   
-  // NFC Enabled footer
-  const footerY = cardHeight - (cardHeight * 0.04);
-  
-  ctx.font = `${Math.min(cardHeight * 0.035, 11)}px Arial`;
+  // === Bottom BRILSON ===
   ctx.fillStyle = "#E1C48A";
-  ctx.textAlign = "left";
-  
-  // Draw checkmark
-  ctx.beginPath();
-  ctx.moveTo(cardWidth * 0.05, footerY - 4);
-  ctx.lineTo(cardWidth * 0.05 + 5, footerY);
-  ctx.lineTo(cardWidth * 0.05 + 10, footerY - 8);
-  ctx.strokeStyle = "#E1C48A";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  
-  ctx.fillText("NFC Enabled", cardWidth * 0.05 + 16, footerY);
+  ctx.font = `${Math.min(cardHeight * 0.03, 10)}px Arial`;
+  ctx.textAlign = "center";
+  ctx.fillText("BRILSON", cardWidth / 2, cardHeight - (cardHeight * 0.03));
   
   return canvas.toDataURL('image/png', 1.0);
 };
@@ -271,6 +237,12 @@ const ManageNFCCard = () => {
   const isGeneratingRef = useRef(false);
   const currentPageRef = useRef(currentPage);
 
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+const [selectedCard, setSelectedCard] = useState(null);
+
+const cardRef = useRef();
+
   // Generate card thumbnails for current page
   const generateCardsForCurrentPage = useCallback(async (cardsList) => {
     if (!cardsList || cardsList.length === 0) return;
@@ -331,6 +303,8 @@ const ManageNFCCard = () => {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
       });
+
+      console.log("Fetched cards data:", res.data);
       
       const allCards = res.data.allCards || [];
       setCards(allCards);
@@ -424,252 +398,173 @@ const ManageNFCCard = () => {
     ([date]) => !selectedDate || date === selectedDate
   );
 
-  const previewCard = async (card) => {
-  if (!card.qrUrl) {
-    alert("No QR URL available for this card");
-    return;
-  }
-  
-  console.log("Preview Card Data:", {
-    activationCode: card.activationCode,
-    profileName: card.owner?.name || card.profile?.name,
-    slug: card.activationCode
-  });
-  
-  const cardImageUrl = await generateNFCCard(
-    card.activationCode,
-    card.owner?.name || card.profile?.name || '',
-    card.activationCode,
-    qrDotsColor,
-    qrBgColor,
-    cardBgColor,
-    cardTextColor,
-    800
-  );
+  const previewCard = (card) => {
+  setSelectedCard(card);
+  setPreviewOpen(true);
+};
 
-  const win = window.open("", "_blank", "width=700,height=600");
-  win.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>NFC Card Preview - ${card.activationCode}</title>
-      <style>
-        body {
-          margin: 0;
-          background: #0b1220;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          font-family: Arial, sans-serif;
-          padding: 40px;
-          min-height: 100vh;
-        }
-        .card-container {
-          background: transparent;
-          padding: 20px;
-          border-radius: 20px;
-          margin-bottom: 30px;
-        }
-        .card-container img {
-          max-width: 450px;
-          width: 100%;
-          height: auto;
-          border-radius: 16px;
-          box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-        .info {
-          background: #1a1a2e;
-          padding: 20px 40px;
-          border-radius: 12px;
-          border: 1px solid #E1C48A;
-          text-align: center;
-        }
-        .info p {
-          color: #888;
-          font-size: 14px;
-          margin: 0 0 5px 0;
-        }
-        .info h2 {
-          color: #E1C48A;
-          font-size: 20px;
-          font-weight: bold;
-          margin: 0;
-          letter-spacing: 2px;
-        }
-        .badge {
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          background: rgba(0,0,0,0.8);
-          padding: 8px 15px;
-          border-radius: 10px;
-          font-size: 12px;
-          color: #E1C48A;
-        }
-        .details {
-          margin-top: 15px;
-          font-size: 12px;
-          color: #666;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="card-container">
-        <img src="${cardImageUrl}" alt="NFC Card" />
-      </div>
-      <div class="info">
-        <p>Activation Code</p>
-        <h2>${card.activationCode}</h2>
-        <p style="margin-top: 10px;">${card.owner?.name || card.profile?.name || '—'}</p>
-        <div class="details">
-          <p>🔗 Profile Link: ${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}</p>
-        </div>
-      </div>
-      <div class="badge">
-        💳 Brilson Professional NFC Card
-      </div>
-    </body>
-    </html>
-  `);
+// console.log("Card Data ", cards);
+
+
+const replaceOklchColors = (element) => {
+  if (!element) return;
+
+  const allElements = element.querySelectorAll("*");
+
+  allElements.forEach((el) => {
+    const styles = window.getComputedStyle(el);
+
+    [
+      "color",
+      "backgroundColor",
+      "borderColor",
+      "outlineColor",
+      "textDecorationColor",
+      "boxShadow",
+    ].forEach((prop) => {
+      const value = styles[prop];
+
+      if (value && value.includes("oklch")) {
+        // fallback color
+        el.style[prop] = "#000000";
+      }
+    });
+  });
 };
 
 
 
 
-// console.log("Card Data ", cards);
-
 const downloadCard = async (card) => {
-    if (!card.qrUrl) {
-      alert("No QR URL available for this card");
-      return;
-    }
-    
-    try {
-      const cardImageUrl = await generateNFCCard(
-        card.activationCode,
-        card.owner?.name || card.profile?.name || '',
-        card.activationCode,
-        qrDotsColor,
-        qrBgColor,
-        cardBgColor,
-        cardTextColor,
-        2000
-      );
-      
-      const link = document.createElement('a');
-      link.href = cardImageUrl;
+  try {
+    setSelectedCard(card);
+
+    setTimeout(async () => {
+      const element = document.getElementById("download-card");
+
+      if (!element) {
+        alert("Card element not found");
+        return;
+      }
+
+      // FIX OKLCH ISSUE
+      replaceOklchColors(element);
+
+      const canvas = await html2canvas(element, {
+        scale: 5,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null,
+        logging: false,
+        foreignObjectRendering: false,
+      });
+
+      const image = canvas.toDataURL("image/png", 1.0);
+
+      const link = document.createElement("a");
+
+      link.href = image;
+
       link.download = `brilson-card-${card.activationCode}.png`;
+
       document.body.appendChild(link);
+
       link.click();
+
       document.body.removeChild(link);
-      
-      if (!card.isDownloaded) {
+
+    }, 500);
+
+  } catch (error) {
+    console.error("Download Error:", error);
+
+    alert("Failed to download card");
+  }
+};
+
+
+ const downloadAllByDate = async (date, cardsList) => {
+  if (!cardsList || cardsList.length === 0) {
+    alert("No cards available for this date");
+    return;
+  }
+
+  const validCards = cardsList.filter(card => card.qrUrl);
+  
+  if (validCards.length === 0) {
+    alert("No cards with QR available for this date");
+    return;
+  }
+
+  setDownloadingDate(date);
+
+  try {
+    const zip = new JSZip();
+    const folderName = `brilson-cards-${date}`;
+    const folder = zip.folder(folderName);
+
+    alert(`📥 Generating ${validCards.length} NFC Cards...\nPlease wait while we create your cards.`);
+
+    const chunkSize = 3;
+    const results = [];
+
+    for (let i = 0; i < validCards.length; i += chunkSize) {
+      const chunk = validCards.slice(i, i + chunkSize);
+      const chunkPromises = chunk.map(async (card) => {
         try {
-          await axios.patch(
-            `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-              },
-            }
+          const cardImageUrl = await generateNFCCard(
+            card.activationCode,
+            card.owner?.name || card.profile?.name || 'Card Owner',
+            card.slug || card.activationCode,
+            qrDotsColor,
+            qrBgColor,
+            cardBgColor,
+            cardTextColor,
+            2000
           );
-          setCards((prev) =>
-            prev.map((c) =>
-              c._id === card._id ? { ...c, isDownloaded: true } : c
-            )
-          );
+          
+          const response = await fetch(cardImageUrl);
+          const blob = await response.blob();
+          const filename = `brilson-card-${card.activationCode}.png`;
+          folder.file(filename, blob);
+
+          return { success: true, card };
         } catch (error) {
-          console.error("Error marking as downloaded:", error);
+          console.error(`Error processing card ${card.activationCode}:`, error);
+          return { success: false, card };
         }
-      }
-    } catch (error) {
-      console.error("Error downloading card:", error);
-      alert("Error downloading card. Please try again.");
-    }
-  };
+      });
 
-  const downloadAllByDate = async (date, cardsList) => {
-    if (!cardsList || cardsList.length === 0) {
-      alert("No cards available for this date");
-      return;
+      const chunkResults = await Promise.all(chunkPromises);
+      results.push(...chunkResults);
     }
 
-    const validCards = cardsList.filter(card => card.qrUrl);
-    
-    if (validCards.length === 0) {
-      alert("No cards with QR available for this date");
-      return;
-    }
+    const zipContent = await zip.generateAsync({ type: "blob" });
+    const zipUrl = URL.createObjectURL(zipContent);
 
-    setDownloadingDate(date);
+    const link = document.createElement('a');
+    link.href = zipUrl;
+    link.download = `all-brilson-cards-${date}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-    try {
-      const zip = new JSZip();
-      const folderName = `brilson-cards-${date}`;
-      const folder = zip.folder(folderName);
+    URL.revokeObjectURL(zipUrl);
 
-      alert(`📥 Generating ${validCards.length} NFC Cards...`);
+    const successful = results.filter(r => r.success).length;
+    const failed = results.filter(r => !r.success).length;
 
-      const chunkSize = 3;
-      const results = [];
+    alert(`✅ Download Complete!\n\n📦 Successful: ${successful}\n❌ Failed: ${failed}\n💳 Brilson Professional Cards\n📐 Resolution: 2000px width`);
 
-      for (let i = 0; i < validCards.length; i += chunkSize) {
-        const chunk = validCards.slice(i, i + chunkSize);
-        const chunkPromises = chunk.map(async (card) => {
-          try {
-            const cardImageUrl = await generateNFCCard(
-              card.activationCode,
-              card.owner?.name || card.profile?.name || '',
-              card.activationCode,
-              qrDotsColor,
-              qrBgColor,
-              cardBgColor,
-              cardTextColor,
-              2000
-            );
-            
-            const response = await fetch(cardImageUrl);
-            const blob = await response.blob();
-            const filename = `brilson-card-${card.activationCode}.png`;
-            folder.file(filename, blob);
+  } catch (error) {
+    console.error("Error in bulk download:", error);
+    alert("Error downloading cards. Please try again.");
+  } finally {
+    setDownloadingDate(null);
+  }
+};
 
-            return { success: true, card };
-          } catch (error) {
-            console.error(`Error processing card ${card.activationCode}:`, error);
-            return { success: false, card };
-          }
-        });
 
-        const chunkResults = await Promise.all(chunkPromises);
-        results.push(...chunkResults);
-      }
-
-      const zipContent = await zip.generateAsync({ type: "blob" });
-      const zipUrl = URL.createObjectURL(zipContent);
-
-      const link = document.createElement('a');
-      link.href = zipUrl;
-      link.download = `all-brilson-cards-${date}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      URL.revokeObjectURL(zipUrl);
-
-      const successful = results.filter(r => r.success).length;
-      const failed = results.filter(r => !r.success).length;
-
-      alert(`✅ Download Complete!\n\n📦 Successful: ${successful}\n❌ Failed: ${failed}\n💳 Brilson Professional Cards`);
-
-    } catch (error) {
-      console.error("Error in bulk download:", error);
-      alert("Error downloading cards. Please try again.");
-    } finally {
-      setDownloadingDate(null);
-    }
-  };
 
   if (loading) {
     return (
@@ -840,13 +735,13 @@ const downloadCard = async (card) => {
             </div>
           </div>
 
-          <Link
+          {/* <Link
             to="/api/cards/bulk"
             className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg text-sm sm:text-base w-full sm:w-auto"
           >
             <FiPlus className="text-base transition-transform duration-300 group-hover:rotate-180" />
             <span>Create Cards</span>
-          </Link>
+          </Link> */}
         </div>
       </div>
 
@@ -934,71 +829,72 @@ const downloadCard = async (card) => {
                 </div>
               </div>
 
+
               {/* Right Side - Live Preview */}
-              <div className="bg-gray-800/50 rounded-xl p-4">
-                <p className="text-sm text-gray-400 text-center mb-3">💳 Live Card Preview</p>
-                <div className="flex justify-center">
-                  <div 
-                    className="relative w-full max-w-[360px] rounded-2xl overflow-hidden"
-                    style={{ 
-                      background: cardBgColor,
-                      border: "1px solid #E1C48A",
-                      boxShadow: "0 0 20px rgba(225, 196, 138, 0.1)"
-                    }}
-                  >
-                    <div className="p-4 relative" style={{ minHeight: "210px" }}>
-                      {/* Top Left - Logo */}
-                      <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-full bg-[#E1C48A] flex items-center justify-center">
-                          <span className="text-lg font-bold text-[#0a0a1a]">B</span>
-                        </div>
-                        <span className="font-bold text-[#E1C48A]" style={{ fontSize: "14px" }}>BRILSON</span>
-                      </div>
+<div className="bg-gray-800/50 rounded-xl p-4">
+  <p className="text-sm text-gray-400 text-center mb-3">💳 Live Card Preview</p>
+  <div className="flex justify-center">
+    <div 
+      className="relative w-full max-w-[360px] rounded-2xl overflow-hidden"
+      style={{ 
+        background: cardBgColor,
+        border: "1px solid #E1C48A",
+        boxShadow: "0 0 20px rgba(225, 196, 138, 0.1)"
+      }}
+    >
+      <div className="p-4 relative" style={{ minHeight: "230px" }}>
+        {/* Top Left - Large Logo */}
+        <div className="flex items-center gap-2">
+          <div className="w-14 h-14 rounded-full bg-[#E1C48A] flex items-center justify-center">
+            <span className="text-2xl font-bold text-[#0a0a1a]">B</span>
+          </div>
+          <span className="font-bold text-[#E1C48A]" style={{ fontSize: "24px" }}>BRILSON</span>
+        </div>
 
-                      {/* Divider */}
-                      <div className="mt-3 mb-2 h-px bg-[#E1C48A]/50 w-32"></div>
+        {/* Top Right - NFC */}
+        <div className="absolute top-4 right-4">
+          <span className="font-bold text-[#E1C48A]" style={{ fontSize: "18px" }}>NFC</span>
+        </div>
 
-                      {/* Profile Name */}
-                      <p className="text-sm font-semibold mt-2" style={{ color: cardTextColor }}>John Doe</p>
+        {/* Professional Card Text */}
+        <p className="text-[#E1C48A] mt-6" style={{ fontSize: "14px" }}>PROFESSIONAL CARD</p>
 
-                      {/* Professional Card Text */}
-                      <p className="text-[10px] text-[#E1C48A] mt-1">PROFESSIONAL CARD</p>
+        {/* Profile Name */}
+        <p className="font-semibold mt-2" style={{ color: cardTextColor, fontSize: "16px" }}>John Doe</p>
 
-                      {/* Activation Code */}
-                      <p className="text-[8px] font-mono absolute bottom-8 left-4" style={{ color: cardTextColor + "80" }}>
-                        SAMPLE123456
-                      </p>
+        {/* Activation Code Label */}
+        <p className="absolute bottom-12 left-4" style={{ color: cardTextColor + "99", fontSize: "9px" }}>ACTIVATION CODE:</p>
 
-                      {/* QR Code */}
-                      <div className="absolute bottom-3 right-3">
-                        <div className="w-14 h-14 rounded-lg flex items-center justify-center bg-white" 
-                             style={{ border: "2px solid #E1C48A" }}>
-                          <div className="w-12 h-12">
-                            <svg viewBox="0 0 100 100">
-                              <rect x="20" y="20" width="8" height="8" fill={qrDotsColor} />
-                              <rect x="32" y="20" width="8" height="8" fill={qrDotsColor} />
-                              <rect x="44" y="20" width="8" height="8" fill={qrDotsColor} />
-                              <rect x="20" y="32" width="8" height="8" fill={qrDotsColor} />
-                              <rect x="44" y="32" width="8" height="8" fill={qrDotsColor} />
-                              <rect x="20" y="44" width="8" height="8" fill={qrDotsColor} />
-                              <rect x="32" y="44" width="8" height="8" fill={qrDotsColor} />
-                              <rect x="44" y="44" width="8" height="8" fill={qrDotsColor} />
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
+        {/* Activation Code */}
+        <p className="absolute bottom-6 left-4 font-mono font-bold" style={{ color: cardTextColor, fontSize: "11px" }}>K3Y-A1B2-C3D4-E5F6</p>
 
-                      {/* NFC Enabled */}
-                      <div className="absolute bottom-3 left-4 flex items-center gap-1">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                          <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#E1C48A" strokeWidth="2" strokeLinecap="round"/>
-                        </svg>
-                        <span className="text-[8px] text-[#E1C48A]">NFC Enabled</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {/* QR Code */}
+        <div className="absolute bottom-3 right-3">
+          <div className="w-16 h-16 rounded-lg flex items-center justify-center bg-white" 
+               style={{ border: "2px solid #E1C48A" }}>
+            <div className="w-14 h-14">
+              <svg viewBox="0 0 100 100">
+                <rect x="20" y="20" width="8" height="8" fill={qrDotsColor} />
+                <rect x="32" y="20" width="8" height="8" fill={qrDotsColor} />
+                <rect x="44" y="20" width="8" height="8" fill={qrDotsColor} />
+                <rect x="20" y="32" width="8" height="8" fill={qrDotsColor} />
+                <rect x="44" y="32" width="8" height="8" fill={qrDotsColor} />
+                <rect x="20" y="44" width="8" height="8" fill={qrDotsColor} />
+                <rect x="32" y="44" width="8" height="8" fill={qrDotsColor} />
+                <rect x="44" y="44" width="8" height="8" fill={qrDotsColor} />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom BRILSON */}
+        <div className="absolute bottom-2 left-0 right-0 text-center">
+          <span className="text-[#E1C48A]" style={{ fontSize: "8px" }}>BRILSON</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
             </div>
 
             <div className="mt-6 flex gap-3">
@@ -1156,6 +1052,35 @@ const downloadCard = async (card) => {
         </div>
         {totalPages > 1 && <Pagination />}
       </div>
+
+<div className="fixed -left-[99999px] -top-[99999px]">
+  <div id="download-card">
+    {selectedCard && (
+      <NFCCardDesign
+        ref={cardRef}
+        activationCode={selectedCard.activationCode}
+        profileName={selectedCard.owner?.name}
+        profileSlug={selectedCard.slug}
+        cardBgColor={cardBgColor}
+        cardTextColor={cardTextColor}
+        qrDotsColor={qrDotsColor}
+        qrBgColor={qrBgColor}
+      />
+    )}
+  </div>
+</div>
+
+
+<CardPreviewModal
+  isOpen={previewOpen}
+  onClose={() => setPreviewOpen(false)}
+  card={selectedCard}
+  cardBgColor={cardBgColor}
+  cardTextColor={cardTextColor}
+  qrDotsColor={qrDotsColor}
+  qrBgColor={qrBgColor}
+/>
+
     </div>
   );
 };
