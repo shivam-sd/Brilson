@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { toast } from "react-toastify";
 import useCart from "./hooks/useCart";
+import {useNavigate} from "react-router-dom"
 import {
   FiTruck,
   FiShield,
@@ -21,6 +22,7 @@ import HowItWorks from "./HowitWorks";
 
 const ProductCardPreference = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -66,6 +68,8 @@ const ProductCardPreference = () => {
     } finally {
       setAddingToCart(false);
     }
+    navigate("/your-items")
+    window.location.reload();
   };
 
   if (loading) {
@@ -241,7 +245,7 @@ const ProductCardPreference = () => {
 
     {/* Buy Now Button */}
     <Link
-      to={'/your-items'}
+      // to={'/your-items'}
       onClick={handleAddtoCart}
       className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg transition-all duration-300 shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 text-center"
     >

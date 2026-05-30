@@ -6,7 +6,6 @@ const NFCCardDesign = forwardRef(
     {
       activationCode,
       profileName,
-    //   profileSlug,
 
       cardBgColor = "#0a0a1a",
       cardTextColor = "#ffffff",
@@ -21,84 +20,204 @@ const NFCCardDesign = forwardRef(
     return (
       <div
         ref={ref}
-        className="relative overflow-hidden rounded-[26px]"
+        className="relative overflow-hidden"
         style={{
-          width: "420px",
-          height: "265px",
-          background: cardBgColor,
-          border: "2px solid #E1C48A",
-          boxShadow:
-            "0 20px 60px rgba(0,0,0,0.5), inset 0 0 40px rgba(255,255,255,0.03)",
+          width: "1200px",
+          height: "750px",
+          background: `
+            radial-gradient(circle at top left, rgba(225,196,138,0.12), transparent 30%),
+            linear-gradient(90deg, #09091a 0%, #060616 50%, #040412 100%)
+          `,
+          border: "6px solid #E1C48A",
+          borderRadius: "40px",
+          boxSizing: "border-box",
+          fontFamily: "Arial, sans-serif",
         }}
       >
-        {/* Glow */}
-        <div className="absolute inset-0 bg-gradient-to-br from-yellow-300/10 via-transparent to-transparent" />
+        {/* Glow Overlay */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.03), transparent 30%, transparent 70%, rgba(255,255,255,0.03))",
+          }}
+        />
 
-        {/* Top */}
-        <div className="flex justify-between items-start p-5">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-[#E1C48A] flex items-center justify-center">
-              <span className="text-black text-2xl font-bold">
-                B
-              </span>
-            </div>
+        {/* Top Section */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            padding: "45px 55px 0px",
+          }}
+        >
+          {/* Left */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "25px",
+            }}
+          >
+            {/* Logo */}
+<div
+  style={{
+    width: "120px",
+    height: "120px",
+    borderRadius: "50%",
+    background: "#E1C48A",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  }}
+>
+  <span
+    style={{
+      fontSize: "65px",
+      fontWeight: "700",
+      color: "#000",
+    }}
+  >
+    B
+  </span>
+</div>
+            {/* Brand */}
+<div>
+  <h1
+    style={{
+      color: "#E1C48A",
+      fontSize: "82px",
+      lineHeight: "0.95",
+      fontWeight: "700",
+      letterSpacing: "2px",
+      margin: 0,
+    }}
+  >
+    BRILSON
+  </h1>
 
-            <div>
-              <h1 className="text-[#E1C48A] text-2xl font-bold tracking-widest">
-                BRILSON
-              </h1>
-
-              <p className="text-[#E1C48A] text-xs mt-1 tracking-[2px]">
-                PROFESSIONAL CARD
-              </p>
-            </div>
+  <p
+    style={{
+      color: "#E1C48A",
+      fontSize: "22px",
+      letterSpacing: "6px",
+      marginTop: "10px",
+      marginBottom: 0,
+    }}
+  >
+    PROFESSIONAL CARD
+  </p>
+</div>
           </div>
 
-          <div className="text-[#E1C48A] text-lg font-bold">
-            NFC
-          </div>
-        </div>
+          {/* NFC */}
+      <div
+  style={{
+    color: "#E1C48A",
+    fontSize: "38px",
+    fontWeight: "700",
+    letterSpacing: "1px",
+  }}
+>
+  NFC
+</div>
+  </div>
 
         {/* User Name */}
-        <div className="px-6 mt-4">
+        <div
+          style={{
+            marginLeft: "90px",
+            marginTop: "80px",
+          }}
+        >
           <h2
-            className="text-xl font-semibold truncate"
-            style={{ color: cardTextColor }}
+            style={{
+              color: cardTextColor,
+              fontSize: "52px",
+              fontWeight: "600",
+              margin: 0,
+              maxWidth: "650px",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+            }}
           >
-            {profileName}
+            {profileName || "Card Holder"}
           </h2>
         </div>
 
-        {/* Activation */}
-        <div className="absolute bottom-5 left-6">
-          <p
-            className="text-[10px] tracking-[2px]"
-            style={{ color: cardTextColor + "99" }}
+        {/* Activation Section */}
+        <div
+          style={{
+            position: "absolute",
+            left: "90px",
+            bottom: "60px",
+          }}
+        >
+          <div
+            style={{
+              color: `${cardTextColor}99`,
+              fontSize: "24px",
+              letterSpacing: "10px",
+              marginBottom: "18px",
+            }}
           >
             ACTIVATION CODE
-          </p>
+          </div>
 
-          <p
-            className="font-mono font-bold mt-1 text-sm"
-            style={{ color: cardTextColor }}
+          <div
+            style={{
+              color: cardTextColor,
+              fontSize: "58px",
+              fontWeight: "700",
+              fontFamily: "monospace",
+              letterSpacing: "2px",
+            }}
           >
             {activationCode}
-          </p>
+          </div>
         </div>
 
-        {/* QR */}
-        <div className="absolute bottom-5 right-5 bg-white p-2 rounded-2xl border-2 border-[#E1C48A]">
+        {/* QR Section */}
+        <div
+          style={{
+            position: "absolute",
+            right: "70px",
+            bottom: "40px",
+            background: "#fff",
+            padding: "18px",
+            borderRadius: "35px",
+            border: "5px solid #E1C48A",
+          }}
+        >
           <QRCodeSVG
             value={profileUrl}
-            size={85}
+            size={250}
             fgColor={qrDotsColor}
             bgColor={qrBgColor}
           />
         </div>
 
         {/* Bottom Branding */}
-        <div className="absolute bottom-1 left-0 right-0 text-center">
-          <span className="text-[#E1C48A] text-[9px] tracking-[4px]">
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: "12px",
+            textAlign: "center",
+          }}
+        >
+          <span
+            style={{
+              color: "#E1C48A",
+              fontSize: "28px",
+              letterSpacing: "18px",
+            }}
+          >
             BRILSON
           </span>
         </div>

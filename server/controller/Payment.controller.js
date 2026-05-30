@@ -41,7 +41,7 @@ const createPaymentOrder = async (req, res) => {
     res.json(razorpayOrder);
   } catch (err) {
     console.error("Create Payment Error:", err);
-    res.status(500).json({ error: "Payment error" });
+    res.status(500).json({ err });
   }
 };
 
