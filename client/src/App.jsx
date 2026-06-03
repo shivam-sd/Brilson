@@ -55,6 +55,7 @@ import PrivacyPolicy from "./Pages/PrivacyPolicy";
 import TermsConditionsPage from "./Pages/Terms&Condition";
 import RefundPolicyPage from "./Pages/RefundPolicy";
 import AboutUsPage from "./Pages/AboutUsPage";
+import PrivacyPolicyPage from "./Admin/LandingPage/PrivacyPolicyPage";
 import CareersPage from "./Pages/CareersPage";
 import Layout from "./Pages/ProfileComp/EditProfileComp/Layout";
 import PortfolioEditProfile from "./Pages/ProfileComp/EditProfileComp/PortfolioEditProfile";
@@ -474,6 +475,16 @@ function App() {
               </ProtectedRoute>
             }
             />
+
+          <Route
+            path="/admin/landing/privacy-policy"
+            element={
+              <ProtectedRoute>
+                <PrivacyPolicyPage />
+              </ProtectedRoute>
+            }
+            />
+            
           <Route
             path="/admin/landing/footer"
             element={

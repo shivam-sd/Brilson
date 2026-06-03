@@ -11,6 +11,7 @@ import {
 import { FaUserCog } from "react-icons/fa";
 import { GiTransform } from "react-icons/gi";
 import { LuPanelsRightBottom } from "react-icons/lu";
+import { MdPrivacyTip } from "react-icons/md";
 
 import { useNavigate } from "react-router-dom";
 
@@ -64,6 +65,13 @@ const sections = [
     icon: FaUserCog,
     route: "/admin/landing/about-page",
     gradient: "from-green-500/20 to-teal-500/20"
+  },
+  {
+    title: "Privacy Policy Page",
+    description: "Details about data handling and user privacy",
+    icon: MdPrivacyTip,
+    route: "/admin/landing/privacy-policy",
+    gradient: "from-blue-500 to-teal-500/20"
   }
 ];
 
