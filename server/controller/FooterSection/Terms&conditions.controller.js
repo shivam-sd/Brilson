@@ -1,4 +1,4 @@
-const TermsConditionsModel = require("../../models/FooterSection/Terms&Conditions.model");
+const TermsConditionsModel = require("../../models/FooterSection.jsx/Terms&Conditions.model");
 
 
 
