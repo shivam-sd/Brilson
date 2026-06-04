@@ -59,13 +59,13 @@ const sections = [
     gradient: "from-rose-500/20 to-pink-500/20"
   },
 
-  {
-    title: "About Page",
-    description: "Information about the company",
-    icon: FaUserCog,
-    route: "/admin/landing/about-page",
-    gradient: "from-green-500/20 to-teal-500/20"
-  },
+  // {
+  //   title: "About Page",
+  //   description: "Information about the company",
+  //   icon: FaUserCog,
+  //   route: "/admin/landing/about-page",
+  //   gradient: "from-green-500/20 to-teal-500/20"
+  // },
   {
     title: "Privacy Policy Page",
     description: "Details about data handling and user privacy",

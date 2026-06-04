@@ -103,7 +103,7 @@ const TermsConditionsPage = () => {
                   
                   <div className="space-y-6 text-gray-300">
                     <p className="text-lg leading-relaxed">
-                      Welcome to BRILSON ("we," "our," or "us"). These Terms and Conditions 
+                      Welcome to BRILSON Our. These Terms and Conditions 
                       ("Terms") govern your access to and use of our website, applications, 
                       and services ("Services").
                     </p>

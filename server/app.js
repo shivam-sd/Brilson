@@ -51,6 +51,7 @@ const ServiceLayoutRouter = require("./routes/ServiceLayout.routes");
 const authRoutesResetPassword = require("./routes/auth.routes");
 const AboutPageRouter = require("./routes/FooterSection/AboutPage.Routes");
 const PrivacyPolicyRouter = require("./routes/FooterSection/PrivacyPolicy.route");
+const TermsConditionsRouter = require("./routes/FooterSection/Terms&Conditions.routes");
 
 
 // Runtime config
@@ -150,7 +151,9 @@ app.use("/", SharePublicProfilerouter);
 app.use("/api/auth", authRoutesResetPassword);
 app.use("/api/about", AboutPageRouter);
 app.use("/api/privacy-policy", PrivacyPolicyRouter);
-  
+app.use("/api/terms-conditions", TermsConditionsRouter);
+
+
 
   app.get("/", (req, res) => {
     res.status(200).json({ message: "Welcome To Brilson" });
