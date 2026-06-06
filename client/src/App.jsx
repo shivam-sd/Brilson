@@ -104,6 +104,7 @@ import VerifyResetOtp from "./Pages/ForgotPassword/VerifyResetOtp";
 import ResetPassword from "./Pages/ForgotPassword/ResetPassword";
 import HelpCenter from "./Pages/HelpCenter";
 import AboutPageAdmin from "./Admin/LandingPage/AboutPageAdmin";
+import TermsCondition from "./Admin/LandingPage/TermsCondition";
 
 
 
@@ -481,6 +482,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <PrivacyPolicyPage />
+              </ProtectedRoute>
+            }
+            />
+
+          <Route
+            path="/admin/landing/terms-conditions"
+            element={
+              <ProtectedRoute>
+                <TermsCondition />
               </ProtectedRoute>
             }
             />

@@ -8,6 +8,7 @@ import {
   HelpCircle,
   ArrowRight
 } from "lucide-react";
+import { VscTerminalCmd } from "react-icons/vsc";
 import { FaUserCog } from "react-icons/fa";
 import { GiTransform } from "react-icons/gi";
 import { LuPanelsRightBottom } from "react-icons/lu";
@@ -71,6 +72,13 @@ const sections = [
     description: "Details about data handling and user privacy",
     icon: MdPrivacyTip,
     route: "/admin/landing/privacy-policy",
+    gradient: "from-blue-500 to-teal-500/20"
+  },
+  {
+    title: "Terms & Conditions Page",
+    description: "Rules and guidelines for using the service",
+    icon: VscTerminalCmd,
+    route: "/admin/landing/terms-conditions",
     gradient: "from-blue-500 to-teal-500/20"
   }
 ];
