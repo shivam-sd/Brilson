@@ -1,15 +1,13 @@
 import React, { forwardRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { FaWifi } from "react-icons/fa";
 
 const NFCCardDesign = forwardRef(
   (
     {
       activationCode,
-      profileName,
-
-      cardBgColor = "#0a0a1a",
-      cardTextColor = "#ffffff",
-
+      cardBgColor = "#FFFFFF",
+      cardTextColor = "#000000",
       qrDotsColor = "#000000",
       qrBgColor = "#ffffff",
     },
@@ -17,209 +15,170 @@ const NFCCardDesign = forwardRef(
   ) => {
     const profileUrl = `${import.meta.env.VITE_DOMAIN}/public/profile/${activationCode}`;
 
+    // Format activation code for display (if needed)
+    const displayActivationCode = activationCode || "52V28-91S28-6B799";
+
     return (
       <div
         ref={ref}
-        className="relative overflow-hidden"
         style={{
           width: "1200px",
           height: "750px",
-          background: `
-            radial-gradient(circle at top left, rgba(225,196,138,0.12), transparent 30%),
-            linear-gradient(90deg, #09091a 0%, #060616 50%, #040412 100%)
-          `,
-          border: "6px solid #E1C48A",
-          borderRadius: "40px",
-          boxSizing: "border-box",
-          fontFamily: "Arial, sans-serif",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          fontFamily: "'Inter', 'Segoe UI', Arial, sans-serif",
         }}
       >
-        {/* Glow Overlay */}
+        {/* Main Card Container */}
         <div
           style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(180deg, rgba(255,255,255,0.03), transparent 30%, transparent 70%, rgba(255,255,255,0.03))",
-          }}
-        />
-
-        {/* Top Section */}
-        <div
-          style={{
+            background: "#FFFFFF",
+            borderRadius: "32px",
+            border: `2px solid ${cardTextColor === "#ffffff" ? "#333" : "#000000"}`,
+            width: "100%",
+            height: "100%",
+            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
             display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            padding: "45px 55px 0px",
+            overflow: "hidden",
           }}
         >
-          {/* Left */}
+          {/* LEFT SECTION - WiFi + BRILSON + URL */}
           <div
             style={{
+              width: "50%",
+              borderRight: `2px solid ${cardTextColor === "#ffffff" ? "#333" : "#000000"}`,
               display: "flex",
-              alignItems: "flex-start",
-              gap: "25px",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "32px",
             }}
           >
-            {/* Logo */}
-<div
-  style={{
-    width: "120px",
-    height: "120px",
-    borderRadius: "50%",
-    background: "#E1C48A",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-  }}
->
-  <span
-    style={{
-      fontSize: "65px",
-      fontWeight: "700",
-      color: "#000",
-    }}
-  >
-    B
-  </span>
-</div>
-            {/* Brand */}
-<div>
-  <h1
-    style={{
-      color: "#E1C48A",
-      fontSize: "82px",
-      lineHeight: "0.95",
-      fontWeight: "700",
-      letterSpacing: "2px",
-      margin: 0,
-    }}
-  >
-    BRILSON
-  </h1>
+            {/* WiFi Icon + NFC Text */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "16px",
+              }}
+            >
+              <FaWifi
+                size={180}
+                color={cardTextColor === "#ffffff" ? "#333" : cardTextColor}
+              />
+              <h4
+                style={{
+                  textTransform: "uppercase",
+                  fontSize: "35px",
+                  fontWeight: "800",
+                  letterSpacing: "2px",
+                  color: cardTextColor === "#ffffff" ? "#333" : cardTextColor,
+                  margin: 0,
+                }}
+              >
+                NFC
+              </h4>
+            </div>
 
-  <p
-    style={{
-      color: "#E1C48A",
-      fontSize: "22px",
-      letterSpacing: "6px",
-      marginTop: "10px",
-      marginBottom: 0,
-    }}
-  >
-    PROFESSIONAL CARD
-  </p>
-</div>
+            {/* BRILSON Title */}
+            <h1
+              style={{
+                fontSize: "72px",
+                fontWeight: "800",
+                color: cardTextColor === "#ffffff" ? "#1a1a2e" : cardTextColor,
+                margin: 0,
+                letterSpacing: "-1px",
+              }}
+            >
+              Brilson
+            </h1>
+
+            {/* Website URL */}
+            <p
+              style={{
+                fontSize: "28px",
+                letterSpacing: "6px",
+                fontWeight:"600",
+                color: "black",
+                marginTop: "6px",
+              }}
+            >
+              www.brilson.in
+            </p>
           </div>
 
-          {/* NFC */}
-      <div
-  style={{
-    color: "#E1C48A",
-    fontSize: "38px",
-    fontWeight: "700",
-    letterSpacing: "1px",
-  }}
->
-  NFC
-</div>
-  </div>
-
-        {/* User Name */}
-        <div
-          style={{
-            marginLeft: "90px",
-            marginTop: "80px",
-          }}
-        >
-          <h2
-            style={{
-              color: cardTextColor,
-              fontSize: "52px",
-              fontWeight: "600",
-              margin: 0,
-              maxWidth: "650px",
-              overflow: "hidden",
-              whiteSpace: "nowrap",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {profileName || "Card Holder"}
-          </h2>
-        </div>
-
-        {/* Activation Section */}
-        <div
-          style={{
-            position: "absolute",
-            left: "90px",
-            bottom: "60px",
-          }}
-        >
+          {/* RIGHT SECTION - QR Code + Activation Key */}
           <div
             style={{
-              color: `${cardTextColor}99`,
-              fontSize: "24px",
-              letterSpacing: "10px",
-              marginBottom: "18px",
+              width: "50%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "40px",
             }}
           >
-            ACTIVATION CODE
+            {/* QR Code Box */}
+            <div
+              style={{
+                padding: "22px",
+                border: `3px solid ${cardTextColor === "#ffffff" ? "#333" : "#000000"}`,
+                borderRadius: "16px",
+                backgroundColor: qrBgColor,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <QRCodeSVG
+                value={profileUrl}
+                size={250}
+                fgColor={qrDotsColor}
+                bgColor={qrBgColor}
+              />
+            </div>
+
+            {/* Activation Key Section */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "12px",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: "25px",
+                  letterSpacing: "5px",
+                  textTransform: "uppercase",
+                  color: "black",
+                  fontWeight:"600",
+                  margin: 0,
+                }}
+              >
+                Activation Key
+              </p>
+              <font
+                style={{
+                  fontSize: "40px",
+                  fontWeight: "800",
+                  fontFamily: "'Courier New', monospace",
+                  borderRadius: "12px",
+                  border: `2px solid ${cardTextColor === "#ffffff" ? "#333" : "#000000"}`,
+                  padding: "8px 24px",
+                  background: cardBgColor === "#ffffff" ? "#f5f5f5" : "transparent",
+                  color: "#000000",
+                  marginTop:"5px"
+                }}
+              >
+                {displayActivationCode}
+              </font>
+            </div>
           </div>
-
-          <div
-            style={{
-              color: cardTextColor,
-              fontSize: "58px",
-              fontWeight: "700",
-              fontFamily: "monospace",
-              letterSpacing: "2px",
-            }}
-          >
-            {activationCode}
-          </div>
-        </div>
-
-        {/* QR Section */}
-        <div
-          style={{
-            position: "absolute",
-            right: "70px",
-            bottom: "40px",
-            background: "#fff",
-            padding: "18px",
-            borderRadius: "35px",
-            border: "5px solid #E1C48A",
-          }}
-        >
-          <QRCodeSVG
-            value={profileUrl}
-            size={250}
-            fgColor={qrDotsColor}
-            bgColor={qrBgColor}
-          />
-        </div>
-
-        {/* Bottom Branding */}
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            bottom: "12px",
-            textAlign: "center",
-          }}
-        >
-          <span
-            style={{
-              color: "#E1C48A",
-              fontSize: "28px",
-              letterSpacing: "18px",
-            }}
-          >
-            BRILSON
-          </span>
         </div>
       </div>
     );

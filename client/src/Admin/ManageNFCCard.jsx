@@ -37,97 +37,86 @@ const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent"
 };
 
 
-/* NFC Card Generator - EXACT design as per your image */
+/* NFC Card Generator - NEW White Card Design as per your image */
 const generateNFCCard = async (
   activationCode,
   profileName,
   profileSlug,
   qrDotsColor = "#000000",
   qrBgColor = "#ffffff",
-  cardBgColor = "#0a0a1a",
-  cardTextColor = "#ffffff",
+  cardBgColor = "#ffffff",
+  cardTextColor = "#000000",
   size = 1200
 ) => {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   
-  // Card dimensions (credit card ratio)
+  // Card dimensions (1200 x 750 ratio)
   const cardWidth = size;
   const cardHeight = Math.round(size / 1.6);
   canvas.width = cardWidth;
   canvas.height = cardHeight;
   
-  // Card background
+  // === Card Background (White) ===
   ctx.fillStyle = cardBgColor;
   ctx.fillRect(0, 0, cardWidth, cardHeight);
   
-  // Gold border
-  ctx.strokeStyle = "#E1C48A";
+  // === Border (Black/Grey) ===
+  ctx.strokeStyle = cardTextColor === "#ffffff" ? "#333" : "#000000";
   ctx.lineWidth = Math.max(2, size / 600);
   ctx.strokeRect(size * 0.02, size * 0.02, cardWidth - (size * 0.04), cardHeight - (size * 0.04));
   
-  // === B Logo (Top Left) ===
-  const logoSize = Math.min(cardWidth * 0.12, 60);
-  const logoX = cardWidth * 0.05;
-  const logoY = cardHeight * 0.08;
+  // ========== LEFT SIDE ==========
+  const leftX = cardWidth * 0.05;
+  const centerY = cardHeight / 2;
   
-  ctx.fillStyle = "#E1C48A";
-  ctx.beginPath();
-  ctx.arc(logoX + logoSize/2, logoY + logoSize/2, logoSize/2, 0, Math.PI * 2);
-  ctx.fill();
+  // === WiFi Icon (Signal Bars) ===
+  const wifiX = leftX;
+  const wifiStartY = cardHeight * 0.25;
+  const barWidth = size * 0.008;
   
-  ctx.fillStyle = "#0a0a1a";
-  ctx.font = `bold ${Math.floor(logoSize * 0.6)}px Arial`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("B", logoX + logoSize/2, logoY + logoSize/2);
+  const bars = [18, 28, 38, 48].map((height, i) => ({
+    height: height * (size / 1200),
+    y: wifiStartY + (48 - height) * (size / 1200)
+  }));
   
-  // === BRILSON text ===
-  ctx.fillStyle = "#E1C48A";
-  ctx.font = `bold ${Math.min(cardHeight * 0.09, 32)}px Arial`;
+  ctx.fillStyle = cardTextColor === "#ffffff" ? "#333" : cardTextColor;
+  bars.forEach((bar, i) => {
+    ctx.fillRect(
+      wifiX + (i * barWidth * 2.5), 
+      bar.y, 
+      barWidth, 
+      bar.height
+    );
+  });
+  
+  // === NFC Text below WiFi ===
+  ctx.font = `bold ${Math.min(cardHeight * 0.07, 28)}px Arial`;
   ctx.textAlign = "left";
-  ctx.fillText("BRILSON", logoX + logoSize + 15, logoY + logoSize * 0.7);
+  ctx.fillStyle = cardTextColor === "#ffffff" ? "#333" : cardTextColor;
+  ctx.fillText("NFC", leftX, wifiStartY + (55 * (size / 1200)));
   
-  // === NFC (Top Right) ===
-  ctx.fillStyle = "#E1C48A";
-  ctx.font = `bold ${Math.min(cardHeight * 0.07, 24)}px Arial`;
-  ctx.textAlign = "right";
-  ctx.fillText("NFC", cardWidth - (cardWidth * 0.05), cardHeight * 0.12);
+  // === BRILSON Title ===
+  ctx.font = `bold ${Math.min(cardHeight * 0.12, 52)}px Arial`;
+  ctx.fillStyle = cardTextColor === "#ffffff" ? "#1a1a2e" : cardTextColor;
+  ctx.fillText("Brilson", leftX, cardHeight * 0.55);
   
-  // === PROFESSIONAL CARD ===
-  ctx.fillStyle = "#E1C48A";
-  ctx.font = `${Math.min(cardHeight * 0.05, 18)}px Arial`;
-  ctx.textAlign = "left";
-  ctx.fillText("PROFESSIONAL CARD", cardWidth * 0.05, cardHeight * 0.38);
+  // === Website URL ===
+  ctx.font = `${Math.min(cardHeight * 0.045, 18)}px Arial`;
+  ctx.fillStyle = cardTextColor === "#ffffff" ? "#666" : "#999";
+  ctx.fillText("www.brilson.in", leftX, cardHeight * 0.65);
   
-  // === Profile Name ===
-  let displayName = "John Doe";
-  if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '' && profileName !== 'undefined') {
-    displayName = profileName;
-    if (displayName.length > 22) {
-      displayName = displayName.substring(0, 19) + '...';
-    }
-  }
-  ctx.fillStyle = cardTextColor;
-  ctx.font = `bold ${Math.min(cardHeight * 0.06, 22)}px Arial`;
-  ctx.fillText(displayName, cardWidth * 0.05, cardHeight * 0.48);
-  
-  // === ACTIVATION CODE: label ===
-  ctx.fillStyle = cardTextColor + "99";
-  ctx.font = `${Math.min(cardHeight * 0.035, 12)}px Arial`;
-  ctx.fillText("ACTIVATION CODE:", cardWidth * 0.05, cardHeight * 0.82);
-  
-  // === Activation Code ===
-  let displayCode = activationCode || "K3Y-A1B2-C3D4-E5F6";
-  ctx.fillStyle = cardTextColor;
-  ctx.font = `bold ${Math.min(cardHeight * 0.045, 16)}px "Courier New"`;
-  ctx.fillText(displayCode, cardWidth * 0.05, cardHeight * 0.9);
-  
-  // === QR Code (Right side) ===
-  const qrSize = Math.min(cardHeight * 0.32, 100);
-  const qrX = cardWidth - qrSize - (cardWidth * 0.05);
+  // ========== RIGHT SIDE ==========
+  const qrSize = Math.min(cardHeight * 0.3, 200);
+  const qrX = cardWidth - qrSize - (cardWidth * 0.08);
   const qrY = (cardHeight - qrSize) / 2;
   
+  // QR Border Box
+  ctx.strokeStyle = cardTextColor === "#ffffff" ? "#333" : "#000000";
+  ctx.lineWidth = Math.max(2, size / 400);
+  ctx.strokeRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
+  
+  // Generate QR Code
   const profileUrl = `${import.meta.env.VITE_DOMAIN || window.location.origin}/public/profile/${profileSlug || activationCode}`;
   const qrCode = createHighQualityQR(profileUrl, qrDotsColor, qrBgColor, qrSize * 4);
   
@@ -139,13 +128,11 @@ const generateNFCCard = async (
   
   await new Promise((resolve) => {
     qrImg.onload = () => {
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(qrX - 5, qrY - 5, qrSize + 10, qrSize + 10);
-      
-      ctx.strokeStyle = "#E1C48A";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(qrX - 5, qrY - 5, qrSize + 10, qrSize + 10);
-      
+      // QR Background (if needed)
+      if (qrBgColor !== "transparent") {
+        ctx.fillStyle = qrBgColor;
+        ctx.fillRect(qrX, qrY, qrSize, qrSize);
+      }
       ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
       resolve();
     };
@@ -155,11 +142,18 @@ const generateNFCCard = async (
   
   URL.revokeObjectURL(qrUrl);
   
-  // === Bottom BRILSON ===
-  ctx.fillStyle = "#E1C48A";
-  ctx.font = `${Math.min(cardHeight * 0.03, 10)}px Arial`;
+  // === Activation Key Section (Below QR) ===
+  const actKeyY = qrY + qrSize + 40;
+  
+  ctx.font = `${Math.min(cardHeight * 0.035, 14)}px Arial`;
+  ctx.fillStyle = cardTextColor === "#ffffff" ? "#666" : "#999";
   ctx.textAlign = "center";
-  ctx.fillText("BRILSON", cardWidth / 2, cardHeight - (cardHeight * 0.03));
+  ctx.fillText("ACTIVATION KEY", cardWidth / 2, actKeyY);
+  
+  let displayCode = activationCode || "52V28-91S28-6B799";
+  ctx.font = `bold ${Math.min(cardHeight * 0.045, 20)}px "Courier New"`;
+  ctx.fillStyle = cardTextColor;
+  ctx.fillText(displayCode, cardWidth / 2, actKeyY + 35);
   
   return canvas.toDataURL('image/png', 1.0);
 };
@@ -184,6 +178,7 @@ CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
 };
 
 /* Thumbnail Card Generator */
+/* Thumbnail Card Generator - Smaller size for table */
 const generateCardThumbnail = async (activationCode, profileName, profileSlug, qrDotsColor, qrBgColor, cardBgColor, cardTextColor) => {
   try {
     const safeSlug = profileSlug && profileSlug !== 'undefined' ? profileSlug : activationCode;
@@ -195,7 +190,7 @@ const generateCardThumbnail = async (activationCode, profileName, profileSlug, q
       qrBgColor,
       cardBgColor,
       cardTextColor,
-      180
+      240 // Smaller size for thumbnail (was 180)
     );
     return cardDataUrl;
   } catch (error) {
@@ -203,6 +198,8 @@ const generateCardThumbnail = async (activationCode, profileName, profileSlug, q
     return null;
   }
 };
+
+
 
 const ManageNFCCard = () => {
   const [cards, setCards] = useState([]);
@@ -221,11 +218,13 @@ const ManageNFCCard = () => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   
   // Card Colors
-  const [cardBgColor, setCardBgColor] = useState("#0a0a1a");
-  const [cardTextColor, setCardTextColor] = useState("#ffffff");
-  const [qrDotsColor, setQrDotsColor] = useState("#000000");
-  const [qrBgColor, setQrBgColor] = useState("#ffffff");
-  
+  // Card Colors - New defaults for white card
+const [cardBgColor, setCardBgColor] = useState("#ffffff");  
+const [cardTextColor, setCardTextColor] = useState("#000000"); 
+const [qrDotsColor, setQrDotsColor] = useState("#000000");
+const [qrBgColor, setQrBgColor] = useState("#ffffff");
+
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCards, setTotalCards] = useState(0);
@@ -1059,7 +1058,6 @@ const downloadCard = async (card) => {
       <NFCCardDesign
         ref={cardRef}
         activationCode={selectedCard.activationCode}
-        profileName={selectedCard.owner?.name}
         profileSlug={selectedCard.slug}
         cardBgColor={cardBgColor}
         cardTextColor={cardTextColor}

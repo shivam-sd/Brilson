@@ -105,6 +105,7 @@ import ResetPassword from "./Pages/ForgotPassword/ResetPassword";
 import HelpCenter from "./Pages/HelpCenter";
 import AboutPageAdmin from "./Admin/LandingPage/AboutPageAdmin";
 import TermsCondition from "./Admin/LandingPage/TermsCondition";
+import TempDesign from "./Admin/ManageNFCCard/tempDesign";
 
 
 
@@ -145,6 +146,7 @@ function App() {
               }
             />
 
+            <Route path="/check-de" element={<TempDesign />} />
             <Route path="/how-it-works" element={<HowitWorks />} />
             <Route path="/products" element={<OurSmartCard />} />
             <Route path="/bestseller-card" element={<BestSeller />} />
