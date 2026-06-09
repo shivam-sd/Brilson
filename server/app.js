@@ -52,6 +52,7 @@ const authRoutesResetPassword = require("./routes/auth.routes");
 const AboutPageRouter = require("./routes/FooterSection/AboutPage.Routes");
 const PrivacyPolicyRouter = require("./routes/FooterSection/PrivacyPolicy.route");
 const TermsConditionsRouter = require("./routes/FooterSection/Terms&Conditions.routes");
+const AdminDashboardRouter = require("./routes/AdminDashboardAPI/AdminDashboard.routes");
 
 
 // Runtime config
@@ -152,6 +153,7 @@ app.use("/api/auth", authRoutesResetPassword);
 app.use("/api/about", AboutPageRouter);
 app.use("/api/privacy-policy", PrivacyPolicyRouter);
 app.use("/api/terms-conditions", TermsConditionsRouter);
+app.use("/api/admin", AdminDashboardRouter);
 
 
 
