@@ -1,93 +1,101 @@
 import axios from "axios";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 
 import StatsCards from "./Components/StatsCards";
 import OverviewChart from "./Components/OverviewChart";
 import CardsStatus from "./Components/CardsStatus";
-
+import RecentOrders from "./Components/RecentOrders";
+import RecentCards from "./Components/RecentCards";
 
 const AdminDashboard = () => {
+  const [data, setData] = useState(null);
+  const [chartData, setChartData] = useState([]);
 
- const [data,setData] = useState(null);
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        axios
+          .get(`${import.meta.env.VITE_BASE_URL}/api/admin/dashboard`, {})
+          .then((res) => {
+            setData(res.data);
+            // console.log(res.data);
+          });
+      } catch (err) {
+        console.error("Dashboard Data Fetch Error:", err);
+      }
+    };
 
- useEffect(()=>{
+    const fetchChartData = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/admin/dashboard/chart`,
+        );
+        setChartData(res.data.chartData);
+        // console.log("Chart Data:", res.data);
+      } catch (err) {
+        console.error("Chart Data Fetch Error:", err);
+      }
+    };
 
-   axios
-   .get(`${import.meta.env.VITE_BASE_URL}/api/admin/dashboard`, {
-   })
-   .then((res)=>{
-      setData(res.data);
-      // console.log(res.data);
-   });
+    fetchDashboardData();
+    fetchChartData();
+  }, []);
 
- },[]);
+  if (!data) {
+    return <div>Loading...</div>;
+  }
 
- if(!data){
-   return <div>Loading...</div>;
- }
-
- return(
-  <div
-   className="
+  return (
+    <div
+      className="
    min-h-screen
    bg-[#030712]
-   p-6 
    lg:pt-5
    md:pt-5
    pt-15"
-  >
+    >
+      <StatsCards data={data} />
 
-   <StatsCards data={data}/>
-
-   <div className="
+      <div
+        className="
    grid
    lg:grid-cols-3
    gap-6
-   mt-6">
+   mt-6"
+      >
+        <div className="lg:col-span-2">
+          <OverviewChart chartData={chartData} />
+        </div>
 
-      <div className="lg:col-span-2">
-
-        {/* <OverviewChart/> */}
-
+        <CardsStatus
+          activeCards={data.activeCards}
+          inactiveCards={data.inactiveCards}
+        />
       </div>
 
-      {/* <CardsStatus
-       activeCards={data.activeCards}
-       inactiveCards={data.inactiveCards}
-      /> */}
 
-   </div>
+<div className="grid lg:grid-cols-12 gap-6 mt-6">
 
+  <div className="lg:col-span-7">
+    <RecentOrders
+      orders={data.recentOrders}
+    />
   </div>
- );
-}
+
+  <div className="lg:col-span-5">
+    <RecentCards
+      cards={data.recentCards}
+    />
+  </div>
+
+</div>
+
+
+    </div>
+  );
+};
 
 export default AdminDashboard;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import React, { useEffect, useState } from "react";
 // import { motion } from "framer-motion";
@@ -219,12 +227,12 @@ export default AdminDashboard;
 //                 </div>
 //                 <div className="h-6 bg-white/10 rounded w-16"></div>
 //               </div>
-              
+
 //               <div className="mb-3">
 //                 <div className="h-3 bg-white/10 rounded w-20 mb-2"></div>
 //                 <div className="h-4 bg-white/10 rounded w-32"></div>
 //               </div>
-              
+
 //               <div className="mb-3">
 //                 <div className="h-3 bg-white/10 rounded w-20 mb-2"></div>
 //                 <div className="space-y-2">
@@ -236,7 +244,7 @@ export default AdminDashboard;
 //                   ))}
 //                 </div>
 //               </div>
-              
+
 //               <div className="flex justify-between items-center pt-3 border-t border-white/10">
 //                 <div className="h-3 bg-white/10 rounded w-20"></div>
 //                 <div className="h-6 bg-white/10 rounded w-16"></div>
@@ -281,7 +289,7 @@ export default AdminDashboard;
 //   return (
 //     <div className="min-h-screen bg-[#0D0F17] text-white">
 //       <main className="max-w-7xl mx-auto">
-        
+
 //         {/* HEADER */}
 //         <motion.div
 //           initial={{ opacity: 0, y: -20 }}
@@ -301,7 +309,7 @@ export default AdminDashboard;
 //           <>
 //             <StatsSkeleton />
 //             <OrdersSkeleton />
-            
+
 //             {/* Loading Spinner Overlay */}
 //             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
 //               <div className="text-center">
@@ -321,23 +329,23 @@ export default AdminDashboard;
 //             {/* STATS CARDS - Responsive Grid */}
 //             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 md:mb-12">
 //               {[
-//                 { 
-//                   label: "Total Orders", 
-//                   value: stats.totalOrders, 
+//                 {
+//                   label: "Total Orders",
+//                   value: stats.totalOrders,
 //                   icon: <FiShoppingBag className="text-cyan-400" />,
-//                   color: "cyan" 
+//                   color: "cyan"
 //                 },
-//                 { 
-//                   label: "Total Customers", 
-//                   value: stats.totalCustomers, 
+//                 {
+//                   label: "Total Customers",
+//                   value: stats.totalCustomers,
 //                   icon: <FiUsers className="text-green-400" />,
-//                   color: "green" 
+//                   color: "green"
 //                 },
-//                 { 
-//                   label: "Total Products", 
-//                   value: stats.totalProducts, 
+//                 {
+//                   label: "Total Products",
+//                   value: stats.totalProducts,
 //                   icon: <FiBox className="text-purple-400" />,
-//                   color: "purple" 
+//                   color: "purple"
 //                 },
 //               ].map((card, index) => (
 //                 <motion.div
@@ -396,7 +404,7 @@ export default AdminDashboard;
 //                     </div>
 //                   ) : (
 //                     orders.map((order) => (
-//                       <div 
+//                       <div
 //                         key={order._id}
 //                         className="bg-white/5 p-4 rounded-lg border border-white/10"
 //                       >
@@ -413,7 +421,7 @@ export default AdminDashboard;
 //                             {order.status}
 //                           </span>
 //                         </div>
-                        
+
 //                         <div className="mb-3">
 //                           <span className="text-xs text-gray-400">Customer</span>
 //                           <p className="text-sm font-medium flex items-center gap-2">
@@ -421,7 +429,7 @@ export default AdminDashboard;
 //                             {order.address?.name || "Customer"}
 //                           </p>
 //                         </div>
-                        
+
 //                         <div className="mb-3">
 //                           <span className="text-xs text-gray-400">Products</span>
 //                           <div className="mt-1 space-y-2 max-h-20 overflow-y-auto">
@@ -440,7 +448,7 @@ export default AdminDashboard;
 //                             )}
 //                           </div>
 //                         </div>
-                        
+
 //                         <div className="flex justify-between items-center pt-3 border-t border-white/10">
 //                           <span className="text-xs text-gray-400">Total Amount</span>
 //                           <span className="text-cyan-400 font-semibold">

@@ -68,4 +68,108 @@ const AdminDashboardController =  async (req, res) => {
   }
 };
 
-module.exports = { AdminDashboardController };
+
+
+const getOverviewChart = async (req, res) => {
+  try {
+
+    const currentYear = new Date().getFullYear();
+
+    const monthlyData = await Order.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(`${currentYear}-01-01`),
+            $lte: new Date(`${currentYear}-12-31`)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+
+          totalRevenue: {
+            $sum: "$totalAmount"
+          },
+
+          totalOrders: {
+            $sum: 1
+          }
+        }
+      },
+      {
+        $sort: {
+          "_id": 1
+        }
+      }
+    ]);
+
+    const monthlyData2 = await User.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(`${currentYear}-01-01`),
+            $lte: new Date(`${currentYear}-12-31`)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+
+
+          totalCustomers: {
+            $sum: 1
+          }
+        }
+      },
+      {
+        $sort: {
+          "_id": 1
+        }
+      }
+    ]);
+
+    const months = [
+      "Jan","Feb","Mar","Apr","May","Jun",
+      "Jul","Aug","Sep","Oct","Nov","Dec"
+    ];
+
+const formattedData = months.map((month, index) => {
+
+  const foundOrders = monthlyData.find(
+    item => item._id === index + 1
+  );
+
+  const foundCustomers = monthlyData2.find(
+    item => item._id === index + 1
+  );
+
+  return {
+    month,
+    revenue: foundOrders?.totalRevenue || 0,
+    orders: foundOrders?.totalOrders || 0,
+    customers: foundCustomers?.totalCustomers || 0
+  };
+});
+
+res.status(200).json({
+      success: true,
+      chartData: formattedData
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      success:false,
+      message:"Failed to fetch chart data"
+    });
+
+  }
+};
+
+
+
+module.exports = { AdminDashboardController, getOverviewChart };

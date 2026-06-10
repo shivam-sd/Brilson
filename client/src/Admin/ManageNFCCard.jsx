@@ -488,13 +488,6 @@ const downloadCard = async (card) => {
     return;
   }
 
-  const validCards = cardsList.filter(card => card.qrUrl);
-  
-  if (validCards.length === 0) {
-    alert("No cards with QR available for this date");
-    return;
-  }
-
   setDownloadingDate(date);
 
   try {
@@ -502,31 +495,64 @@ const downloadCard = async (card) => {
     const folderName = `brilson-cards-${date}`;
     const folder = zip.folder(folderName);
 
-    alert(`📥 Generating ${validCards.length} NFC Cards...\nPlease wait while we create your cards.`);
+    alert(`📥 Generating ${cardsList.length} NFC Cards...\nPlease wait while we create your cards.`);
 
     const chunkSize = 3;
     const results = [];
 
-    for (let i = 0; i < validCards.length; i += chunkSize) {
-      const chunk = validCards.slice(i, i + chunkSize);
-      const chunkPromises = chunk.map(async (card) => {
+    for (let i = 0; i < cardsList.length; i += chunkSize) {
+      const chunk = cardsList.slice(i, i + chunkSize);
+      
+      const chunkPromises = chunk.map(async (card, idx) => {
         try {
-          const cardImageUrl = await generateNFCCard(
-            card.activationCode,
-            card.owner?.name || card.profile?.name || 'Card Owner',
-            card.slug || card.activationCode,
-            qrDotsColor,
-            qrBgColor,
-            cardBgColor,
-            cardTextColor,
-            2000
-          );
+          // Create a temporary hidden container
+          const tempDiv = document.createElement('div');
+          tempDiv.style.position = 'absolute';
+          tempDiv.style.left = '-9999px';
+          tempDiv.style.top = '-9999px';
+          tempDiv.style.width = '1200px';
+          document.body.appendChild(tempDiv);
           
-          const response = await fetch(cardImageUrl);
-          const blob = await response.blob();
-          const filename = `brilson-card-${card.activationCode}.png`;
-          folder.file(filename, blob);
-
+          // Render NFCCardDesign component
+          const { default: ReactDOM } = await import('react-dom/client');
+          const NFCCardDesignComponent = (await import('./ManageNFCCard/NFCCardDesign')).default;
+          
+          const root = ReactDOM.createRoot(tempDiv);
+          
+          await new Promise((resolve) => {
+            root.render(
+              <NFCCardDesign
+                activationCode={card.activationCode}
+                profileSlug={card.slug || card.activationCode}
+                profileName={card.owner?.name || card.profile?.name || 'Card Owner'}
+                cardBgColor={cardBgColor}
+                cardTextColor={cardTextColor}
+                qrDotsColor={qrDotsColor}
+                qrBgColor={qrBgColor}
+              />
+            );
+            
+            // Wait for render
+            setTimeout(async () => {
+              const element = tempDiv.firstChild;
+              if (element) {
+                const canvas = await html2canvas(element, {
+                  scale: 3,
+                  useCORS: true,
+                  backgroundColor: null,
+                  logging: false,
+                });
+                
+                const blob = await new Promise((res) => canvas.toBlob(res, 'image/png', 1.0));
+                const filename = `brilson-card-${card.activationCode}.png`;
+                folder.file(filename, blob);
+              }
+              root.unmount();
+              document.body.removeChild(tempDiv);
+              resolve();
+            }, 500);
+          });
+          
           return { success: true, card };
         } catch (error) {
           console.error(`Error processing card ${card.activationCode}:`, error);
@@ -553,7 +579,7 @@ const downloadCard = async (card) => {
     const successful = results.filter(r => r.success).length;
     const failed = results.filter(r => !r.success).length;
 
-    alert(`✅ Download Complete!\n\n📦 Successful: ${successful}\n❌ Failed: ${failed}\n💳 Brilson Professional Cards\n📐 Resolution: 2000px width`);
+    alert(`✅ Download Complete!\n\n📦 Successful: ${successful}\n❌ Failed: ${failed}`);
 
   } catch (error) {
     console.error("Error in bulk download:", error);
