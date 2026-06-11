@@ -1,3 +1,6 @@
+import {Link} from "react-router-dom"
+
+
 const RecentCards = ({ cards }) => {
   return (
     <div className="
@@ -14,7 +17,7 @@ const RecentCards = ({ cards }) => {
           Recent Cards
         </h2>
 
-        <button
+        <Link
           className="
           text-xs
           bg-[#1e293b]
@@ -23,9 +26,10 @@ const RecentCards = ({ cards }) => {
           rounded-lg
           hover:bg-[#334155]
           "
+          to={"/admindashboard/manage-cards"}
         >
           View All Cards
-        </button>
+        </Link>
 
       </div>
 

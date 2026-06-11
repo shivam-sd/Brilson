@@ -6,6 +6,8 @@ import OverviewChart from "./Components/OverviewChart";
 import CardsStatus from "./Components/CardsStatus";
 import RecentOrders from "./Components/RecentOrders";
 import RecentCards from "./Components/RecentCards";
+import QuickActions from "./Components/QuickActiions";
+import ModernLoader from "../lottie/ModernLoader";
 
 const AdminDashboard = () => {
   const [data, setData] = useState(null);
@@ -42,7 +44,9 @@ const AdminDashboard = () => {
   }, []);
 
   if (!data) {
-    return <div>Loading...</div>;
+    return(<>
+    <ModernLoader />
+    </>);
   }
 
   return (
@@ -90,6 +94,7 @@ const AdminDashboard = () => {
 
 </div>
 
+<QuickActions />
 
     </div>
   );
