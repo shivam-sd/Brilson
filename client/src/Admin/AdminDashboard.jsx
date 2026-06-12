@@ -56,7 +56,10 @@ const AdminDashboard = () => {
    bg-[#030712]
    lg:pt-5
    md:pt-5
-   pt-15"
+   pt-15
+   px-4
+   rounded-xl
+   "
     >
       <StatsCards data={data} />
 

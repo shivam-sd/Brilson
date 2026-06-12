@@ -10,6 +10,8 @@ import {
   FiMenu,
   FiX,
 } from "react-icons/fi";
+import { CiMenuFries } from "react-icons/ci";
+import { GiCrossMark } from "react-icons/gi";
 import { BsQrCode } from "react-icons/bs";
 import { RiSecurePaymentFill } from "react-icons/ri";
 import { MdAnalytics } from "react-icons/md";
@@ -20,124 +22,23 @@ import { MdReviews } from "react-icons/md";
 
 const AdminLayout = () => {
   const [open, setOpen] = useState(false);
+  const [SideBar, setSideBar] = useState(true);
+
+  const handleSideBarToggle = (val) => {
+    setSideBar(val);
+  };
 
   return (
     <div className="flex h-screen bg-[#0D0F17] text-white overflow-hidden">
       {/* MOBILE TOPBAR */}
       <div className="md:hidden w-full fixed top-0 left-0 bg-[#151822] px-5 py-4 flex justify-between items-center z-50 border-b border-white/10">
-        <h2 className="text-2xl font-bold">
+        <h3 className="text-xl font-bold">
           Brilson <span className="text-cyan-400">Admin</span>
-        </h2>
+        </h3>
         <button onClick={() => setOpen(true)}>
           <FiMenu size={26} className="text-white" />
         </button>
       </div>
-
-      {/* SIDEBAR FOR DESKTOP */}
-      <aside className="relative z-50 w-72 bg-[#151822] border-r border-white/10 px-6 py-10 hidden md:flex flex-col h-full overflow-y-auto">
-        <h2 className="text-3xl font-extrabold tracking-wide mb-10">
-          Brilson <span className="text-cyan-400">Admin</span>
-        </h2>
-
-        <nav className="flex flex-col gap-6 text-lg">
-          <NavLink
-            to="/admindashboard"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <FiHome size={20} /> Dashboard
-          </NavLink>
-
-          <NavLink
-            to="products/list"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <FiPackage size={20} /> Products
-          </NavLink>
-
-          <NavLink
-            to="orders/list"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <FiShoppingBag size={20} /> Orders
-          </NavLink>
-
-          <NavLink
-            to="customers/list"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <FiUsers size={20} /> Customers
-          </NavLink>
-
-          <NavLink
-            to="manage-cards"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <MdManageAccounts size={25} /> Manage Cards (QR)
-          </NavLink>
-
-          <NavLink
-            to="manage-cards/card"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <MdManageAccounts size={25} /> Manage Cards (CARD)
-          </NavLink>
-
-          <NavLink
-            to="manage-parking-tag"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <FaLuggageCart size={22} /> Manage Parking Tag
-          </NavLink>
-
-          <NavLink
-            to="manage-google-reviews"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <MdReviews size={22} /> Manage Google Reviews
-          </NavLink>
-
-          <NavLink
-            to="selling-overview"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <MdAnalytics size={20} /> Selling Overview
-          </NavLink>
-
-          <NavLink
-            to="orders/invoices"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <GrDocumentLocked size={20} /> Orders invoices
-          </NavLink>
-
-          <NavLink
-            to="landing/page/content"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <FiSettings size={20} /> Landing Page Content
-          </NavLink>
-
-          <NavLink
-            to="payment/gateway/isactive"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <RiSecurePaymentFill size={20} /> Payment Gateway
-          </NavLink>
-
-          <NavLink
-            to="setting/config"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-          >
-            <FiSettings size={20} /> Settings
-          </NavLink>
-        </nav>
-
-        <div className="mt-auto">
-          {/* <button className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition">
-            <FiLogOut size={20} /> Logout
-          </button> */}
-        </div>
-      </aside>
 
       {/* MOBILE SIDEBAR DRAWER */}
       <aside
@@ -146,9 +47,9 @@ const AdminLayout = () => {
         }`}
       >
         <div className="flex justify-between items-center mb-10">
-          <h2 className="text-2xl font-bold">
+          <h4 className="text-xl font-bold">
             Brilson <span className="text-cyan-400">Admin</span>
-          </h2>
+          </h4>
           <button onClick={() => setOpen(false)}>
             <FiX size={26} className="text-white" />
           </button>
@@ -195,14 +96,6 @@ const AdminLayout = () => {
           >
             <MdManageAccounts size={25} /> Manage Cards (QR)
           </NavLink>
-
-          {/* <NavLink
-            to="manage-cards/card"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
-            onClick={() => setOpen(false)}
-          >
-            <MdManageAccounts size={25} /> Manage Cards (CARD)
-          </NavLink> */}
 
           <NavLink
             to="manage-parking-tag"
@@ -268,11 +161,133 @@ const AdminLayout = () => {
         </div>
       </aside>
 
+      {/* DESKTOP SIDEBAR - SMOOTH TOGGLE */}
+      <aside
+        className={`hidden md:flex flex-col h-full overflow-y-auto transition-all duration-500 ease-in-out ${
+          SideBar ? "w-72 opacity-100" : "w-0 opacity-0 overflow-hidden"
+        }`}
+      >
+        <div className="w-72 bg-[#151822] border-r border-white/10 px-6 py-10 h-full flex flex-col">
+          <div className="flex items-center justify-between mb-10">
+            <h3 className="text-2xl font-extrabold tracking-wide whitespace-nowrap">
+              Brilson <span className="text-cyan-400">Admin</span>
+            </h3>
+            <span onClick={() => handleSideBarToggle(false)}>
+              <GiCrossMark size={28} className="cursor-pointer text-slate-300 hover:text-red-400 transition" />
+            </span>
+          </div>
+
+          <nav className="flex flex-col gap-6 text-lg">
+            <NavLink
+              to="/admindashboard"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <FiHome size={20} /> Dashboard
+            </NavLink>
+
+            <NavLink
+              to="products/list"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <FiPackage size={20} /> Products
+            </NavLink>
+
+            <NavLink
+              to="orders/list"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <FiShoppingBag size={20} /> Orders
+            </NavLink>
+
+            <NavLink
+              to="customers/list"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <FiUsers size={20} /> Customers
+            </NavLink>
+
+            <NavLink
+              to="manage-cards"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <MdManageAccounts size={25} /> Manage Cards (QR)
+            </NavLink>
+
+            <NavLink
+              to="manage-cards/card"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <MdManageAccounts size={25} /> Manage Cards (CARD)
+            </NavLink>
+
+            <NavLink
+              to="manage-parking-tag"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <FaLuggageCart size={22} /> Manage Parking Tag
+            </NavLink>
+
+            <NavLink
+              to="manage-google-reviews"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <MdReviews size={22} /> Manage Google Reviews
+            </NavLink>
+
+            <NavLink
+              to="selling-overview"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <MdAnalytics size={20} /> Selling Overview
+            </NavLink>
+
+            <NavLink
+              to="orders/invoices"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <GrDocumentLocked size={20} /> Orders invoices
+            </NavLink>
+
+            <NavLink
+              to="landing/page/content"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <FiSettings size={20} /> Landing Page Content
+            </NavLink>
+
+            <NavLink
+              to="payment/gateway/isactive"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <RiSecurePaymentFill size={20} /> Payment Gateway
+            </NavLink>
+
+            <NavLink
+              to="setting/config"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+            >
+              <FiSettings size={20} /> Settings
+            </NavLink>
+          </nav>
+
+          <div className="mt-auto">
+            {/* <button className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition">
+              <FiLogOut size={20} /> Logout
+            </button> */}
+          </div>
+        </div>
+      </aside>
+
       {/* MAIN CONTENT - SCROLLABLE AREA */}
       <main className="flex-1 flex flex-col h-full overflow-hidden">
         {/* TOPBAR (DESKTOP) */}
-        <div className="hidden md:flex justify-between items-center px-4 sm:px-6 md:px-10 py-4 bg-[#0D0F17] border-b border-white/10">
-          <h2 className="text-3xl font-bold">Admin Panel</h2>
+        <div className="hidden md:flex gap-15 items-center px-4 sm:px-6 md:px-20 py-4 bg-[#0D0F17] border-b border-white/10">
+          {!SideBar && (
+            <span onClick={() => handleSideBarToggle(true)}>
+              <CiMenuFries size={28} color="white" className="cursor-pointer hover:text-cyan-400 transition" />
+            </span>
+          )}
+          <h3 className="text-2xl font-bold">Admin Dashboard</h3>
         </div>
 
         {/* SCROLLABLE PAGE CONTENT */}
