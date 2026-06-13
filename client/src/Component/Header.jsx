@@ -148,9 +148,9 @@ const { cartCount } = useCart();
 
         {/* DESKTOP MENU */}
         <ul className="hidden md:flex gap-10 text-gray-300">
-          <Link to="/" className="hover:text-white">Home</Link>
-          <Link to="/products" className="hover:text-white">Products</Link>
-          <Link to="/how-it-works" className="hover:text-white">How It Works</Link>
+          <Link to="/" className="hover:text-white text-sm">Home</Link>
+          <Link to="/products" className="hover:text-white text-sm">Products</Link>
+          <Link to="/how-it-works" className="hover:text-white text-sm">How It Works</Link>
         </ul>
 
         {/* DESKTOP ACTIONS */}

@@ -43,7 +43,7 @@ useEffect(() => {
         </span>
 
         {/* Heading */}
-        <h2 className="text-white lg:text-5xl text-3xl md:text-5xl font-extrabold leading-tight">
+        <h2 className="text-white lg:text-3xl text-2xl md:text-3xl font-extrabold leading-tight">
           {
             data.heading
           }

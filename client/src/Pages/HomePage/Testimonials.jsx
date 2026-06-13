@@ -120,7 +120,7 @@ const Testimonials = () => {
             </span>
           </h2>
           
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+          <p className="md:text-base lg:text-base text-sm text-gray-400 max-w-3xl mx-auto leading-relaxed">
             Join thousands of professionals who have transformed their networking experience with our smart digital solutions.
           </p>
         </div>

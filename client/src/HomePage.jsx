@@ -8,7 +8,7 @@ import Networking from './Pages/HomePage/Networking';
 import HowToUse from './Component/HowToUse';
 
 const HomePage = () => {
-  return (
+  return ( 
     <div>
       <HeroSection />
       <PowerFullFeature />

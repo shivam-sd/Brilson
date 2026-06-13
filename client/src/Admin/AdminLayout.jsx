@@ -36,7 +36,7 @@ const AdminLayout = () => {
           Brilson <span className="text-cyan-400">Admin</span>
         </h3>
         <button onClick={() => setOpen(true)}>
-          <FiMenu size={26} className="text-white" />
+          <CiMenuFries size={26} className="text-white" />
         </button>
       </div>
 
@@ -51,7 +51,7 @@ const AdminLayout = () => {
             Brilson <span className="text-cyan-400">Admin</span>
           </h4>
           <button onClick={() => setOpen(false)}>
-            <FiX size={26} className="text-white" />
+            <GiCrossMark size={26} className="text-white" />
           </button>
         </div>
 
@@ -59,98 +59,98 @@ const AdminLayout = () => {
         <nav className="flex flex-col gap-6 text-[14px]">
           <NavLink
             to="/admindashboard"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <FiHome size={20} /> Dashboard
+            <FiHome size={18} /> Dashboard
           </NavLink>
 
           <NavLink
             to="products/list"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <FiPackage size={20} /> Products
+            <FiPackage size={18} /> Products
           </NavLink>
 
           <NavLink
             to="orders/list"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <FiShoppingBag size={20} /> Orders
+            <FiShoppingBag size={18} /> Orders
           </NavLink>
 
           <NavLink
             to="customers/list"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <FiUsers size={20} /> Customers
+            <FiUsers size={18} /> Customers
           </NavLink>
 
           <NavLink
             to="manage-cards"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <MdManageAccounts size={25} /> Manage Cards (QR)
+            <MdManageAccounts size={18} /> Manage Cards (QR)
           </NavLink>
 
           <NavLink
             to="manage-parking-tag"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <FaLuggageCart size={22} /> Manage Parking Tag
+            <FaLuggageCart size={18} /> Manage Parking Tag
           </NavLink>
 
           <NavLink
             to="manage-google-reviews"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <MdReviews size={22} /> Manage Google Reviews
+            <MdReviews size={18} /> Manage Google Reviews
           </NavLink>
 
           <NavLink
             to="selling-overview"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <MdAnalytics size={20} /> Selling Overview
+            <MdAnalytics size={18} /> Selling Overview
           </NavLink>
 
           <NavLink
             to="orders/invoices"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <GrDocumentLocked size={20} /> Orders invoices
+            <GrDocumentLocked size={18} /> Orders invoices
           </NavLink>
 
           <NavLink
             to="landing/page/content"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <FiSettings size={20} /> Landing Page Content
+            <FiSettings size={18} /> Landing Page Content
           </NavLink>
 
           <NavLink
             to="payment/gateway/isactive"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <RiSecurePaymentFill size={20} /> Payment Gateway
+            <RiSecurePaymentFill size={18} /> Payment Gateway
           </NavLink>
 
           <NavLink
             to="setting/config"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <FiSettings size={20} /> Settings
+            <FiSettings size={18} /> Settings
           </NavLink>
         </nav>
 
@@ -169,7 +169,7 @@ const AdminLayout = () => {
       >
         <div className="w-72 bg-[#151822] border-r border-white/10 px-6 py-10 h-full flex flex-col">
           <div className="flex items-center justify-between mb-10">
-            <h3 className="text-2xl font-extrabold tracking-wide whitespace-nowrap">
+            <h3 className="text-xl font-extrabold tracking-wide whitespace-nowrap">
               Brilson <span className="text-cyan-400">Admin</span>
             </h3>
             <span onClick={() => handleSideBarToggle(false)}>
@@ -180,93 +180,93 @@ const AdminLayout = () => {
           <nav className="flex flex-col gap-6 text-lg">
             <NavLink
               to="/admindashboard"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <FiHome size={20} /> Dashboard
+              <FiHome size={18} /> Dashboard
             </NavLink>
 
             <NavLink
               to="products/list"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <FiPackage size={20} /> Products
+              <FiPackage size={18} /> Products
             </NavLink>
 
             <NavLink
               to="orders/list"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <FiShoppingBag size={20} /> Orders
+              <FiShoppingBag size={18} /> Orders
             </NavLink>
 
             <NavLink
               to="customers/list"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <FiUsers size={20} /> Customers
+              <FiUsers size={18} /> Customers
             </NavLink>
 
             <NavLink
               to="manage-cards"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <MdManageAccounts size={25} /> Manage Cards (QR)
+              <MdManageAccounts size={18} /> Manage Cards (QR)
             </NavLink>
 
             <NavLink
               to="manage-cards/card"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <MdManageAccounts size={25} /> Manage Cards (CARD)
+              <MdManageAccounts size={18} /> Manage Cards (CARD)
             </NavLink>
 
             <NavLink
               to="manage-parking-tag"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <FaLuggageCart size={22} /> Manage Parking Tag
+              <FaLuggageCart size={18} /> Manage Parking Tag
             </NavLink>
 
             <NavLink
               to="manage-google-reviews"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <MdReviews size={22} /> Manage Google Reviews
+              <MdReviews size={18} /> Manage Google Reviews
             </NavLink>
 
             <NavLink
               to="selling-overview"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <MdAnalytics size={20} /> Selling Overview
+              <MdAnalytics size={18} /> Selling Overview
             </NavLink>
 
             <NavLink
               to="orders/invoices"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <GrDocumentLocked size={20} /> Orders invoices
+              <GrDocumentLocked size={18} /> Orders invoices
             </NavLink>
 
             <NavLink
               to="landing/page/content"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <FiSettings size={20} /> Landing Page Content
+              <FiSettings size={18} /> Landing Page Content
             </NavLink>
 
             <NavLink
               to="payment/gateway/isactive"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <RiSecurePaymentFill size={20} /> Payment Gateway
+              <RiSecurePaymentFill size={18} /> Payment Gateway
             </NavLink>
 
             <NavLink
               to="setting/config"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-base"
             >
-              <FiSettings size={20} /> Settings
+              <FiSettings size={18} /> Settings
             </NavLink>
           </nav>
 

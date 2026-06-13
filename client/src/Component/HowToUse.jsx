@@ -90,10 +90,10 @@ const HowToUse = () => {
         viewport={{ once: true }}
         className="max-w-3xl mx-auto text-center mb-16 md:mb-24"
       >
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
           {info.heading}
-        </h2>
-        <p className="text-gray-400 text-base md:text-lg">
+        </h3>
+        <p className="text-gray-400 text-sm md:text-base">
           {info.subHeading}
         </p>
       </div>
@@ -162,10 +162,10 @@ const HowToUse = () => {
               <span className="text-sm text-indigo-400 font-semibold">
                 STEP {index + 1}
               </span>
-              <h3 className="text-2xl md:text-3xl font-bold mt-2 mb-4">
+              <h3 className="text-2xl md:text-2xl font-bold mt-2 mb-4">
                 {step.title || `Step ${index + 1}`}
               </h3>
-              <p className="text-gray-400 text-base md:text-lg">
+              <p className="text-gray-400 text-sm md:text-sm">
                 {step.description || "Description will appear here."}
               </p>
             </div>
@@ -251,10 +251,10 @@ const HowToUse = () => {
               <span className="text-sm text-indigo-400 font-semibold">
                 STEP {videoSteps.length + index + 1}
               </span>
-              <h3 className="text-2xl md:text-3xl font-bold mt-2 mb-4">
+              <h3 className="text-xl md:text-2xl font-bold mt-2 mb-4">
                 {step.title || defaultLottieSteps[index]?.title || `Step ${videoSteps.length + index + 1}`}
               </h3>
-              <p className="text-gray-400 text-base md:text-lg">
+              <p className="text-gray-400 text-sm md:text-sm">
                 {step.description || defaultLottieSteps[index]?.desc || "Description will appear here."}
               </p>
             </div>
@@ -307,9 +307,9 @@ const HowToUse = () => {
         viewport={{ once: true }}
         className="max-w-6xl mx-auto mt-20 md:mt-32 text-center"
       >
-        <h3 className="text-2xl md:text-3xl font-bold mb-8 md:mb-12">
+        <h4 className="text-xl md:text-2xl font-bold mb-8 md:mb-12">
           Why Use Smart Card?
-        </h3>
+        </h4>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 px-4">
           {[
@@ -322,7 +322,7 @@ const HowToUse = () => {
               key={i}
               className="bg-[#111] p-6 md:p-8 rounded-2xl shadow-lg"
             >
-              <h4 className="font-semibold text-base md:text-lg">{benefit}</h4>
+              <h4 className="font-semibold text-base md:text-base text-sm">{benefit}</h4>
             </div>
           ))}
         </div>

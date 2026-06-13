@@ -143,7 +143,7 @@ const colorStyles = [
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-center text-gray-400 mt-4 max-w-2xl mx-auto"
+          className="text-center text-gray-400 mt-4 max-w-2xl mx-auto text-sm"
         >
           {subHeading}
           {/* Everything you need to make lasting impressions and grow your network effortlessly. */}

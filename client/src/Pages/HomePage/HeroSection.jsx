@@ -105,7 +105,7 @@ useEffect(() => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-gray-300 max-w-3xl mx-auto text-lg sm:text-xl mb-12"
+          className="text-gray-300 max-w-3xl mx-auto text-base sm:text-base mb-12"
         >
           {homePageContent.subHeading
 }
@@ -141,7 +141,7 @@ useEffect(() => {
   transition-all duration-200 active:scale-95"
 >
   {/* Text split into letters */}
-  <span className="flex gap-[2px] text-xl font-extrabold text-red-200">
+  <span className="flex gap-[2px] text-base font-extrabold text-red-200">
     {"SHOP NOW".split("").map((char, i) => (
       <span
         key={i}
@@ -167,7 +167,7 @@ useEffect(() => {
   transition-all duration-200 active:scale-95"
 >
   {/* Text split into letters */}
-  <span className="flex gap-[2px] text-xl font-extrabold text-red-200">
+  <span className="flex gap-[2px] text-base font-extrabold text-red-200">
     {"How It Works".split("").map((char, i) => (
       <span
         key={i}
@@ -195,7 +195,7 @@ useEffect(() => {
   transition-all duration-200 active:scale-95"
 >
   {/* Text split into letters */}
-  <span className="flex gap-[2px] text-lg font-extrabold text-red-200">
+  <span className="flex gap-[2px] text-base font-extrabold text-red-200">
     {"SHOP NOW".split("").map((char, i) => (
       <span
         key={i}
@@ -219,7 +219,7 @@ useEffect(() => {
   transition-all duration-200 active:scale-95"
 >
 {/* Text split into letters */}
-  <span className="flex gap-[2px] text-lg font-extrabold text-red-200">
+  <span className="flex gap-[2px] text-base font-extrabold text-red-200">
     {"HOW IT WORKS".split("").map((char, i) => (
       <span
         key={i}
@@ -248,7 +248,7 @@ useEffect(() => {
             >
               <img src={f.image} alt="" className="w-10"loading="lazy" />
               <div className="text-left">
-                <div className="font-semibold">{f.title}</div>
+                <div className="font-semibold text-base">{f.title}</div>
                 <div className="text-sm text-gray-400">{f.description}</div>
               </div>
             </div>

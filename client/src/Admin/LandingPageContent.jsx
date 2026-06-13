@@ -87,7 +87,7 @@ const LandingPageContent = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <div className="min-h-screen p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900 md:mt-0 lg:mt-0 mt-10">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
