@@ -9,10 +9,10 @@ const SmartNFCSection = () => {
 
       {/* Heading */}
       <div className="text-center mb-16 mt-10">
-        <h2 className="text-4xl md:text-5xl font-bold text-white">
+        <h2 className="text-xl md:text-3xl font-bold text-white">
           Smart <span className="text-cyan-400">NFC Business Card</span>
         </h2>
-        <p className="text-gray-400 mt-4 max-w-2xl mx-auto">
+        <p className="text-gray-400 mt-4 max-w-2xl mx-auto text-sm md:text-base">
           Share your contact instantly with just a tap.  
           No apps. No paper. Just smart networking.
         </p>

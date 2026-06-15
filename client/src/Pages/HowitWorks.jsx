@@ -58,7 +58,7 @@ const HowItWorks = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-4xl md:text-5xl font-bold"
+          className="md:text-3xl text-xl font-bold"
         >
           How <span className="text-cyan-400">NFC Smart Card</span> Works
         </motion.h4>
@@ -67,7 +67,7 @@ const HowItWorks = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-4 max-w-2xl text-gray-400"
+          className="mt-4 max-w-2xl text-gray-400 md:text-base text-sm"
         >
           Tap once. Share forever. No apps. No paper. Just smart networking.
         </motion.p>
@@ -153,8 +153,8 @@ const HowItWorks = () => {
 <NfcCardFeatures />
 
       {/* BENEFITS */}
-      <section className="py-24 px-6 bg-white/5">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+      <section className="py-5 px-6 bg-white/5">
+        <h2 className="text-xl md:text-2xl font-bold text-center mb-5">
           Why Choose <span className="text-cyan-400">Us?</span>
         </h2>
 

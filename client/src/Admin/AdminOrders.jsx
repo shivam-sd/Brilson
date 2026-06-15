@@ -149,8 +149,8 @@ const AdminOrders = () => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
-        <h2 className="text-3xl font-bold text-cyan-400">
+      <div className="flex flex-col md:flex-row justify-between gap-4 mb-6 mt-15">
+        <h2 className="text-2xl font-bold text-cyan-400">
           Last 7 Days Orders
         </h2>
 

@@ -5,7 +5,7 @@ import SmartNFCSection from './SmartNFCSection'
 
 const GetYourCard = () => {
   return (
-    <div>
+    <div> 
       <SmartNFCSection />
       <ChooseYourCard />
     </div>

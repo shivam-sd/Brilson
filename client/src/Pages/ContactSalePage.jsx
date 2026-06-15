@@ -46,10 +46,10 @@ const handleSubmit = async (e) => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-16 px-6"
       >
-        <h2 className="text-4xl md:text-5xl font-extrabold leading-tight">
+        <h4 className="text-xl md:text-3xl font-extrabold leading-tight">
           Contact <span className="text-cyan-400">Sales</span>
-        </h2>
-        <p className="text-gray-400 mt-4 max-w-2xl mx-auto text-base">
+        </h4>
+        <p className="text-gray-400 mt-4 max-w-2xl mx-auto lg:text-base text-sm">
           Looking for bulk orders, corporate plans, or business solutions?  
           Our sales team is here to help you find the perfect smart card solution.
         </p>

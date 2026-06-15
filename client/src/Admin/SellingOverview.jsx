@@ -123,16 +123,16 @@ console.log(res)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto mt-10">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3 mb-5">
                 <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md">  
                   <BarChart3 className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-2xl md:text-4xl font-bold text-gray-800">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-800">
                   Sales Overview
                 </h2>
               </div>

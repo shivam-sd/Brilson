@@ -107,16 +107,16 @@ const AdminProducts = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl">
-      <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 mt-13 lg:mt-0">
         
         {/* HEADER SECTION */}
         <div className="mb-8 lg:mb-10">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-6">
             <div className="flex-1">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <h3 className="text-xl sm:text-4xl lg:text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
                 Product Management
-              </h2>
-              <p className="text-gray-400 mt-2 text-sm sm:text-base">
+              </h3>
+              <p className="text-gray-400 mt-2 text-sm sm:text-sm">
                 Manage and organize your product catalog efficiently
               </p>
             </div>

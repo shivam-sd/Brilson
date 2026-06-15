@@ -358,10 +358,10 @@ const Checkout = () => {
           >
             ← Back to Cart
           </button>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent uppercase">
+          <h4 className="text-2xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent uppercase">
             Checkout
-          </h2>
-          <p className="text-gray-400 mt-2">Complete your purchase</p>
+          </h4>
+          <p className="text-gray-400 mt-2 lg:text-base text-sm">Complete your purchase</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">

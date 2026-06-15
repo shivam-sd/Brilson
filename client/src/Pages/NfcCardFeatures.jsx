@@ -64,7 +64,7 @@ const NfcCardFeatures = () => {
     <div className="bg-gradient-to-br from-[#03060A] via-[#060B14] to-[#03060A] text-white">
 
       {/*  HERO  */}
-      <section className="max-w-7xl mx-auto px-6 py-28 grid lg:grid-cols-2 gap-20 items-center">
+      <section className="max-w-7xl mx-auto px-6 py-10 grid lg:grid-cols-2 gap-20 items-center">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -73,15 +73,15 @@ const NfcCardFeatures = () => {
             <div className="w-full flex items-center justify-center">
 
           <span className="inline-block mb-4 px-4 py-1 text-sm rounded-full bg-cyan-500/10 text-cyan-400">
-            Brison NFC Smart Card
+            Brilson NFC Smart Card
           </span>
             </div>
 
-          <h2 className="text-4xl md:text-5xl font-bold leading-tight text-center">
+          <h2 className="text-2xl md:text-3xl font-bold leading-tight text-center">
             The Future of <span className="text-cyan-400">Smart Networking</span>
           </h2>
 
-          <p className="mt-6 text-gray-300 text-lg max-w-xl">
+          <p className="mt-6 text-gray-300 md:text-base text-sm max-w-xl">
             Replace traditional visiting cards with Brison’s premium NFC Smart
             Card  fast, secure, eco-friendly & built for modern businesses.
           </p>
@@ -107,10 +107,10 @@ const NfcCardFeatures = () => {
 
       {/*  FEATURES  */}
       <section className="max-w-7xl mx-auto px-6 lg:py-10">
-        <h2 className="text-3xl md:text-4xl font-bold text-center">
+        <h2 className="text-2xl md:text-3xl font-bold text-center">
           Powerful Features
         </h2>
-        <p className="text-center text-gray-400 mt-4 max-w-2xl mx-auto">
+        <p className="text-center text-gray-400 mt-4 max-w-2xl mx-auto text-sm md:text-base">
           Designed for professionals, enterprises & modern brands.
         </p>
 
@@ -132,7 +132,7 @@ const NfcCardFeatures = () => {
       </section>
 
       {/*  HOW IT WORKS  */}
-      <section className="bg-[#060B14] lg:py-24 py-4 lg:mt-0 mt-10">
+      <section className="bg-[#060B14] lg:py-5 py-4 lg:mt-0 mt-10">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-center">
             How It Works
@@ -155,7 +155,7 @@ const NfcCardFeatures = () => {
       </section>
 
       {/*  CTA  */}
-      <section className="py-24 text-center">
+      {/* <section className="py-24 text-center">
         <h2 className="text-3xl md:text-5xl font-bold">
           Upgrade Your <span className="text-cyan-400">Networking Experience</span>
         </h2>
@@ -163,10 +163,10 @@ const NfcCardFeatures = () => {
           Join the future of digital identity & smart business networking with Brison.
         </p>
 
-        {/* <button className="mt-10 px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl font-semibold text-xl inline-flex items-center gap-3 hover:scale-105 transition">
+        <button className="mt-10 px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl font-semibold text-xl inline-flex items-center gap-3 hover:scale-105 transition">
           Start with Brison <FiArrowRight />
-        </button> */}
-      </section>
+        </button>
+      </section> */}
     </div>
   );
 };

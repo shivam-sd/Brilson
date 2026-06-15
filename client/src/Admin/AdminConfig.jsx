@@ -235,7 +235,7 @@ const AdminConfig = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-800 to-slate-800 p-4 md:p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto mt-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-center gap-3 mb-3">

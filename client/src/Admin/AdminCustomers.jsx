@@ -24,7 +24,7 @@ const AdminCustomers = () => {
 
       const orders = res.data.orders || [];
 
-      /* ================= CREATE UNIQUE CUSTOMERS ================= */
+      /*  CREATE UNIQUE CUSTOMERS  */
       const customerMap = new Map();
 
       orders.forEach((order) => {
@@ -52,7 +52,7 @@ const AdminCustomers = () => {
     }
   };
 
-  /* ================= UI ================= */
+  /*  UI  */
   if (loading) {
     return (
       <div className="text-center text-gray-400 py-10">
@@ -62,8 +62,8 @@ const AdminCustomers = () => {
   }
 
   return (
-    <div className="w-full">
-      <h2 className="text-2xl md:text-5xl font-bold mb-6">
+    <div className="w-full mt-15">
+      <h2 className="text-xl md:text-2xl font-bold mb-6">
         Customers
       </h2>
 

@@ -96,9 +96,9 @@ const ChooseYourCard = () => {
       <section className="w-full min-h-screen py-24 bg-gradient-to-br from-[#05070a] via-gray-900 to-[#05070a] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-extrabold leading-tight">
+            <h4 className="text-xl md:text-2xl font-extrabold leading-tight">
               Choose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Smart Card</span>
-            </h2>
+            </h4>
             <p className="text-gray-400 mt-3">Fetching premium cards...</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -152,10 +152,10 @@ const ChooseYourCard = () => {
 
       {/* Page Title */}
       <div className="relative text-center max-w-3xl mx-auto mb-16 px-4 sm:px-6">
-        <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight">
+        <h4 className="text-2xl md:text-3xl lg:text-3xl font-extrabold leading-tight">
           Choose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Smart Card</span>
-        </h2>
-        <p className="text-gray-400 mt-4 text-lg">
+        </h4>
+        <p className="text-gray-400 mt-4 lg:text-base text-sm">
           Premium quality cards at competitive prices. Free shipping on all orders.
         </p>
       </div>
@@ -212,13 +212,13 @@ const ChooseYourCard = () => {
             <div className="p-6">
               {/* Category */}
               {product.category && (
-                <p className="text-cyan-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                <p className="text-cyan-400 text-sm font-semibold uppercase tracking-wider mb-2">
                   {typeof product.category === 'object' ? product.category.name : product.category}
                 </p>
               )}
 
               {/* Title */}
-              <h3 className="text-2xl font-bold mb-2 line-clamp-1">
+              <h3 className="text-xl font-bold mb-2 line-clamp-1">
                 {product.title || "Untitled Product"}
               </h3>
 
@@ -228,7 +228,7 @@ const ChooseYourCard = () => {
                   {getPrice(product)}
                 </p>
                 {product.oldPrice && parseFloat(product.oldPrice) > parseFloat(product.price) && (
-                  <p className="text-gray-400 line-through text-lg">
+                  <p className="text-gray-400 line-through text-sm">
                     ₹{parseFloat(product.oldPrice).toFixed(2)}
                   </p>
                 )}

@@ -782,7 +782,7 @@ const ManageParkingTag = () => {
   };
 
   return (
-    <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-full overflow-x-hidden">
+    <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-full overflow-x-hidden mt-8">
       {/* HEADER - Responsive */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6">
         <div className="w-full lg:w-auto text-center lg:text-left">

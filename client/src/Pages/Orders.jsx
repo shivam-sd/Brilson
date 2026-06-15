@@ -98,11 +98,11 @@ const Orders = () => {
     <div className="min-h-screen bg-[#03060A] text-white px-5 py-24">
       <div className="max-w-6xl mx-auto">
 
-        <div className="flex justify-center mb-10">
-          <h2 className="text-5xl font-bold flex items-center gap-3">
-            <FiShoppingBag className="text-cyan-400" />
+        <div className="flex justify-center mb-6">
+          <h4 className="text-2xl  font-bold flex items-center gap-3">
+            <FiShoppingBag className="text-cyan-400" size={25} />
             My Orders
-          </h2>
+          </h4>
         </div>
 
         {orders.length === 0 ? (
