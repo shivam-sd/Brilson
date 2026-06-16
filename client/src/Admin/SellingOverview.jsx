@@ -122,8 +122,8 @@ console.log(res)
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-6">
-      <div className="max-w-7xl mx-auto mt-10">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-4 rounded-2xl">
+      <div className="max-w-7xl mx-auto mt-10 lg:mt-0 md:mt-0">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">

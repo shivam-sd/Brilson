@@ -39,20 +39,20 @@ const AdminInvoices = () => {
   };
 
   return (
-    <div className="min-h-screen px-6 py-12 bg-gradient-to-br from-[#05070a] via-[#070b14] to-[#05070a] text-white">
+    <div className="min-h-screen px-6 py-2 bg-gradient-to-br from-[#05070a] via-[#070b14] to-[#05070a] text-white">
       <div className="max-w-7xl mx-auto">
 
         {/* HEADER */}
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6 mb-12">
-          <h2 className="text-4xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6 mb-5">
+          <h4 className="text-xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             Invoices
-          </h2>
+          </h4>
 
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={downloadZip}
-            className="flex items-center gap-3 px-6 py-3 rounded-xl font-semibold text-black bg-gradient-to-r from-cyan-400 to-blue-500 shadow-lg"
+            className="flex items-center gap-3 px-6 py-2 rounded-xl font-semibold text-black bg-gradient-to-r from-cyan-400 to-blue-500 shadow-lg text-sm cursor-pointer"
           >
             <FiDownload />
             Download All Invoices
@@ -75,7 +75,7 @@ const AdminInvoices = () => {
               {/* TOP */}
               <div className="flex flex-col md:flex-row justify-between md:items-center gap-6">
                 <div className="space-y-1">
-                  <p className="flex items-center gap-2 font-semibold text-lg">
+                  <p className="flex items-center gap-2 font-semibold text-base">
                     <FiUser className="text-cyan-400" />
                     {inv.userName}
                   </p>
@@ -83,7 +83,7 @@ const AdminInvoices = () => {
                     <FiMail />
                     {inv.email}
                   </p>
-                  <p className="flex items-center gap-2 text-sm text-gray-400">
+                  <p className="flex items-center gap-2 text-xs text-gray-400">
                     <FiFileText />
                     Invoice #{inv.invoiceNumber}
                   </p>
@@ -116,7 +116,7 @@ const AdminInvoices = () => {
 
               {/* TOTAL */}
               <div className="mt-6 flex justify-end">
-                <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                <span className="text-base font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                   Total: ₹{inv.totalAmount}
                 </span>
               </div>

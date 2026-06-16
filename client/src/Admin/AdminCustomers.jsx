@@ -62,10 +62,10 @@ const AdminCustomers = () => {
   }
 
   return (
-    <div className="w-full mt-15">
-      <h2 className="text-xl md:text-2xl font-bold mb-6">
+    <div className="w-full mt-15 lg:mt-0 md:mt-0">
+      <h4 className="text-xl font-bold mb-4 text-center md:text-left lg:text-left">
         Customers
-      </h2>
+      </h4>
 
       <div className="bg-[#151822] border border-white/10 rounded-xl overflow-hidden shadow-lg">
 

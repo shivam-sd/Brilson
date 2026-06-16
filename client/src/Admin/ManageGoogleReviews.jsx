@@ -761,12 +761,12 @@ const ManageGoogleReviews = () => {
   };
 
   return (
-    <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-full overflow-x-hidden mt-8">
+    <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-full overflow-x-hidden mt-8 lg:mt-0 md:mt-0">
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6">
         <div className="w-full lg:w-auto text-center lg:text-left">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">Manage Google Reviews</h2>
-          <p className="text-gray-400 mt-1 text-xs sm:text-sm">
+          <h4 className="text-xl sm:text-xl md:text-xl lg:text-xl font-bold">Manage Google Reviews</h4>
+          <p className="text-gray-400 mt-1 text-xs">
             View, track and manage all Google review profiles
             <span className="ml-2 text-indigo-400 font-medium block sm:inline mt-1 sm:mt-0">
               (Page {currentPage} of {totalPages})
@@ -858,7 +858,7 @@ const ManageGoogleReviews = () => {
           {/* Create Button */}
           <Link
             to="/api/google-reviews/bulk"
-            className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg text-sm sm:text-base w-full sm:w-auto"
+            className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg text-xs w-full sm:w-auto"
           >
             <FiPlus className="text-base transition-transform duration-300 group-hover:rotate-180" />
             <span>Create Reviews</span>

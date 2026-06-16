@@ -87,7 +87,7 @@ const LandingPageContent = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900 md:mt-0 lg:mt-0 mt-10">
+    <div className="relative min-h-screen p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900 md:mt-0 lg:mt-0 mt-10">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
@@ -97,15 +97,15 @@ const LandingPageContent = () => {
       <div className="relative z-10">
         {/* Header */}
         <div className="mb-10 text-center">
-          <div className="inline-flex items-center gap-3 mb-4">
+          <div className="inline-flex items-center gap-3 mb-2">
             <div className="p-2 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500">
-              <Sparkles className="text-white" size={18} />
+              <Sparkles className="text-white" size={15} />
             </div>
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-orange-400 to-purple-400 bg-clip-text text-transparent">
+            <h4 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-orange-400 to-purple-400 bg-clip-text text-transparent">
               Landing Page 
-            </h2>
+            </h4>
           </div>
-          <p className="text-gray-300 max-w-2xl mx-auto text-lg">
+          <p className="text-gray-300 max-w-2xl mx-auto text-xs">
             Customize every section of your landing page with our intuitive editor
           </p>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Outlet, NavLink, Link } from "react-router-dom";
+import { Outlet, NavLink, Link, useLocation } from "react-router-dom";
 import {
   FiHome,
   FiPackage,
@@ -27,6 +27,27 @@ const AdminLayout = () => {
   const handleSideBarToggle = (val) => {
     setSideBar(val);
   };
+
+  const pageTitles = {
+  "/admindashboard": "Admin Dashboard",
+  "/admindashboard/products/list": "Admin Products",
+  "/admindashboard/orders/list": "Admin Orders",
+  "/admindashboard/customers/list": "Admin Customers",
+  "/admindashboard/manage-cards": "Admin Manage Cards (QR)",
+  "/admindashboard/manage-cards/card": "Admin Manage Cards (CARD)",
+  "/admindashboard/manage-parking-tag": "Admin Manage Parking Tag",
+  "/admindashboard/manage-google-reviews": "Admin Manage Google Reviews",
+  "/admindashboard/selling-overview": "Admin Selling Overview",
+  "/admindashboard/orders/invoices": "Admin Orders Invoices",
+  "/admindashboard/landing/page/content": "Admin Landing Page Content",
+  "/admindashboard/payment/gateway/isactive": "Admin Payment Gateway",
+  "/admindashboard/setting/config": "Admin Settings",
+};
+
+const location = useLocation();
+console.log(location);
+const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
+
 
   return (
     <div className="flex h-screen bg-[#0D0F17] text-white overflow-hidden">
@@ -287,7 +308,7 @@ const AdminLayout = () => {
               <CiMenuFries size={28} color="white" className="cursor-pointer hover:text-cyan-400 transition" />
             </span>
           )}
-          <h3 className="text-xl font-bold">Admin Dashboard</h3>
+          <h3 className="text-xl font-bold">{currentTitle}</h3>
         </div>
 
         {/* SCROLLABLE PAGE CONTENT */}

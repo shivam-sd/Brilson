@@ -85,11 +85,11 @@ const AdminPaymentGateway = () => {
 
   return (
 
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white p-10">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white px-10 py-5">
 
-      <h2 className="text-4xl mt-4 font-bold mb-10 text-center">
+      <h4 className="text-xl font-bold mb-5 text-center">
         Payment Gateway Settings
-      </h2>
+      </h4>
 
       <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
 

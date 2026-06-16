@@ -7,6 +7,8 @@ import {
 
 const StatsCards = ({data}) => {
 
+  const revenue = data.totalRevenue.toFixed(2)
+  
   const cards = [
     {
       title:"Orders",
@@ -25,7 +27,7 @@ const StatsCards = ({data}) => {
     },
     {
       title:"Revenue",
-      value:`₹${data.totalRevenue}`,
+      value:`₹${revenue}`,
       icon:<FiDollarSign/>
     }
   ];
@@ -52,7 +54,7 @@ const StatsCards = ({data}) => {
           </div>
 
 
-          <h2 className="text-white text-xl lg:text-3xl md:text-3xl font-bold flex items-center justify-center mt-4">
+          <h2 className="text-white text-base font-bold flex items-center justify-center mt-4">
             {item.value}
           </h2>
         </div>

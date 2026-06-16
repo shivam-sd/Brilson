@@ -235,18 +235,18 @@ const AdminConfig = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-800 to-slate-800 p-4 md:p-6">
-      <div className="max-w-4xl mx-auto mt-8">
+      <div className="max-w-4xl mx-auto mt-8 md:mt-0 lg:mt-0">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-center gap-3 mb-3">
             <div className="p-2 bg-blue-100 rounded-lg">
-              <Settings className="w-6 h-6 text-blue-600" />
+              <Settings className="w-4 h-4 text-blue-600" />
             </div>
-            <p className="text-2xl md:text-3xl text-center text-white">
+            <p className="text-xl md:text-2xl text-center text-white">
               Configuration Settings
             </p>
           </div>
-          <p className="text-gray-300 text-center">
+          <p className="text-gray-300 text-center text-xs">
             Manage your payment gateway and media storage configurations
           </p>
         </div>
