@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL12;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const TermsCondition = () => {
   const [activeSection, setActiveSection] = useState('hero');
