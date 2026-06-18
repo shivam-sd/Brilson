@@ -133,11 +133,11 @@ const RefundPolicyPage = () => {
             className="text-center max-w-5xl mx-auto"
           >
 
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+            <h4 className="text-2xl md:text-4xl font-bold mb-3 text-white">
               Refund Policy
-            </h2>
+            </h4>
 
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base text-gray-300 max-w-3xl mx-auto leading-relaxed">
               We stand behind our services with a transparent and fair refund policy. 
               Your satisfaction is our priority.
             </p>
