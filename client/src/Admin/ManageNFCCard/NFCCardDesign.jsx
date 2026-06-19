@@ -18,6 +18,9 @@ const NFCCardDesign = forwardRef(
     // Format activation code for display (if needed)
     const displayActivationCode = activationCode || "52V28-91S28-6B799";
 
+    // Determine border color based on card text color
+    const borderColor = cardTextColor === "#ffffff" ? "#333" : cardTextColor;
+
     return (
       <div
         ref={ref}
@@ -33,9 +36,9 @@ const NFCCardDesign = forwardRef(
         {/* Main Card Container */}
         <div
           style={{
-            background: "#FFFFFF",
+            background: cardBgColor,
             borderRadius: "32px",
-            border: `2px solid ${cardTextColor === "#ffffff" ? "#333" : "#000000"}`,
+            border: `2px solid ${borderColor}`,
             width: "100%",
             height: "100%",
             boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
@@ -47,7 +50,7 @@ const NFCCardDesign = forwardRef(
           <div
             style={{
               width: "50%",
-              borderRight: `2px solid ${cardTextColor === "#ffffff" ? "#333" : "#000000"}`,
+              borderRight: `2px solid ${borderColor}`,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -101,8 +104,8 @@ const NFCCardDesign = forwardRef(
               style={{
                 fontSize: "28px",
                 letterSpacing: "6px",
-                fontWeight:"600",
-                color: "black",
+                fontWeight: "600",
+                color: cardTextColor === "#ffffff" ? "#666" : "#999",
                 marginTop: "6px",
               }}
             >
@@ -125,9 +128,9 @@ const NFCCardDesign = forwardRef(
             <div
               style={{
                 padding: "22px",
-                border: `3px solid ${cardTextColor === "#ffffff" ? "#333" : "#000000"}`,
+                border: `3px solid ${borderColor}`,
                 borderRadius: "16px",
-                backgroundColor: qrBgColor,
+                backgroundColor: qrBgColor === "transparent" ? "transparent" : qrBgColor,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -137,7 +140,7 @@ const NFCCardDesign = forwardRef(
                 value={profileUrl}
                 size={250}
                 fgColor={qrDotsColor}
-                bgColor={qrBgColor}
+                bgColor={qrBgColor === "transparent" ? "#ffffff" : qrBgColor}
               />
             </div>
 
@@ -155,28 +158,28 @@ const NFCCardDesign = forwardRef(
                   fontSize: "25px",
                   letterSpacing: "5px",
                   textTransform: "uppercase",
-                  color: "black",
-                  fontWeight:"600",
+                  color: cardTextColor === "#ffffff" ? "#666" : "#999",
+                  fontWeight: "600",
                   margin: 0,
                 }}
               >
                 Activation Key
               </p>
-              <font
+              <div
                 style={{
                   fontSize: "40px",
                   fontWeight: "800",
                   fontFamily: "'Courier New', monospace",
                   borderRadius: "12px",
-                  border: `2px solid ${cardTextColor === "#ffffff" ? "#333" : "#000000"}`,
+                  border: `2px solid ${borderColor}`,
                   padding: "8px 24px",
-                  background: cardBgColor === "#ffffff" ? "#f5f5f5" : "transparent",
-                  color: "#000000",
-                  marginTop:"5px"
+                  background: cardBgColor === "#ffffff" ? "#f5f5f5" : "rgba(255,255,255,0.05)",
+                  color: cardTextColor,
+                  marginTop: "5px",
                 }}
               >
                 {displayActivationCode}
-              </font>
+              </div>
             </div>
           </div>
         </div>

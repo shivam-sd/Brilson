@@ -36,26 +36,18 @@ const CardPreviewModal = ({
   if (!isOpen || !card) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-center items-center p-4">
-      <div className="">
-        {/* Close Button - Better for mobile */}
-        <button
-          onClick={onClose}
-          className="absolute lg:top-30 md:top-30 top-30 lg:right-100 md:right-100 right-10 text-white hover:text-red-400 transition z-10 flex items-center justify-center"
-          style={{
-            background: "rgba(0,0,0,0.6)",
-            width: "36px",
-            height: "36px",
-            borderRadius: "50%",
-            fontSize: "20px",
-            border: "1px solid rgba(255,255,255,0.2)",
-          }}
-        >
-          ✕
-        </button>
-
+    <div 
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-center items-center p-4"
+      onClick={onClose} // Click outside to close
+    >
+      {/* Card Container */}
+      <div 
+        className="relative"
+        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+      >
         {/* Card Preview */}
         <div
+        className="relative"
           style={{
             transform: `scale(${scale})`,
             transformOrigin: "center",
@@ -68,13 +60,18 @@ const CardPreviewModal = ({
             qrDotsColor={qrDotsColor}
             qrBgColor={qrBgColor}
           />
-        </div>
 
-        {/* Optional: Tap outside to close (mobile friendly) */}
-        <div
-          className="fixed inset-0 -z-10"
+          {/* Close Button - Top right corner */}
+        <button
           onClick={onClose}
-        />
+          className="absolute lg:-top-25 lg:right-0 -top-50 -right-30 z-100 flex items-center justify-center text-white hover:text-red-400 lg:w-20 lg:h-20 rounded-full transition-colors cursor-pointer lg:text-2xl border w-40 h-40 text-6xl"
+          style={{
+            boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+          }}
+        >
+          ✕
+        </button>
+        </div>
       </div>
     </div>
   );
