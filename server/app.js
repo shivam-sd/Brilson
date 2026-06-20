@@ -52,6 +52,7 @@ const authRoutesResetPassword = require("./routes/auth.routes");
 const AboutPageRouter = require("./routes/FooterSection/AboutPage.Routes");
 const PrivacyPolicyRouter = require("./routes/FooterSection/PrivacyPolicy.route");
 const TermsConditionsRouter = require("./routes/FooterSection/Terms&Conditions.routes");
+const RefundpolicyRouter = require("./routes/FooterSection/RefundPolicy.routes");
 const AdminDashboardRouter = require("./routes/AdminDashboardAPI/AdminDashboard.routes");
 
 
@@ -154,6 +155,7 @@ app.use("/api/about", AboutPageRouter);
 app.use("/api/privacy-policy", PrivacyPolicyRouter);
 app.use("/api/terms-conditions", TermsConditionsRouter);
 app.use("/api/admin", AdminDashboardRouter);
+app.use("/api/admin", RefundpolicyRouter);
 
 
 
