@@ -9,6 +9,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { VscTerminalCmd } from "react-icons/vsc";
+import { RiRefund2Fill } from "react-icons/ri";
 import { FaUserCog } from "react-icons/fa";
 import { GiTransform } from "react-icons/gi";
 import { LuPanelsRightBottom } from "react-icons/lu";
@@ -79,6 +80,13 @@ const sections = [
     description: "Rules and guidelines for using the service",
     icon: VscTerminalCmd,
     route: "/admin/landing/terms-conditions",
+    gradient: "from-blue-500 to-teal-500/20"
+  },
+  {
+    title: "Refund Policy Page",
+    description: "Refund policy",
+    icon: RiRefund2Fill,
+    route: "/admin/landing/refund-policy",
     gradient: "from-blue-500 to-teal-500/20"
   }
 ];

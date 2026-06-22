@@ -171,6 +171,6 @@ const refundPolicySchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model(
-  "Refund Policy",
+  "Refund Policy", 
   refundPolicySchema
 );

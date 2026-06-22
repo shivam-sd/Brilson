@@ -105,6 +105,7 @@ import ResetPassword from "./Pages/ForgotPassword/ResetPassword";
 import HelpCenter from "./Pages/HelpCenter";
 import AboutPageAdmin from "./Admin/LandingPage/AboutPageAdmin";
 import TermsCondition from "./Admin/LandingPage/TermsCondition";
+import RefundPolicy from "./Admin/LandingPage/RefundPolicy";
 
 
 
@@ -490,6 +491,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <TermsCondition />
+              </ProtectedRoute>
+            }
+            />
+
+          <Route
+            path="/admin/landing/refund-policy"
+            element={
+              <ProtectedRoute>
+                <RefundPolicy />
               </ProtectedRoute>
             }
             />

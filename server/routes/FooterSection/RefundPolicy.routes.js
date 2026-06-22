@@ -8,9 +8,9 @@ const {
 } = require("../../controller/FooterSection/RefundPolicy.controller");
 
 // CREATE OR UPDATE
-router.post("/create-or-update", createOrUpdateRefundPolicy);
+router.post("/create-or-update/refund-policy", createOrUpdateRefundPolicy);
 
 // GET
-router.get("/get", getRefundPolicy);
+router.get("/get/refund-policy", getRefundPolicy);
 
 module.exports = router;
