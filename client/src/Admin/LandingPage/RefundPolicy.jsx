@@ -19,7 +19,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL1;
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const RefundPolicy = () => {
   const [activeSection, setActiveSection] = useState('hero');
@@ -165,73 +165,105 @@ const RefundPolicy = () => {
     setFormData(prev => ({ ...prev, [section]: { ...prev[section], [field]: value } }));
   };
 
-  // Nested Change Handler
+  // Nested Change Handler (for policyOverview moneyBackGuarantee, quickProcessing)
   const handleNestedChange = (section, subsection, field, value) => {
     setFormData(prev => ({
       ...prev,
-      [section]: { ...prev[section], [subsection]: { ...prev[section][subsection], [field]: value } }
+      [section]: {
+        ...prev[section],
+        [subsection]: { ...prev[section][subsection], [field]: value }
+      }
     }));
   };
 
-  // Double Nested Change Handler
-  const handleDoubleNestedChange = (section, subsection, subsub, field, value) => {
+  // For refundEligibility nested objects - FIXED
+  const handleEligibilityChange = (subsection, field, value) => {
     setFormData(prev => ({
       ...prev,
-      [section]: {
-        ...prev[section],
-        [subsection]: {
-          ...prev[section][subsection],
-          [subsub]: { ...prev[section][subsection][subsub], [field]: value }
+      refundEligibility: {
+        ...prev.refundEligibility,
+        [subsection]: { 
+          ...prev.refundEligibility[subsection], 
+          [field]: value 
         }
       }
     }));
   };
 
-  // Array Change Handler for nested arrays
-  const handleNestedArrayChange = (section, subsection, subsub, index, value) => {
-    const newItems = [...formData[section][subsection][subsub].items];
-    newItems[index] = value;
+  // For nonRefundableItems nested objects - FIXED
+  const handleNonRefundableChange = (subsection, field, value) => {
     setFormData(prev => ({
       ...prev,
-      [section]: {
-        ...prev[section],
-        [subsection]: {
-          ...prev[section][subsection],
-          [subsub]: { ...prev[section][subsection][subsub], items: newItems }
+      nonRefundableItems: {
+        ...prev.nonRefundableItems,
+        [subsection]: { 
+          ...prev.nonRefundableItems[subsection], 
+          [field]: value 
         }
       }
     }));
   };
 
-  const addNestedArrayItem = (section, subsection, subsub) => {
+  // For contactSupport nested objects
+  const handleContactInfoChange = (subsection, field, value) => {
     setFormData(prev => ({
       ...prev,
-      [section]: {
-        ...prev[section],
-        [subsection]: {
-          ...prev[section][subsection],
-          [subsub]: {
-            ...prev[section][subsection][subsub],
-            items: [...prev[section][subsection][subsub].items, '']
+      contactSupport: {
+        ...prev.contactSupport,
+        [subsection]: { 
+          ...prev.contactSupport[subsection], 
+          [field]: value 
+        }
+      }
+    }));
+  };
+
+  // Array Change Handler for nested arrays - FIXED
+  const handleNestedArrayChange = (section, subsection, index, value) => {
+    setFormData(prev => {
+      const newItems = [...prev[section][subsection].items];
+      newItems[index] = value;
+      return {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [subsection]: { 
+            ...prev[section][subsection], 
+            items: newItems 
           }
         }
-      }
-    }));
+      };
+    });
   };
 
-  const removeNestedArrayItem = (section, subsection, subsub, index) => {
-    const newItems = [...formData[section][subsection][subsub].items];
-    newItems.splice(index, 1);
+  const addNestedArrayItem = (section, subsection) => {
     setFormData(prev => ({
       ...prev,
       [section]: {
         ...prev[section],
         [subsection]: {
           ...prev[section][subsection],
-          [subsub]: { ...prev[section][subsection][subsub], items: newItems }
+          items: [...prev[section][subsection].items, '']
         }
       }
     }));
+  };
+
+  const removeNestedArrayItem = (section, subsection, index) => {
+    setFormData(prev => {
+      const newItems = [...prev[section][subsection].items];
+      newItems.splice(index, 1);
+      return {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [subsection]: { 
+            ...prev[section][subsection], 
+            items: newItems 
+          }
+        }
+      };
+    });
   };
 
   // Refund Process Steps Handlers
@@ -296,18 +328,8 @@ const RefundPolicy = () => {
     }));
   };
 
-  // Contact Support Handlers
-  const handleContactInfoChange = (subsection, field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      contactSupport: {
-        ...prev.contactSupport,
-        [subsection]: { ...prev.contactSupport[subsection], [field]: value }
-      }
-    }));
-  };
-
-  const handleContactArrayChange = (subsection, index, value) => {
+  // Contact Support Array Handlers
+  const handleContactArrayChange = (index, value) => {
     const newItems = [...formData.contactSupport.requiredInformation.items];
     newItems[index] = value;
     setFormData(prev => ({
@@ -351,16 +373,12 @@ const RefundPolicy = () => {
 
     const cleanedData = JSON.parse(JSON.stringify(formData));
 
-    // Clean arrays
-    const arrayFields = ['refundCards', 'steps', 'items'];
-    arrayFields.forEach(field => {
-      if (cleanedData[field]) {
-        cleanedData[field] = cleanedData[field].filter(item => {
-          if (Array.isArray(item)) return item.length > 0;
-          return Object.values(item).some(val => String(val).trim());
-        });
-      }
-    });
+    // Clean refundCards
+    if (cleanedData.refundCards) {
+      cleanedData.refundCards = cleanedData.refundCards.filter(card => 
+        card.title?.trim() || card.periodLabel?.trim() || card.periodValue?.trim()
+      );
+    }
 
     // Clean nested arrays
     ['refundEligibility', 'nonRefundableItems'].forEach(section => {
@@ -372,6 +390,20 @@ const RefundPolicy = () => {
         });
       }
     });
+
+    // Clean refundProcess steps
+    if (cleanedData.refundProcess?.steps) {
+      cleanedData.refundProcess.steps = cleanedData.refundProcess.steps.filter(step => 
+        step.title?.trim() || step.description?.trim()
+      );
+    }
+
+    // Clean refundTimeline items
+    if (cleanedData.refundTimeline?.items) {
+      cleanedData.refundTimeline.items = cleanedData.refundTimeline.items.filter(item => 
+        item.title?.trim() || item.value?.trim()
+      );
+    }
 
     // Clean contact support array
     if (cleanedData.contactSupport?.requiredInformation?.items) {
@@ -584,7 +616,7 @@ const RefundPolicy = () => {
                 <input
                   type="text"
                   value={formData.refundEligibility.eligibleCases.title}
-                  onChange={(e) => handleDoubleNestedChange('refundEligibility', 'eligibleCases', null, 'title', e.target.value)}
+                  onChange={(e) => handleEligibilityChange('eligibleCases', 'title', e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black"
                 />
                 <label className="block text-sm font-medium text-gray-700 mt-2 mb-2">Eligible Cases Items</label>
@@ -593,21 +625,21 @@ const RefundPolicy = () => {
                     <input
                       type="text"
                       value={item}
-                      onChange={(e) => handleNestedArrayChange('refundEligibility', 'eligibleCases', null, idx, e.target.value)}
+                      onChange={(e) => handleNestedArrayChange('refundEligibility', 'eligibleCases', idx, e.target.value)}
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-black"
                       placeholder={`Item ${idx + 1}`}
                     />
-                    <button onClick={() => removeNestedArrayItem('refundEligibility', 'eligibleCases', null, idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg">Remove</button>
+                    <button onClick={() => removeNestedArrayItem('refundEligibility', 'eligibleCases', idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg cursor-pointer">Remove</button>
                   </div>
                 ))}
-                <button onClick={() => addNestedArrayItem('refundEligibility', 'eligibleCases', null)} className="mt-2 text-sm text-indigo-600 font-medium">+ Add Item</button>
+                <button onClick={() => addNestedArrayItem('refundEligibility', 'eligibleCases')} className="mt-2 text-sm text-indigo-600 font-medium cursor-pointer">+ Add Item</button>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Non-Eligible Cases Title</label>
                 <input
                   type="text"
                   value={formData.refundEligibility.nonEligibleCases.title}
-                  onChange={(e) => handleDoubleNestedChange('refundEligibility', 'nonEligibleCases', null, 'title', e.target.value)}
+                  onChange={(e) => handleEligibilityChange('nonEligibleCases', 'title', e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black"
                 />
                 <label className="block text-sm font-medium text-gray-700 mt-2 mb-2">Non-Eligible Cases Items</label>
@@ -616,14 +648,14 @@ const RefundPolicy = () => {
                     <input
                       type="text"
                       value={item}
-                      onChange={(e) => handleNestedArrayChange('refundEligibility', 'nonEligibleCases', null, idx, e.target.value)}
+                      onChange={(e) => handleNestedArrayChange('refundEligibility', 'nonEligibleCases', idx, e.target.value)}
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-black"
                       placeholder={`Item ${idx + 1}`}
                     />
-                    <button onClick={() => removeNestedArrayItem('refundEligibility', 'nonEligibleCases', null, idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg">Remove</button>
+                    <button onClick={() => removeNestedArrayItem('refundEligibility', 'nonEligibleCases', idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg cursor-pointer">Remove</button>
                   </div>
                 ))}
-                <button onClick={() => addNestedArrayItem('refundEligibility', 'nonEligibleCases', null)} className="mt-2 text-sm text-indigo-600 font-medium">+ Add Item</button>
+                <button onClick={() => addNestedArrayItem('refundEligibility', 'nonEligibleCases')} className="mt-2 text-sm text-indigo-600 font-medium cursor-pointer">+ Add Item</button>
               </div>
             </div>
             <div>
@@ -759,7 +791,7 @@ const RefundPolicy = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black"
                     />
                   </div>
-                  <button onClick={() => removeTimelineItem(idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg mb-0.5">Remove</button>
+                  <button onClick={() => removeTimelineItem(idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg mb-0.5 cursor-pointer">Remove</button>
                 </div>
               ))}
               <button onClick={addTimelineItem} className="text-sm text-indigo-600 hover:text-indigo-700 font-medium cursor-pointer flex items-center gap-1">
@@ -796,7 +828,7 @@ const RefundPolicy = () => {
                 <input
                   type="text"
                   value={formData.nonRefundableItems.services.title}
-                  onChange={(e) => handleDoubleNestedChange('nonRefundableItems', 'services', null, 'title', e.target.value)}
+                  onChange={(e) => handleNonRefundableChange('services', 'title', e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black"
                 />
                 <label className="block text-sm font-medium text-gray-700 mt-2 mb-2">Services Items</label>
@@ -805,21 +837,21 @@ const RefundPolicy = () => {
                     <input
                       type="text"
                       value={item}
-                      onChange={(e) => handleNestedArrayChange('nonRefundableItems', 'services', null, idx, e.target.value)}
+                      onChange={(e) => handleNestedArrayChange('nonRefundableItems', 'services', idx, e.target.value)}
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-black"
                       placeholder={`Item ${idx + 1}`}
                     />
-                    <button onClick={() => removeNestedArrayItem('nonRefundableItems', 'services', null, idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg">Remove</button>
+                    <button onClick={() => removeNestedArrayItem('nonRefundableItems', 'services', idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg cursor-pointer">Remove</button>
                   </div>
                 ))}
-                <button onClick={() => addNestedArrayItem('nonRefundableItems', 'services', null)} className="mt-2 text-sm text-indigo-600 font-medium">+ Add Item</button>
+                <button onClick={() => addNestedArrayItem('nonRefundableItems', 'services')} className="mt-2 text-sm text-indigo-600 font-medium cursor-pointer">+ Add Item</button>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Other Items Title</label>
                 <input
                   type="text"
                   value={formData.nonRefundableItems.otherItems.title}
-                  onChange={(e) => handleDoubleNestedChange('nonRefundableItems', 'otherItems', null, 'title', e.target.value)}
+                  onChange={(e) => handleNonRefundableChange('otherItems', 'title', e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg text-black"
                 />
                 <label className="block text-sm font-medium text-gray-700 mt-2 mb-2">Other Items</label>
@@ -828,14 +860,14 @@ const RefundPolicy = () => {
                     <input
                       type="text"
                       value={item}
-                      onChange={(e) => handleNestedArrayChange('nonRefundableItems', 'otherItems', null, idx, e.target.value)}
+                      onChange={(e) => handleNestedArrayChange('nonRefundableItems', 'otherItems', idx, e.target.value)}
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-black"
                       placeholder={`Item ${idx + 1}`}
                     />
-                    <button onClick={() => removeNestedArrayItem('nonRefundableItems', 'otherItems', null, idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg">Remove</button>
+                    <button onClick={() => removeNestedArrayItem('nonRefundableItems', 'otherItems', idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg cursor-pointer">Remove</button>
                   </div>
                 ))}
-                <button onClick={() => addNestedArrayItem('nonRefundableItems', 'otherItems', null)} className="mt-2 text-sm text-indigo-600 font-medium">+ Add Item</button>
+                <button onClick={() => addNestedArrayItem('nonRefundableItems', 'otherItems')} className="mt-2 text-sm text-indigo-600 font-medium cursor-pointer">+ Add Item</button>
               </div>
             </div>
           </div>
@@ -924,14 +956,14 @@ const RefundPolicy = () => {
                   <input
                     type="text"
                     value={item}
-                    onChange={(e) => handleContactArrayChange(null, idx, e.target.value)}
+                    onChange={(e) => handleContactArrayChange(idx, e.target.value)}
                     className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-black"
                     placeholder={`Item ${idx + 1}`}
                   />
-                  <button onClick={() => removeContactArrayItem(idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg">Remove</button>
+                  <button onClick={() => removeContactArrayItem(idx)} className="px-3 py-2 bg-red-50 text-red-600 rounded-lg cursor-pointer">Remove</button>
                 </div>
               ))}
-              <button onClick={addContactArrayItem} className="mt-2 text-sm text-indigo-600 font-medium">+ Add Item</button>
+              <button onClick={addContactArrayItem} className="mt-2 text-sm text-indigo-600 font-medium cursor-pointer">+ Add Item</button>
             </div>
           </div>
         );
@@ -998,12 +1030,8 @@ const RefundPolicy = () => {
                     Manage content for {navigationItems.find(i => i.id === activeSection)?.label.toLowerCase()}
                   </p>
                 </div>
-                
               </div>
-              
             </div>
-
-            
 
             {/* Message */}
             {message.text && (
@@ -1020,15 +1048,15 @@ const RefundPolicy = () => {
                 {renderSectionContent()}
               </div>
               <div className="mt-6 flex items-center justify-center">
-                  <button
-                    onClick={handleSubmit}
-                    disabled={loading}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1 "
-                  >
-                    <Save size={16} />
-                    {loading ? 'Saving...' : 'Save All Changes'}
-                  </button>
-                </div>
+                <button
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+                >
+                  <Save size={16} />
+                  {loading ? 'Saving...' : 'Save All Changes'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
