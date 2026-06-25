@@ -75,13 +75,6 @@ const sections = [
     route: "/admin/landing/terms-conditions",
     gradient: "from-blue-500 to-teal-500/20"
   },
-  {
-    title: "Refund Policy Page",
-    description: "Refund policy",
-    icon: RiRefund2Fill,
-    route: "/admin/landing/refund-policy",
-    gradient: "from-blue-500 to-teal-500/20"
-  },
   // {
   //   title: "About Page",
   //   description: "Information about the company",
@@ -89,6 +82,13 @@ const sections = [
   //   route: "/admin/landing/about-page",
   //   gradient: "from-green-500/20 to-teal-500/20"
   // }
+  {
+    title: "Refund Policy Page",
+    description: "Refund policy",
+    icon: RiRefund2Fill,
+    route: "/admin/landing/refund-policy",
+    gradient: "from-blue-500 to-teal-500/20"
+  },
 ];
 
 const LandingPageContent = () => {
