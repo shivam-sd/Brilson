@@ -106,7 +106,7 @@ const AboutPageAdmin = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/about/get`,
+        `${import.meta.env.VITE_BASE_URL}/api/about/get1`,
       );
       if (res.data.success && res.data.data) {
         setFormData(res.data.data);
@@ -188,7 +188,7 @@ const AboutPageAdmin = () => {
 
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/about/create-or-update`,
+        `${import.meta.env.VITE_BASE_URL}/api/about/create-or-update1`,
         formDataToSend,
         { headers: { "Content-Type": "multipart/form-data" } },
       );

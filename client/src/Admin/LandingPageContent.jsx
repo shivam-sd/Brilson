@@ -75,13 +75,6 @@ const sections = [
     route: "/admin/landing/terms-conditions",
     gradient: "from-blue-500 to-teal-500/20"
   },
-  // {
-  //   title: "About Page",
-  //   description: "Information about the company",
-  //   icon: FaUserCog,
-  //   route: "/admin/landing/about-page",
-  //   gradient: "from-green-500/20 to-teal-500/20"
-  // }
   {
     title: "Refund Policy Page",
     description: "Refund policy",
@@ -89,11 +82,18 @@ const sections = [
     route: "/admin/landing/refund-policy",
     gradient: "from-blue-500 to-teal-500/20"
   },
+  {
+    title: "About Page",
+    description: "Information about the company",
+    icon: FaUserCog,
+    route: "/admin/landing/about-page",
+    gradient: "from-green-500/20 to-teal-500/20"
+  }
 ];
 
 const LandingPageContent = () => {
   const navigate = useNavigate();
-
+  
   return (
     <div className="relative min-h-screen p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900 md:mt-0 lg:mt-0 mt-10">
       {/* Decorative Background Elements */}
