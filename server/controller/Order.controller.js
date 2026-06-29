@@ -102,6 +102,8 @@ const orderCreate = async (req, res) => {
 
 
 
+
+
   //  USER ORDERS
 
 const getOrderProduct = async (req, res) => {
@@ -175,17 +177,28 @@ const allOrders = async (req, res) => {
       .populate("items.productId")
       .sort({ createdAt: -1 });
 
+
+      // console.log(orders)
+
+      const sevenDays = new Date();
+      sevenDays.setDate(sevenDays.getDate() - 7);
+
+      const lastSevenDaysOrder = orders.filter((order) => {
+      return new Date(order.createdAt) >= sevenDays
+      });
+
+      console.log(lastSevenDaysOrder);
+
     res.status(200).json({
       success: true,
-      count: orders.length,
-      orders,
+      count: lastSevenDaysOrder.length,
+      lastSevenDaysOrder,
     });
   } catch (err) {
     console.error("All Orders Error:", err);
     res.status(500).json({ error: "Server Error" });
   }
 };
-
 
 const GetOrderDetails = async (req,res) => {
   try{

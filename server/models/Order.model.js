@@ -77,4 +77,6 @@ invoice:{
 
 }, { timestamps: true });
 
+orderSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model("Order", orderSchema);

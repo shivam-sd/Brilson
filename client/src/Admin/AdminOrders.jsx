@@ -4,16 +4,13 @@ import { motion } from "framer-motion";
 import { FiUser, FiCalendar } from "react-icons/fi";
 import { FaDownload } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const AdminOrders = () => {
   const token = localStorage.getItem("token");
-  const navigate = useNavigate();
 
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
-
-
   const [searchName, setSearchName] = useState("");
   const [searchDate, setSearchDate] = useState("");
   const [loading, setLoading] = useState(true);
@@ -32,20 +29,13 @@ const AdminOrders = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(res)
 
-      const allOrders = res.data?.orders || [];
+      // console.log(res.data)
 
-      // last 7 days filter
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const allOrders = res.data?.lastSevenDaysOrder || [];
 
-      const last7DaysOrders = allOrders.filter(
-        (order) => new Date(order.createdAt) >= sevenDaysAgo
-      );
-
-      setOrders(last7DaysOrders);
-      setFilteredOrders(last7DaysOrders);
+      setOrders(allOrders);
+      setFilteredOrders(allOrders);
     } catch (err) {
       console.error(err);
       toast.error("Orders fetch failed");
@@ -54,25 +44,19 @@ const AdminOrders = () => {
     }
   };
 
-  //  SEARCH LOGIC
+  // SEARCH LOGIC
   useEffect(() => {
     let data = Array.isArray(orders) ? [...orders] : [];
 
-    // customer name filter
     if (searchName.trim()) {
       data = data.filter((order) =>
-        order.address?.name
-          ?.toLowerCase()
-          .includes(searchName.toLowerCase())
+        order.address?.name?.toLowerCase().includes(searchName.toLowerCase())
       );
     }
 
-    // date filter
     if (searchDate) {
       data = data.filter((order) => {
-        const orderDate = new Date(order.createdAt)
-          .toISOString()
-          .split("T")[0]; // YYYY-MM-DD
+        const orderDate = new Date(order.createdAt).toISOString().split("T")[0];
         return orderDate === searchDate;
       });
     }
@@ -92,38 +76,32 @@ const AdminOrders = () => {
     }
   };
 
-
-
-  // function to change the order status 
   const handleOrderStatu = async (orderId, orderStatus) => {
-      console.log(orderStatus);
-    try{
-      const res = await axios.put(`${import.meta.env.VITE_BASE_URL}/api/orders/update/orderStatus`, {
-        orderId,
-        orderStatus:orderStatus
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/api/orders/update/orderStatus`,
+        { orderId, orderStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
         }
-      });
+      );
 
-      // console.log(res)
-      window.location.reload();
       toast.success(res.data.message || "Order Status Changed");
 
-      setOrders((prev) => {
-        prev.map((order) => {
-          order._id == orderId ? { ...order, orderStatus} : order
-        })
-      })
 
-    }catch(err){
-      console.log("Order Status Error", err);
-      toast.error(err.response.data.error || "Order Status Change Error");
+      setOrders((prev) =>
+        prev.map((order) =>
+          order._id === orderId ? { ...order, orderStatus } : order
+        )
+      );
+    } catch (err) {
+      console.error("Order Status Error", err);
+      
+      toast.error(err?.response?.data?.error || "Order Status Change Error");
     }
-  }
-
-
+  };
 
   const statusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -192,13 +170,14 @@ const AdminOrders = () => {
               <th className="p-4">Status</th>
               <th className="p-4">Date</th>
               <th className="p-4">Invoice</th>
+              <th className="p-4">View Order</th>
             </tr>
           </thead>
 
           <tbody>
             {filteredOrders.length === 0 ? (
               <tr>
-                <td colSpan="6" className="p-8 text-center text-gray-400">
+                <td colSpan="7" className="p-8 text-center text-gray-400">
                   No orders found
                 </td>
               </tr>
@@ -207,7 +186,6 @@ const AdminOrders = () => {
                 <tr
                   key={order._id}
                   className="border-t border-white/10 hover:bg-white/5"
-                  onClick={() => navigate(`/admin/orders/detils/${order._id}`)}
                 >
                   <td className="p-4">{order._id}</td>
                   <td className="p-4">{order.address?.name}</td>
@@ -215,10 +193,17 @@ const AdminOrders = () => {
                     ₹{order.totalAmount}
                   </td>
                   <td className="p-4">
-                    <select id="order-status" value={order.orderStatus} onChange={(e) => {handleOrderStatu(order._id, e.target.value)}} className="bg-black/60 text-white font-extralight p-2 rounded-lg cursor-pointer hover:scale-105 active:scale-95 duration-300">
-                      <option value="processing" className="cursor-pointer hover:scale-105 active:scale-95 duration-300">processing</option>
-                      <option value="shipped" className="cursor-pointer hover:scale-105 active:scale-95 duration-300">shipped</option>
-                      <option value="delivered" className="cursor-pointer hover:scale-105 active:scale-95 duration-300">delivered</option>
+                    <select
+                      id="order-status"
+                      value={order.orderStatus}
+                      onChange={(e) =>
+                        handleOrderStatu(order._id, e.target.value)
+                      }
+                      className="bg-black/60 text-white font-extralight p-2 rounded-lg cursor-pointer hover:scale-105 active:scale-95 duration-300"
+                    >
+                      <option value="processing">processing</option>
+                      <option value="shipped">shipped</option>
+                      <option value="delivered">delivered</option>
                     </select>
                   </td>
                   <td className="p-4 text-gray-400">
@@ -226,13 +211,19 @@ const AdminOrders = () => {
                   </td>
                   <td className="p-4">
                     <button
-                      onClick={() =>
-                        handleInvoice(order.invoice?.pdfUrl)
-                      }
-                      className="flex items-center gap-2 bg-blue-600 px-3 py-1 rounded hover:scale-105"
+                      onClick={() => handleInvoice(order.invoice?.pdfUrl)}
+                      className="flex items-center gap-2 bg-blue-600 px-3 py-1 rounded hover:bg-blue-700 cursor-pointer"
                     >
                       Invoice <FaDownload />
                     </button>
+                  </td>
+                  <td className="p-4">
+                    <Link
+                      to={`/admin/orders/detils/${order._id}`}
+                      className="bg-green-500 text-white px-3 py-2 rounded-md font-Playfair hover:bg-green-700 duration-300"
+                    >
+                      View Orders
+                    </Link>
                   </td>
                 </tr>
               ))
