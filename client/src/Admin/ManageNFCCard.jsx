@@ -877,7 +877,7 @@ const ManageNFCCard = () => {
 
           {/* URL */}
           <p className="text-xs leading-none" style={{ 
-            color: cardTextColor === "#ffffff" ? "#666" : "#999" 
+            color: cardTextColor === "#ffffff" ? "#666" : cardTextColor 
           }}>
             www.brilson.in
           </p>
@@ -909,7 +909,7 @@ const ManageNFCCard = () => {
           {/* Activation Key */}
           <div className="text-center">
             <p className="text-[8px] uppercase tracking-wider leading-none mb-1" style={{ 
-              color: cardTextColor === "#ffffff" ? "#666" : "#999" 
+              color: cardTextColor === "#ffffff" ? "#666" : cardTextColor 
             }}>
               Activation Key
             </p>

@@ -1,11 +1,12 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect, useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { FaWifi } from "react-icons/fa";
+import QRCodeStyling from "qr-code-styling";
 
 const NFCCardDesign = forwardRef(
   (
     {
-      activationCode,
+      activationCode = "#000000",
       cardBgColor = "#FFFFFF",
       cardTextColor = "#000000",
       qrDotsColor = "#000000",
@@ -20,6 +21,38 @@ const NFCCardDesign = forwardRef(
 
     // Determine border color based on card text color
     const borderColor = cardTextColor === "#ffffff" ? "#333" : cardTextColor;
+
+const containerRef = useRef(null);
+
+useEffect(() => {
+  const QrCode = new QRCodeStyling({
+    width: 300,
+    height: 300,
+    type: "svg",
+    data: profileUrl,
+    image: "/B.png",
+    dotsOptions: {
+      color: qrDotsColor,
+      margin:10,
+      type: "dots"
+    },
+    backgroundOptions: {
+      color: qrBgColor,
+    },
+    imageOptions: {
+      crossOrigin: "anonymous",
+      imageSize: 0.45
+    },
+    cornersDotOptions: { type: "rounded" },
+    cornersSquareOptions: { type: "extra-rounded" },
+  });
+
+  if (containerRef.current) {
+    containerRef.current.innerHTML = ""; 
+    QrCode.append(containerRef.current);
+  }
+}, [profileUrl, qrDotsColor, qrBgColor]);
+
 
     return (
       <div
@@ -105,7 +138,7 @@ const NFCCardDesign = forwardRef(
                 fontSize: "28px",
                 letterSpacing: "6px",
                 fontWeight: "600",
-                color: cardTextColor === "#ffffff" ? "#666" : "#999",
+                color: cardTextColor === "#ffffff" ? "#666" : cardTextColor,
                 marginTop: "6px",
               }}
             >
@@ -136,12 +169,16 @@ const NFCCardDesign = forwardRef(
                 justifyContent: "center",
               }}
             >
-              <QRCodeSVG
+              {/* <QRCodeSVG
                 value={profileUrl}
                 size={250}
                 fgColor={qrDotsColor}
                 bgColor={qrBgColor === "transparent" ? "#ffffff" : qrBgColor}
-              />
+              /> */}
+              
+              <div ref={containerRef} id="canvas"></div>
+            
+
             </div>
 
             {/* Activation Key Section */}
@@ -158,7 +195,7 @@ const NFCCardDesign = forwardRef(
                   fontSize: "25px",
                   letterSpacing: "5px",
                   textTransform: "uppercase",
-                  color: cardTextColor === "#ffffff" ? "#666" : "#999",
+                  color: cardTextColor === "#ffffff" ? "#666" : cardTextColor,
                   fontWeight: "600",
                   margin: 0,
                 }}
