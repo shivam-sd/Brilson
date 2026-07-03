@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useRef } from "react";
+import React, { forwardRef, useLayoutEffect, useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { FaWifi } from "react-icons/fa";
 import QRCodeStyling from "qr-code-styling";
@@ -24,34 +24,85 @@ const NFCCardDesign = forwardRef(
 
 const containerRef = useRef(null);
 
-useEffect(() => {
-  const QrCode = new QRCodeStyling({
-    width: 300,
-    height: 300,
-    type: "svg",
-    data: profileUrl,
-    image: "/B.png",
-    dotsOptions: {
-      color: qrDotsColor,
-      margin:10,
-      type: "dots"
-    },
-    backgroundOptions: {
-      color: qrBgColor,
-    },
-    imageOptions: {
-      crossOrigin: "anonymous",
-      imageSize: 0.45
-    },
-    cornersDotOptions: { type: "rounded" },
-    cornersSquareOptions: { type: "extra-rounded" },
-  });
 
-  if (containerRef.current) {
-    containerRef.current.innerHTML = ""; 
-    QrCode.append(containerRef.current);
-  }
-}, [profileUrl, qrDotsColor, qrBgColor]);
+useLayoutEffect(() => {
+
+  let mounted = true;
+
+  const createQR = async () => {
+
+    const qr = new QRCodeStyling({
+
+      width:300,
+      height:300,
+      type:"svg",
+
+      data:profileUrl,
+
+      image:"/B.png",
+
+      dotsOptions:{
+        color:qrDotsColor,
+        margin:10,
+        type:"dots"
+      },
+
+      backgroundOptions:{
+        color:qrBgColor
+      },
+
+      imageOptions:{
+        crossOrigin:"anonymous",
+        imageSize:0.45
+      },
+
+      cornersDotOptions:{
+        type:"rounded"
+      },
+
+      cornersSquareOptions:{
+        type:"extra-rounded"
+      }
+
+    });
+
+    if(!containerRef.current) return;
+
+    containerRef.current.innerHTML="";
+
+    qr.append(containerRef.current);
+
+    // Logo load hone ka wait
+    await new Promise(resolve=>setTimeout(resolve,300));
+
+    if(mounted){
+
+      containerRef.current.dataset.ready="true";
+
+    }
+
+  };
+
+  createQR();
+
+  return ()=>{
+
+    mounted=false;
+
+    if(containerRef.current){
+
+      containerRef.current.innerHTML="";
+
+    }
+
+  };
+
+},[
+  profileUrl,
+  qrDotsColor,
+  qrBgColor
+]);
+
 
 
     return (
@@ -176,7 +227,7 @@ useEffect(() => {
                 bgColor={qrBgColor === "transparent" ? "#ffffff" : qrBgColor}
               /> */}
               
-              <div ref={containerRef} id="canvas"></div>
+              <div ref={containerRef}></div>
             
 
             </div>

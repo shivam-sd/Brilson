@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
+const qrCache = new Map();
 import { FiPlus, FiAlertCircle, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiSearch, FiDownloadCloud, FiGrid, FiEye } from "react-icons/fi";
 import { FaDownload } from "react-icons/fa";
+import * as htmlToImage from "html-to-image";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import QRCodeStyling from "qr-code-styling";
@@ -213,6 +215,7 @@ const ManageNFCCard = () => {
   });
   const [cardImages, setCardImages] = useState({});
   const [downloadingDate, setDownloadingDate] = useState(null);
+  const [downloadingAll, setDownloadingAll] = useState(false);
   const [generatingCards, setGeneratingCards] = useState(false);
   
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -440,7 +443,7 @@ const ManageNFCCard = () => {
         replaceOklchColors(element);
 
         const canvas = await html2canvas(element, {
-          scale: 5,
+          scale: 2,
           useCORS: true,
           allowTaint: true,
           backgroundColor: null,
@@ -465,112 +468,327 @@ const ManageNFCCard = () => {
     }
   };
 
-  const downloadAllByDate = async (date, cardsList) => {
-    if (!cardsList || cardsList.length === 0) {
-      alert("No cards available for this date");
+
+  
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const waitForQRCode = async (element) => {
+
+  const start = Date.now();
+
+  while(Date.now()-start<10000){
+
+    const qr = element.querySelector("[data-ready='true']");
+
+    if(qr){
+
       return;
+
     }
 
-    setDownloadingDate(date);
+    await sleep(50);
 
-    try {
-      const zip = new JSZip();
-      const folderName = `brilson-cards-${date}`;
-      const folder = zip.folder(folderName);
+  }
 
-      alert(`📥 Generating ${cardsList.length} NFC Cards...\nPlease wait while we create your cards.`);
+  throw new Error("QR Timeout");
 
-      const chunkSize = 3;
-      const results = [];
+};
 
-      for (let i = 0; i < cardsList.length; i += chunkSize) {
-        const chunk = cardsList.slice(i, i + chunkSize);
-        
-        const chunkPromises = chunk.map(async (card, idx) => {
-          try {
-            // Create a temporary hidden container
-            const tempDiv = document.createElement('div');
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.left = '-9999px';
-            tempDiv.style.top = '-9999px';
-            tempDiv.style.width = '1200px';
-            document.body.appendChild(tempDiv);
-            
-            // Render NFCCardDesign component
-            const { default: ReactDOM } = await import('react-dom/client');
-            const NFCCardDesignComponent = (await import('./ManageNFCCard/NFCCardDesign')).default;
-            
-            const root = ReactDOM.createRoot(tempDiv);
-            
-            await new Promise((resolve) => {
-              root.render(
-                <NFCCardDesign
-                  activationCode={card.activationCode}
-                  profileSlug={card.slug || card.activationCode}
-                  profileName={card.owner?.name || card.profile?.name || 'Card Owner'}
-                  cardBgColor={cardBgColor}
-                  cardTextColor={cardTextColor}
-                  qrDotsColor={qrDotsColor}
-                  qrBgColor={qrBgColor}
-                />
-              );
-              
-              // Wait for render
-              setTimeout(async () => {
-                const element = tempDiv.firstChild;
-                if (element) {
-                  const canvas = await html2canvas(element, {
-                    scale: 3,
-                    useCORS: true,
-                    backgroundColor: null,
-                    logging: false,
-                  });
-                  
-                  const blob = await new Promise((res) => canvas.toBlob(res, 'image/png', 1.0));
-                  const filename = `brilson-card-${card.activationCode}.png`;
-                  folder.file(filename, blob);
-                }
-                root.unmount();
-                document.body.removeChild(tempDiv);
-                resolve();
-              }, 500);
-            });
-            
-            return { success: true, card };
-          } catch (error) {
-            console.error(`Error processing card ${card.activationCode}:`, error);
-            return { success: false, card };
-          }
-        });
 
-        const chunkResults = await Promise.all(chunkPromises);
-        results.push(...chunkResults);
+
+const exportCard = async (element) => {
+
+  await waitForQRCode(element);
+
+// extra repaint
+
+await new Promise(r=>requestAnimationFrame(r));
+
+await new Promise(r=>requestAnimationFrame(r));
+
+  const blob = await htmlToImage.toBlob(element, {
+
+    cacheBust: true,
+
+    pixelRatio: 2,
+
+    backgroundColor: null,
+
+    skipFonts: false,
+
+  });
+
+  return blob;
+
+};
+
+
+const getQRCode = async (key, createFn) => {
+  if (qrCache.has(key)) {
+    return qrCache.get(key);
+  }
+
+  const value = await createFn();
+
+  qrCache.set(key, value);
+
+  return value;
+};
+
+
+  const downloadAllByDate = async (date, cardsList) => {
+    const { default: ReactDOM } = await import("react-dom/client");
+    const NFCCardDesignComponent =
+(await import("./ManageNFCCard/NFCCardDesign")).default;
+  if (!cardsList || cardsList.length === 0) {
+    alert("No cards available for this date");
+    return;
+  }
+
+  setDownloadingDate(date);
+
+  try {
+    const zip = new JSZip();
+    const folder = zip.folder(`brilson-cards-${date}`);
+
+    alert(
+      `📥 Generating ${cardsList.length} NFC Cards...\nPlease wait...`
+    );
+
+    // FIX: Process cards one by one but with reduced delay
+    for (let i = 0; i < cardsList.length; i++) {
+      const card = cardsList[i];
+      
+      const tempDiv = document.createElement("div");
+      tempDiv.style.position = "fixed";
+      tempDiv.style.left = "-100000px";
+      tempDiv.style.top = "0";
+      tempDiv.style.width = "1200px";
+      tempDiv.style.height = "750px";
+      document.body.appendChild(tempDiv);
+
+      const root = ReactDOM.createRoot(tempDiv);
+
+      try {
+        root.render(
+          <NFCCardDesign
+            activationCode={card.activationCode}
+            profileSlug={card.slug || card.activationCode}
+            profileName={
+              card.owner?.name ||
+              card.profile?.name ||
+              "Card Owner"
+            }
+            cardBgColor={cardBgColor}
+            cardTextColor={cardTextColor}
+            qrDotsColor={qrDotsColor}
+            qrBgColor={qrBgColor}
+          />
+        );
+
+        await new Promise((r) => requestAnimationFrame(r));
+        await new Promise((r) => requestAnimationFrame(r));
+
+        const element = tempDiv.firstElementChild;
+
+        if (!element) {
+          throw new Error("Card render failed.");
+        }
+
+        const blob = await exportCard(element);
+
+        folder.file(
+          `brilson-card-${card.activationCode}.png`,
+          blob
+        );
+      } catch (err) {
+        console.error(`Failed for card ${card.activationCode}:`, err);
+      } finally {
+        root.unmount();
+        if (tempDiv.parentNode) {
+          tempDiv.parentNode.removeChild(tempDiv);
+        }
       }
+      
+      // Reduced delay between cards for faster processing
+      if (i % 3 === 0) {
+        await sleep(10);
+      }
+    }
 
-      const zipContent = await zip.generateAsync({ type: "blob" });
-      const zipUrl = URL.createObjectURL(zipContent);
+    const zipBlob = await zip.generateAsync({
+      type: "blob",
+      compression: "DEFLATE",
+      compressionOptions: {
+        level: 6,
+      },
+    });
 
-      const link = document.createElement('a');
-      link.href = zipUrl;
-      link.download = `all-brilson-cards-${date}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    const url = URL.createObjectURL(zipBlob);
 
-      URL.revokeObjectURL(zipUrl);
+    const a = document.createElement("a");
 
-      const successful = results.filter(r => r.success).length;
-      const failed = results.filter(r => !r.success).length;
+    a.href = url;
 
-      alert(`✅ Download Complete!\n\n📦 Successful: ${successful}\n❌ Failed: ${failed}`);
+    a.download = `all-brilson-cards-${date}.zip`;
 
-    } catch (error) {
-      console.error("Error in bulk download:", error);
-      alert("Error downloading cards. Please try again.");
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    alert(`✅ Download Completed!\n\n✅ Total Cards: ${cardsList.length}`);
+  } catch (err) {
+    console.error(err);
+    alert("Download failed");
+  } finally {
+    qrCache.clear();
+    setDownloadingDate(null);
+  }
+};
+
+  // FIXED: Download all cards with proper sequential processing
+  const downloadAllCards = async () => {
+    if (downloadingAll) return;
+    
+    try {
+      setDownloadingAll(true);
+      
+      // First, fetch total count
+      const initialRes = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/all/cards?page=1&limit=1`,
+        { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+      );
+      
+      const total = initialRes.data.totalCards || 0;
+      
+      if (total === 0) {
+        alert("No cards available to download");
+        setDownloadingAll(false);
+        return;
+      }
+      
+      const confirmDownload = window.confirm(
+        `📥 You are about to download ${total} NFC cards.\n\nThis may take a few minutes. Continue?`
+      );
+      
+      if (!confirmDownload) {
+        setDownloadingAll(false);
+        return;
+      }
+      
+      const { default: ReactDOM } = await import("react-dom/client");
+      const zip = new JSZip();
+      const folder = zip.folder(`brilson-cards-all`);
+      
+      // Fetch all cards in batches
+      const allCards = [];
+      const batchSize = 100;
+      let page = 1;
+      let hasMore = true;
+      
+      while (hasMore) {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/all/cards?page=${page}&limit=${batchSize}`,
+          { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+        );
+        
+        const cardsBatch = res.data.allCards || [];
+        allCards.push(...cardsBatch);
+        
+        hasMore = cardsBatch.length === batchSize;
+        page++;
+        
+        console.log(`Fetched ${allCards.length} cards...`);
+      }
+      
+      // Process cards one by one to ensure all are captured
+      let successCount = 0;
+      let failCount = 0;
+      
+      for (let i = 0; i < allCards.length; i++) {
+        const card = allCards[i];
+        
+        // Progress update every 10 cards
+        if (i % 10 === 0) {
+          console.log(`Processing ${i + 1}/${allCards.length} cards...`);
+        }
+        
+        const tempDiv = document.createElement("div");
+        tempDiv.style.position = "fixed";
+        tempDiv.style.left = "-100000px";
+        tempDiv.style.top = "0";
+        tempDiv.style.width = "1200px";
+        tempDiv.style.height = "750px";
+        document.body.appendChild(tempDiv);
+        
+        const root = ReactDOM.createRoot(tempDiv);
+        
+        try {
+          root.render(
+            <NFCCardDesign
+              activationCode={card.activationCode}
+              profileSlug={card.slug || card.activationCode}
+              profileName={card.owner?.name || card.profile?.name || "Card Owner"}
+              cardBgColor={cardBgColor}
+              cardTextColor={cardTextColor}
+              qrDotsColor={qrDotsColor}
+              qrBgColor={qrBgColor}
+            />
+          );
+          
+          await new Promise((r) => requestAnimationFrame(r));
+          await new Promise((r) => requestAnimationFrame(r));
+          
+          const element = tempDiv.firstElementChild;
+          if (!element) {
+            throw new Error("Card render failed");
+          }
+          
+          const blob = await exportCard(element);
+          folder.file(`brilson-card-${card.activationCode}.png`, blob);
+          successCount++;
+          
+        } catch (err) {
+          console.error(`Failed to generate card ${card.activationCode}:`, err);
+          failCount++;
+        } finally {
+          root.unmount();
+          if (tempDiv.parentNode) {
+            tempDiv.parentNode.removeChild(tempDiv);
+          }
+        }
+        
+        // Small delay between cards
+        if (i % 5 === 0) {
+          await sleep(10);
+        }
+      }
+      
+      // Generate zip
+      const zipBlob = await zip.generateAsync({
+        type: "blob",
+        compression: "DEFLATE",
+        compressionOptions: { level: 6 },
+      });
+      
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `all-brilson-cards.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      alert(`✅ Download Completed!\n\n✅ Success: ${successCount}\n❌ Failed: ${failCount}`);
+      
+    } catch (err) {
+      console.error("Download all failed:", err);
+      alert("Failed to download all cards. Please try again.");
     } finally {
-      setDownloadingDate(null);
+      setDownloadingAll(false);
+      qrCache.clear();
     }
   };
+
 
   if (loading) {
     return (
@@ -690,6 +908,29 @@ const ManageNFCCard = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-stretch sm:items-center">
+          {/* Download All Cards Button */}
+          <button
+            onClick={downloadAllCards}
+            disabled={downloadingAll || stats.total === 0}
+            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${
+              downloadingAll || stats.total === 0
+                ? 'bg-gray-600 cursor-not-allowed opacity-50'
+                : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg'
+            }`}
+          >
+            {downloadingAll ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Downloading All...</span>
+              </>
+            ) : (
+              <>
+                <FiDownloadCloud size={16} />
+                <span>Download All ({stats.total})</span>
+              </>
+            )}
+          </button>
+
           <button
             onClick={() => setShowColorPicker(!showColorPicker)}
             className="px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center gap-2 text-white hover:shadow-lg transition-all cursor-pointer text-sm sm:text-base"
