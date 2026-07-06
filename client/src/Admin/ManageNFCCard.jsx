@@ -1,241 +1,38 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { FiAlertCircle, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiSearch, FiDownloadCloud, FiEye } from "react-icons/fi";
+import {
+  FiAlertCircle,
+  FiChevronLeft,
+  FiChevronRight,
+  FiChevronsLeft,
+  FiChevronsRight,
+  FiSearch,
+  FiDownloadCloud,
+  FiEye,
+} from "react-icons/fi";
 import { FaDownload } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import QRCodeStyling from "qr-code-styling";
-import JSZip from "jszip";
 import { HexColorPicker } from "react-colorful";
-import html2canvas from "html2canvas-pro";
 import NFCCardDesign from "./ManageNFCCard/NFCCardDesign";
 import CardPreviewModal from "./ManageNFCCard/CardPreviewModel";
-
-// QR Code Cache for faster generation
-const qrCache = new Map();
-
-/* High Quality QR Generator for Card - Optimized for PNG */
-const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent", size = 800) => {
-  return new QRCodeStyling({ 
-    width: size,
-    height: size,
-    data: url,
-    type: "png", // PNG is faster than SVG for rendering
-    margin: 5,
-    dotsOptions: {
-      color: dotsColor,
-      type: "rounded",
-    },
-    cornersSquareOptions: {
-      type: "extra-rounded",
-    },
-    cornersDotOptions: {
-      type: "rounded",
-    },
-    backgroundOptions: {
-      color: bgColor,
-    },
-  });
-};
-
-/* NFC Card Generator - Using Canvas directly */
-const generateNFCCard = async (
-  activationCode,
-  profileName,
-  profileSlug,
-  qrDotsColor = "#000000",
-  qrBgColor = "#ffffff",
-  cardBgColor = "#ffffff",
-  cardTextColor = "#000000",
-  size = 1200
-) => {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  
-  const cardWidth = size;
-  const cardHeight = Math.round(size / 1.6);
-  canvas.width = cardWidth;
-  canvas.height = cardHeight;
-  
-  // Card Background
-  ctx.fillStyle = cardBgColor;
-  ctx.fillRect(0, 0, cardWidth, cardHeight);
-  
-  // Border
-  const borderColor = cardTextColor === "#ffffff" ? "#333" : "#000000";
-  ctx.strokeStyle = borderColor;
-  ctx.lineWidth = Math.max(2, size / 600);
-  ctx.strokeRect(size * 0.02, size * 0.02, cardWidth - (size * 0.04), cardHeight - (size * 0.04));
-  
-  // LEFT SIDE - WiFi Icon
-  const leftX = cardWidth * 0.05;
-  const wifiStartY = cardHeight * 0.25;
-  const barWidth = size * 0.008;
-  
-  const bars = [18, 28, 38, 48].map((height, i) => ({
-    height: height * (size / 1200),
-    y: wifiStartY + (48 - height) * (size / 1200)
-  }));
-  
-  const textColor = cardTextColor === "#ffffff" ? "#333" : cardTextColor;
-  ctx.fillStyle = textColor;
-  bars.forEach((bar, i) => {
-    ctx.fillRect(
-      leftX + (i * barWidth * 2.5), 
-      bar.y, 
-      barWidth, 
-      bar.height
-    );
-  });
-  
-  // NFC Text
-  ctx.font = `bold ${Math.min(cardHeight * 0.07, 28)}px Arial`;
-  ctx.textAlign = "left";
-  ctx.fillStyle = textColor;
-  ctx.fillText("NFC", leftX, wifiStartY + (55 * (size / 1200)));
-  
-  // BRILSON Title
-  ctx.font = `bold ${Math.min(cardHeight * 0.12, 52)}px Arial`;
-  ctx.fillStyle = cardTextColor === "#ffffff" ? "#1a1a2e" : cardTextColor;
-  ctx.fillText("Brilson", leftX, cardHeight * 0.55);
-  
-  // Website URL
-  ctx.font = `${Math.min(cardHeight * 0.045, 18)}px Arial`;
-  ctx.fillStyle = cardTextColor === "#ffffff" ? "#666" : "#999";
-  ctx.fillText("www.brilson.in", leftX, cardHeight * 0.65);
-  
-  // RIGHT SIDE - QR Code
-  const qrSize = Math.min(cardHeight * 0.3, 200);
-  const qrX = cardWidth - qrSize - (cardWidth * 0.08);
-  const qrY = (cardHeight - qrSize) / 2;
-  
-  // QR Border Box
-  ctx.strokeStyle = borderColor;
-  ctx.lineWidth = Math.max(2, size / 400);
-  ctx.strokeRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
-  
-  // Generate QR Code with Cache
-  const profileUrl = `${import.meta.env.VITE_DOMAIN || window.location.origin}/public/profile/${profileSlug || activationCode}`;
-  const qrKey = `${profileUrl}-${qrDotsColor}-${qrBgColor}-${qrSize}`;
-  
-  let qrDataUrl;
-  if (qrCache.has(qrKey)) {
-    qrDataUrl = qrCache.get(qrKey);
-  } else {
-    const qrCode = createHighQualityQR(profileUrl, qrDotsColor, qrBgColor, qrSize * 4);
-    qrDataUrl = await new Promise((resolve) => {
-      qrCode.getRawData("png", (blob) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-      });
-    });
-    qrCache.set(qrKey, qrDataUrl);
-  }
-  
-  // Draw QR Code
-  const qrImg = new Image();
-  await new Promise((resolve) => {
-    qrImg.onload = () => {
-      if (qrBgColor !== "transparent") {
-        ctx.fillStyle = qrBgColor;
-        ctx.fillRect(qrX, qrY, qrSize, qrSize);
-      }
-      ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
-      resolve();
-    };
-    qrImg.onerror = () => {
-      // Fallback: draw a simple QR pattern
-      ctx.fillStyle = qrBgColor !== "transparent" ? qrBgColor : "#ffffff";
-      ctx.fillRect(qrX, qrY, qrSize, qrSize);
-      ctx.fillStyle = qrDotsColor;
-      for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
-          if ((i + j) % 2 === 0) {
-            ctx.fillRect(
-              qrX + (i * qrSize / 10),
-              qrY + (j * qrSize / 10),
-              qrSize / 10 - 1,
-              qrSize / 10 - 1
-            );
-          }
-        }
-      }
-      resolve();
-    };
-    qrImg.src = qrDataUrl;
-  });
-  
-  // Activation Key
-  const actKeyY = qrY + qrSize + 40;
-  ctx.font = `${Math.min(cardHeight * 0.035, 14)}px Arial`;
-  ctx.fillStyle = cardTextColor === "#ffffff" ? "#666" : "#999";
-  ctx.textAlign = "center";
-  ctx.fillText("ACTIVATION KEY", cardWidth / 2, actKeyY);
-  
-  let displayCode = activationCode || "52V28-91S28-6B799";
-  ctx.font = `bold ${Math.min(cardHeight * 0.045, 20)}px "Courier New"`;
-  ctx.fillStyle = cardTextColor;
-  ctx.fillText(displayCode, cardWidth / 2, actKeyY + 35);
-  
-  return canvas.toDataURL('image/png', 1.0);
-};
-
-// Helper for rounded rectangles
-CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-  if (w < 2 * r) r = w / 2;
-  if (h < 2 * r) r = h / 2;
-  this.moveTo(x+r, y);
-  this.lineTo(x+w-r, y);
-  this.quadraticCurveTo(x+w, y, x+w, y+r);
-  this.lineTo(x+w, y+h-r);
-  this.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-  this.lineTo(x+r, y+h);
-  this.quadraticCurveTo(x, y+h, x, y+h-r);
-  this.lineTo(x, y+r);
-  this.quadraticCurveTo(x, y, x+r, y);
-  return this;
-};
-
-/* Thumbnail Card Generator */
-const generateCardThumbnail = async (activationCode, profileName, profileSlug, qrDotsColor, qrBgColor, cardBgColor, cardTextColor) => {
-  try {
-    const safeSlug = profileSlug && profileSlug !== 'undefined' ? profileSlug : activationCode;
-    const cardDataUrl = await generateNFCCard(
-      activationCode,
-      profileName || '',
-      safeSlug,
-      qrDotsColor,
-      qrBgColor,
-      cardBgColor,
-      cardTextColor,
-      240
-    );
-    return cardDataUrl;
-  } catch (error) {
-    console.error("Error creating card thumbnail:", error);
-    return null;
-  }
-};
+import JSZip from 'jszip'; // Install: npm install jszip
 
 const ManageNFCCard = () => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedDate, setSelectedDate] = useState("");
   const [stats, setStats] = useState({
     total: 0,
     activated: 0,
-    inactive: 0
+    inactive: 0,
   });
-  const [cardImages, setCardImages] = useState({});
-  const [downloadingDate, setDownloadingDate] = useState(null);
-  const [downloadingAll, setDownloadingAll] = useState(false);
-  const [generatingCards, setGeneratingCards] = useState(false);
-  
+  const [downloading, setDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
+
   const [showColorPicker, setShowColorPicker] = useState(false);
-  
-  const [cardBgColor, setCardBgColor] = useState("#ffffff");  
-  const [cardTextColor, setCardTextColor] = useState("#000000"); 
+
+  const [cardBgColor, setCardBgColor] = useState("#ffffff");
+  const [cardTextColor, setCardTextColor] = useState("#000000");
   const [qrDotsColor, setQrDotsColor] = useState("#000000");
   const [qrBgColor, setQrBgColor] = useState("#ffffff");
 
@@ -243,76 +40,33 @@ const ManageNFCCard = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCards, setTotalCards] = useState(0);
   const [limit] = useState(100);
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  
-  const isGeneratingRef = useRef(false);
-  const currentPageRef = useRef(currentPage);
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const cardRef = useRef();
 
-  // Generate card thumbnails
-  const generateCardsForCurrentPage = useCallback(async (cardsList) => {
-    if (!cardsList || cardsList.length === 0) return;
-    if (isGeneratingRef.current) return;
-    
-    isGeneratingRef.current = true;
-    setGeneratingCards(true);
-    
-    const cardMap = {};
-    const chunkSize = 5;
-    
-    for (let i = 0; i < cardsList.length; i += chunkSize) {
-      if (currentPageRef.current !== currentPage) {
-        console.log("Page changed, stopping card generation");
-        break;
-      }
-      
-      const chunk = cardsList.slice(i, i + chunkSize);
-      
-      await Promise.all(chunk.map(async (card) => {
-        if (!cardImages[card._id]) {
-          try {
-            const thumbnailUrl = await generateCardThumbnail(
-              card.activationCode,
-              card.owner?.name || card.profile?.name || '',
-              card.slug || card.activationCode,
-              qrDotsColor,
-              qrBgColor,
-              cardBgColor,
-              cardTextColor
-            );
-            cardMap[card._id] = thumbnailUrl;
-          } catch (err) {
-            console.error(`Error generating card for ${card._id}:`, err);
-            cardMap[card._id] = null;
-          }
-        }
-      }));
-      
-      setCardImages(prev => ({ ...prev, ...cardMap }));
-      await new Promise(resolve => setTimeout(resolve, 10));
-    }
-    
-    isGeneratingRef.current = false;
-    setGeneratingCards(false);
-  }, [qrDotsColor, qrBgColor, cardBgColor, cardTextColor, currentPage]);
-
-  const fetchCards = async (page = 1, search = "") => {
+  // ✅ Fetch cards
+  const fetchCards = useCallback(async (page = 1, search = "") => {
     try {
       setLoading(true);
       setIsSearching(!!search);
-      currentPageRef.current = page;
-      
-      const url = `${import.meta.env.VITE_BASE_URL}/api/all/cards?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
-      
-      const res = await axios.get(url, { 
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-        },
+
+      const baseUrl = import.meta.env.VITE_BASE_URL || '';
+      const url = `${baseUrl}/api/all/cards?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        setError("Please login again");
+        setLoading(false);
+        return;
+      }
+
+      const res = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 30000,
       });
 
       const allCards = res.data.allCards || [];
@@ -320,29 +74,20 @@ const ManageNFCCard = () => {
       setTotalCards(res.data.totalCards || 0);
       setTotalPages(res.data.totalPages || 1);
       setCurrentPage(res.data.page || 1);
-      
+
       const total = res.data.totalCards || 0;
       const activated = allCards.filter(card => card.isActivated).length;
       const inactive = allCards.length - activated;
-      
+
       setStats({ total, activated, inactive });
-      setCardImages({});
-      await generateCardsForCurrentPage(allCards);
-      
+
     } catch (err) {
-      console.error(err);
-      setError("Unable to fetch cards");
+      console.error("❌ Fetch error:", err);
+      setError(err.message || "Unable to fetch cards");
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    if (cards.length > 0 && !loading) {
-      setCardImages({});
-      generateCardsForCurrentPage(cards);
-    }
-  }, [cardBgColor, cardTextColor, qrDotsColor, qrBgColor]);
+  }, [limit]);
 
   useEffect(() => {
     fetchCards(currentPage, searchQuery);
@@ -351,398 +96,315 @@ const ManageNFCCard = () => {
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
       setCurrentPage(page);
-      currentPageRef.current = page;
-      setCardImages({});
       fetchCards(page, searchQuery);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
-    currentPageRef.current = 1;
-    setCardImages({});
     fetchCards(1, searchQuery);
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
     setCurrentPage(1);
-    currentPageRef.current = 1;
-    setCardImages({});
     fetchCards(1, "");
   };
 
-  const getPageNumbers = () => {
-    const pageNumbers = [];
-    const maxPagesToShow = 5;
-    
-    if (totalPages <= maxPagesToShow) {
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
+  // ✅ SINGLE CARD DOWNLOAD - Works perfectly
+  const downloadCard = async (card) => {
+    try {
+      setSelectedCard(card);
+
+      const loadingDiv = document.createElement('div');
+      loadingDiv.style.cssText = `
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        flex-direction: column;
+        gap: 15px;
+      `;
+      loadingDiv.innerHTML = `
+        <div class="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-white text-lg">Generating Card...</p>
+        <p class="text-gray-400 text-sm">${card.activationCode}</p>
+      `;
+      document.body.appendChild(loadingDiv);
+
+      const params = new URLSearchParams({
+        cardBgColor, cardTextColor, qrDotsColor, qrBgColor
+      });
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/download?${params.toString()}`,
+        {
+          responseType: 'blob',
+          headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
+          timeout: 60000
+        }
+      );
+
+      if (loadingDiv.parentNode) {
+        document.body.removeChild(loadingDiv);
       }
-    } else {
-      if (currentPage <= 3) {
-        pageNumbers.push(1, 2, 3, 4, '...', totalPages);
-      } else if (currentPage >= totalPages - 2) {
-        pageNumbers.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-      } else {
-        pageNumbers.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+
+      if (!response.data || response.data.size === 0) {
+        alert('Download failed: Empty response');
+        return;
       }
+
+      const url = URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `brilson-card-${card.activationCode}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+      // Mark as downloaded
+      try {
+        await axios.patch(
+          `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
+          {},
+          { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+        );
+        setCards(prev =>
+          prev.map(c =>
+            c._id === card._id ? { ...c, isDownloaded: true } : c
+          )
+        );
+      } catch (err) {
+        console.error('Failed to mark as downloaded:', err);
+      }
+
+    } catch (error) {
+      console.error("Download Error:", error);
+      const loadingDiv = document.querySelector('div[style*="fixed"]');
+      if (loadingDiv && loadingDiv.parentNode) {
+        document.body.removeChild(loadingDiv);
+      }
+      
+      let errorMessage = 'Failed to download card. Please try again.';
+      if (error.response?.status === 401) {
+        errorMessage = 'Session expired. Please login again.';
+        localStorage.removeItem('adminToken');
+      }
+      alert(`❌ ${errorMessage}`);
     }
-    
-    return pageNumbers;
   };
 
-  const groupedCards = cards.reduce((acc, card) => {
-    const date = new Date(card.createdAt).toISOString().split("T")[0];
-    if (!acc[date]) acc[date] = [];
-    acc[date].push(card);
-    return acc;
-  }, {});
+  // ✅ FIXED: BULK DOWNLOAD - Using the same approach as single download
+  const downloadCurrentPageCards = async () => {
+    if (cards.length === 0) {
+      alert("No cards available on this page to download");
+      return;
+    }
 
-  const filteredGroupedCards = Object.entries(groupedCards).filter(
-    ([date]) => !selectedDate || date === selectedDate
-  );
+    setDownloading(true);
+    setDownloadProgress({ current: 0, total: cards.length });
+
+    // Show loading with progress
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'bulk-download-loader';
+    loadingDiv.style.cssText = `
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 20px;
+      backdrop-filter: blur(5px);
+    `;
+    loadingDiv.innerHTML = `
+      <div class="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-white text-xl font-semibold">Downloading ${cards.length} NFC Cards...</p>
+      <p class="text-gray-400 text-sm">Page ${currentPage} of ${totalPages}</p>
+      <div class="w-64 bg-gray-700 rounded-full h-2.5">
+        <div id="progress-bar" class="bg-indigo-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+      <p id="progress-text" class="text-gray-400 text-sm">0 / ${cards.length} cards</p>
+      <p id="failed-text" class="text-red-400 text-sm hidden">Failed: 0</p>
+    `;
+    document.body.appendChild(loadingDiv);
+
+    try {
+      const failedCards = [];
+      const successfulCards = [];
+      const zip = new JSZip();
+      
+      // Update progress function
+      const updateProgress = (current, total) => {
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        if (progressBar) {
+          const percentage = (current / total) * 100;
+          progressBar.style.width = `${Math.min(percentage, 100)}%`;
+        }
+        if (progressText) {
+          progressText.textContent = `${current} / ${total} cards`;
+        }
+        setDownloadProgress({ current, total });
+      };
+
+      // Show failed count
+      const updateFailed = (count) => {
+        const failedText = document.getElementById('failed-text');
+        if (failedText) {
+          failedText.classList.remove('hidden');
+          failedText.textContent = `Failed: ${count}`;
+        }
+      };
+
+      // Download each card one by one with the same method as single download
+      for (let i = 0; i < cards.length; i++) {
+        const card = cards[i];
+        try {
+          updateProgress(i, cards.length);
+
+          const params = new URLSearchParams({
+            cardBgColor, cardTextColor, qrDotsColor, qrBgColor
+          });
+
+          const response = await axios.get(
+            `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/download?${params.toString()}`,
+            {
+              responseType: 'blob',
+              headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
+              timeout: 60000
+            }
+          );
+
+          if (response.data && response.data.size > 0) {
+            // Add to zip
+            const fileName = `brilson-card-${card.activationCode}.png`;
+            zip.file(fileName, response.data);
+            successfulCards.push(card);
+            
+            // Mark as downloaded (async, don't wait)
+            axios.patch(
+              `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
+              {},
+              { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+            ).catch(err => console.error('Failed to mark as downloaded:', err));
+          } else {
+            failedCards.push(card);
+            updateFailed(failedCards.length);
+          }
+        } catch (error) {
+          console.error(`Failed to download card ${card.activationCode}:`, error);
+          failedCards.push(card);
+          updateFailed(failedCards.length);
+        }
+      }
+
+      // Final progress update
+      updateProgress(cards.length, cards.length);
+
+      // Check if we have any successful downloads
+      if (successfulCards.length === 0) {
+        throw new Error('No cards could be downloaded. Please try again.');
+      }
+
+      // Generate ZIP file
+      const zipBlob = await zip.generateAsync({ 
+        type: 'blob',
+        compression: 'DEFLATE',
+        compressionOptions: { level: 6 }
+      });
+
+      // Remove loading
+      const loader = document.getElementById('bulk-download-loader');
+      if (loader && loader.parentNode) {
+        document.body.removeChild(loader);
+      }
+
+      // Download ZIP
+      const url = URL.createObjectURL(zipBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `brilson-cards-page-${currentPage}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Cleanup URL
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+      // Update UI - mark successful cards as downloaded
+      setCards(prev =>
+        prev.map(c => {
+          if (successfulCards.find(sc => sc._id === c._id)) {
+            return { ...c, isDownloaded: true };
+          }
+          return c;
+        })
+      );
+
+      // Show success/failure message
+      if (failedCards.length > 0) {
+        alert(`✅ Download Complete with some issues!\n\n📦 Successful: ${successfulCards.length}\n❌ Failed: ${failedCards.length}\n\nFailed cards:\n${failedCards.map(c => c.activationCode).join('\n')}\n\nPlease check the downloaded ZIP.`);
+      } else {
+        alert(`✅ Download Complete!\n\n📦 All ${successfulCards.length} cards downloaded successfully!`);
+      }
+
+    } catch (error) {
+      console.error("Bulk download error:", error);
+      
+      // Remove loading
+      const loader = document.getElementById('bulk-download-loader');
+      if (loader && loader.parentNode) {
+        document.body.removeChild(loader);
+      }
+
+      // Show detailed error
+      let errorMessage = 'Download failed. Please try again.';
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.code === 'ECONNABORTED') {
+        errorMessage = 'Request timed out. The server is taking too long to respond.';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Session expired. Please login again.';
+        localStorage.removeItem('adminToken');
+      }
+      
+      alert(`❌ ${errorMessage}`);
+    } finally {
+      setDownloading(false);
+      setDownloadProgress({ current: 0, total: 0 });
+    }
+  };
 
   const previewCard = (card) => {
     setSelectedCard(card);
     setPreviewOpen(true);
   };
 
-  const downloadCard = async (card) => {
-    try {
-      setSelectedCard(card);
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
 
-      setTimeout(async () => {
-        const element = document.getElementById("download-card");
-
-        if (!element) {
-          alert("Card element not found");
-          return;
-        }
-
-        const canvas = await html2canvas(element, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: null,
-          logging: false,
-          foreignObjectRendering: false,
-        });
-
-        const image = canvas.toDataURL("image/png", 1.0);
-
-        const link = document.createElement("a");
-        link.href = image;
-        link.download = `brilson-card-${card.activationCode}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-      }, 300);
-
-    } catch (error) {
-      console.error("Download Error:", error);
-      alert("Failed to download card");
-    }
-  };
-
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  // FIXED: Better wait for render function
-  const waitForRender = async (container, timeout = 10000) => {
-    const start = Date.now();
-
-    while (Date.now() - start < timeout) {
-      // Check if container has child elements
-      if (container.children.length > 0) {
-        const root = container.firstElementChild;
-        
-        // Check if root has content
-        if (root) {
-          // Check for QR container or any content
-          const hasContent = root.querySelector('[style]') || 
-                           root.querySelector('div') || 
-                           root.querySelector('svg') ||
-                           root.querySelector('canvas');
-          
-          if (hasContent) {
-            // Additional wait for QR to render
-            await sleep(200);
-            return root;
-          }
-        }
+    if (totalPages <= maxPagesToShow) {
+      for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+    } else {
+      if (currentPage <= 3) {
+        pageNumbers.push(1, 2, 3, 4, "...", totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pageNumbers.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pageNumbers.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
       }
-
-      await sleep(50);
     }
-
-    // If timeout, return whatever is there
-    if (container.firstElementChild) {
-      return container.firstElementChild;
-    }
-    
-    throw new Error("Card render timeout");
-  };
-
-  // FIXED: Bulk download function with guaranteed QR
-  const downloadAllByDate = async (date, cardsList) => {
-    if (!cardsList || cardsList.length === 0) {
-      alert("No cards available for this date");
-      return;
-    }
-
-    setDownloadingDate(date);
-
-    try {
-      const zip = new JSZip();
-      const folderName = `brilson-cards-${date}`;
-      const folder = zip.folder(folderName);
-
-      alert(`📥 Generating ${cardsList.length} NFC Cards...\nPlease wait.`);
-
-      const chunkSize = 3;
-      const results = [];
-
-      for (let i = 0; i < cardsList.length; i += chunkSize) {
-        const chunk = cardsList.slice(i, i + chunkSize);
-        
-        const chunkPromises = chunk.map(async (card) => {
-          try {
-            const tempDiv = document.createElement('div');
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.left = '-9999px';
-            tempDiv.style.top = '-9999px';
-            tempDiv.style.width = '1200px';
-            tempDiv.style.height = '750px';
-            document.body.appendChild(tempDiv);
-            
-            const { default: ReactDOM } = await import('react-dom/client');
-            const NFCCardDesignComponent = (await import('./ManageNFCCard/NFCCardDesign')).default;
-            
-            const root = ReactDOM.createRoot(tempDiv);
-            
-            root.render(
-              <NFCCardDesignComponent
-                activationCode={card.activationCode}
-                profileSlug={card.slug || card.activationCode}
-                profileName={card.owner?.name || card.profile?.name || "Card Owner"}
-                cardBgColor={cardBgColor}
-                cardTextColor={cardTextColor}
-                qrDotsColor={qrDotsColor}
-                qrBgColor={qrBgColor}
-              />
-            );
-
-            // Wait for render with better detection
-            const element = await waitForRender(tempDiv);
-
-            // Additional wait for QR to fully render
-            await sleep(300);
-
-            const canvas = await html2canvas(element, {
-              scale: 3,
-              useCORS: true,
-              allowTaint: true,
-              backgroundColor: null,
-              logging: false,
-              onclone: (clonedDoc) => {
-                // Ensure QR is visible in cloned document
-                const qrElements = clonedDoc.querySelectorAll('[style*="position"]');
-                qrElements.forEach(el => {
-                  if (el.style.display === 'none') {
-                    el.style.display = 'block';
-                  }
-                });
-              }
-            });
-
-            const blob = await new Promise((resolve) => {
-              canvas.toBlob(resolve, "image/png", 1);
-            });
-
-            folder.file(
-              `brilson-card-${card.activationCode}.png`,
-              blob
-            );
-
-            try {
-              root.unmount();
-            } catch (e) {}
-
-            if (tempDiv.parentNode) {
-              tempDiv.parentNode.removeChild(tempDiv);
-            }
-
-            return { success: true, card };
-          } catch (error) {
-            console.error(`Error processing card ${card.activationCode}:`, error);
-            
-            // Fallback: Try with canvas-based generation
-            try {
-              const fallbackDataUrl = await generateNFCCard(
-                card.activationCode,
-                card.owner?.name || card.profile?.name || "Card Owner",
-                card.slug || card.activationCode,
-                qrDotsColor,
-                qrBgColor,
-                cardBgColor,
-                cardTextColor,
-                1200
-              );
-              
-              const response = await fetch(fallbackDataUrl);
-              const blob = await response.blob();
-              folder.file(`brilson-card-${card.activationCode}.png`, blob);
-              return { success: true, card };
-            } catch (fallbackError) {
-              console.error("Fallback also failed:", fallbackError);
-              return { success: false, card };
-            }
-          }
-        });
-
-        const chunkResults = await Promise.all(chunkPromises);
-        results.push(...chunkResults);
-      }
-
-      const zipContent = await zip.generateAsync({ type: "blob" });
-      const zipUrl = URL.createObjectURL(zipContent);
-
-      const link = document.createElement('a');
-      link.href = zipUrl;
-      link.download = `all-brilson-cards-${date}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      URL.revokeObjectURL(zipUrl);
-
-      const successful = results.filter(r => r.success).length;
-      const failed = results.filter(r => !r.success).length;
-
-      alert(`✅ Download Complete!\n\n📦 Successful: ${successful}\n❌ Failed: ${failed}`);
-
-    } catch (error) {
-      console.error("Error in bulk download:", error);
-      alert("Error downloading cards. Please try again.");
-    } finally {
-      setDownloadingDate(null);
-    }
-  };
-
-  // FIXED: Download All Cards
-  const downloadAllCards = async () => {
-    if (downloadingAll) return;
-    
-    try {
-      setDownloadingAll(true);
-      
-      const initialRes = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/all/cards?page=1&limit=1`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
-      );
-      
-      const total = initialRes.data.totalCards || 0;
-      
-      if (total === 0) {
-        alert("No cards available to download");
-        setDownloadingAll(false);
-        return;
-      }
-      
-      const confirmDownload = window.confirm(
-        `📥 You are about to download ${total} NFC cards.\n\nThis may take a few minutes. Continue?`
-      );
-      
-      if (!confirmDownload) {
-        setDownloadingAll(false);
-        return;
-      }
-      
-      // Fetch all cards
-      const allCards = [];
-      let page = 1;
-      let hasMore = true;
-      
-      while (hasMore) {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/all/cards?page=${page}&limit=100`,
-          { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
-        );
-        
-        const cardsBatch = res.data.allCards || [];
-        allCards.push(...cardsBatch);
-        hasMore = cardsBatch.length === 100;
-        page++;
-      }
-      
-      // Group by date for organized download
-      const groupedByDate = allCards.reduce((acc, card) => {
-        const date = new Date(card.createdAt).toISOString().split("T")[0];
-        if (!acc[date]) acc[date] = [];
-        acc[date].push(card);
-        return acc;
-      }, {});
-      
-      const zip = new JSZip();
-      
-      for (const [date, cardsList] of Object.entries(groupedByDate)) {
-        const folder = zip.folder(`brilson-cards-${date}`);
-        
-        // Process in batches
-        const batchSize = 5;
-        for (let i = 0; i < cardsList.length; i += batchSize) {
-          const batch = cardsList.slice(i, i + batchSize);
-          
-          await Promise.all(batch.map(async (card) => {
-            try {
-              // Use canvas-based generation for speed and reliability
-              const dataUrl = await generateNFCCard(
-                card.activationCode,
-                card.owner?.name || card.profile?.name || "Card Owner",
-                card.slug || card.activationCode,
-                qrDotsColor,
-                qrBgColor,
-                cardBgColor,
-                cardTextColor,
-                1200
-              );
-              
-              const response = await fetch(dataUrl);
-              const blob = await response.blob();
-              folder.file(`brilson-card-${card.activationCode}.png`, blob);
-            } catch (error) {
-              console.error(`Failed to generate card ${card.activationCode}:`, error);
-            }
-          }));
-        }
-      }
-      
-      const zipBlob = await zip.generateAsync({
-        type: "blob",
-        compression: "DEFLATE",
-        compressionOptions: { level: 6 },
-      });
-      
-      const url = URL.createObjectURL(zipBlob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `all-brilson-cards.zip`;
-      a.click();
-      URL.revokeObjectURL(url);
-      
-      alert(`✅ Download Completed!\n\nTotal Cards: ${allCards.length}`);
-      
-    } catch (err) {
-      console.error("Download all failed:", err);
-      alert("Failed to download all cards. Please try again.");
-    } finally {
-      setDownloadingAll(false);
-      qrCache.clear();
-    }
+    return pageNumbers;
   };
 
   if (loading) {
@@ -763,49 +425,34 @@ const ManageNFCCard = () => {
   }
 
   const StatusBadge = ({ active }) => (
-    <span
-      className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-        active
-          ? "bg-green-500/20 text-green-400"
-          : "bg-yellow-500/20 text-yellow-400"
-      }`}
-    >
+    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+      active ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
+    }`}>
       {active ? "Active" : "Inactive"}
     </span>
   );
 
   const Pagination = () => (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-2 py-4 bg-gray-800/30 rounded-lg">
-      <div className="text-xs sm:text-sm text-gray-400 text-center sm:text-left">
-        Page <span className="font-medium text-gray-300">{currentPage}</span> of{" "}
-        <span className="font-medium text-gray-300">{totalPages}</span> • 
-        Showing <span className="font-medium text-gray-300">{(currentPage - 1) * limit + 1}</span> to{" "}
-        <span className="font-medium text-gray-300">
-          {Math.min(currentPage * limit, totalCards)}
-        </span> of{" "}
-        <span className="font-medium text-gray-300">{totalCards}</span>
-        {isSearching && (
-          <span className="ml-2 text-indigo-400 block sm:inline mt-1 sm:mt-0">
-            (Search results)
-          </span>
-        )}
-        {generatingCards && (
-          <span className="ml-2 text-yellow-400 block sm:inline mt-1 sm:mt-0">
-            (Generating cards...)
+      <div className="text-xs sm:text-sm text-gray-400">
+        Page {currentPage} of {totalPages} • Showing {(currentPage - 1) * limit + 1} to{" "}
+        {Math.min(currentPage * limit, totalCards)} of {totalCards}
+        {isSearching && <span className="ml-2 text-indigo-400">(Search results)</span>}
+        {downloading && (
+          <span className="ml-2 text-yellow-400">
+            (Downloading: {downloadProgress.current}/{downloadProgress.total})
           </span>
         )}
       </div>
-      
-      <div className="flex items-center gap-1 flex-wrap justify-center">
+      <div className="flex items-center gap-1 flex-wrap">
         <button onClick={() => handlePageChange(1)} disabled={currentPage === 1}
-          className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
+          className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronsLeft size={16} />
         </button>
         <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}
-          className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
+          className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronLeft size={16} />
         </button>
-        
         {getPageNumbers().map((pageNum, index) => (
           <button key={index} onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
             className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-xs sm:text-sm font-medium ${
@@ -815,141 +462,55 @@ const ManageNFCCard = () => {
             {pageNum}
           </button>
         ))}
-        
         <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}
-          className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
+          className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronRight size={16} />
         </button>
         <button onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages}
-          className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
+          className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronsRight size={16} />
         </button>
       </div>
     </div>
   );
 
-const CardThumbnail = ({ cardId }) => {
-  const imageData = cardImages[cardId];
-  
-  // Agar actual thumbnail generate ho gaya hai to show karein
-  if (imageData) {
-    return (
-      <img
-        src={imageData}
-        alt="NFC Card"
-        className="w-14 h-9 object-cover rounded shadow-md border border-gray-600"
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.style.display = 'none';
-        }}
-      />
-    );
-  }
-  
-  // Simple placeholder card design (14x9 size)
-  return (
-    <div 
-      className="w-14 h-9 rounded shadow-md border overflow-hidden flex"
-      style={{ 
-        background: cardBgColor,
-        borderColor: cardTextColor === "#ffffff" ? "#333" : cardTextColor,
-        borderWidth: "1px",
-      }}
-    >
-      {/* LEFT SIDE - WiFi + NFC + URL */}
-      <div className="flex-1 flex flex-col items-center justify-center px-1" style={{ borderRight: `1px solid ${cardTextColor === "#ffffff" ? "#333" : cardTextColor}` }}>
-        {/* WiFi Icon (small) */}
-        <svg width="10" height="8" viewBox="0 0 24 24" fill="none" 
-          stroke={cardTextColor === "#ffffff" ? "#333" : cardTextColor} 
-          strokeWidth="2"
-        >
-          <path d="M5 12.5a8 8 0 0 1 14 0"/>
-          <path d="M8 16a4 4 0 0 1 8 0"/>
-          <circle cx="12" cy="20" r="1.5" fill={cardTextColor === "#ffffff" ? "#333" : cardTextColor}/>
-        </svg>
-        
-        {/* NFC Text */}
-        <span className="text-[5px] font-bold leading-none" style={{ color: cardTextColor === "#ffffff" ? "#333" : cardTextColor }}>
-          NFC
-        </span>
-        
-        {/* URL */}
-        <span className="text-[4px] leading-none mt-0.5" style={{ color: cardTextColor === "#ffffff" ? "#666" : cardTextColor }}>
-          brilson.in
-        </span>
-      </div>
-      
-      {/* RIGHT SIDE */}
-      <div className="flex-1 flex flex-col items-center justify-center px-1">
-        {/* QR Box  */}
-        <div 
-          className="w-4 h-4 rounded flex items-center justify-center mb-1"
-          style={{ 
-            border: `1px solid ${cardTextColor === "#ffffff" ? "#333" : cardTextColor}`,
-            background: qrBgColor === "transparent" ? "transparent" : qrBgColor
-          }}
-        >
-          {/* Small QR pattern */}
-          <div className="w-4 h-4 grid grid-cols-3 gap-0.5">
-            <div className="bg-black/80 rounded-sm" style={{ backgroundColor: qrDotsColor }}></div>
-            <div className="bg-black/80 rounded-sm" style={{ backgroundColor: qrDotsColor }}></div>
-            <div className="bg-black/80 rounded-sm" style={{ backgroundColor: qrDotsColor }}></div>
-            <div className="bg-black/80 rounded-sm" style={{ backgroundColor: qrDotsColor }}></div>
-            <div className="bg-transparent"></div>
-            <div className="bg-black/80 rounded-sm" style={{ backgroundColor: qrDotsColor }}></div>
-            <div className="bg-black/80 rounded-sm" style={{ backgroundColor: qrDotsColor }}></div>
-            <div className="bg-black/80 rounded-sm" style={{ backgroundColor: qrDotsColor }}></div>
-            <div className="bg-black/80 rounded-sm" style={{ backgroundColor: qrDotsColor }}></div>
-          </div>
-        </div>
-        
-        {/* Activation Key Text */}
-        <span className="text-[3px] leading-none mt-0.5 uppercase tracking-tighter" style={{ color: cardTextColor === "#ffffff" ? "#666" : cardTextColor }}>
-          KEY
-        </span>
-      </div>
-    </div>
-  );
-};
-
-
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-2 py-4 text-gray-200 max-w-full overflow-x-hidden">
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6 lg:mt-0 mt-11">
         <div className="w-full lg:w-auto text-center lg:text-left">
-          <h4 className="text-xl sm:text-xl md:text-xl lg:text-xl font-bold">Manage NFC Cards</h4>
+          <h4 className="text-xl font-bold">Manage NFC Cards</h4>
           <p className="text-gray-400 mt-1 text-xs">
             View, track and manage all NFC card profiles
-            <span className="ml-2 text-indigo-400 font-medium block sm:inline mt-1 sm:mt-0">
+            <span className="ml-2 text-indigo-400 font-medium block sm:inline">
               (Page {currentPage} of {totalPages})
             </span>
           </p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-stretch sm:items-center">
-          {/* Download All Cards Button */}
-          {/* <button
-            onClick={downloadAllCards}
-            disabled={downloadingAll || stats.total === 0}
+          {/* Bulk Download Button - Current Page */}
+          <button
+            onClick={downloadCurrentPageCards}
+            disabled={downloading || cards.length === 0}
             className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${
-              downloadingAll || stats.total === 0
+              downloading || cards.length === 0
                 ? 'bg-gray-600 cursor-not-allowed opacity-50'
                 : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg'
             }`}
           >
-            {downloadingAll ? (
+            {downloading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Downloading All...</span>
+                <span>{downloadProgress.current}/{downloadProgress.total}</span>
               </>
             ) : (
               <>
                 <FiDownloadCloud size={16} />
-                <span>Download All ({stats.total})</span>
+                <span>Download Page ({cards.length})</span>
               </>
             )}
-          </button> */}
+          </button>
 
           <button
             onClick={() => setShowColorPicker(!showColorPicker)}
@@ -981,26 +542,12 @@ const CardThumbnail = ({ cardId }) => {
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1"
                 >
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               )}
             </div>
           </form>
-
-          <div className="relative w-full sm:w-auto">
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-gray-900/60 backdrop-blur border-0 pl-3 pr-8 py-2.5 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white text-sm"
-            />
-            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1012,13 +559,12 @@ const CardThumbnail = ({ cardId }) => {
               <h3 className="text-xl font-bold text-white">Customize NFC Card</h3>
               <button onClick={() => setShowColorPicker(false)} className="text-gray-400 hover:text-white">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-              {/* Controls */}
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Card Background Color</label>
@@ -1108,7 +654,6 @@ const CardThumbnail = ({ cardId }) => {
                     }}
                   >
                     <div className="p-5 relative w-full h-full flex">
-                      {/* LEFT SECTION */}
                       <div className="flex-1 flex flex-col items-start justify-center gap-1">
                         <div className="flex flex-col items-center gap-0.5 mb-1">
                           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" 
@@ -1121,23 +666,16 @@ const CardThumbnail = ({ cardId }) => {
                           </svg>
                           <span className="font-bold text-lg leading-none" style={{ 
                             color: cardTextColor === "#ffffff" ? "#333" : cardTextColor 
-                          }}>
-                            NFC
-                          </span>
+                          }}>NFC</span>
                         </div>
                         <h2 className="font-bold text-3xl leading-tight" style={{ 
                           color: cardTextColor === "#ffffff" ? "#1a1a2e" : cardTextColor 
-                        }}>
-                          Brilson
-                        </h2>
+                        }}>Brilson</h2>
                         <p className="text-xs leading-none" style={{ 
                           color: cardTextColor === "#ffffff" ? "#666" : cardTextColor 
-                        }}>
-                          www.brilson.in
-                        </p>
+                        }}>www.brilson.in</p>
                       </div>
 
-                      {/* RIGHT SECTION */}
                       <div className="flex-1 flex flex-col items-center justify-center gap-3">
                         <div className="w-28 h-28 rounded-lg flex items-center justify-center" 
                           style={{ 
@@ -1161,9 +699,7 @@ const CardThumbnail = ({ cardId }) => {
                         <div className="text-center">
                           <p className="text-[8px] uppercase tracking-wider leading-none mb-1" style={{ 
                             color: cardTextColor === "#ffffff" ? "#666" : cardTextColor 
-                          }}>
-                            Activation Key
-                          </p>
+                          }}>Activation Key</p>
                           <div className="font-mono font-bold text-xs px-2 py-0.5 rounded border inline-block" 
                             style={{ 
                               color: cardTextColor,
@@ -1194,148 +730,111 @@ const CardThumbnail = ({ cardId }) => {
         <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
           <div className="flex items-center justify-between">
             <div><p className="text-gray-400 text-xs mb-1">Total Cards</p><p className="text-2xl font-bold">{stats.total}</p></div>
-            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center"><span className="text-indigo-400 text-lg">📋</span></div>
+            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
+              <span className="text-indigo-400 text-lg">📋</span>
+            </div>
           </div>
         </div>
         <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
           <div className="flex items-center justify-between">
             <div><p className="text-gray-400 text-xs mb-1">Activated</p><p className="text-2xl font-bold text-green-400">{stats.activated}</p></div>
-            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center"><span className="text-green-400 text-lg">✓</span></div>
+            <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+              <span className="text-green-400 text-lg">✓</span>
+            </div>
           </div>
         </div>
         <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
             <div><p className="text-gray-400 text-xs mb-1">Inactive</p><p className="text-2xl font-bold text-yellow-400">{stats.inactive}</p></div>
-            <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center"><span className="text-yellow-400 text-lg">⏸</span></div>
+            <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
+              <span className="text-yellow-400 text-lg">⏸</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* MOBILE VIEW */}
-      <div className="block lg:hidden">
-        {filteredGroupedCards.length > 0 ? (
-          filteredGroupedCards.map(([date, list]) => (
-            <div key={date} className="mb-6">
-              <div className="mb-3 p-3 bg-gray-800/30 rounded-lg sticky top-0 z-10">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-base">📅</span>
-                    <span className="font-medium text-gray-300 text-sm">{new Date(date).toLocaleDateString("en-GB")}</span>
-                    <span className="text-xs bg-gray-700 px-2 py-0.5 rounded-full text-gray-300">{list.length}</span>
-                  </div>
-                  <button onClick={() => downloadAllByDate(date, list)} disabled={downloadingDate === date}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium w-full sm:w-auto justify-center ${downloadingDate === date ? 'bg-gray-600 cursor-not-allowed opacity-50' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'}`}>
-                    {downloadingDate === date ? (<><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Downloading...</span></>) : (<><FiDownloadCloud size={12} /><span>Download All ({list.length})</span></>)}
-                  </button>
-                </div>
-              </div>
-              <div className="space-y-3">
-                {list.map((card) => (
-                  <div key={card._id} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <StatusBadge active={card.isActivated} />
-                          <span className="text-xs text-gray-400">✓ {card.isDownloaded ? 'Downloaded' : 'Not Downloaded'}</span>
-                        </div>
-                        <p className="text-sm font-medium text-white truncate">{card.owner?.name || "—"}</p>
-                        <p className="text-xs text-indigo-400 font-mono mt-1 break-all">{card.activationCode}</p>
-                      </div>
-                      <div className="flex-shrink-0">
-                        <CardThumbnail cardId={card._id} />
-                      </div>
+      {/* TABLE VIEW */}
+      <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
+        <table className="w-full min-w-[900px]">
+          <thead className="bg-gray-800/50 border-b border-gray-700/50">
+            <tr>
+              <th className="p-3 text-left text-xs font-medium text-gray-300">✓</th>
+              <th className="p-3 text-left text-xs font-medium text-gray-300">Status</th>
+              <th className="p-3 text-left text-xs font-medium text-gray-300">Owner</th>
+              <th className="p-3 text-left text-xs font-medium text-gray-300">Activation</th>
+              <th className="p-3 text-left text-xs font-medium text-gray-300">Created</th>
+              <th className="p-3 text-center text-xs font-medium text-gray-300">Preview</th>
+              <th className="p-3 text-center text-xs font-medium text-gray-300">Download</th>
+              <th className="p-3 text-center text-xs font-medium text-gray-300">Profile</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-700/30">
+            {cards.length > 0 ? (
+              cards.map((card) => (
+                <tr key={card._id} className="hover:bg-gray-800/20 transition-colors">
+                  <td className="p-3">
+                    <input checked={card.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" />
+                  </td>
+                  <td className="p-3"><StatusBadge active={card.isActivated} /></td>
+                  <td className="p-3">
+                    <span className="text-sm truncate block max-w-[150px]" title={card.owner?.name}>
+                      {card.owner?.name || "—"}
+                    </span>
+                  </td>
+                  <td className="p-3">
+                    <div className="font-mono text-sm text-indigo-400 truncate max-w-[100px]" title={card.activationCode}>
+                      {card.activationCode}
                     </div>
-                    <div className="flex gap-2 mt-3 pt-2 border-t border-gray-700/50">
-                      <button onClick={() => previewCard(card)} disabled={!card.qrUrl} className="flex-1 py-1.5 bg-blue-500/20 rounded-lg text-blue-400 text-xs flex items-center justify-center gap-1"><FiEye size={12} /> Preview</button>
-                      <button onClick={() => downloadCard(card)} disabled={!card.qrUrl} className="flex-1 py-1.5 bg-cyan-500/20 rounded-lg text-cyan-400 text-xs flex items-center justify-center gap-1"><FaDownload size={12} /> Download</button>
-                      <Link to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`} target="_blank" className="flex-1 py-1.5 bg-indigo-500/20 rounded-lg text-indigo-400 text-xs flex items-center justify-center gap-1">View</Link>
-                    </div>
+                  </td>
+                  <td className="p-3 text-gray-400 text-sm whitespace-nowrap">
+                    {new Date(card.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="p-3 text-center">
+                    <button
+                      onClick={() => previewCard(card)}
+                      disabled={!card.qrUrl}
+                      className="text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50"
+                      title="Preview Card"
+                    >
+                      <FiEye className="w-4 h-4" />
+                    </button>
+                  </td>
+                  <td className="p-3 text-center">
+                    <button
+                      onClick={() => downloadCard(card)}
+                      disabled={!card.qrUrl}
+                      className="bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition-all"
+                      title="Download Card"
+                    >
+                      <FaDownload className="w-3 h-3 sm:w-4 sm:h-4" />
+                    </button>
+                  </td>
+                  <td className="p-3 text-center">
+                    <Link
+                      to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
+                      className="text-indigo-400 hover:text-indigo-300 transition text-xs font-medium hover:underline"
+                      target="_blank"
+                    >
+                      View
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="p-6 text-center">
+                  <div className="text-gray-400">
+                    <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
+                    <p className="text-sm">No cards available</p>
                   </div>
-                ))}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="p-6 text-center bg-gray-800/30 rounded-xl"><FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" /><p className="text-gray-400 text-sm">No cards available</p></div>
-        )}
-        {totalPages > 1 && <Pagination />}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* DESKTOP/TABLET TABLE VIEW */}
-      <div className="hidden lg:block">
-        <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
-          <table className="w-full min-w-[900px]">
-            <thead className="bg-gray-800/50 border-b border-gray-700/50">
-              <tr>
-                <th className="p-3 text-left text-xs font-medium text-gray-300">✓</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300">Status</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300">Owner</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300">Activation</th>
-                <th className="p-3 text-left text-xs font-medium text-gray-300">Created</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300">Card</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300">Preview</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300">Download</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300">Profile</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700/30">
-              {filteredGroupedCards.length > 0 ? (
-                filteredGroupedCards.map(([date, list]) => (
-                  <React.Fragment key={date}>
-                    <tr className="bg-gray-800/30">
-                      <td colSpan="9" className="p-3">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <span>📅</span>
-                            <span className="font-medium text-gray-300">{new Date(date).toLocaleDateString("en-GB")}</span>
-                            <span className="text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">{list.length} cards</span>
-                          </div>
-                          <button onClick={() => downloadAllByDate(date, list)} disabled={downloadingDate === date}
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${downloadingDate === date ? 'bg-gray-600 cursor-not-allowed opacity-50' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg'}`}>
-                            {downloadingDate === date ? (<><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Downloading...</span></>) : (<><FiDownloadCloud size={14} /><span>Download All ({list.length})</span></>)}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    {list.map((card) => (
-                      <tr key={card._id} className="hover:bg-gray-800/20 transition-colors">
-                        <td className="p-3"><input checked={card.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" /></td>
-                        <td className="p-3"><StatusBadge active={card.isActivated} /></td>
-                        <td className="p-3"><span className="text-sm truncate block max-w-[150px]" title={card.owner?.name}>{card.owner?.name || "—"}</span></td>
-                        <td className="p-3"><div className="font-mono text-sm text-indigo-400 truncate max-w-[100px]" title={card.activationCode}>{card.activationCode}</div></td>
-                        <td className="p-3 text-gray-400 text-sm whitespace-nowrap">{new Date(card.createdAt).toLocaleDateString()}</td>
-                        <td className="p-3 text-center">
-                          <div className="w-20 h-12 mx-auto">
-                            <CardThumbnail cardId={card._id} />
-                          </div>
-                        </td>
-                        <td className="p-3 text-center">
-                          <button onClick={() => previewCard(card)} disabled={!card.qrUrl} className="text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50" title="Preview Card">
-                            <FiEye className="w-4 h-4" />
-                          </button>
-                        </td>
-                        <td className="p-3 text-center">
-                          <button onClick={() => downloadCard(card)} disabled={!card.qrUrl} className="bg-cyan-500 hover:bg-cyan-600 p-1.5 rounded-lg text-black transition-all" title="Download Card">
-                            <FaDownload className="w-3 h-3 sm:w-4 sm:h-4" />
-                          </button>
-                        </td>
-                        <td className="p-3 text-center">
-                          <Link to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`} className="text-indigo-400 hover:text-indigo-300 transition text-xs font-medium hover:underline" target="_blank">
-                            View
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </React.Fragment>
-                ))
-              ) : (
-                <tr><td colSpan="9" className="p-6 text-center"><div className="text-gray-400"><FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" /><p className="text-sm">No cards available</p></div></td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        {totalPages > 1 && <Pagination />}
-      </div>
+      {totalPages > 1 && <Pagination />}
 
       {/* Hidden download card element */}
       <div className="fixed -left-[99999px] -top-[99999px]">
@@ -1345,7 +844,7 @@ const CardThumbnail = ({ cardId }) => {
               ref={cardRef}
               activationCode={selectedCard.activationCode}
               profileSlug={selectedCard.slug}
-              profileName={selectedCard.owner?.name || selectedCard.profile?.name || 'Card Owner'}
+              profileName={selectedCard.owner?.name || selectedCard.profile?.name || "Card Owner"}
               cardBgColor={cardBgColor}
               cardTextColor={cardTextColor}
               qrDotsColor={qrDotsColor}
