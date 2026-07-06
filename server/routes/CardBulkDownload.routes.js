@@ -220,7 +220,7 @@ function generateCardHTML(card, colors) {
           ${wifiSvg}
           <h4 class="nfc-text">NFC</h4>
         </div>
-        <h1 class="brilson-title">Brilson</h1>
+        <h1 class="brilson-title">BRILSON</h1>
         <p class="website-url">www.brilson.in</p>
       </div>
 

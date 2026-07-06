@@ -507,7 +507,7 @@ const ManageNFCCard = () => {
             ) : (
               <>
                 <FiDownloadCloud size={16} />
-                <span>Download Page ({cards.length})</span>
+                <span>Download Cards ({cards.length})</span>
               </>
             )}
           </button>
