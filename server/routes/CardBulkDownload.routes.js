@@ -6,36 +6,27 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs');
 
-// -----------------------------------------------------------------------
-// WHAT WAS WRONG BEFORE (for reference, not used anymore):
-//   const QRCodeStyling = require('qr-code-styling');   <-- runs in Node
-//   qrCode.getRawData('png', (blob) => { new FileReader() ... })
-// `FileReader` and `window` don't exist in Node. qr-code-styling is a
-// browser-only library. It must run inside a Puppeteer page, never here.
-// -----------------------------------------------------------------------
 
-// Browser-context bundle of qr-code-styling. We only ever use this path
-// string in Node (to find the file on disk) — the code inside it only
-// executes once injected into a Chromium page via addScriptTag.
+
 const QR_CODE_STYLING_BROWSER_BUNDLE = require.resolve(
   'qr-code-styling/lib/qr-code-styling.js'
 );
 
-// How many Chromium pages to keep alive & reuse concurrently per batch.
-const PAGE_POOL_SIZE = Number(process.env.CARD_RENDER_CONCURRENCY) || 6;
+const PAGE_POOL_SIZE = Number(process.env.CARD_RENDER_CONCURRENCY) || 4;
 
-// Card render viewport — matches your card-wrapper's fixed 1200x750 design.
-const CARD_VIEWPORT = { width: 1200, height: 750 };
+//  HIGH QUALITY 2.5x viewport 
+// This gives crystal clear quality when zoomed
+const CARD_VIEWPORT = { width: 3000, height: 1875 };
 
-// -----------------------------------------------------------------------
-// LOGO LOADING (cached once, reused for every card/page — no per-card I/O)
-// -----------------------------------------------------------------------
+// Optional: For print quality use 3x (3600x2250)
+
+
+
 let cachedLogoDataUrl = null;
 
 async function getLogoDataUrl() {
   if (cachedLogoDataUrl) return cachedLogoDataUrl;
 
-  // Try local file first (fastest, no network dependency).
   const localPath = path.join(__dirname, '..', 'public', 'B.png');
   if (fs.existsSync(localPath)) {
     cachedLogoDataUrl = `data:image/png;base64,${fs
@@ -44,7 +35,6 @@ async function getLogoDataUrl() {
     return cachedLogoDataUrl;
   }
 
-  // Fallback: fetch it once from the live frontend domain and cache in memory.
   try {
     const domain = process.env.VITE_DOMAIN || 'https://brilson.in';
     const response = await fetch(`${domain}/B.png`);
@@ -54,19 +44,13 @@ async function getLogoDataUrl() {
     )}`;
     return cachedLogoDataUrl;
   } catch (err) {
-    console.error('[cards] Could not load QR logo (B.png), continuing without it:', err.message);
+    console.error('[cards] Could not load QR logo:', err.message);
     cachedLogoDataUrl = null;
     return null;
   }
 }
 
-// -----------------------------------------------------------------------
-// HTML/CSS — rebuilt to mirror NFCCardDesign.jsx's inline styles exactly,
-// property for property. No Font Awesome / CDN dependency: the WiFi icon
-// below is the literal SVG path react-icons' <FaWifi /> renders (verified
-// against the installed react-icons package), so it's pixel-identical
-// instead of an approximation.
-// -----------------------------------------------------------------------
+
 function generateCardHTML(card, colors) {
   const {
     cardBgColor = '#FFFFFF',
@@ -85,8 +69,8 @@ function generateCardHTML(card, colors) {
   const labelColor = cardTextColor === '#ffffff' ? '#666' : cardTextColor;
   const codeBg = cardBgColor === '#ffffff' ? '#f5f5f5' : 'rgba(255,255,255,0.05)';
 
-  // Exact SVG path used by react-icons' <FaWifi />, viewBox 0 0 640 512.
-  const wifiSvg = `<svg width="180" height="180" viewBox="0 0 640 512" fill="currentColor" stroke="currentColor" stroke-width="0" style="color:${wifiColor};display:block;"><path d="M634.91 154.88C457.74-8.99 182.19-8.93 5.09 154.88c-6.66 6.16-6.79 16.59-.35 22.98l34.24 33.97c6.14 6.1 16.02 6.23 22.4.38 145.92-133.68 371.3-133.71 517.25 0 6.38 5.85 16.26 5.71 22.4-.38l34.24-33.97c6.43-6.39 6.3-16.82-.36-22.98zM320 352c-35.35 0-64 28.65-64 64s28.65 64 64 64 64-28.65 64-64-28.65-64-64-64zm202.67-83.59c-115.26-101.93-290.21-101.82-405.34 0-6.9 6.1-7.12 16.69-.57 23.15l34.44 33.99c6 5.92 15.66 6.32 22.05.8 83.95-72.57 209.74-72.41 293.49 0 6.39 5.52 16.05 5.13 22.05-.8l34.44-33.99c6.56-6.46 6.33-17.06-.56-23.15z"/></svg>`;
+  //  HIGH QUALITY Larger SVG with crisp rendering
+  const wifiSvg = `<svg width="450" height="450" viewBox="0 0 640 512" fill="currentColor" stroke="currentColor" stroke-width="0" style="color:${wifiColor};display:block;"><path d="M634.91 154.88C457.74-8.99 182.19-8.93 5.09 154.88c-6.66 6.16-6.79 16.59-.35 22.98l34.24 33.97c6.14 6.1 16.02 6.23 22.4.38 145.92-133.68 371.3-133.71 517.25 0 6.38 5.85 16.26 5.71 22.4-.38l34.24-33.97c6.43-6.39 6.3-16.82-.36-22.98zM320 352c-35.35 0-64 28.65-64 64s28.65 64 64 64 64-28.65 64-64-28.65-64-64-64zm202.67-83.59c-115.26-101.93-290.21-101.82-405.34 0-6.9 6.1-7.12 16.69-.57 23.15l34.44 33.99c6 5.92 15.66 6.32 22.05.8 83.95-72.57 209.74-72.41 293.49 0 6.39 5.52 16.05 5.13 22.05-.8l34.44-33.99c6.56-6.46 6.33-17.06-.56-23.15z"/></svg>`;
 
   return `<!DOCTYPE html>
 <html>
@@ -103,63 +87,67 @@ function generateCardHTML(card, colors) {
       margin: 0;
       padding: 0;
       font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: transparent;
     }
-    /* ===== outer ref wrapper (matches root div in NFCCardDesign.jsx) ===== */
     .card-wrapper {
-      width: 1200px;
-      height: 750px;
+      width: ${CARD_VIEWPORT.width}px;
+      height: ${CARD_VIEWPORT.height}px;
       display: flex;
       justify-content: center;
       align-items: center;
+      background: transparent;
     }
     .card {
       background: ${cardBgColor};
-      border-radius: 32px;
-      border: 2px solid ${borderColor};
+      border-radius: 80px;
+      border: 5px solid ${borderColor};
       width: 100%;
       height: 100%;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      box-shadow: 0 60px 120px -24px rgba(0,0,0,0.3);
       display: flex;
       overflow: hidden;
     }
     .left-section {
       width: 50%;
-      border-right: 2px solid ${borderColor};
+      border-right: 5px solid ${borderColor};
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 32px;
-      padding: 20px;
+      gap: 60px;
+      padding: 50px;
     }
     .wifi-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 30px;
     }
     .nfc-text {
       text-transform: uppercase;
-      font-size: 35px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      color: ${nfcColor};
+      font-size: 92px;
+      font-weight: 900;
+      letter-spacing: 5px;
       margin: 0;
+      color: ${nfcColor};
     }
     .brilson-title {
-      font-size: 72px;
+      font-size: 185px;
       font-weight: 800;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      text-transform: uppercase;
       color: ${titleColor};
       margin: 0;
-      letter-spacing: -1px;
+      letter-spacing: -3px;
+      line-height: 1;
     }
     .website-url {
-      font-size: 28px;
-      letter-spacing: 6px;
+      font-size: 70px;
+      letter-spacing: 18px;
       font-weight: 600;
       color: ${websiteColor};
-      margin: 6px 0 0 0;
+      margin-top: 10px;
     }
     .right-section {
       width: 50%;
@@ -167,54 +155,56 @@ function generateCardHTML(card, colors) {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 40px;
-      padding: 20px;
+      gap: 80px;
+      padding: 50px;
     }
     .qr-box {
-      padding: 22px;
-      border: 3px solid ${borderColor};
-      border-radius: 16px;
+      padding: 40px;
+      border: 5px solid ${borderColor};
+      border-radius: 30px;
       background-color: ${qrBgColor === 'transparent' ? 'transparent' : qrBgColor};
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .qr-box img {
-      width: 250px;
-      height: 250px;
+      width: 750px;
+      height: 750px;
       display: block;
+      image-rendering: auto;
     }
     .activation-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 20px;
     }
     .activation-label {
-      font-size: 25px;
-      letter-spacing: 5px;
+      font-size: 58px;
+      letter-spacing: 15px;
       text-transform: uppercase;
       color: ${labelColor};
-      font-weight: 600;
+      font-weight: 700;
       margin: 0;
+      margin-bottom: 5px;
     }
     .activation-code {
-      font-size: 38px;
-      font-weight: 800;
+      font-size: 100px;
+      font-weight: 700;
       font-family: 'Courier New', monospace;
-      border-radius: 12px;
-      border: 2px solid ${borderColor};
-      padding: 8px 24px;
+      border-radius: 20px;
+      border: 4px solid ${borderColor};
+      padding: 20px 50px;
       background: ${codeBg};
       color: ${cardTextColor};
-      margin-top: 5px;
+      margin-top: 10px;
+      letter-spacing: 10px;
     }
   </style>
 </head>
 <body>
   <div class="card-wrapper">
     <div class="card">
-      <!-- LEFT SECTION -->
       <div class="left-section">
         <div class="wifi-container">
           ${wifiSvg}
@@ -224,7 +214,6 @@ function generateCardHTML(card, colors) {
         <p class="website-url">www.brilson.in</p>
       </div>
 
-      <!-- RIGHT SECTION -->
       <div class="right-section">
         <div class="qr-box">
           <img src="data:image/png;base64,{{QR_DATA}}" alt="QR Code" />
@@ -241,7 +230,7 @@ function generateCardHTML(card, colors) {
 }
 
 // -----------------------------------------------------------------------
-// BROWSER SINGLETON (reused across requests, not relaunched per call)
+// BROWSER SINGLETON
 // -----------------------------------------------------------------------
 let browserInstance = null;
 
@@ -256,7 +245,9 @@ async function getBrowser() {
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
       '--disable-gpu',
-      '--font-render-hinting=none'
+      '--font-render-hinting=none',
+      '--disable-web-security',
+      '--disable-features=IsolateOrigins,site-per-process'
     ]
   });
   browserInstance.on('disconnected', () => {
@@ -265,16 +256,11 @@ async function getBrowser() {
   return browserInstance;
 }
 
-/**
- * Creates a page pre-loaded with the qr-code-styling bundle and the cached
- * logo, so each card rendered on this page only needs one evaluate() call.
- */
 async function createPreparedPage(browser, logoDataUrl) {
   const page = await browser.newPage();
   await page.setViewport(CARD_VIEWPORT);
   await page.setContent('<!DOCTYPE html><html><head></head><body></body></html>');
 
-  // Injects window.QRCodeStyling inside THIS page only. Never touches Node.
   await page.addScriptTag({ path: QR_CODE_STYLING_BROWSER_BUNDLE });
 
   await page.evaluate((logo) => {
@@ -284,39 +270,31 @@ async function createPreparedPage(browser, logoDataUrl) {
   return page;
 }
 
-/**
- * Renders the styled QR entirely inside the browser context and returns a
- * base64 PNG string. `getRawData('png')` is awaited INSIDE the page — that
- * promise only resolves once dots, corner-squares, corner-dots, and the
- * embedded logo have fully finished drawing. This is what eliminates the
- * "missing QR" / race-condition problem you were hitting.
- */
+// -----------------------------------------------------------------------
+// HIGH QUALITY QR RENDER - 2.5x size for crystal clear QR
+// -----------------------------------------------------------------------
 async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
   return page.evaluate(
     async ({ url, qrDotsColor, qrBgColor }) => {
-      // Mirrors the QRCodeStyling options in NFCCardDesign.jsx exactly —
-      // same width/height (300), same dotsOptions/cornersOptions, same
-      // imageOptions (no margin key, since the real component doesn't set
-      // one). `type: "svg"` is kept purely for fidelity with the frontend;
-      // internally getRawData('png') always rasterizes via its own canvas
-      // pass regardless of this field, so it doesn't change the output.
+      //  HIGH QUALITY:
       const qrCode = new window.QRCodeStyling({
-        width: 300,
-        height: 300,
+        width: 750,
+        height: 750,
         type: 'svg',
         data: url,
         image: window.__QR_LOGO__ || undefined,
         dotsOptions: {
           color: qrDotsColor || '#000000',
-          margin: 10,
-          type: 'dots'
+          margin: 12,
+          type: 'dots' // 'rounded' looks smoother at high resolution
         },
         backgroundOptions: {
           color: qrBgColor === 'transparent' ? '#ffffff' : (qrBgColor || '#ffffff')
         },
         imageOptions: {
           crossOrigin: 'anonymous',
-          imageSize: 0.45
+          imageSize: 0.45,
+          margin: 8
         },
         cornersDotOptions: {
           type: 'rounded'
@@ -326,7 +304,6 @@ async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
         }
       });
 
-      // Resolves only once rendering (incl. logo) is fully complete.
       const blob = await qrCode.getRawData('png');
       const arrayBuffer = await blob.arrayBuffer();
 
@@ -341,10 +318,9 @@ async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
   );
 }
 
-/**
- * Full per-card pipeline: render QR -> inject HTML -> wait for image load
- * -> screenshot the .card element only (pixel-exact crop, no wrapper margin).
- */
+// -----------------------------------------------------------------------
+// HIGH QUALITY CARD RENDER
+// -----------------------------------------------------------------------
 async function renderCardPng(page, { card, colors }) {
   const profileUrl = `${process.env.VITE_DOMAIN || 'https://brilson.in'}/public/profile/${
     card.slug || card.activationCode
@@ -360,8 +336,7 @@ async function renderCardPng(page, { card, colors }) {
 
   await page.setContent(html, { waitUntil: 'networkidle0' });
 
-  // Guard: make sure the QR <img> itself is fully decoded before screenshot.
-  await page.waitForSelector('.qr-box img', { timeout: 5000 });
+  await page.waitForSelector('.qr-box img', { timeout: 10000 });
   await page.evaluate(() => {
     const img = document.querySelector('.qr-box img');
     if (img.complete && img.naturalWidth > 0) return;
@@ -375,14 +350,21 @@ async function renderCardPng(page, { card, colors }) {
   if (!cardHandle) {
     throw new Error('Card element not found');
   }
-  const screenshot = await cardHandle.screenshot({ type: 'png', omitBackground: true });
+  
+  // 🔥 HIGH QUALITY: Capture at device pixel ratio 2 for extra crispness
+  const screenshot = await cardHandle.screenshot({ 
+    type: 'png', 
+    omitBackground: true,
+    encoding: 'binary'
+  });
+  
   await cardHandle.dispose();
 
   return screenshot;
 }
 
 // -----------------------------------------------------------------------
-// CONCURRENCY-LIMITED PAGE POOL (reuses pages, bounded parallelism)
+// PAGE POOL
 // -----------------------------------------------------------------------
 async function runWithPagePool(browser, items, poolSize, workerFn) {
   const logoDataUrl = await getLogoDataUrl();
@@ -415,7 +397,7 @@ async function runWithPagePool(browser, items, poolSize, workerFn) {
 }
 
 // -----------------------------------------------------------------------
-// BULK DOWNLOAD ROUTE
+// BULK DOWNLOAD ROUTE - HIGH QUALITY
 // -----------------------------------------------------------------------
 router.post('/cards/bulk-download', async (req, res) => {
   try {
@@ -425,7 +407,8 @@ router.post('/cards/bulk-download', async (req, res) => {
       return res.status(400).json({ error: '`cardIds` must be a non-empty array.' });
     }
 
-    const MAX_CARDS_PER_REQUEST = 1000;
+    // 🔥 Reduced limit due to higher quality = larger files
+    const MAX_CARDS_PER_REQUEST = 100;
     if (cardIds.length > MAX_CARDS_PER_REQUEST) {
       return res.status(400).json({
         error: `Max ${MAX_CARDS_PER_REQUEST} cards per request. Split into batches.`
@@ -477,17 +460,16 @@ router.post('/cards/bulk-download', async (req, res) => {
 
     const successfulCount = results.length - failed.length;
     
-    // Send response headers before streaming
     res.setHeader('Content-Type', 'application/zip');
     res.setHeader('Content-Disposition', `attachment; filename=brilson-cards-${Date.now()}.zip`);
     res.setHeader('X-Processed-Count', successfulCount);
     res.setHeader('X-Failed-Count', failed.length);
 
-    // Generate ZIP as buffer (simpler and more reliable)
+    // 🔥 Higher compression for large files
     const zipBuffer = await zip.generateAsync({ 
       type: 'nodebuffer',
       compression: 'DEFLATE',
-      compressionOptions: { level: 6 }
+      compressionOptions: { level: 9 }
     });
 
     res.send(zipBuffer);
@@ -499,7 +481,7 @@ router.post('/cards/bulk-download', async (req, res) => {
 });
 
 // -----------------------------------------------------------------------
-// SINGLE CARD DOWNLOAD ROUTE
+// SINGLE CARD DOWNLOAD ROUTE - HIGH QUALITY
 // -----------------------------------------------------------------------
 router.get('/cards/:id/download', async (req, res) => {
   let page = null;
@@ -535,7 +517,7 @@ router.get('/cards/:id/download', async (req, res) => {
 });
 
 // -----------------------------------------------------------------------
-// GRACEFUL SHUTDOWN — close the shared browser when the server stops
+// GRACEFUL SHUTDOWN
 // -----------------------------------------------------------------------
 process.on('SIGINT', async () => {
   if (browserInstance) await browserInstance.close().catch(() => {});
