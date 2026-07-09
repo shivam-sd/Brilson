@@ -229,9 +229,7 @@ function generateCardHTML(card, colors) {
 </html>`;
 }
 
-// -----------------------------------------------------------------------
-// BROWSER SINGLETON
-// -----------------------------------------------------------------------
+
 let browserInstance = null;
 
 async function getBrowser() {
@@ -270,9 +268,8 @@ async function createPreparedPage(browser, logoDataUrl) {
   return page;
 }
 
-// -----------------------------------------------------------------------
-// HIGH QUALITY QR RENDER - 2.5x size for crystal clear QR
-// -----------------------------------------------------------------------
+
+
 async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
   return page.evaluate(
     async ({ url, qrDotsColor, qrBgColor }) => {
@@ -318,9 +315,7 @@ async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
   );
 }
 
-// -----------------------------------------------------------------------
-// HIGH QUALITY CARD RENDER
-// -----------------------------------------------------------------------
+
 async function renderCardPng(page, { card, colors }) {
   const profileUrl = `${process.env.VITE_DOMAIN || 'https://brilson.in'}/public/profile/${
     card.slug || card.activationCode
@@ -407,7 +402,7 @@ router.post('/cards/bulk-download', async (req, res) => {
       return res.status(400).json({ error: '`cardIds` must be a non-empty array.' });
     }
 
-    // 🔥 Reduced limit due to higher quality = larger files
+    //  Reduced limit due to higher quality 
     const MAX_CARDS_PER_REQUEST = 100;
     if (cardIds.length > MAX_CARDS_PER_REQUEST) {
       return res.status(400).json({

@@ -14,7 +14,7 @@ const NFCCardDesign = forwardRef(
     },
     ref
   ) => {
-    const profileUrl = `${import.meta.env.VITE_DOMAIN}/public/profile/${activationCode}`;
+    const profileUrl = `${import.meta.env.VITE_DOMAIN}/c/card/${activationCode}`;
 
     // Format activation code for display (if needed)
     const displayActivationCode = activationCode || "52V28-91S28-6B799";

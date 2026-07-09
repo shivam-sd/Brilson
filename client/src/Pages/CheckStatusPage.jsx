@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 import axios from "axios";
 
 const CheckStatusPage = () => {
@@ -22,6 +23,7 @@ const CheckStatusPage = () => {
         }
       } catch (err) {
         navigate("/404");
+        toast.error("Invalid Card");
       }
     };
 

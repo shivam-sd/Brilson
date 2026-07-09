@@ -880,7 +880,7 @@ const ManageParkingTag = () => {
           <Link
             to="/api/tags/bulk"
             className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:shadow-lg text-sm w-full sm:w-auto"
-          >
+          > 
             <FiPlus className="text-base transition-transform duration-300 group-hover:rotate-180" />
             <span>Create Tags</span>
           </Link>
