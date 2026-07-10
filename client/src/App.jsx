@@ -2,7 +2,6 @@ import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async"; 
 const HomePage = React.lazy(() => import("./HomePage"));
-import ParkingTagDesign from "./Admin/ManageParkingTag/ParkingTagDesign";
 import ReactLenis from "lenis/react";
 import HowitWorks from "./Pages/HowitWorks";
 import BestSeller from "./Component/BestSeller";
@@ -530,7 +529,6 @@ function App() {
 <Route path="/users/verify-otp/brilson" element={<VerifyResetOtp />} />
 <Route path="/users/reset-password/brilson" element={<ResetPassword />} />
 
-<Route path="/parking-tag/design" element={<ParkingTagDesign />} />
 
           {/* error Page */}
           <Route path="*" element={<ErrorPage />} />

@@ -115,7 +115,7 @@ const ParkingTagDesign = forwardRef(
           {/* LEFT SECTION - Brand + Tagline + Info */}
           <div
             style={{
-              width: "60%",
+              width: "50%",
               background: "linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%)",
               display: "flex",
               flexDirection: "column",
@@ -151,8 +151,8 @@ const ParkingTagDesign = forwardRef(
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                 <div
                   style={{
-                    width: "70px",
-                    height: "70px",
+                    width: "60px",
+                    height: "60px",
                     background: "linear-gradient(135deg, #d4a843, #f5d77b)",
                     borderRadius: "16px",
                     display: "flex",
@@ -168,7 +168,7 @@ const ParkingTagDesign = forwardRef(
                 </div>
                 <div>
                   <h3 style={{
-                    fontSize: "52px",
+                    fontSize: "48px",
                     fontWeight: "800",
                     letterSpacing: "8px",
                     color: "#f5d77b",
@@ -196,7 +196,7 @@ const ParkingTagDesign = forwardRef(
                   background: "linear-gradient(90deg, transparent, #d4a843)",
                   borderRadius: "2px",
                 }} />
-                <GiSwirlString style={{ color: "#d4a843", fontSize: "28px" }} />
+                <GiSwirlString style={{ color: "#d4a843", fontSize: "26px" }} />
                 <div style={{ 
                   width: "80px", 
                   height: "2px", 
@@ -229,7 +229,7 @@ const ParkingTagDesign = forwardRef(
                   height: "1px", 
                   background: "linear-gradient(90deg, transparent, rgba(212,168,67,0.5))",
                 }} />
-                <HiOutlineSparkles style={{ color: "#d4a843", fontSize: "24px" }} />
+                <HiOutlineSparkles style={{ color: "#d4a843", fontSize: "22px" }} />
                 <div style={{ 
                   width: "40px", 
                   height: "1px", 
@@ -237,7 +237,7 @@ const ParkingTagDesign = forwardRef(
                 }} />
               </div>
               <h1 style={{
-                fontSize: "32px",
+                fontSize: "27px",
                 fontWeight: "700",
                 letterSpacing: "12px",
                 color: "#ffffff",
@@ -247,11 +247,11 @@ const ParkingTagDesign = forwardRef(
                 Scan This Tag
               </h1>
               <p style={{
-                fontSize: "18px",
+                fontSize: "16px",
                 fontWeight: "500",
                 letterSpacing: "4px",
                 color: "#d4a843",
-                margin: "4px 0 0 0",
+                margin: "6px 0 0 0",
                 opacity: 0.9,
               }}>
                 To Contact Vehicle Owner
@@ -277,7 +277,7 @@ const ParkingTagDesign = forwardRef(
               }}>
                 <div style={{
                   background: "linear-gradient(135deg, #d4a843, #f5d77b)",
-                  padding: "10px",
+                  padding: "8px",
                   borderRadius: "12px",
                   display: "flex",
                   alignItems: "center",
@@ -286,10 +286,10 @@ const ParkingTagDesign = forwardRef(
                   fontSize: "24px",
                   flexShrink: 0,
                 }}>
-                  <FaPhoneSquareAlt size={36} />
+                  <FaPhoneSquareAlt size={30} />
                 </div>
                 <p style={{
-                  fontSize: "20px",
+                  fontSize: "16px",
                   fontWeight: "600",
                   color: "#e0e0e0",
                   letterSpacing: "1px",
@@ -315,9 +315,9 @@ const ParkingTagDesign = forwardRef(
               background: "rgba(255,255,255,0.05)",
               border: "1px solid rgba(255,255,255,0.08)",
             }}>
-              <TfiWorld style={{ color: "#d4a843", fontSize: "22px" }} />
+              <TfiWorld style={{ color: "#d4a843", fontSize: "20px" }} />
               <p style={{
-                fontSize: "20px",
+                fontSize: "16px",
                 fontWeight: "600",
                 color: "#ffffff",
                 letterSpacing: "4px",
@@ -333,7 +333,7 @@ const ParkingTagDesign = forwardRef(
           {/* RIGHT SECTION - QR Code + Activation Key */}
           <div
             style={{
-              width: "40%",
+              width: "50%",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",

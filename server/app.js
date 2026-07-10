@@ -55,6 +55,7 @@ const TermsConditionsRouter = require("./routes/FooterSection/Terms&Conditions.r
 const RefundpolicyRouter = require("./routes/FooterSection/RefundPolicy.routes");
 const AdminDashboardRouter = require("./routes/AdminDashboardAPI/AdminDashboard.routes");
 const BulkCardDownloadRouter = require("./routes/CardBulkDownload.routes");
+const BulkParkingTagDownloadRouter = require("./routes/CardDownloadBulkParkingTag.routes");
 
 
 // Runtime config
@@ -158,7 +159,7 @@ app.use("/api/terms-conditions", TermsConditionsRouter);
 app.use("/api/admin", AdminDashboardRouter);
 app.use("/api/admin", RefundpolicyRouter);
 app.use("/api", BulkCardDownloadRouter);
-
+app.use("/api", BulkParkingTagDownloadRouter);
 
 
   app.get("/", (req, res) => {

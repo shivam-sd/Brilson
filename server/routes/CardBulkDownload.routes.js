@@ -317,8 +317,8 @@ async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
 
 
 async function renderCardPng(page, { card, colors }) {
-  const profileUrl = `${process.env.VITE_DOMAIN || 'https://brilson.in'}/public/profile/${
-    card.slug || card.activationCode
+  const profileUrl = `${process.env.VITE_DOMAIN || 'https://brilson.in'}/c/card/${
+   card.activationCode
   }`;
 
   const qrBase64 = await renderQrBase64(page, {
