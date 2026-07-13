@@ -8,7 +8,7 @@ const createInvoicePdf = require("../utils/createInvoicePdf");
 const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
 
 
-
+ 
 // CREATE PAYU ORDER
 const createPayUOrder = async (req, res) => {
   const config = getConfig();
@@ -48,6 +48,13 @@ const salt = config?.payU?.salt || process.env.PAYU_SALT;
       status: "created"
     });
 
+    console.log("BASE_URL", process.env.payU_Verify_Payment_Url);
+
+console.log({
+  surl: `${process.env.payU_Verify_Payment_Url}/api/payment/payu/verify`,
+  furl: `${process.env.payU_Verify_Payment_Url}/api/payment/payu-failure`
+});
+
     res.json({
       paymentUrl: config?.payU?.payUBaseUrl || process.env.PAYU_BASE_URL,
       data: {
@@ -58,8 +65,8 @@ const salt = config?.payU?.salt || process.env.PAYU_SALT;
         firstname,
         email,
         phone,
-        surl: `${process.env.BASE_URL1}/api/payment/payu/verify`,
-        furl: `${process.env.BASE_URL1}/api/payment/payu-failure`,
+        surl: `${process.env.payU_Verify_Payment_Url}/api/payment/payu/verify`,
+        furl: `${process.env.payU_Verify_Payment_Url}/api/payment/payu-failure`,
         hash
       }
     });
@@ -85,7 +92,7 @@ const VerifyPayU = async (req, res) => {
     const { status, txnid } = req.body;
 
     if (status !== "success") {
-      return res.redirect(`${process.env.BASE_URL1}/payment-failed`);
+      return res.redirect(`${process.env.BASE_URL}/payment-failed`);
     }
 
     const payment = await PaymentModel.findOneAndUpdate(
@@ -95,7 +102,7 @@ const VerifyPayU = async (req, res) => {
     );
 
     if (!payment) {
-      return res.redirect(`${process.env.BASE_URL1}/payment-failed`);
+      return res.redirect(`${process.env.BASE_URL}/payment-failed`);
     }
 
     const order = await OrderModel.findByIdAndUpdate(
@@ -133,12 +140,12 @@ const VerifyPayU = async (req, res) => {
       console.error("Invoice error:", invoiceError);
     }
 
-    res.redirect(`${process.env.BASE_URL1}/payment-success`);
+    res.redirect(`${process.env.BASE_URL}/payment-success`);
 
   } catch (err) {
 
     console.error("PayU verify error", err);
-    res.redirect(`${process.env.BASE_URL1}/payment-failed`);
+    res.redirect(`${process.env.BASE_URL}/payment-failed`);
 
   }
 
