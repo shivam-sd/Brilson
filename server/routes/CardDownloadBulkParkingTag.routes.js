@@ -12,8 +12,8 @@ const QR_CODE_STYLING_BROWSER_BUNDLE = require.resolve(
 
 const PAGE_POOL_SIZE = Number(process.env.CARD_RENDER_CONCURRENCY) || 4;
 
-// HIGH QUALITY viewport for parking tags
-const PARKING_TAG_VIEWPORT = { width: 3000, height: 1950 };
+// HIGH QUALITY viewport for parking tags (same as NFC cards but adjusted for landscape)
+const PARKING_TAG_VIEWPORT = { width: 2500, height: 1675 }; 
 
 let cachedLogoDataUrl = null;
 
@@ -43,16 +43,6 @@ async function getLogoDataUrl() {
   }
 }
 
-// SVG Icons as inline strings
-const getIcons = () => ({
-  swirl: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`,
-  sparkle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1 6 6-1-4 4 4 6-6-4-4 6-4-6-6 4 4-6-4-4 6 1z"/></svg>`,
-  phone: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>`,
-  world: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
-  shield: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`,
-  qr: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="7" height="7"/><rect x="15" y="2" width="7" height="7"/><rect x="2" y="15" width="7" height="7"/><line x1="11" y1="11" x2="11" y2="15"/><line x1="13" y1="11" x2="13" y2="15"/><line x1="11" y1="13" x2="15" y2="13"/><line x1="15" y1="9" x2="15" y2="11"/></svg>`,
-});
-
 function generateParkingTagHTML(card, colors) {
   const {
     cardBgColor = '#FFFFFF',
@@ -62,14 +52,19 @@ function generateParkingTagHTML(card, colors) {
   } = colors;
 
   const displayCode = card.activationCode || '52V28-91S28-6B799';
-  const icons = getIcons();
+  const profileUrl = `${process.env.VITE_DOMAIN || 'https://brilson.in'}/public/profile/${card.activationCode}`;
 
+  // Color adjustments for dark theme
+  const leftBg = '#0a0a0a';
+  const rightBg = '#fafafa';
+  const goldColor = '#d4a843';
+  const goldLight = '#f5d77b';
+  
   return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>Brilson Parking Tag</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@400;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * { 
       margin: 0;
@@ -81,8 +76,6 @@ function generateParkingTagHTML(card, colors) {
       padding: 0;
       font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
       background: transparent;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
     .tag-wrapper {
       width: ${PARKING_TAG_VIEWPORT.width}px;
@@ -91,7 +84,7 @@ function generateParkingTagHTML(card, colors) {
       justify-content: center;
       align-items: center;
       background: transparent;
-      padding: 60px;
+      padding: 50px;
     }
     .tag-container {
       background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
@@ -104,6 +97,7 @@ function generateParkingTagHTML(card, colors) {
       overflow: hidden;
       position: relative;
     }
+    /* Gold accent line */
     .gold-accent {
       position: absolute;
       top: 0;
@@ -113,6 +107,7 @@ function generateParkingTagHTML(card, colors) {
       background: linear-gradient(90deg, #d4a843, #f5d77b, #d4a843);
       z-index: 10;
     }
+    /* LEFT SECTION */
     .left-section {
       width: 50%;
       background: linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
@@ -120,8 +115,8 @@ function generateParkingTagHTML(card, colors) {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 84px;
-      padding: 120px 90px;
+      gap: 70px;
+      padding: 100px 80px;
       position: relative;
     }
     .pattern-overlay {
@@ -147,8 +142,8 @@ function generateParkingTagHTML(card, colors) {
       gap: 36px;
     }
     .brand-icon {
-      width: 180px;
-      height: 180px;
+      width: 160px;
+      height: 160px;
       background: linear-gradient(135deg, #d4a843, #f5d77b);
       border-radius: 48px;
       display: flex;
@@ -160,7 +155,7 @@ function generateParkingTagHTML(card, colors) {
       box-shadow: 0 30px 60px -15px rgba(212,168,67,0.3);
     }
     .brand-name {
-      font-size: 144px;
+      font-size: 120px;
       font-weight: 800;
       letter-spacing: 24px;
       color: #f5d77b;
@@ -188,12 +183,12 @@ function generateParkingTagHTML(card, colors) {
     .divider-line-right {
       background: linear-gradient(90deg, #d4a843, transparent);
     }
-    .divider-icon svg {
+    .divider-icon {
       color: #d4a843;
-      width: 78px;
-      height: 78px;
+      font-size: 68px;
     }
 
+    /* Tagline */
     .tagline-box {
       text-align: center;
       position: relative;
@@ -202,6 +197,7 @@ function generateParkingTagHTML(card, colors) {
       padding: 48px 96px;
       border-radius: 60px;
       border: 3px solid rgba(212,168,67,0.15);
+      backdrop-filter: blur(10px);
     }
     .tagline-sparkle {
       display: flex;
@@ -211,7 +207,7 @@ function generateParkingTagHTML(card, colors) {
       margin-bottom: 24px;
     }
     .sparkle-line {
-      width: 120px;
+      width: 100px;
       height: 3px;
       border-radius: 2px;
     }
@@ -221,13 +217,12 @@ function generateParkingTagHTML(card, colors) {
     .sparkle-line-right {
       background: linear-gradient(90deg, rgba(212,168,67,0.5), transparent);
     }
-    .sparkle-icon svg {
+    .sparkle-icon {
       color: #d4a843;
-      width: 66px;
-      height: 66px;
+      font-size: 60px;
     }
     .tagline-title {
-      font-size: 78px;
+      font-size: 70px;
       font-weight: 700;
       letter-spacing: 36px;
       color: #ffffff;
@@ -235,7 +230,7 @@ function generateParkingTagHTML(card, colors) {
       text-transform: uppercase;
     }
     .tagline-sub {
-      font-size: 48px;
+      font-size: 40px;
       font-weight: 500;
       letter-spacing: 12px;
       color: #d4a843;
@@ -243,6 +238,7 @@ function generateParkingTagHTML(card, colors) {
       opacity: 0.9;
     }
 
+    /* Hindi Text */
     .hindi-box {
       background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05));
       border-radius: 48px;
@@ -251,6 +247,7 @@ function generateParkingTagHTML(card, colors) {
       max-width: 90%;
       position: relative;
       z-index: 2;
+      backdrop-filter: blur(10px);
     }
     .hindi-content {
       display: flex;
@@ -265,15 +262,12 @@ function generateParkingTagHTML(card, colors) {
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #0a0a0a;
+      color: black;
+      font-size: 65px;
       flex-shrink: 0;
     }
-    .hindi-icon svg {
-      width: 72px;
-      height: 72px;
-    }
     .hindi-text {
-      font-size: 48px;
+      font-size: 40px;
       font-weight: 600;
       color: #e0e0e0;
       letter-spacing: 3px;
@@ -282,6 +276,7 @@ function generateParkingTagHTML(card, colors) {
       font-family: 'Noto Sans Devanagari', sans-serif;
     }
 
+    /* Website */
     .website-box {
       display: flex;
       align-items: center;
@@ -294,13 +289,12 @@ function generateParkingTagHTML(card, colors) {
       background: rgba(255,255,255,0.05);
       border: 3px solid rgba(255,255,255,0.08);
     }
-    .website-icon svg {
+    .website-icon {
       color: #d4a843;
-      width: 60px;
-      height: 60px;
+      font-size: 50px;
     }
     .website-text {
-      font-size: 48px;
+      font-size: 40px;
       font-weight: 500;
       color: #ffffff;
       letter-spacing: 15px;
@@ -309,6 +303,7 @@ function generateParkingTagHTML(card, colors) {
       opacity: 0.9;
     }
 
+    /* RIGHT SECTION */
     .right-section {
       width: 50%;
       display: flex;
@@ -321,8 +316,9 @@ function generateParkingTagHTML(card, colors) {
       position: relative;
     }
 
+    /* QR Container */
     .qr-container {
-      padding: 72px;
+      padding: 62px;
       background: linear-gradient(135deg, #ffffff, #fafafa);
       border-radius: 72px;
       box-shadow: 0 45px 105px -24px rgba(0,0,0,0.15), 0 0 0 3px rgba(212,168,67,0.2) inset;
@@ -334,8 +330,8 @@ function generateParkingTagHTML(card, colors) {
     }
     .corner-accent {
       position: absolute;
-      width: 60px;
-      height: 60px;
+      width: 55px;
+      height: 55px;
       border: 9px solid #d4a843;
     }
     .corner-tl {
@@ -367,14 +363,15 @@ function generateParkingTagHTML(card, colors) {
       border-radius: 0 0 12px 0;
     }
     .qr-image {
-      width: 840px;
-      height: 840px;
+      width: 740px;
+      height: 740px;
       display: block;
       image-rendering: auto;
       position: relative;
       z-index: 2;
     }
 
+    /* Scan Badge */
     .scan-badge {
       display: flex;
       align-items: center;
@@ -390,10 +387,11 @@ function generateParkingTagHTML(card, colors) {
       text-transform: uppercase;
     }
     .scan-badge svg {
-      width: 42px;
-      height: 42px;
+      width: 35px;
+      height: 35px;
     }
 
+    /* Activation Code */
     .activation-wrapper {
       display: flex;
       flex-direction: column;
@@ -406,19 +404,19 @@ function generateParkingTagHTML(card, colors) {
       align-items: center;
       gap: 24px;
       opacity: 0.6;
-      font-size: 33px;
+      font-size: 25px;
       font-weight: 600;
       letter-spacing: 9px;
       color: #666;
       text-transform: uppercase;
     }
     .label-line {
-      width: 90px;
+      width: 80px;
       height: 3px;
       background: #ccc;
     }
     .activation-code {
-      font-size: 66px;
+      font-size: 55px;
       font-weight: 700;
       color: #1a1a1a;
       letter-spacing: 9px;
@@ -437,11 +435,11 @@ function generateParkingTagHTML(card, colors) {
     }
     .secure-badge svg {
       color: #d4a843;
-      width: 35px;
-      height: 35px;
+      width: 30px;
+      height: 30px;
     }
     .secure-text {
-      font-size: 28px;
+      font-size: 20px;
       color: #666;
       letter-spacing: 3px;
       font-weight: 500;
@@ -464,7 +462,7 @@ function generateParkingTagHTML(card, colors) {
           </div>
           <div class="brand-divider">
             <div class="divider-line divider-line-left"></div>
-            <div class="divider-icon">${icons.swirl}</div>
+            <div class="divider-icon">✦</div>
             <div class="divider-line divider-line-right"></div>
           </div>
         </div>
@@ -472,7 +470,7 @@ function generateParkingTagHTML(card, colors) {
         <div class="tagline-box">
           <div class="tagline-sparkle">
             <div class="sparkle-line sparkle-line-left"></div>
-            <div class="sparkle-icon">${icons.sparkle}</div>
+            <div class="sparkle-icon">✨</div>
             <div class="sparkle-line sparkle-line-right"></div>
           </div>
           <h2 class="tagline-title">SCAN THIS TAG</h2>
@@ -481,13 +479,13 @@ function generateParkingTagHTML(card, colors) {
 
         <div class="hindi-box">
           <div class="hindi-content">
-            <div class="hindi-icon">${icons.phone}</div>
+            <div class="hindi-icon">📞</div>
             <p class="hindi-text">वाहन स्वामी से संपर्क करने के लिए इस टैग को स्कैन करें।</p>
           </div>
         </div>
 
         <div class="website-box">
-          <div class="website-icon">${icons.world}</div>
+          <div class="website-icon">🌐</div>
           <p class="website-text">www.brilson.in</p>
         </div>
       </div>
@@ -501,7 +499,7 @@ function generateParkingTagHTML(card, colors) {
           <div class="corner-accent corner-br"></div>
           <img class="qr-image" src="data:image/png;base64,{{QR_DATA}}" alt="QR Code" />
           <div class="scan-badge">
-            ${icons.qr}
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h4V2H1v6h2V4zm0 16h4v2H1v-6h2v4zm16-16h4v6h-2V4h-2V2zm0 16h4v-6h-2v4h-2v2z"/></svg>
             <span>Scan to Connect</span>
           </div>
         </div>
@@ -514,9 +512,9 @@ function generateParkingTagHTML(card, colors) {
           </div>
           <div class="activation-code">${displayCode}</div>
           <div class="secure-badge">
-            ${icons.shield}
-            <span class="secure-text">SECURE • VERIFIED</span>
-          </div>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5L12 1zm0 4.5c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5S9.5 9.38 9.5 8s1.12-2.5 2.5-2.5z"/></svg>
+            <h3 class="secure-text">SECURE • VERIFIED</h3>
+            </div>
         </div>
       </div>
     </div>
@@ -616,21 +614,13 @@ async function renderParkingTagPng(page, { card, colors }) {
 
   const qrBase64 = await renderQrBase64(page, {
     url: profileUrl,
-    qrDotsColor: colors.qrDotsColor || '#1a1a1a',
-    qrBgColor: colors.qrBgColor || '#ffffff'
+    qrDotsColor: colors.qrDotsColor,
+    qrBgColor: colors.qrBgColor
   });
 
   const html = generateParkingTagHTML(card, colors).replace('{{QR_DATA}}', qrBase64);
 
-  await page.setContent(html, { 
-    waitUntil: 'networkidle0',
-    timeout: 30000 
-  });
-
-  // Wait for fonts to load
-  await page.evaluate(async () => {
-    await document.fonts.ready;
-  });
+  await page.setContent(html, { waitUntil: 'networkidle0' });
 
   await page.waitForSelector('.qr-image', { timeout: 10000 });
   await page.evaluate(() => {
