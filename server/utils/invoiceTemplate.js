@@ -12,7 +12,7 @@ module.exports = (order) => `
 
   body {
     margin: 0;
-    padding: 40px;
+    padding: 20px;
     background: #f1f5f9;
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     color: #0f172a;
@@ -30,7 +30,7 @@ module.exports = (order) => `
   /* HEADER */
   .header {
     background: linear-gradient(135deg, #0ea5e9, #0284c7);
-    padding: 32px 40px;
+    padding: 25px 20px;
     color: #ffffff;
     display: flex;
     justify-content: space-between;
@@ -96,7 +96,7 @@ module.exports = (order) => `
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 10px;
   }
 
   thead {
@@ -129,7 +129,7 @@ module.exports = (order) => `
 
   /* SUMMARY */
   .summary {
-    margin-top: 30px;
+    margin-top: 10px;
     display: flex;
     justify-content: flex-end;
   }
@@ -198,8 +198,8 @@ module.exports = (order) => `
 
   /* FOOTER */
   .footer {
-    margin-top: 50px;
-    padding-top: 20px;
+    margin-top: 10px;
+    padding-top: 10px;
     border-top: 1px solid #e2e8f0;
     text-align: center;
     font-size: 13px;
@@ -318,7 +318,7 @@ module.exports = (order) => `
 
     <!-- BILLING ADDRESS -->
     ${order.address ? `
-    <div style="margin-top: 50px;">
+    <div style="margin-top: 20px;">
       <h3 style="color:#475569; font-size:16px; margin-bottom:12px;">Billing & Shipping Address</h3>
       <div style="background:#f8fafc; padding:20px; border-radius:8px; border:1px solid #e2e8f0;">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
@@ -353,13 +353,13 @@ module.exports = (order) => `
 
     <!-- FOOTER -->
     <div class="footer">
-      <div style="margin-bottom: 15px;">
+      <div style="margin-top:"10px";>
         <strong style="color: #0f172a; font-size: 14px;">Brilson Enterprises</strong><br/>
         <span>contact@brilson.in | +91 12345 67890</span><br/>
         <span>123 Business Street, City, State - 123456</span>
-      </div>
-      Thank you for choosing Brilson! 💙<br/>
-      This is a system-generated invoice and does not require a signature.
+        Thank you for choosing Brilson! 💙<br/>
+        This is a system-generated invoice and does not require a signature.
+        </div>
     </div>
 
   </div>

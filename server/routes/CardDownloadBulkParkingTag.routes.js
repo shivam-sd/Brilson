@@ -12,8 +12,8 @@ const QR_CODE_STYLING_BROWSER_BUNDLE = require.resolve(
 
 const PAGE_POOL_SIZE = Number(process.env.CARD_RENDER_CONCURRENCY) || 4;
 
-// HIGH QUALITY viewport for parking tags
-const PARKING_TAG_VIEWPORT = { width: 2500, height: 1675 };
+// 1500 × 900 viewport
+const PARKING_TAG_VIEWPORT = { width: 1500, height: 900 };
 
 let cachedLogoDataUrl = null;
 
@@ -91,15 +91,15 @@ function generateParkingTagHTML(card, colors) {
       justify-content: center;
       align-items: center;
       background: transparent;
-      padding: 50px;
+      padding: 20px;
     }
     .tag-container {
       background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-      border-radius: 108px;
-      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 60px;
+      border: 2px solid rgba(255,255,255,0.3);
       width: 100%;
       height: 100%;
-      box-shadow: 0 90px 180px -45px rgba(0,0,0,0.3), 0 0 0 3px rgba(255,215,0,0.1) inset;
+      box-shadow: 0 40px 80px -25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,215,0,0.1) inset;
       display: flex;
       overflow: hidden;
       position: relative;
@@ -109,7 +109,7 @@ function generateParkingTagHTML(card, colors) {
       top: 0;
       left: 0;
       right: 0;
-      height: 12px;
+      height: 8px;
       background: linear-gradient(90deg, #d4a843, #f5d77b, #d4a843);
       z-index: 10;
     }
@@ -120,8 +120,8 @@ function generateParkingTagHTML(card, colors) {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 70px;
-      padding: 100px 80px;
+      gap: 28px;
+      padding: 35px 30px;
       position: relative;
     }
     .pattern-overlay {
@@ -144,43 +144,43 @@ function generateParkingTagHTML(card, colors) {
     .brand-logo {
       display: flex;
       align-items: center;
-      gap: 36px;
+      gap: 20px;
     }
     .brand-icon {
-      width: 160px;
-      height: 160px;
+      width: 70px;
+      height: 70px;
       background: linear-gradient(135deg, #d4a843, #f5d77b);
-      border-radius: 48px;
+      border-radius: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 120px;
+      font-size: 48px;
       font-weight: 900;
       color: #0a0a0a;
-      box-shadow: 0 30px 60px -15px rgba(212,168,67,0.3);
+      box-shadow: 0 15px 30px -10px rgba(212,168,67,0.3);
     }
     .brand-name {
-      font-size: 120px;
+      font-size: 48px;
       font-weight: 800;
-      letter-spacing: 24px;
+      letter-spacing: 12px;
       color: #f5d77b;
       font-family: 'Playfair Display', serif;
       margin: 0;
       line-height: 1;
-      text-shadow: 0 6px 30px rgba(212,168,67,0.2);
+      text-shadow: 0 4px 20px rgba(212,168,67,0.2);
     }
     .brand-divider {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 48px;
-      margin-top: 12px;
+      gap: 28px;
+      margin-top: 6px;
       width: 100%;
     }
     .divider-line {
-      width: 240px;
-      height: 6px;
-      border-radius: 3px;
+      width: 120px;
+      height: 4px;
+      border-radius: 2px;
     }
     .divider-line-left {
       background: linear-gradient(90deg, transparent, #d4a843);
@@ -190,8 +190,8 @@ function generateParkingTagHTML(card, colors) {
     }
     .divider-icon svg {
       color: #d4a843;
-      width: 68px;
-      height: 68px;
+      width: 35px;
+      height: 35px;
     }
 
     .tagline-box {
@@ -199,22 +199,22 @@ function generateParkingTagHTML(card, colors) {
       position: relative;
       z-index: 2;
       background: rgba(212,168,67,0.08);
-      padding: 48px 96px;
-      border-radius: 60px;
-      border: 3px solid rgba(212,168,67,0.15);
+      padding: 24px 48px;
+      border-radius: 32px;
+      border: 2px solid rgba(212,168,67,0.15);
       backdrop-filter: blur(10px);
     }
     .tagline-sparkle {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 48px;
-      margin-bottom: 24px;
+      gap: 28px;
+      margin-bottom: 12px;
     }
     .sparkle-line {
-      width: 100px;
-      height: 3px;
-      border-radius: 2px;
+      width: 60px;
+      height: 2px;
+      border-radius: 1px;
     }
     .sparkle-line-left {
       background: linear-gradient(90deg, transparent, rgba(212,168,67,0.5));
@@ -224,31 +224,31 @@ function generateParkingTagHTML(card, colors) {
     }
     .sparkle-icon svg {
       color: #d4a843;
-      width: 60px;
-      height: 60px;
+      width: 35px;
+      height: 35px;
     }
     .tagline-title {
-      font-size: 70px;
+      font-size: 40px;
       font-weight: 700;
-      letter-spacing: 36px;
+      letter-spacing: 18px;
       color: #ffffff;
       margin: 0;
       text-transform: uppercase;
     }
     .tagline-sub {
-      font-size: 40px;
+      font-size: 22px;
       font-weight: 500;
-      letter-spacing: 12px;
+      letter-spacing: 6px;
       color: #d4a843;
-      margin: 18px 0 0 0;
+      margin: 10px 0 0 0;
       opacity: 0.9;
     }
 
     .hindi-box {
       background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05));
-      border-radius: 48px;
-      border: 3px solid rgba(212,168,67,0.2);
-      padding: 42px 72px;
+      border-radius: 28px;
+      border: 2px solid rgba(212,168,67,0.2);
+      padding: 22px 40px;
       max-width: 90%;
       position: relative;
       z-index: 2;
@@ -258,12 +258,12 @@ function generateParkingTagHTML(card, colors) {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 60px;
+      gap: 32px;
     }
     .hindi-icon {
       background: linear-gradient(135deg, #d4a843, #f5d77b);
-      padding: 24px;
-      border-radius: 36px;
+      padding: 14px;
+      border-radius: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -271,14 +271,14 @@ function generateParkingTagHTML(card, colors) {
       flex-shrink: 0;
     }
     .hindi-icon svg {
-      width: 65px;
-      height: 65px;
+      width: 38px;
+      height: 38px;
     }
     .hindi-text {
-      font-size: 40px;
+      font-size: 28px;
       font-weight: 600;
       color: #e0e0e0;
-      letter-spacing: 3px;
+      letter-spacing: 1.5px;
       margin: 0;
       line-height: 1.4;
       font-family: 'Noto Sans Devanagari', sans-serif;
@@ -288,24 +288,24 @@ function generateParkingTagHTML(card, colors) {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 36px;
+      gap: 20px;
       position: relative;
       z-index: 2;
-      padding: 24px 72px;
-      border-radius: 90px;
+      padding: 14px 40px;
+      border-radius: 50px;
       background: rgba(255,255,255,0.05);
-      border: 3px solid rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,255,255,0.08);
     }
     .website-icon svg {
       color: #d4a843;
-      width: 50px;
-      height: 50px;
+      width: 30px;
+      height: 30px;
     }
     .website-text {
-      font-size: 40px;
+      font-size: 22px;
       font-weight: 500;
       color: #ffffff;
-      letter-spacing: 15px;
+      letter-spacing: 8px;
       margin: 0;
       font-family: 'Playfair Display', serif;
       opacity: 0.9;
@@ -317,17 +317,17 @@ function generateParkingTagHTML(card, colors) {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 96px;
+      gap: 30px;
       background: linear-gradient(160deg, #fafafa 0%, #f0f0f0 100%);
-      padding: 90px 60px;
+      padding: 40px 35px;
       position: relative;
     }
 
     .qr-container {
-      padding: 62px;
+      padding: 32px;
       background: linear-gradient(135deg, #ffffff, #fafafa);
-      border-radius: 72px;
-      box-shadow: 0 45px 105px -24px rgba(0,0,0,0.15), 0 0 0 3px rgba(212,168,67,0.2) inset;
+      border-radius: 40px;
+      box-shadow: 0 25px 60px -15px rgba(0,0,0,0.12), 0 0 0 2px rgba(212,168,67,0.18) inset;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -336,41 +336,41 @@ function generateParkingTagHTML(card, colors) {
     }
     .corner-accent {
       position: absolute;
-      width: 55px;
-      height: 55px;
-      border: 9px solid #d4a843;
+      width: 32px;
+      height: 32px;
+      border: 5px solid #d4a843;
     }
     .corner-tl {
-      top: -9px;
-      left: -9px;
+      top: -5px;
+      left: -5px;
       border-right: none;
       border-bottom: none;
-      border-radius: 12px 0 0 0;
+      border-radius: 8px 0 0 0;
     }
     .corner-tr {
-      top: -9px;
-      right: -9px;
+      top: -5px;
+      right: -5px;
       border-left: none;
       border-bottom: none;
-      border-radius: 0 12px 0 0;
+      border-radius: 0 8px 0 0;
     }
     .corner-bl {
-      bottom: -9px;
-      left: -9px;
+      bottom: -5px;
+      left: -5px;
       border-right: none;
       border-top: none;
-      border-radius: 0 0 0 12px;
+      border-radius: 0 0 0 8px;
     }
     .corner-br {
-      bottom: -9px;
-      right: -9px;
+      bottom: -5px;
+      right: -5px;
       border-left: none;
       border-top: none;
-      border-radius: 0 0 12px 0;
+      border-radius: 0 0 8px 0;
     }
     .qr-image {
-      width: 740px;
-      height: 740px;
+      width: 380px;
+      height: 380px;
       display: block;
       image-rendering: auto;
       position: relative;
@@ -380,50 +380,50 @@ function generateParkingTagHTML(card, colors) {
     .scan-badge {
       display: flex;
       align-items: center;
-      gap: 24px;
-      margin-top: 36px;
-      padding: 18px 48px;
+      gap: 14px;
+      margin-top: 18px;
+      padding: 10px 28px;
       background: linear-gradient(135deg, #d4a843, #f5d77b);
-      border-radius: 60px;
+      border-radius: 32px;
       color: #0a0a0a;
-      font-size: 36px;
+      font-size: 18px;
       font-weight: 700;
-      letter-spacing: 6px;
+      letter-spacing: 4px;
       text-transform: uppercase;
     }
     .scan-badge svg {
-      width: 35px;
-      height: 35px;
+      width: 20px;
+      height: 20px;
     }
 
     .activation-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 18px;
+      gap: 8px;
       width: 100%;
     }
     .activation-label {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 14px;
       opacity: 0.6;
-      font-size: 25px;
+      font-size: 14px;
       font-weight: 600;
-      letter-spacing: 9px;
+      letter-spacing: 5px;
       color: #666;
       text-transform: uppercase;
     }
     .label-line {
-      width: 80px;
-      height: 3px;
+      width: 45px;
+      height: 2px;
       background: #ccc;
     }
     .activation-code {
-      font-size: 55px;
+      font-size: 32px;
       font-weight: 700;
       color: #1a1a1a;
-      letter-spacing: 9px;
+      letter-spacing: 5px;
       margin: 0;
       font-family: 'Inter', monospace;
       background: linear-gradient(135deg, #1a1a1a, #333);
@@ -434,18 +434,18 @@ function generateParkingTagHTML(card, colors) {
     .secure-badge {
       display: flex;
       align-items: center;
-      gap: 18px;
-      margin-top: 12px;
+      gap: 10px;
+      margin-top: 6px;
     }
     .secure-badge svg {
       color: #d4a843;
-      width: 30px;
-      height: 30px;
+      width: 18px;
+      height: 18px;
     }
     .secure-text {
-      font-size: 20px;
+      font-size: 12px;
       color: #666;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
       font-weight: 500;
     }
   </style>
@@ -569,8 +569,8 @@ async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
   return page.evaluate(
     async ({ url, qrDotsColor, qrBgColor }) => {
       const qrCode = new window.QRCodeStyling({
-        width: 840,
-        height: 840,
+        width: 420,
+        height: 420,
         type: 'svg',
         data: url,
         image: window.__QR_LOGO__ || undefined,
