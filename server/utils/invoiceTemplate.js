@@ -198,8 +198,8 @@ module.exports = (order) => `
 
   /* FOOTER */
   .footer {
-    margin-top: 10px;
-    padding-top: 10px;
+    margin-top: 40px;
+    padding-top: 20px;
     border-top: 1px solid #e2e8f0;
     text-align: center;
     font-size: 13px;
@@ -354,9 +354,10 @@ module.exports = (order) => `
     <!-- FOOTER -->
     <div class="footer">
       <div style="margin-top:"10px";>
-        <strong style="color: #0f172a; font-size: 14px;">Brilson Enterprises</strong><br/>
+        <strong style="color: #0f172a; font-size: 14px;">Brilson Enterprises</strong><br/><br/>
         <span>contact@brilson.in | +91 12345 67890</span><br/>
         <span>123 Business Street, City, State - 123456</span>
+        <br/><br/>
         Thank you for choosing Brilson! 💙<br/>
         This is a system-generated invoice and does not require a signature.
         </div>
