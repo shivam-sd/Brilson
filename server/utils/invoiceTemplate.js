@@ -1,4 +1,4 @@
-module.exports = (order) => `
+module.exports = (order, invoiceAddress) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -355,8 +355,9 @@ module.exports = (order) => `
     <div class="footer">
       <div style="margin-top:"10px";>
         <strong style="color: #0f172a; font-size: 14px;">Brilson Enterprises</strong><br/><br/>
-        <span>contact@brilson.in | +91 12345 67890</span><br/>
-        <span>123 Business Street, City, State - 123456</span>
+        <span> ${invoiceAddress.phone} |</span><br/>
+        <span>${invoiceAddress.email} |<br>
+        ${invoiceAddress.address}</span>
         <br/><br/>
         Thank you for choosing Brilson! 💙<br/>
         This is a system-generated invoice and does not require a signature.

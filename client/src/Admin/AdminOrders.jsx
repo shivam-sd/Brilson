@@ -167,7 +167,8 @@ const AdminOrders = () => {
               <th className="p-4">Order ID</th>
               <th className="p-4">Customer</th>
               <th className="p-4">Amount</th>
-              <th className="p-4">Status</th>
+              <th className="p-4">Order Status</th>
+              <th className="p-4">Payment Status</th>
               <th className="p-4">Date</th>
               <th className="p-4">Invoice</th>
               <th className="p-4">View Order</th>
@@ -206,6 +207,7 @@ const AdminOrders = () => {
                       <option value="delivered">delivered</option>
                     </select>
                   </td>
+                  <td className={`p-4 text-center ${order?.status === "paid" ? "text-green-500 font-bold tracking-widest" : "text-red-300 font-bold tracking-wider"}`}>{order?.status}</td>
                   <td className="p-4 text-gray-400">
                     {new Date(order.createdAt).toLocaleDateString()}
                   </td>

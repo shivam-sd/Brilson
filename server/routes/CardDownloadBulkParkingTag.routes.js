@@ -369,8 +369,8 @@ function generateParkingTagHTML(card, colors) {
       border-radius: 0 0 8px 0;
     }
     .qr-image {
-      width: 380px;
-      height: 380px;
+      width: 440px;
+      height: 440px;
       display: block;
       image-rendering: auto;
       position: relative;
@@ -576,7 +576,7 @@ async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
         image: window.__QR_LOGO__ || undefined,
         dotsOptions: {
           margin: 10,
-          type: 'rounded',
+          type: 'dots',
           color: qrDotsColor || '#1a1a1a',
         },
         backgroundOptions: {
