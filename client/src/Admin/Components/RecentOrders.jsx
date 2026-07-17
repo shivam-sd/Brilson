@@ -55,7 +55,11 @@ const RecentOrders = ({ orders }) => {
               </th>
 
               <th className="text-left text-gray-400 text-sm pb-3">
-                Status
+                Order Status
+              </th>
+
+              <th className="text-left text-gray-400 text-sm pb-3">
+                Payment Status
               </th>
 
               <th className="text-left text-gray-400 text-sm pb-3">
@@ -112,6 +116,9 @@ const RecentOrders = ({ orders }) => {
                   </span>
 
                 </td>
+
+                <td className={`${order.status === "paid" ? "text-green-500" : "text-red-600"} font-bold tracking-widest flex items-center justify-center`}>{order?.status}</td>
+
 
                 <td className="py-4 text-gray-400 text-sm">
 

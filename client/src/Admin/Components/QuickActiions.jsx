@@ -131,21 +131,21 @@ const QuickActions = () => {
                   {/* Content */}
                   <div className="relative z-10">
                     {/* Icon and Title Row */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center gap-3">
                       {/* Icon with gradient background */}
-                      <div className={`w-10 h-10 rounded-lg ${action.iconBg} shadow-md flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110`}>
+                      <div className={`w-8 h-8 rounded-lg ${action.iconBg} shadow-md flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110`}>
                         <Icon className="w-5 h-5 text-white" strokeWidth={1.8} />
                       </div>
                       
                       {/* Title */}
-                      <h3 className="text-base font-semibold text-white  transition-colors">
+                      <h3 className="text-base font-Playfair font-bold tracking-wider text-white  transition-colors">
                         {action.title}
                       </h3>
                     </div>
 
-                      <p className="text-base font-semibold text-white  transition-colors mt-2 text-center">
+                      {/* <p className="text-base font-semibold text-white  transition-colors mt-2 text-center">
                         {action.description}
-                      </p>
+                      </p> */}
 
                   </div>
                 </div>

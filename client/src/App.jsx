@@ -106,6 +106,7 @@ import HelpCenter from "./Pages/HelpCenter";
 import AboutPageAdmin from "./Admin/LandingPage/AboutPageAdmin";
 import TermsCondition from "./Admin/LandingPage/TermsCondition";
 import RefundPolicy from "./Admin/LandingPage/RefundPolicy";
+import AdminInvoiceAddress from "./Admin/AdminInvoiceAddress";
 
 
 
@@ -351,6 +352,16 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AdminInvoices />
+                </ProtectedRoute>
+              }
+              />
+
+
+            <Route
+              path="invoice/address"
+              element={
+                <ProtectedRoute>
+                  <AdminInvoiceAddress />
                 </ProtectedRoute>
               }
               />

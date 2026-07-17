@@ -19,6 +19,7 @@ import { GrDocumentLocked } from "react-icons/gr";
 import { MdManageAccounts } from "react-icons/md";
 import { FaLuggageCart } from "react-icons/fa";
 import { MdReviews } from "react-icons/md";
+import { FaFileInvoice } from "react-icons/fa";
 
 const AdminLayout = () => {
   const [open, setOpen] = useState(false);
@@ -40,6 +41,7 @@ const AdminLayout = () => {
   "/admindashboard/selling-overview": "Admin Selling Overview",
   "/admindashboard/orders/invoices": "Admin Orders Invoices",
   "/admindashboard/landing/page/content": "Admin Landing Page Content",
+  "/admindashboard/invoice/address": "invoice Address",
   "/admindashboard/payment/gateway/isactive": "Admin Payment Gateway",
   "/admindashboard/setting/config": "Admin Settings",
 };
@@ -158,6 +160,16 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
             <FiSettings size={18} /> Landing Page Content
           </NavLink>
 
+
+          <NavLink
+            to="invoice/address"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
+            onClick={() => setOpen(false)}
+          >
+            <FaFileInvoice  size={18} /> Invoice Address
+          </NavLink>
+
+
           <NavLink
             to="payment/gateway/isactive"
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
@@ -275,6 +287,17 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
             >
               <FiSettings size={18} /> Landing Page Content
             </NavLink>
+
+
+
+          <NavLink
+            to="invoice/address"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
+            onClick={() => setOpen(false)}
+          >
+            <FaFileInvoice  size={18} /> Invoice Address
+          </NavLink>
+
 
             <NavLink
               to="payment/gateway/isactive"
