@@ -48,12 +48,12 @@ const salt = config?.payU?.salt || process.env.PAYU_SALT;
       status: "created"
     });
 
-    console.log("BASE_URL", process.env.payU_Verify_Payment_Url);
+    // console.log("BASE_URL", process.env.payU_Verify_Payment_Url);
 
-console.log({
-  surl: `${process.env.payU_Verify_Payment_Url}/api/payment/payu/verify`,
-  furl: `${process.env.payU_Verify_Payment_Url}/api/payment/payu-failure`
-});
+// console.log({
+//   surl: `${process.env.payU_Verify_Payment_Url}/api/payment/payu/verify`,
+//   furl: `${process.env.payU_Verify_Payment_Url}/api/payment/payu-failure`
+// });
 
     res.json({
       paymentUrl: config?.payU?.payUBaseUrl || process.env.PAYU_BASE_URL,
@@ -65,8 +65,8 @@ console.log({
         firstname,
         email,
         phone,
-        surl: `${process.env.payU_Verify_Payment_Url}/api/payment/payu/verify`,
-        furl: `${process.env.payU_Verify_Payment_Url}/api/payment/payu-failure`,
+        surl: `${process.env.payU_Verify_Payment_Url1}/api/payment/payu/verify`,
+        furl: `${process.env.payU_Verify_Payment_Url1}/api/payment/payu-failure`,
         hash
       }
     });
