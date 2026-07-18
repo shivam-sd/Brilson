@@ -85,7 +85,7 @@ const Testimonials = () => {
   }
 
   return (
-    <section className="relative w-full py-28 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
+    <section className="relative w-full py-10 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
       
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -107,20 +107,20 @@ const Testimonials = () => {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 backdrop-blur-sm mb-6">
             <Sparkles className="w-4 h-4 text-cyan-300" />
-            <span className="text-cyan-300 text-sm font-medium tracking-wider">TESTIMONIALS</span>
+            <span className="text-cyan-300 text-sm font-medium tracking-widest font-Playfair">TESTIMONIALS</span>
           </div>
           
           <h2 className="text-5xl md:text-5xl font-bold mb-6">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-white">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-white tracking-widest font-Playfair">
               Loved by
             </span>
             <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 tracking-widest font-Playfair">
               Industry Leaders
             </span>
           </h2>
           
-          <p className="md:text-base lg:text-base text-sm text-gray-400 max-w-3xl mx-auto leading-relaxed">
+          <p className="md:text-base lg:text-base text-sm text-gray-400 max-w-3xl mx-auto leading-relaxed tracking-widest font-Poppins">
             Join thousands of professionals who have transformed their networking experience with our smart digital solutions.
           </p>
         </div>
@@ -151,7 +151,7 @@ const Testimonials = () => {
                   bulletClass: "swiper-pagination-bullet !bg-white/30",
                   bulletActiveClass: "swiper-pagination-bullet-active !bg-gradient-to-r !from-cyan-500 !to-blue-500",
                 }}
-                className="!pb-16"
+                className="!pb-16 tracking-widest font-Poppins"
               >
                 {testimonials.map((testimonial) => (
                   <SwiperSlide key={testimonial.id}>
@@ -230,7 +230,7 @@ const Testimonials = () => {
                   freeMode={true}
                   slidesPerView="auto"
                   spaceBetween={30}
-                  className="opacity-50"
+                  className="opacity-50 tracking-widest font-Playfair"
                 >
                   {[...testimonials, ...testimonials].map((t, i) => (
                     <SwiperSlide key={i} className="!w-auto">

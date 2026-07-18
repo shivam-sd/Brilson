@@ -87,14 +87,14 @@ useEffect(() => {
         {/* Heading */}
         <h1
           transition={{ duration: 0.7 }}
-          className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-6"
+          className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-6 tracking-wider font-Playfair"
         >
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-white">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-white ">
             {homePageContent.headingAccent}
             {/* Your Identity */}
           </span>
           <br />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500 ">
             {homePageContent.headingPrimary}
             {/* Digitally Elevated */}
           </span>
@@ -105,7 +105,7 @@ useEffect(() => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-gray-300 max-w-3xl mx-auto text-base sm:text-base mb-12"
+          className="text-gray-300 max-w-3xl mx-auto text-base sm:text-base mb-12 tracking-widest font-Poppins"
         >
           {homePageContent.subHeading
 }
@@ -138,7 +138,7 @@ useEffect(() => {
   to="/products"
   className="group inline-flex items-center justify-center px-7 py-4 rounded-full
   border-2 border-white/20 
-  transition-all duration-200 active:scale-95"
+  transition-all duration-200 active:scale-95 tracking-widest font-Playfair"
 >
   {/* Text split into letters */}
   <span className="flex gap-[2px] text-base font-extrabold text-red-200">
@@ -158,13 +158,11 @@ useEffect(() => {
 </Link>
 
 
-
-
           <Link
   to="/how-it-works"
   className="group inline-flex items-center justify-center px-8 py-4 rounded-full
  border-2 border-white/20
-  transition-all duration-200 active:scale-95"
+  transition-all duration-200 active:scale-95 tracking-widest font-Playfair"
 >
   {/* Text split into letters */}
   <span className="flex gap-[2px] text-base font-extrabold text-red-200">
@@ -191,8 +189,8 @@ useEffect(() => {
         <div className="lg:hidden flex sm:flex-row justify-center gap-2 mb-16">
           <Link
   to="/products"
-  className="px-5 py-4 rounded-full border-2 border-white/20
-  transition-all duration-200 active:scale-95"
+  className="px-4 py-4 rounded-full border-2 border-white/20
+  transition-all duration-200 active:scale-95 tracking-widest font-Playfair"
 >
   {/* Text split into letters */}
   <span className="flex gap-[2px] text-base font-extrabold text-red-200">
@@ -215,8 +213,8 @@ useEffect(() => {
 
           <Link
   to="/how-it-works"
-  className="px-6 py-4 rounded-full border-2 border-white/20
-  transition-all duration-200 active:scale-95"
+  className="px-5 py-4 rounded-full border-2 border-white/20
+  transition-all duration-200 active:scale-95 tracking-widest font-Playfair"
 >
 {/* Text split into letters */}
   <span className="flex gap-[2px] text-base font-extrabold text-red-200">
@@ -244,7 +242,7 @@ useEffect(() => {
             heroSectionFeatures.map((f, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/40 transition cursor-pointer hover:scale-105 duration-500"
+              className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/40 transition cursor-pointer hover:scale-105 duration-500 tracking-widest font-Playfair"
             >
               <img src={f.image} alt="" className="w-10"loading="lazy" />
               <div className="text-left">
@@ -259,7 +257,7 @@ useEffect(() => {
         
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto border-t border-white/10 pt-8">
+        <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto border-t border-white/10 pt-8 tracking-widest font-Playfair">
           {[
             ["50K+", "Cards Sold"],
             ["1M+", "Connections"],
@@ -267,7 +265,7 @@ useEffect(() => {
           ].map(([v, l]) => (
             <div key={l}>
               <div className="text-4xl font-bold text-cyan-400">{v}</div>
-              <div className="text-gray-400 text-sm">{l}</div>
+              <div className="text-gray-400 text-sm mt-2">{l}</div>
             </div>
           ))}
         </div>

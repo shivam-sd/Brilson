@@ -612,7 +612,7 @@ async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
 }
 
 async function renderParkingTagPng(page, { card, colors }) {
-  const profileUrl = `${process.env.VITE_DOMAIN || 'https://brilson.in'}/public/profile/${
+  const profileUrl = `${process.env.VITE_DOMAIN || 'https://brilson.in'}/c/parking-tag/${
     card.slug || card.activationCode
   }`;
 

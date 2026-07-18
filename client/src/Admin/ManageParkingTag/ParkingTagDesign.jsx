@@ -13,7 +13,7 @@ const ParkingTagDesign = forwardRef(
     },
     ref
   ) => {
-    const profileUrl = `${import.meta.env.VITE_DOMAIN}/public/profile/${activationCode}`;
+    const profileUrl = `${import.meta.env.VITE_DOMAIN}/c/parking-tag/${activationCode}`;
     const displayActivationCode = activationCode || "52V28-91S28-6B799";
 
     const containerRef = useRef(null);
@@ -30,7 +30,7 @@ const ParkingTagDesign = forwardRef(
           image: "/B.png",
           dotsOptions: {
             margin: 10,
-            type: "rounded",
+            type: "dots",
             color: "#1a1a1a",
           },
           backgroundOptions: {

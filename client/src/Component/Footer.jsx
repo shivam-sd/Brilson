@@ -44,22 +44,22 @@ const Footer = () => {
           <div className="flex items-center">
             {/* <img src="./logo2.png" alt="" className="w-6" loading="lazy" />
             <h2 className="text-3xl font-semibold text-white">RILSON</h2> */}
-               <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+               <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
                 Brilson
               </div>
           </div>
 
-          <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
+          <p className="text-gray-400 text-sm leading-relaxed tracking-widest font-Poppins">{description}</p>
 
           
         </div>
 
         {/* Products */}
         <div>
-          <h3 className="text-white font-semibold text-lg mb-4 md:mt-2 lg:mt-2">
+          <h3 className="text-white font-semibold text-lg mb-4 md:mt-2 lg:mt-2 tracking-widest font-Playfair">
             Products
           </h3>
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-sm tracking-widest font-Poppins">
             {Products.map((item, i) => (
               <Link
                 to={item.link}
@@ -74,13 +74,13 @@ const Footer = () => {
 
         {/* Company */}
         <div>
-          <h3 className="text-white font-semibold text-lg mb-4">Company</h3>
+          <h3 className="text-white font-semibold text-lg mb-4 tracking-widest font-Playfair">Company</h3>
           <ul className="space-y-2 text-sm">
             {Company.map((item, i) => (
               <Link
                 to={item.link}
                 key={i}
-                className="hover:text-blue-400 cursor-pointer duration-200 flex flex-col"
+                className="hover:text-blue-400 cursor-pointer duration-200 flex flex-col tracking-widest font-Poppins"
               >
                 {item.label}
               </Link>
@@ -108,8 +108,8 @@ const Footer = () => {
 
         {/* Contact */}
         <div className="md:col-span-1">
-          <h3 className="text-white font-semibold text-lg mb-4">Contact</h3>
-          <ul className="space-y-3 text-sm">
+          <h3 className="text-white font-semibold text-lg mb-4 tracking-widest font-Playfair">Contact</h3>
+          <ul className="space-y-3 text-sm tracking-widest font-Poppins">
             <li className="flex items-center gap-3 hover:text-blue-400 cursor-pointer duration-200">
               <MdEmail className="text-lg" /> {Contact.email}
             </li>
@@ -153,7 +153,7 @@ const Footer = () => {
       <div className="border-t border-gray-700 mt-10"></div>
 
       {/* Bottom Footer */}
-      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center mt-6 text-xs sm:text-sm text-gray-500 gap-3">
+      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center mt-6 text-xs sm:text-sm text-gray-500 gap-3 tracking-widest font-Poppins">
         <p>© {new Date().getFullYear()} Brilson. All rights reserved.</p>
 
         <div className="flex gap-6">

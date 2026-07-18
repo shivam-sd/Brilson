@@ -90,10 +90,10 @@ const HowToUse = () => {
         viewport={{ once: true }}
         className="max-w-3xl mx-auto text-center mb-16 md:mb-24"
       >
-        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
+        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 tracking-widest font-Playfair">
           {info.heading}
         </h3>
-        <p className="text-gray-400 text-sm md:text-base">
+        <p className="text-gray-400 text-sm md:text-base tracking-widest font-Poppins">
           {info.subHeading}
         </p>
       </div>
@@ -159,13 +159,13 @@ const HowToUse = () => {
 
             {/* Content */}
             <div className="w-full md:w-1/2 px-4">
-              <span className="text-sm text-indigo-400 font-semibold">
+              <span className="text-sm text-indigo-400 font-semibold tracking-widest font-Poppins">
                 STEP {index + 1}
               </span>
-              <h3 className="text-2xl md:text-2xl font-bold mt-2 mb-4">
+              <h3 className="text-2xl md:text-2xl font-bold mt-2 mb-4 tracking-widest font-Playfair">
                 {step.title || `Step ${index + 1}`}
               </h3>
-              <p className="text-gray-400 text-sm md:text-sm">
+              <p className="text-gray-400 text-sm md:text-sm tracking-widest font-Poppins">
                 {step.description || "Description will appear here."}
               </p>
             </div>
@@ -248,13 +248,13 @@ const HowToUse = () => {
 
             {/* Content */}
             <div className="w-full md:w-1/2 px-4">
-              <span className="text-sm text-indigo-400 font-semibold">
+              <span className="text-sm text-indigo-400 font-semibold tracking-widest font-Poppins">
                 STEP {videoSteps.length + index + 1}
               </span>
-              <h3 className="text-xl md:text-2xl font-bold mt-2 mb-4">
+              <h3 className="text-xl md:text-2xl font-bold mt-2 mb-4 tracking-widest font-Playfair">
                 {step.title || defaultLottieSteps[index]?.title || `Step ${videoSteps.length + index + 1}`}
               </h3>
-              <p className="text-gray-400 text-sm md:text-sm">
+              <p className="text-gray-400 text-sm md:text-sm tracking-widest font-Poppins">
                 {step.description || defaultLottieSteps[index]?.desc || "Description will appear here."}
               </p>
             </div>
@@ -287,13 +287,13 @@ const HowToUse = () => {
 
             {/* Content */}
             <div className="w-full md:w-1/2 px-4">
-              <span className="text-sm text-indigo-400 font-semibold">
+              <span className="text-sm text-indigo-400 font-semibold tracking-widest font-Poppins">
                 STEP {videoSteps.length + index + 1}
               </span>
-              <h3 className="text-2xl md:text-3xl font-bold mt-2 mb-4">
+              <h3 className="text-2xl md:text-3xl font-bold mt-2 mb-4 tracking-widest font-Playfair">
                 {step.title}
               </h3>
-              <p className="text-gray-400 text-base md:text-lg">
+              <p className="text-gray-400 text-base md:text-lg tracking-widest font-Poppins">
                 {step.desc}
               </p>
             </div>
@@ -307,11 +307,11 @@ const HowToUse = () => {
         viewport={{ once: true }}
         className="max-w-6xl mx-auto mt-20 md:mt-32 text-center"
       >
-        <h4 className="text-xl md:text-2xl font-bold mb-8 md:mb-12">
+        <h4 className="text-xl md:text-2xl font-bold mb-8 md:mb-12 tracking-widest font-Playfair">
           Why Use Smart Card?
         </h4>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-5 px-2 tracking-widest font-Poppins">
           {[
             "No Reprinting Needed",
             "Professional Identity",
