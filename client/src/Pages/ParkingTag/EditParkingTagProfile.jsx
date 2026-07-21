@@ -192,7 +192,7 @@ const EditParkingTagProfile = () => {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg mb-4">
               <Car size={40} className="text-white" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-widest font-Playfair">
               Edit Parking Tag
             </h2>
           </motion.div>
@@ -207,7 +207,7 @@ const EditParkingTagProfile = () => {
             <form onSubmit={handleSubmit} className="p-6 md:p-8">
               {/* Owner Name */}
               <div className="mb-6">
-                <label className="text-white font-medium mb-2 flex items-center gap-2">
+                <label className="text-white font-medium mb-2 flex items-center gap-2 tracking-widest font-Playfair">
                   <User size={18} className="text-purple-400" />
                   Owner Name <span className="text-red-400">*</span>
                 </label>
@@ -217,25 +217,25 @@ const EditParkingTagProfile = () => {
                   value={form.ownerName}
                   onChange={handleChange}
                   placeholder="Enter owner name"
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none tracking-widest font-Poppins"
                   required
                 />
               </div>
 
               {/* Vehicle Type */}
               <div className="mb-6">
-                <label className="text-white font-medium mb-2 flex items-center gap-2">
-                  <Car size={18} className="text-purple-400" />
+                <label className="text-white font-medium mb-2 flex items-center gap-2 tracking-widest font-Playfair">
+                  <Car size={18} className="text-purple-400 " />
                   Vehicle Type <span className="text-red-400">*</span>
                 </label>
                 <select
                   name="vehicleType"
                   value={form.vehicleType}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none cursor-pointer"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none cursor-pointer tracking-widest font-Poppinsr"
                   required
                 >
-                  <option value="" className="bg-gray-800">Select vehicle type</option>
+                  <option value="" className="bg-gray-800 tracking-widest font-Playfair">Select vehicle type</option>
                   {vehicleTypes.map((type) => (
                     <option key={type.value} value={type.value} className="bg-gray-800">
                       {type.label}
@@ -246,7 +246,7 @@ const EditParkingTagProfile = () => {
 
               {/* Vehicle Number */}
               <div className="mb-6">
-                <label className="text-white font-medium mb-2 flex items-center gap-2">
+                <label className="text-white font-medium mb-2 flex items-center gap-2 tracking-widest font-Playfair">
                   <Car size={18} className="text-purple-400" />
                   Vehicle Number <span className="text-red-400">*</span>
                 </label>
@@ -256,15 +256,15 @@ const EditParkingTagProfile = () => {
                   value={form.vehicleNumber}
                   onChange={handleChange}
                   placeholder="e.g., UP78KJS1234"
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none uppercase"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none uppercase tracking-widest font-Playfair"
                   required
                 />
-                <p className="text-gray-400 text-xs mt-1">Vehicle number will be automatically converted to uppercase</p>
+                <p className="text-gray-400 text-xs mt-1 tracking-widest font-Poppins">Vehicle number will be automatically converted to uppercase</p>
               </div>
 
               {/* Phone Number */}
               <div className="mb-8">
-                <label className="text-white font-medium mb-2 flex items-center gap-2">
+                <label className="text-white font-medium mb-2 flex items-center gap-2 tracking-widest font-Playfair">
                   <Phone size={18} className="text-purple-400" />
                   Phone Number <span className="text-red-400">*</span>
                 </label>
@@ -275,10 +275,10 @@ const EditParkingTagProfile = () => {
                   onChange={handleChange}
                   maxLength={10}
                   placeholder="Enter 10 digit mobile number"
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none tracking-widest font-Poppinsr"
                   required
                 />
-                <p className="text-gray-400 text-xs mt-1">Enter 10 digit mobile number without country code</p>
+                <p className="text-gray-400 text-xs mt-1 tracking-widest font-Poppins">Enter 10 digit mobile number without country code</p>
               </div>
 
               {/* Action Buttons */}
@@ -288,7 +288,7 @@ const EditParkingTagProfile = () => {
                   onClick={() => navigate(`/parking-tag/${id}`)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex-1 py-3 rounded-xl bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/20 transition-all cursor-pointer"
+                  className="flex-1 py-3 rounded-xl bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/20 transition-all cursor-pointer tracking-widest font-Playfair"
                 >
                   Cancel
                 </motion.button>
@@ -303,7 +303,7 @@ const EditParkingTagProfile = () => {
                   }`}
                 >
                   {loading ? (
-                    <span className="flex items-center justify-center gap-2">
+                    <span className="flex items-center justify-center gap-2 tracking-widest font-Playfair">
                       <Loader2 className="animate-spin" size={20} />
                       Saving...
                     </span>

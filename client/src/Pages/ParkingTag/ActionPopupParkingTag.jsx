@@ -72,7 +72,7 @@ const ActionPopupParkingTag = ({ number }) => {
                   </div>
                   
                   {/* Title */}
-                  <h2 className="text-2xl font-bold text-center bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                  <h2 className="text-2xl font-bold text-center bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent tracking-widest font-Playfair">
                     Contact Owner
                   </h2>
                 </div>
@@ -88,7 +88,7 @@ const ActionPopupParkingTag = ({ number }) => {
                     className={`w-full py-4 rounded-xl font-semibold text-white flex items-center justify-center gap-3 transition-all duration-200 tracking-widest font-Playfair ${
                       number
                         ? 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-800 hover:to-blue-700 shadow-lg hover:shadow-xl cursor-pointer'
-                        : 'bg-gray-700 cursor-not-allowed opacity-50'
+                        : 'bg-gray-700 cursor-not-allowed opacity-50 tracking-widest font-Poppins'
                     }`}
                   >
                     <Phone size={20} />

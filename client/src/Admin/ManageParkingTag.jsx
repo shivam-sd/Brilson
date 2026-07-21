@@ -600,7 +600,7 @@ const ManageParkingTag = () => {
                   </td>
                   <td className="p-3 text-center">
                     <Link
-                      to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}
+                      to={`${import.meta.env.VITE_DOMAIN}/profile/P/public/${card.slug}`}
                       className="text-indigo-400 hover:text-indigo-300 transition text-xs font-medium hover:underline"
                       target="_blank"
                     >

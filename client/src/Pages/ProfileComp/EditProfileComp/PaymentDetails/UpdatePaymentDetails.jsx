@@ -133,7 +133,7 @@ const UpdatePaymentDetails = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl space-y-6 shadow-2xl"
       >
-        <h2 className="text-3xl font-bold text-center text-white">
+        <h2 className="text-3xl font-bold text-center text-white tracking-widest font-Playfair">
           Update Payment Details
         </h2>
 
@@ -145,7 +145,7 @@ const UpdatePaymentDetails = () => {
               className="w-40 h-40 object-cover rounded-xl border border-gray-700 hover:opacity-80 transition"
             />
           ) : (
-            <div className="w-40 h-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-600 rounded-xl text-gray-400">
+            <div className="w-40 h-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-600 rounded-xl text-gray-400 tracking-widest font-Poppins">
               <ImgIcon size={30} />
               Upload QR Image
             </div>
@@ -164,7 +164,7 @@ const UpdatePaymentDetails = () => {
           value={form.upi}
           onChange={handleChange}
           placeholder="UPI ID"
-          className="input"
+          className="input tracking-widest font-Playfair"
         />
 
         <div className="grid md:grid-cols-2 gap-4">
@@ -173,7 +173,7 @@ const UpdatePaymentDetails = () => {
             value={form.bankName}
             onChange={handleChange}
             placeholder="Bank Name"
-            className="input"
+            className="input tracking-widest font-Playfair"
           />
 
           <input
@@ -181,7 +181,7 @@ const UpdatePaymentDetails = () => {
             value={form.bankHolderName}
             onChange={handleChange}
             placeholder="Account Holder Name"
-            className="input"
+            className="input tracking-widest font-Playfair"
           />
 
           <input
@@ -189,7 +189,7 @@ const UpdatePaymentDetails = () => {
             value={form.accountNumber}
             onChange={handleChange}
             placeholder="Account Number"
-            className="input"
+            className="input tracking-widest font-Playfair"
           />
 
           <input
@@ -197,13 +197,13 @@ const UpdatePaymentDetails = () => {
             value={form.ifscCode}
             onChange={handleChange}
             placeholder="IFSC Code"
-            className="input"
+            className="input tracking-widest font-Playfair"
           />
         </div>
 
         <button
           disabled={loading}
-          className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold flex justify-center gap-2 hover:scale-105 transition cursor-pointer"
+          className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold flex justify-center gap-2 hover:scale-105 transition cursor-pointer tracking-widest font-Playfair"
         >
           {loading ? (
             <>

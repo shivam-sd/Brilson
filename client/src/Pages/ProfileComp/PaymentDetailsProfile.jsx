@@ -77,7 +77,7 @@ const PaymentDetailsProfile = ({ activationCode }) => {
           text-white 
           text-center 
           mb-8 sm:mb-10
-          flex justify-center items-center gap-2 sm:gap-3
+          flex justify-center items-center gap-2 sm:gap-3 tracking-widest font-Playfair
         ">
           <CreditCard className="text-emerald-400 w-5 h-5 sm:w-6 sm:h-6" />
           Payment Details
@@ -85,7 +85,7 @@ const PaymentDetailsProfile = ({ activationCode }) => {
 
         {!hasPayment ? (
           <div className="flex flex-col items-center text-center py-10">
-            <p className="text-gray-400 text-sm sm:text-base">
+            <p className="text-gray-400 text-sm sm:text-base tracking-widest font-Poppins">
               Add Payment Details From Edit Profile
             </p>
           </div>
@@ -131,7 +131,7 @@ const PaymentDetailsProfile = ({ activationCode }) => {
                   rounded-xl sm:rounded-2xl 
                   flex flex-col gap-3
                 ">
-                  <p className="text-gray-400 text-xs sm:text-sm">
+                  <p className="text-gray-400 text-xs sm:text-sm tracking-widest font-Playfair">
                     UPI ID
                   </p>
 
@@ -146,7 +146,7 @@ const PaymentDetailsProfile = ({ activationCode }) => {
                       text-emerald-400 
                       font-semibold 
                       text-sm sm:text-base 
-                      break-all
+                      break-all tracking-widest font-Poppins
                     ">
                       {paymentData.upi}
                     </span>
@@ -179,22 +179,22 @@ const PaymentDetailsProfile = ({ activationCode }) => {
               ">
 
                 <div>
-                  <p className="text-gray-400 text-xs sm:text-sm">Bank Name</p>
-                  <p className="text-white font-medium text-sm sm:text-base break-words">
+                  <p className="text-gray-400 text-xs sm:text-sm tracking-widest font-Playfair">Bank Name</p>
+                  <p className="text-white font-medium text-sm sm:text-base break-words tracking-widest font-Poppins">
                     {paymentData.paymentDetails.bankName || "-"}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-gray-400 text-xs sm:text-sm">Account Holder</p>
-                  <p className="text-white font-medium text-sm sm:text-base break-words">
+                  <p className="text-gray-400 text-xs sm:text-sm tracking-widest font-Playfair">Account Holder</p>
+                  <p className="text-white font-medium text-sm sm:text-base break-words tracking-widest font-Poppins">
                     {paymentData.paymentDetails.bankHolderName || "-"}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-gray-400 text-xs sm:text-sm">Account Number</p>
-                  <p className="text-white font-medium text-sm sm:text-base">
+                  <p className="text-gray-400 text-xs sm:text-sm tracking-widest font-Playfair">Account Number</p>
+                  <p className="text-white font-medium text-sm sm:text-base tracking-widest font-Poppins">
                     {paymentData.paymentDetails.accountNumber}
                   </p>
                 </div>

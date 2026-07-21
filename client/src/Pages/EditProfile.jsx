@@ -530,7 +530,7 @@ const EditProfile = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h3 className="text-2xl font-semibold text-white mb-6 border-b border-gray-800 pb-2 text-center">
+              <h3 className="text-2xl font-semibold text-white mb-6 border-b border-gray-800 pb-2 text-center tracking-widest font-Playfair">
                 Basic Information
               </h3>
 
@@ -555,7 +555,7 @@ const EditProfile = () => {
                 
                 {/* Phone with Country Code */}
                 <div className="md:col-span-2 lg:col-span-1">
-                  <label className="text-sm text-gray-400 mb-2 block">
+                  <label className="text-sm text-gray-400 mb-2 block tracking-widest font-Playfair">
                     Phone Number <span className="text-red-400">*</span>
                   </label>
 
@@ -564,7 +564,7 @@ const EditProfile = () => {
                       name="countryCode"
                       value={form.countryCode}
                       onChange={handleChange}
-                      className="w-full sm:w-32 px-3 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                      className="w-full sm:w-32 px-3 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all tracking-widest font-Playfair"
                     >
                       {countryCodes.map((cc) => (
                         <option key={cc.code} value={cc.code}>
@@ -580,7 +580,7 @@ const EditProfile = () => {
                       onChange={handleChange}
                       maxLength={10}
                       placeholder="Enter 10 digit number"
-                      className={`flex-1 px-4 py-3 rounded-xl bg-[#0B1220] border ${
+                      className={`flex-1 px-4 py-3 rounded-xl tracking-widest font-Playfair bg-[#0B1220] border ${
                         phoneError ? 'border-red-500' : 'border-gray-700'
                       } text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all`}
                       required
@@ -588,14 +588,14 @@ const EditProfile = () => {
                   </div>
                   
                   {phoneError && (
-                    <p className="text-red-400 text-xs mt-1">{phoneError}</p>
+                    <p className="text-red-400 text-xs mt-1 tracking-widest font-Poppins">{phoneError}</p>
                   )}
                 </div>
 
 
 {/* Phone with Country Code */}
                 <div className="md:col-span-2 lg:col-span-1">
-                  <label className="text-sm text-gray-400 mb-2 block">
+                  <label className="text-sm text-gray-400 mb-2 block tracking-widest font-Playfair">
                     Whatsapp Number <span className="text-red-400">*</span>
                   </label>
 
@@ -604,7 +604,7 @@ const EditProfile = () => {
                       name="WacountryCode"
                       value={form.WacountryCode}
                       onChange={handleChange}
-                      className="w-full sm:w-32 px-3 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                      className="w-full sm:w-32 px-3 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all tracking-widest font-Playfair"
                     >
                       {countryCodes.map((cc) => (
                         <option key={cc.code} value={cc.code}>
@@ -621,7 +621,7 @@ const EditProfile = () => {
                   onChange={handleChange}
                   maxLength={10} 
                   placeholder="With country code"
-                      className={`flex-1 px-4 py-3 rounded-xl bg-[#0B1220] border ${
+                      className={`flex-1 px-4 py-3 tracking-widest font-Playfair rounded-xl bg-[#0B1220] border ${
                         phoneError ? 'border-red-500' : 'border-gray-700'
                       } text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all`}
                       required
@@ -691,7 +691,7 @@ const EditProfile = () => {
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={`mt-8 w-full py-3 md:py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-semibold text-base md:text-lg transition-all ${
+                className={`mt-8 w-full py-3 md:py-4 rounded-xl tracking-widest font-Playfair bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-semibold text-base md:text-lg transition-all ${
                   loading ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-indigo-500/30 cursor-pointer'
                 }`}
               >
@@ -733,23 +733,23 @@ const EditProfile = () => {
 /* Reusable Components */
 const Input = ({ label, required, ...props }) => (
   <div>
-    <label className="text-sm text-gray-400 mb-2 block">
+    <label className="text-sm text-gray-400 mb-2 block tracking-widest font-Playfair">
       {label}
       {required && <span className="text-red-400 ml-1">*</span>}
     </label>
     <input 
       {...props} 
-      className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-gray-500" 
+      className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-gray-500 tracking-widest font-Poppins" 
     />
   </div>
 );
 
 const Textarea = ({ label, ...props }) => (
   <div>
-    <label className="text-sm text-gray-400 mb-2 block">{label}</label>
+    <label className="text-sm text-gray-400 mb-2 block tracking-widest font-Playfair">{label}</label>
     <textarea 
       {...props} 
-      className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-none placeholder-gray-500" 
+      className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-none placeholder-gray-500 tracking-widest font-Poppins" 
     />
   </div>
 );

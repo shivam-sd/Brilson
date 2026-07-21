@@ -49,7 +49,7 @@ const ProfileLocation = ({ activationCode }) => {
               to={locationData.googleMapLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-[#162338] hover:bg-[#1c2c47] transition-all duration-300 rounded-xl h-11 text-gray-200 font-medium text-sm sm:text-base"
+              className="flex items-center justify-center gap-2 bg-[#162338] hover:bg-[#1c2c47] transition-all duration-300 rounded-xl h-11 text-gray-200 font-medium text-sm sm:text-base tracking-widest font-Playfair"
             >
               <MapPin size={18} className="text-yellow-400" />
               View on Google Maps
@@ -62,7 +62,7 @@ const ProfileLocation = ({ activationCode }) => {
               to={locationData.googleReviewLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-[#162338] hover:bg-[#1c2c47] transition-all duration-300 rounded-xl h-11 text-gray-200 font-medium text-sm sm:text-base"
+              className="flex items-center justify-center gap-2 bg-[#162338] hover:bg-[#1c2c47] transition-all duration-300 rounded-xl h-11 text-gray-200 font-medium text-sm sm:text-base tracking-widest font-Playfair"
             >
               <Star size={18} className="text-yellow-400" />
               View Google Reviews
@@ -74,7 +74,7 @@ const ProfileLocation = ({ activationCode }) => {
             </>) : <>
             
             <div className="flex flex-col items-center text-center py-10">
-            <p className="text-gray-400 text-sm sm:text-base">
+            <p className="text-gray-400 text-sm sm:text-base tracking-widest font-Playfair">
               Add Location & Reviews From Edit Profile
             </p>
           </div>

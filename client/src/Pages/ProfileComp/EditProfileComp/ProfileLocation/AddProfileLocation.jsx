@@ -66,7 +66,7 @@ const AddProfileLocation = () => {
 <div className="pointer-events-none absolute -top-20 -left-20 w-72 h-72 bg-emerald-500/20 blur-3xl rounded-full"></div>
 <div className="pointer-events-none absolute -bottom-20 -right-20 w-72 h-72 bg-blue-500/20 blur-3xl rounded-full"></div>
 
-        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-8">
+        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-8 tracking-widest font-Playfair">
           Add Location & Reviews
         </h2>
 
@@ -74,7 +74,7 @@ const AddProfileLocation = () => {
 
           {/* Google Map Link */}
           <div className="space-y-2">
-            <label className="text-gray-400 text-sm flex items-center gap-2">
+            <label className="text-gray-400 text-sm flex items-center gap-2 tracking-widest font-Playfair">
               <MapPin size={16} />
               Google Map Link
             </label>
@@ -86,13 +86,13 @@ const AddProfileLocation = () => {
               onChange={handleChange}
               placeholder="https://maps.google.com/..."
               required
-              className="input"
+              className="input tracking-widest font-Playfair"
             />
           </div>
 
           {/* Google Review Link */}
           <div className="space-y-2">
-            <label className="text-gray-400 text-sm flex items-center gap-2">
+            <label className="text-gray-400 text-sm flex items-center gap-2 tracking-widest font-Playfair">
               <Star size={16} />
               Google Review Link
             </label>
@@ -104,14 +104,14 @@ const AddProfileLocation = () => {
               onChange={handleChange}
               placeholder="https://search.google.com/..."
               required
-              className="input"
+              className="input tracking-widest font-Playfair"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-gradient-to-r from-emerald-600 to-green-600 rounded-xl font-semibold flex justify-center items-center gap-2 transition shadow-lg active:scale-95 disabled:opacity-60"
+            className="w-full py-4 bg-gradient-to-r from-emerald-600 to-green-600 rounded-xl font-semibold flex justify-center items-center gap-2 transition shadow-lg active:scale-95 disabled:opacity-60 tracking-widest font-Playfair"
           >
             {loading ? (
               <>

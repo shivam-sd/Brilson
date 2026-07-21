@@ -104,7 +104,7 @@ const UpdateProfileLocation = () => {
           <ArrowLeft size={20} />
         </button>
 
-        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-8">
+        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-8 tracking-widest font-Playfair">
           Update Location & Reviews
         </h2>
 
@@ -112,7 +112,7 @@ const UpdateProfileLocation = () => {
 
           {/* Google Map Link */}
           <div className="space-y-2">
-            <label className="text-gray-400 text-sm flex items-center gap-2">
+            <label className="text-gray-400 text-sm flex items-center gap-2 tracking-widest font-Playfair">
               <MapPin size={16} />
               Google Map Link
             </label>
@@ -123,13 +123,13 @@ const UpdateProfileLocation = () => {
               value={form.googleMapLink}
               onChange={handleChange}
               required
-              className="input"
+              className="input tracking-widest font-Playfair"
             />
           </div>
 
           {/* Google Review Link */}
           <div className="space-y-2">
-            <label className="text-gray-400 text-sm flex items-center gap-2">
+            <label className="text-gray-400 text-sm flex items-center gap-2 tracking-widest font-Playfair">
               <Star size={16} />
               Google Review Link
             </label>
@@ -140,14 +140,14 @@ const UpdateProfileLocation = () => {
               value={form.googleReviewLink}
               onChange={handleChange}
               required
-              className="input"
+              className="input tracking-widest font-Playfair"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-gradient-to-r from-emerald-600 to-green-600 rounded-xl font-semibold flex justify-center items-center gap-2 transition shadow-lg active:scale-95 disabled:opacity-60"
+            className="w-full py-4 bg-gradient-to-r from-emerald-600 to-green-600 rounded-xl font-semibold flex justify-center items-center gap-2 transition shadow-lg active:scale-95 disabled:opacity-60 tracking-widest font-Playfair"
           >
             {loading ? (
               <>

@@ -106,7 +106,7 @@ const ServicesProfile = ({ activationCode }) => {
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
         {/* Price Badge */}
-        <div className="absolute top-3 right-3 bg-black/60 backdrop-blur px-3 py-1 rounded-full text-sm font-semibold text-emerald-400 border border-emerald-500/30">
+        <div className="absolute top-3 right-3 bg-black/60 backdrop-blur px-3 py-1 rounded-full text-sm font-semibold text-emerald-400 border border-emerald-500/30 tracking-widest font-Playfair">
           ₹ {service.price}
         </div>
       </div>
@@ -114,7 +114,7 @@ const ServicesProfile = ({ activationCode }) => {
       {/* CONTENT */}
       <div className="p-6 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xl font-bold text-white group-hover:text-[#E1C48A] transition">
+          <h3 className="text-xl font-bold text-white group-hover:text-[#E1C48A] transition tracking-widest font-Playfair">
             {service.title}
           </h3>
           {service.link && (
@@ -125,12 +125,12 @@ const ServicesProfile = ({ activationCode }) => {
         </div>
 
         {/* Description */}
-        <p className="text-gray-400 text-sm mb-5 line-clamp-3">
+        <p className="text-gray-400 text-sm mb-5 line-clamp-3 tracking-widest font-Poppins">
           {service.description}
         </p>
 
         {/* Features */}
-        <div className="space-y-2 mt-auto">
+        <div className="space-y-2 mt-auto tracking-widest font-Poppins">
           {service.features?.slice(0, 3).map((feature, idx) => (
             <div key={idx} className="flex items-center gap-2 text-sm text-gray-300">
               <CheckCircle size={14} className="text-emerald-400 flex-shrink-0" />

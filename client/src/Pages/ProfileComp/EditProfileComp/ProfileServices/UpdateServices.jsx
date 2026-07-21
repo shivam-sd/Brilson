@@ -200,7 +200,7 @@ const handleCropCancel = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-xl bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl space-y-6 shadow-xl"
       >
-        <h2 className="text-3xl font-bold text-center text-white">
+        <h2 className="text-3xl font-bold text-center text-white tracking-widest font-Playfair">
           Update Service
         </h2>
 
@@ -231,7 +231,7 @@ const handleCropCancel = () => {
           value={form.title}
           onChange={handleChange}
           placeholder="Service Title"
-          className="input"
+          className="input tracking-widest font-Playfair"
         />
 
         <textarea
@@ -240,7 +240,7 @@ const handleCropCancel = () => {
           onChange={handleChange}
           placeholder="Description"
           rows={4}
-          className="input"
+          className="input tracking-widest font-Playfair"
         />
 
         <input
@@ -249,7 +249,7 @@ const handleCropCancel = () => {
           value={form.price}
           onChange={handleChange}
           placeholder="Price"
-          className="input"
+          className="input tracking-widest font-Playfair"
         />
 
         <input
@@ -257,7 +257,7 @@ const handleCropCancel = () => {
           value={form.link}
           onChange={handleChange}
           placeholder="Service Link"
-          className="input"
+          className="input tracking-widest font-Playfair"
         />
 
         {/* FEATURES */}
@@ -282,14 +282,14 @@ const handleCropCancel = () => {
         <button
           type="button"
           onClick={addFeature}
-          className="text-blue-400 flex gap-2"
+          className="text-blue-400 flex gap-2 tracking-widest font-Playfair"
         >
           <Plus size={16} /> Add Feature
         </button>
 
         <button
           disabled={loading}
-          className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold flex justify-center gap-2 hover:scale-105 transition"
+          className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold flex justify-center gap-2 hover:scale-105 transition tracking-widest font-Playfair"
         >
           {loading ? (
             <>

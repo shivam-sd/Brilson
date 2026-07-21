@@ -116,7 +116,7 @@ const EditProfileSocialMedia = () => {
           transition={{ duration: 0.5 }}
           className="w-full max-w-4xl bg-[#111827] border border-gray-800 rounded-3xl p-8 md:p-10 shadow-2xl"
         >
-          <h2 className="text-3xl font-bold text-white text-center">
+          <h2 className="text-3xl font-bold text-white text-center tracking-widest font-Playfair">
             Social Media
           </h2>
 
@@ -228,10 +228,10 @@ const EditProfileSocialMedia = () => {
  */
 const Input = ({ label, ...props }) => (
   <div>
-    <label className="text-sm text-gray-400 mb-2 block">{label}</label>
+    <label className="text-sm text-gray-400 mb-2 block tracking-widest font-Playfair">{label}</label>
     <input
       {...props}
-      className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white placeholder:opacity-50"
+      className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white placeholder:opacity-50 tracking-widest font-Poppins"
     />
   </div>
 );

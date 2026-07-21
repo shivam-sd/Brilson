@@ -69,11 +69,11 @@ const id = activationCode;
             <div className="p-5">  
               {/* Title and Price */}
               <div className="flex items-start justify-between mb-3">
-                <h3 className="text-lg font-bold text-white group-hover:text-[#E1C48A] transition-colors duration-300 line-clamp-1">
+                <h3 className="text-lg font-bold text-white group-hover:text-[#E1C48A] transition-colors duration-300 line-clamp-1 tracking-widest font-Playfair">
                   {product.title}
                 </h3>
                 <span className="text-xl font-bold text-[#E1C48A] ml-2 whitespace-nowrap">
-                 <span className="text-lg font-fold">₹</span> {product.price}
+                 <span className="text-lg font-fold tracking-widest font-Playfair">₹</span> {product.price}
                 </span>
               </div>
               
@@ -81,7 +81,7 @@ const id = activationCode;
 
 
               {/* Description */}
-              <p className="text-gray-300 text-sm line-clamp-2">
+              <p className="text-gray-300 text-sm line-clamp-2 tracking-widest font-Poppins">
                 {product.description}
               </p>
 

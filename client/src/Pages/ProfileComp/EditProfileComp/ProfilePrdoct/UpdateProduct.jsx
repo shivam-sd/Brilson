@@ -161,10 +161,10 @@ setOriginalImage(imageUrl);
       >
         {/* Header */}
         <div className="text-center space-y-2">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent tracking-widest font-Playfair">
             Update Product
           </h2>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-400 text-sm tracking-widest font-Poppins">
             Showcase your product beautifully
           </p>
         </div>
@@ -181,7 +181,7 @@ setOriginalImage(imageUrl);
             ) : (
               <>
                 <ImageIcon size={40} className="text-gray-500 mb-2" />
-                <p className="text-gray-400 text-sm">
+                <p className="text-gray-400 text-sm tracking-widest font-Poppins">
                   Click to upload product image
                 </p>
               </>
@@ -192,7 +192,7 @@ setOriginalImage(imageUrl);
               name="image"
               accept="image/jpeg,image/png,image/jpg,image/gif,image/webp,image/svg+xml"
               onChange={handleChange}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              className="absolute inset-0 opacity-0 cursor-pointer tracking-widest font-Playfair"
             />
           </div>
         </label>
@@ -203,7 +203,7 @@ setOriginalImage(imageUrl);
           value={form.title}
           onChange={handleChange}
           placeholder="Product Title"
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
         />
 
         {/* Price */}
@@ -212,7 +212,7 @@ setOriginalImage(imageUrl);
           value={form.price}
           onChange={handleChange}
           placeholder="Product Price"
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
         />
 
 
@@ -222,7 +222,7 @@ setOriginalImage(imageUrl);
           value={form.link}
           onChange={handleChange}
           placeholder="Product Link"
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
         />
 
         <textarea
@@ -231,7 +231,7 @@ setOriginalImage(imageUrl);
           onChange={handleChange}
           placeholder="Product Description"
           rows={4}
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
         />
 
 
@@ -239,7 +239,7 @@ setOriginalImage(imageUrl);
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-4 rounded-xl font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] active:scale-95 transition flex justify-center items-center gap-2 shadow-lg cursor-pointer"
+          className="w-full py-4 rounded-xl font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] active:scale-95 transition flex justify-center items-center gap-2 shadow-lg cursor-pointer tracking-widest font-Playfair"
         >
           {loading ? (
             <>

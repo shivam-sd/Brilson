@@ -53,10 +53,20 @@ const CashfreePayment = ({ createdOrder, total }) => {
     }
 
     //  OPEN CHECKOUT
-    await cashfree.checkout({
+   
+    try{
+      const result = await cashfree.checkout({
       paymentSessionId,
       redirectTarget: "_modal"
     });
+
+    console.log("Checkout Result", result)
+
+    }catch(err){
+        console.log("Checkout Error:", err);
+
+    }
+
 
     //  VERIFY PAYMENT
     const verify = await axios.post(

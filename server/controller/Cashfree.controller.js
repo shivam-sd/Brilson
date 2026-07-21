@@ -41,6 +41,10 @@ console.log("Cashfree Config: Create se", config.cashfree);
         customer_phone: order.address?.phone,
         customer_name: order.address?.name
       }
+,
+        order_meta: {
+    return_url: `${process.env.BASE_URL}/payment-status?order_id={order_id}`
+  }
 
     };
 
@@ -50,13 +54,15 @@ console.log("Cashfree Config: Create se", config.cashfree);
   "x-client-id": config.cashfree?.appId || process.env.CASHFREE_APP_ID,
   "x-client-secret": config.cashfree?.secretKey || process.env.CASHFREE_SECRET_KEY,
   "x-api-version": "2022-09-01",
-};
+}; 
 
     const response = await axios.post(
       "https://sandbox.cashfree.com/pg/orders",
       data,
       { headers }
     );
+
+    console.log(response)
 
     const cfOrderId = response.data.order_id;
 

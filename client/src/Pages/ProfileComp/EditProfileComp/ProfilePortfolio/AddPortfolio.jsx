@@ -74,10 +74,10 @@ const AddPortfolio = () => {
       >
         {/* Header */}
         <div className="text-center space-y-2">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent tracking-widest font-Playfair">
             Add Portfolio
           </h2>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-400 text-sm tracking-widest font-Poppins">
             Showcase your product beautifully
           </p>
         </div>
@@ -94,7 +94,7 @@ const AddPortfolio = () => {
             ) : (
               <>
                 <ImageIcon size={40} className="text-gray-500 mb-2" />
-                <p className="text-gray-400 text-sm">
+                <p className="text-gray-400 text-sm tracking-widest font-Poppins">
                   Click to upload product image
                 </p>
               </>
@@ -105,7 +105,7 @@ const AddPortfolio = () => {
               name="image"
               accept="image/*"
               onChange={handleChange}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              className="absolute inset-0 opacity-0 cursor-pointer tracking-widest font-Playfair"
             />
           </div>
         </label>
@@ -116,7 +116,7 @@ const AddPortfolio = () => {
           value={form.title}
           onChange={handleChange}
           placeholder="Product Title"
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
         />
 
         {/* Inputs */}
@@ -125,7 +125,7 @@ const AddPortfolio = () => {
           value={form.duration}
           onChange={handleChange}
           placeholder="Duration"
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
         />
 
         <textarea
@@ -134,14 +134,14 @@ const AddPortfolio = () => {
           onChange={handleChange}
           placeholder="Product Description"
           rows={4}
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
         />
 
         {/* Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-4 rounded-xl font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] active:scale-95 transition flex justify-center items-center gap-2 shadow-lg cursor-pointer"
+          className="w-full py-4 rounded-xl font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] active:scale-95 transition flex justify-center items-center gap-2 shadow-lg cursor-pointer tracking-widest font-Playfair"
         >
           {loading ? (
             <>
