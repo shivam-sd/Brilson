@@ -152,10 +152,10 @@ const ChooseYourCard = () => {
 
       {/* Page Title */}
       <div className="relative text-center max-w-3xl mx-auto mb-16 px-4 sm:px-6">
-        <h4 className="text-2xl md:text-3xl lg:text-3xl font-extrabold leading-tight">
+        <h4 className="text-2xl md:text-3xl lg:text-3xl font-extrabold leading-tight tracking-widest font-Playfair">
           Choose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Smart Card</span>
         </h4>
-        <p className="text-gray-400 mt-4 lg:text-base text-sm">
+        <p className="text-gray-400 mt-4 lg:text-base text-sm tracking-widest font-Poppins">
           Premium quality cards at competitive prices. Free shipping on all orders.
         </p>
       </div>

@@ -134,11 +134,11 @@ animate={{ opacity: 1 }}
               <Gift size={18} className="text-white" />
             </div>
             <div className=''>
-              <h3 className="text-center text-white font-semibold flex items-center gap-2">
+              <h3 className="text-center text-white font-semibold flex items-center gap-2 tracking-widest font-Playfair">
                 Referral Dashboard
                 <Sparkles size={14} className="text-indigo-400" />
               </h3>
-              <p className="text-xs text-gray-400">Track your referrals & rewards</p>
+              <p className="text-xs text-gray-400 tracking-widest font-Poppins">Track your referrals & rewards</p>
             </div>
           </div>
           

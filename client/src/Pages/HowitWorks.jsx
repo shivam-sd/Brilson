@@ -53,12 +53,12 @@ const HowItWorks = () => {
     <div className="bg-[#03060A] text-white overflow-hidden">
 
       {/* HERO */}
-      <section className="h-auto mt-30 flex flex-col items-center justify-center px-6 text-center mb-15">
+      <section className="h-auto mt-30 flex flex-col items-center justify-center px-6 text-center mb-15 ">
         <motion.h4
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="md:text-3xl text-xl font-bold"
+          className="md:text-3xl text-xl font-bold tracking-widest"
         >
           How <span className="text-cyan-400">NFC Smart Card</span> Works
         </motion.h4>
@@ -122,7 +122,7 @@ const HowItWorks = () => {
        
                {/* Name */}
                <div className="relative mt-4">
-                 <p className="text-xl font-semibold text-white">
+                 <p className="text-xl font-semibold text-white tracking-widest font-Playfair">
                    Brilson
                  </p>
                  {/* <p className="text-sm text-gray-300">
@@ -132,12 +132,12 @@ const HowItWorks = () => {
        
                {/* Footer */}
                <div className="absolute bottom-4 left-5 right-5 flex justify-between items-center text-xs text-gray-300">
-                 <div className="flex items-center gap-1">
+                 <div className="flex items-center gap-1 tracking-widest font-Playfair">
                    <RiVerifiedBadgeLine className="text-yellow-400" />
                    NFC Enabled
                  </div>
        
-                 <span className="text-cyan-300 font-medium">
+                 <span className="text-cyan-300 font-medium tracking-widest font-Playfair">
                    brilson.me/JohnDeo
                  </span>
                </div>
@@ -154,7 +154,7 @@ const HowItWorks = () => {
 
       {/* BENEFITS */}
       <section className="py-5 px-6 bg-white/5">
-        <h2 className="text-xl md:text-2xl font-bold text-center mb-5">
+        <h2 className="text-xl md:text-2xl font-bold text-center mb-5 tracking-widest font-Playfair">
           Why Choose <span className="text-cyan-400">Us?</span>
         </h2>
 
@@ -165,7 +165,7 @@ const HowItWorks = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="bg-[#03060A] border border-white/10 rounded-2xl p-6 flex gap-4"
+              className="bg-[#03060A] border border-white/10 rounded-2xl p-6 flex gap-4 tracking-widest font-Poppins"
             >
               <div className="text-cyan-400 text-3xl">{b.icon}</div>
               <div>
@@ -178,11 +178,11 @@ const HowItWorks = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-24 text-center px-6">
+      <section className="py-24 text-center px-6 tracking-widest font-Playfair">
         <h2 className="text-3xl md:text-4xl font-bold">
           Ready to <span className="text-cyan-400">Go Smart?</span>
         </h2>
-        <p className="text-gray-400 mt-4">
+        <p className="text-gray-400 mt-4 font-Poppins">
           Upgrade your networking with NFC smart cards.
         </p>
 
@@ -190,7 +190,7 @@ const HowItWorks = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           className="mt-8 px-10 py-3 rounded-xl 
-          bg-cyan-500 text-black font-semibold shadow-lg cursor-pointer"
+          bg-cyan-500 text-black font-semibold shadow-lg cursor-pointer font-Poppins"
         >
             Get Your Card Now
         </motion.button>

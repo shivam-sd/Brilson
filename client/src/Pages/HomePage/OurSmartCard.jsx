@@ -55,7 +55,7 @@ const getPrice = (product) => {
   }
 };
 
-// ✅ FIXED: Check if discount exists and get its value safely
+//  Check if discount exists and get its value safely
 const hasDiscount = (product) => {
   if (!product) return false;
 
@@ -68,7 +68,7 @@ const hasDiscount = (product) => {
     }
   }
 
-  // ✅ FIXED: Safely check discount - handle both string and object
+  //  Safely check discount handle both string and object
   if (product.discount) {
     // If discount is an object, check if it has a value
     if (typeof product.discount === 'object') {
@@ -92,7 +92,7 @@ const hasDiscount = (product) => {
   return false;
 };
 
-// ✅ FIXED: Render discount badge safely
+//  Render discount badge safely
 const renderDiscount = (product) => {
   if (!hasDiscount(product)) return null;
 
@@ -172,7 +172,7 @@ const renderBadge = (badge) => {
 
 
 
-// 🖼️ FIXED: Image Component with proper aspect ratio
+// Image Component with proper aspect ratio
 const ProductImage = ({ product }) => {
   const [imageError, setImageError] = useState(false);
 
@@ -269,7 +269,7 @@ const OurSmartCard = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h3 className="text-xl md:text-3xl lg:text-3xl font-extrabold leading-tight">
+          <h3 className="text-xl md:text-3xl lg:text-3xl font-extrabold leading-tight tracking-widest font-Playfair">
             Our{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
               Smart Cards
@@ -279,7 +279,7 @@ const OurSmartCard = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-gray-400 mt-4 max-w-2xl mx-auto lg:text-base text-sm"
+            className="text-gray-400 mt-4 max-w-2xl mx-auto lg:text-base text-sm tracking-wider font-Poppins"
           >
             Choose the perfect card for your professional needs. Every card
             includes lifetime updates and a free digital profile.
@@ -289,14 +289,15 @@ const OurSmartCard = () => {
         {/* Products Grid */}
         <div className="mt-8 grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product, index) => (
+            <Link to={`/products/${product._id}`}>
             <motion.div
               key={product._id || index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -10 }}
-              className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-gray-900/70 to-gray-800/70 backdrop-blur-lg hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 group"
-            >
+              className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-gray-900/70 to-gray-800/70 backdrop-blur-lg hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 group tracking-widest font-Playfair"
+              >
               {/* Product Badge */}
               {renderBadge(product.badge)}
 
@@ -311,7 +312,7 @@ const OurSmartCard = () => {
 
               {/* Product Info */}
               <div className="space-y-3">
-                <p className="text-cyan-400 text-xs font-semibold uppercase tracking-wider">
+                <p className="text-cyan-400 text-xs font-semibold uppercase tracking-wider font-Poppins">
                   {getCategoryName(product.category)}
                 </p>
                 <h3 className="text-xl font-semibold line-clamp-1">
@@ -343,7 +344,7 @@ const OurSmartCard = () => {
                 </div>
 
                 {product.description && (
-                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-3">
+                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 font-Poppins">
                     {product.description}
                   </p>
                 )}
@@ -353,13 +354,14 @@ const OurSmartCard = () => {
               <Link
                 to={`/products/${product._id}`}
                 className="w-full mt-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 border border-cyan-500/30 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 hover:from-cyan-600/30 hover:to-blue-600/30 text-cyan-300 hover:text-white transition-all duration-300 group/btn"
-              >
+                >
                 <span>View Details</span>
                 <span className="group-hover/btn:translate-x-1 transition-transform">
                   →
                 </span>
               </Link>
             </motion.div>
+                </Link>
           ))}
         </div>
       </div>

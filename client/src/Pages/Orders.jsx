@@ -99,8 +99,8 @@ const Orders = () => {
       <div className="max-w-6xl mx-auto">
 
         <div className="flex justify-center mb-6">
-          <h4 className="text-2xl  font-bold flex items-center gap-3">
-            <FiShoppingBag className="text-cyan-400" size={25} />
+          <h4 className="text-2xl font-bold flex items-center gap-3 tracking-widest font-Playfair">
+            <FiShoppingBag className="text-cyan-400" size={20} />
             My Orders
           </h4>
         </div>
@@ -112,7 +112,7 @@ const Orders = () => {
             {orders.map((order) => (
               <div
                 key={order._id}
-                className="bg-white/5 border border-white/10 rounded-2xl p-6"
+                className="bg-white/5 border border-white/10 rounded-2xl p-6 tracking-widest font-Playfair"
               >
                 {/* HEADER */}
                 <div className="flex flex-col md:flex-row justify-between gap-3 mb-6">
