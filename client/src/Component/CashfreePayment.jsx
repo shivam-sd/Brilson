@@ -43,9 +43,19 @@ const CashfreePayment = ({ createdOrder, total }) => {
     }
 
     //  LOAD CASHFREE SDK
+
+    // -> For Local Test  
     const cashfree = await load({
       mode: "sandbox"
     });
+    
+
+    // For Prod 
+
+    // const cashfree = await load({
+    //   mode: "production"
+    // });
+
 
     if (!cashfree) {
       toast.error("Cashfree SDK failed to load");
@@ -65,7 +75,7 @@ const CashfreePayment = ({ createdOrder, total }) => {
     }catch(err){
         console.log("Checkout Error:", err);
 
-    }
+    } 
 
 
     //  VERIFY PAYMENT

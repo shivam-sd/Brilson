@@ -56,13 +56,24 @@ console.log("Cashfree Config: Create se", config.cashfree);
   "x-api-version": "2022-09-01",
 }; 
 
+
+// For Local Test 
+
     const response = await axios.post(
       "https://sandbox.cashfree.com/pg/orders",
       data,
       { headers }
     );
 
-    console.log(response)
+    // For Prod
+
+    // const response = await axios.post(
+    //   "https://api.cashfree.com/pg/orders",
+    //   data,
+    //   { headers }
+    // );
+
+    // console.log(response)
 
     const cfOrderId = response.data.order_id;
 
@@ -110,7 +121,7 @@ const verifyCashfreePayment = async (req, res) => {
   };
 
 
-  console.log("Cashfree Config: Verify Se", config.cashfree);
+  // console.log("Cashfree Config: Verify Se", config.cashfree);
 
   try {
 
@@ -120,6 +131,15 @@ const verifyCashfreePayment = async (req, res) => {
       `https://sandbox.cashfree.com/pg/orders/${orderId}`,
       { headers }
     );
+
+
+    // For Prod
+
+    // const response = await axios.get(
+    //   `https://api.cashfree.com/pg/orders/${orderId}`,
+    //   { headers }
+    // );
+
 
     const orderStatus = response.data.order_status;
 
