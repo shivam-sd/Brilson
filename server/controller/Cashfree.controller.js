@@ -16,7 +16,7 @@ const createCashfreeOrder = async (req, res) => {
 
   const config = getConfig();
 
-console.log("Cashfree Config: Create se", config.cashfree);
+// console.log("Cashfree Config: Create se", config.cashfree);
 
 
   try {
@@ -125,7 +125,9 @@ const verifyCashfreePayment = async (req, res) => {
 
   try {
 
-    // const { orderId } = req.body; 
+    const { orderId } = req.body; 
+
+    // console.log("verify se order id", orderId);
 
     // const response = await axios.get(
     //   `https://sandbox.cashfree.com/pg/orders/${orderId}`,
@@ -140,6 +142,7 @@ const verifyCashfreePayment = async (req, res) => {
       { headers }
     );
 
+    // console.log("Verify se", response);
 
     const orderStatus = response.data.order_status;
 
