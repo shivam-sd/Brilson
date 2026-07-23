@@ -65,8 +65,8 @@ const salt = config?.payU?.salt || process.env.PAYU_SALT;
         firstname,
         email,
         phone,
-        surl: `${process.env.payU_Verify_Payment_Url1}/api/payment/payu/verify`,
-        furl: `${process.env.payU_Verify_Payment_Url1}/api/payment/payu-failure`,
+        surl: `${process.env.PayU_Verify_Payment_Url1}/api/payment/payu/verify`,
+        furl: `${process.env.PayU_Verify_Payment_Url1}/api/payment/payu-failure`,
         hash
       }
     });
