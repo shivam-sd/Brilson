@@ -45,16 +45,16 @@ const CashfreePayment = ({ createdOrder, total }) => {
     //  LOAD CASHFREE SDK
 
     // -> For Local Test  
-    const cashfree = await load({
-      mode: "sandbox"
-    });
+    // const cashfree = await load({
+    //   mode: "sandbox"
+    // });
     
 
     // For Prod 
 
-    // const cashfree = await load({
-    //   mode: "production"
-    // });
+    const cashfree = await load({
+      mode: "production"
+    });
 
 
     if (!cashfree) {

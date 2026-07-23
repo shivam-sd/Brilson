@@ -59,19 +59,19 @@ console.log("Cashfree Config: Create se", config.cashfree);
 
 // For Local Test 
 
-    const response = await axios.post(
-      "https://sandbox.cashfree.com/pg/orders",
-      data,
-      { headers }
-    );
-
-    // For Prod
-
     // const response = await axios.post(
-    //   "https://api.cashfree.com/pg/orders",
+    //   "https://sandbox.cashfree.com/pg/orders",
     //   data,
     //   { headers }
     // );
+
+    // For Prod
+
+    const response = await axios.post(
+      "https://api.cashfree.com/pg/orders",
+      data,
+      { headers }
+    );
 
     // console.log(response)
 
@@ -125,20 +125,20 @@ const verifyCashfreePayment = async (req, res) => {
 
   try {
 
-    const { orderId } = req.body; 
+    // const { orderId } = req.body; 
 
-    const response = await axios.get(
-      `https://sandbox.cashfree.com/pg/orders/${orderId}`,
-      { headers }
-    );
+    // const response = await axios.get(
+    //   `https://sandbox.cashfree.com/pg/orders/${orderId}`,
+    //   { headers }
+    // );
 
 
     // For Prod
 
-    // const response = await axios.get(
-    //   `https://api.cashfree.com/pg/orders/${orderId}`,
-    //   { headers }
-    // );
+    const response = await axios.get(
+      `https://api.cashfree.com/pg/orders/${orderId}`,
+      { headers }
+    );
 
 
     const orderStatus = response.data.order_status;
