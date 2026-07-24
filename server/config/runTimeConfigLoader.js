@@ -80,7 +80,7 @@ async function loadConfig() {
       console.log("✓ PayU config loaded");
     }
 
-    console.log("Runtime configuration loaded successfully ", data);
+    // console.log("Runtime configuration loaded successfully ", data);
     console.log("Loaded config keys:", Object.keys(runtimeConfigLoader));
     
   } catch (error) {

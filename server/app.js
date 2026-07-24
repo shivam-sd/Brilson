@@ -169,7 +169,7 @@ app.use("/api", InvoiceAddressRouter);
     res.status(200).json({ message: "Welcome To Brilson" });
   });
 
-  app.listen(PORT, "0.0.0.0", () => {
+  app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
 })();
