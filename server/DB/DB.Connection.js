@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 
 const DBConnection = async () => {
+
   mongoose
     .connect(`${process.env.DB_URI}`)
     .then(async () => {
