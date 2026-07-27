@@ -154,6 +154,7 @@ const Footer = () => {
 
       {/* Bottom Footer */}
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center mt-6 text-xs sm:text-sm text-gray-500 gap-3 tracking-widest font-Poppins">
+        
         <p>© {new Date().getFullYear()} Brilson. All rights reserved.</p>
 
         <div className="flex gap-6">
