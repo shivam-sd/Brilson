@@ -50,7 +50,7 @@ useEffect(() => {
         {/* Floating Orbs */}
         <div
         
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl font-Poppins"
         />
 
         <div
@@ -87,7 +87,7 @@ useEffect(() => {
         {/* Heading */}
         <h1
           transition={{ duration: 0.7 }}
-          className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-6 tracking-wider font-Playfair"
+          className="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-6 tracking-wider"
         >
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-white ">
             {homePageContent.headingAccent}
@@ -138,7 +138,7 @@ useEffect(() => {
   to="/products"
   className="group inline-flex items-center justify-center px-7 py-4 rounded-full
   border-2 border-white/20 
-  transition-all duration-200 active:scale-95 tracking-widest font-Playfair"
+  transition-all duration-200 active:scale-95 tracking-widest"
 >
   {/* Text split into letters */}
   <span className="flex gap-[2px] text-base font-extrabold text-red-200">
@@ -162,7 +162,7 @@ useEffect(() => {
   to="/how-it-works"
   className="group inline-flex items-center justify-center px-8 py-4 rounded-full
  border-2 border-white/20
-  transition-all duration-200 active:scale-95 tracking-widest font-Playfair"
+  transition-all duration-200 active:scale-95 tracking-widest"
 >
   {/* Text split into letters */}
   <span className="flex gap-[2px] text-base font-extrabold text-red-200">
@@ -190,7 +190,7 @@ useEffect(() => {
           <Link
   to="/products"
   className="px-4 py-4 rounded-full border-2 border-white/20
-  transition-all duration-200 active:scale-95 tracking-widest font-Playfair"
+  transition-all duration-200 active:scale-95 tracking-widest "
 >
   {/* Text split into letters */}
   <span className="flex gap-[2px] text-base font-extrabold text-red-200">
@@ -214,7 +214,7 @@ useEffect(() => {
           <Link
   to="/how-it-works"
   className="px-5 py-4 rounded-full border-2 border-white/20
-  transition-all duration-200 active:scale-95 tracking-widest font-Playfair"
+  transition-all duration-200 active:scale-95 tracking-widest "
 >
 {/* Text split into letters */}
   <span className="flex gap-[2px] text-base font-extrabold text-red-200">
@@ -242,7 +242,7 @@ useEffect(() => {
             heroSectionFeatures.map((f, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/40 transition cursor-pointer hover:scale-105 duration-500 tracking-widest font-Playfair"
+              className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/40 transition cursor-pointer hover:scale-105 duration-500 tracking-widest "
             >
               <img src={f.image} alt="" className="w-10"loading="lazy" />
               <div className="text-left">
@@ -257,7 +257,7 @@ useEffect(() => {
         
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto border-t border-white/10 pt-8 tracking-widest font-Playfair">
+        <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto border-t border-white/10 pt-8 tracking-widest ">
           {[
             ["50K+", "Cards Sold"],
             ["1M+", "Connections"],
