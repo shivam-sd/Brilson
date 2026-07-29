@@ -259,8 +259,8 @@ useEffect(() => {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto border-t border-white/10 pt-8 tracking-widest ">
           {[
-            ["50K+", "Cards Sold"],
-            ["1M+", "Connections"],
+            ["60K+", "Cards Sold"],
+            ["500K+", "Connections"],
             ["4.9★", "Rating"]
           ].map(([v, l]) => (
             <div key={l}>
