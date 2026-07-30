@@ -149,7 +149,7 @@ const SignupPage = () => {
 
       toast.success("Account registered successfully!");
       setTimeout(() => navigate("/"), 500);
-      setTimeout(() => window.location.reload(), 700);
+      // setTimeout(() => window.location.reload(), 700);
     } catch (err) {
       toast.error(
         err.response?.data?.error || 

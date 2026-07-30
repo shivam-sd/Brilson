@@ -186,6 +186,11 @@ const updateHomepageContent = async (req, res) => {
 const getHomepageContent = async (req, res) => {
   try {
     const content = await HomepageContentModel.findOne();
+    
+    if(!content){
+      return res.status(404).json({error:"Content Not Found"});
+    }
+
     res.json({ success: true, data: content });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

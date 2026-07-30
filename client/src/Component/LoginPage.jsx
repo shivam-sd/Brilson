@@ -68,7 +68,7 @@ const LoginPage = () => {
       toast.success("Login successful");
       
       setTimeout(() => navigate("/"), 500);
-      setTimeout(() => window.location.reload(), 700);
+      // setTimeout(() => window.location.reload(), 700);
     } catch (err) {
       console.log(err)
       toast.error(
@@ -197,7 +197,7 @@ const LoginPage = () => {
         </div>
 
         {/* for the mobile */}
-        <div className="flex items-center justify-center mt-8 pt-6 border-t border-gray-800 flex-col">
+        <div className="lg:hidden flex items-center justify-center mt-8 pt-6 border-t border-gray-800 flex-col">
           <p className="text-center text-gray-400 text-sm mb-3">
             Don't have an account?{" "}
             <Link to="/signup" className="text-cyan-400 hover:underline font-medium">

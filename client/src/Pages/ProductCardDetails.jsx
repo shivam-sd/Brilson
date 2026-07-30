@@ -92,8 +92,8 @@ const ProductCardPreference = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 mt-4 sm:mt-6 md:mt-10">
           
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base overflow-x-auto whitespace-nowrap pb-2">
-            <a href="/" className="hover:text-cyan-400 transition">Home</a>
+          <div className="flex items-center gap-2 text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base overflow-x-auto whitespace-nowrap pb-2 lg:mt-0 md:mt-0 mt-6">
+            <Link to="/" className="hover:text-cyan-400 transition">Home</Link>
             <FiChevronRight className="flex-shrink-0" />
             <span className="text-white truncate">{product.title}</span>
           </div>
