@@ -144,20 +144,22 @@ function generateParkingTagHTML(card, colors) {
     .brand-logo {
       display: flex;
       align-items: center;
-      gap: 20px;
+      justify-content:center;
+      flex-direction:column;
+      gap: 10px;
     }
     .brand-icon {
-      width: 70px;
-      height: 70px;
-      background: linear-gradient(135deg, #d4a843, #f5d77b);
+      // width: 70px;
+      // height: 70px;
+      // background: linear-gradient(135deg, #d4a843, #f5d77b);
       border-radius: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 48px;
+      font-size: 80px;
       font-weight: 900;
       color: #0a0a0a;
-      box-shadow: 0 15px 30px -10px rgba(212,168,67,0.3);
+      // box-shadow: 0 15px 30px -10px rgba(212,168,67,0.3);
     }
     .brand-name {
       font-size: 48px;
@@ -448,6 +450,223 @@ function generateParkingTagHTML(card, colors) {
       letter-spacing: 2px;
       font-weight: 500;
     }
+      /* Quick Action Section Styles */
+.quick-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 12px 20px;
+  margin-top: 8px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid rgba(212, 168, 67, 0.12);
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.action-item:hover {
+  transform: translateY(-2px);
+}
+
+.action-item:hover .action-icon-wrapper {
+  background: linear-gradient(135deg, rgba(212, 168, 67, 0.25), rgba(212, 168, 67, 0.1));
+  border-color: rgba(212, 168, 67, 0.4);
+  box-shadow: 0 8px 25px -8px rgba(212, 168, 67, 0.2);
+}
+
+.action-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(212, 168, 67, 0.06);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.action-icon-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(212, 168, 67, 0.3), transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.action-item:hover .action-icon-wrapper::before {
+  opacity: 1;
+}
+
+.action-icon {
+  width: 28px;
+  height: 28px;
+  color: #d4a843;
+  transition: all 0.3s ease;
+}
+
+.action-item:hover .action-icon {
+  transform: scale(1.1);
+  color: #f5d77b;
+}
+
+.action-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  line-height: 1.2;
+}
+
+.action-item:hover .action-label {
+  color: #d4a843;
+}
+
+/* Active/Selected State */
+.action-item.active .action-icon-wrapper {
+  background: linear-gradient(135deg, rgba(212, 168, 67, 0.2), rgba(212, 168, 67, 0.08));
+  border-color: #d4a843;
+  box-shadow: 0 0 30px rgba(212, 168, 67, 0.15);
+}
+
+.action-item.active .action-label {
+  color: #d4a843;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .quick-action {
+    gap: 20px;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+  }
+  
+  .action-icon-wrapper {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .action-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .action-label {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-action {
+    gap: 12px;
+    padding: 6px 8px;
+  }
+  
+  .action-icon-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .action-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .action-label {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+}
+
+/* Dark Theme Support */
+.dark .action-icon-wrapper {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(212, 168, 67, 0.04);
+}
+
+.dark .action-label {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.dark .action-item:hover .action-label {
+  color: #d4a843;
+}
+
+/* Animation */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(212, 168, 67, 0);
+  }
+}
+
+.action-item:focus-visible .action-icon-wrapper {
+  animation: pulse 1.5s ease-out;
+  outline: 2px solid #d4a843;
+  outline-offset: 2px;
+}
+
+/* Tooltip on Hover (Optional) */
+.action-item .tooltip {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+  /* Car Icon - Bigger Size */
+.action-item.car .action-icon-wrapper {
+  width: 80px !important;
+  height: 80px !important;
+  border-color: rgba(212, 168, 67, 0.3) !important;
+  background: rgba(212, 168, 67, 0.1) !important;
+}
+
+.action-item.car .action-icon {
+  width: 50px !important;
+  height: 50px !important;
+}
+
+.action-item.car .action-label {
+  font-size: 13px !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
   </style>
 </head>
 <body>
@@ -461,8 +680,37 @@ function generateParkingTagHTML(card, colors) {
 
         <div class="brand-section">
           <div class="brand-logo">
-            <div class="brand-icon">B</div>
-            <h1 class="brand-name">BRILSON</h1>
+            <div class="brand-icon">
+
+ <div class="action-item car">
+    <div class="action-icon-wrapper car-wrapper">
+      <svg 
+        class="action-icon car-icon" 
+        viewBox="0 0 65 65" 
+        width="65" 
+        height="65" 
+        fill="none" 
+        stroke="currentColor" 
+        stroke-width="2" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+      >
+        <path d="M12 44h36M12 44a5 5 0 0 1-5-5v-10l6-12A5 5 0 0 1 18 12h24a5 5 0 0 1 5 5l6 12v10a5 5 0 0 1-5 5M12 44a5 5 0 1 0 10 0M48 44a5 5 0 1 0-10 0"/>
+        <circle cx="17" cy="38" r="4" fill="currentColor" fill-opacity="0.2"/>
+        <circle cx="43" cy="38" r="4" fill="currentColor" fill-opacity="0.2"/>
+        <path d="M17 24h26" stroke-width="4"/>
+        <rect x="19" y="14" width="22" height="10" rx="3" fill="currentColor" fill-opacity="0.1"/>
+        <!-- Windshield -->
+        <path d="M24 14l-6 8h28l-6-8H24z" fill="currentColor" fill-opacity="0.05"/>
+        <!-- Headlights -->
+        <circle cx="9" cy="32" r="3" fill="currentColor" fill-opacity="0.15"/>
+        <circle cx="51" cy="32" r="3" fill="currentColor" fill-opacity="0.15"/>
+      </svg>
+    </div>
+  </div>
+
+</div>
+            <h1 class="brand-name">PARKING TAG</h1>
           </div>
           <div class="brand-divider">
             <div class="divider-line divider-line-left"></div>
@@ -492,6 +740,47 @@ function generateParkingTagHTML(card, colors) {
           <div class="website-icon">${icons.world}</div>
           <p class="website-text">www.brilson.in</p>
         </div>
+
+
+
+
+        <!-- Quick Action Section -->
+<div class="quick-action flex items-center justify-center gap-8">
+  <!-- Owner Info -->
+  <div class="action-item owner">
+    <div class="action-icon-wrapper">
+      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+    <span class="action-label">OWNER INFO</span>
+  </div>
+
+  <!-- Instant Call -->
+  <div class="action-item call">
+    <div class="action-icon-wrapper">
+      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+      </svg>
+    </div>
+    <span class="action-label">INSTANT CALL</span>
+  </div>
+
+  <!-- Location -->
+  <div class="action-item location">
+    <div class="action-icon-wrapper">
+      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+    </div>
+    <span class="action-label">LOCATION</span>
+  </div>
+</div>
+
+
+
       </div>
 
       <!-- RIGHT SECTION -->

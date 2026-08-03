@@ -3,7 +3,7 @@ import ParkingTagDesign from "./ParkingTagDesign";
 
 const PreviewParkingTag = ({
   isOpen,
-  onClose,
+  onClose, 
   card,
 }) => {
   const [scale, setScale] = useState(0.5);
