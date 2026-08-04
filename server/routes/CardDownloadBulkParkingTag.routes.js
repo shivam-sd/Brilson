@@ -80,171 +80,178 @@ function generateParkingTagHTML(card, colors) {
       margin: 0;
       padding: 0;
       font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-      background: transparent;
+      // background: transparent;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-    }
-    .tag-wrapper {
-      width: ${PARKING_TAG_VIEWPORT.width}px;
-      height: ${PARKING_TAG_VIEWPORT.height}px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: transparent;
-      padding: 20px;
-    }
-    .tag-container {
-      background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
       border-radius: 60px;
-      border: 2px solid rgba(255,255,255,0.3);
-      width: 100%;
-      height: 100%;
-      box-shadow: 0 40px 80px -25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,215,0,0.1) inset;
-      display: flex;
-      overflow: hidden;
-      position: relative;
-    }
-    .gold-accent {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 8px;
-      background: linear-gradient(90deg, #d4a843, #f5d77b, #d4a843);
-      z-index: 10;
-    }
-    .left-section {
-      width: 50%;
-      background: linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 28px;
-      padding: 35px 30px;
-      position: relative;
-    }
-    .pattern-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: radial-gradient(circle at 20% 50%, rgba(212,168,67,0.05) 0%, transparent 50%);
-      pointer-events: none;
-    }
-    .brand-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 2;
-    }
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      justify-content:center;
-      flex-direction:column;
-      gap: 10px;
-    }
-    .brand-icon {
-      // width: 70px;
-      // height: 70px;
-      // background: linear-gradient(135deg, #d4a843, #f5d77b);
-      border-radius: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 80px;
-      font-weight: 900;
-      color: #0a0a0a;
-      // box-shadow: 0 15px 30px -10px rgba(212,168,67,0.3);
-    }
-    .brand-name {
-      font-size: 48px;
-      font-weight: 800;
-      letter-spacing: 12px;
-      color: #f5d77b;
-      font-family: 'Playfair Display', serif;
-      margin: 0;
-      line-height: 1;
-      text-shadow: 0 4px 20px rgba(212,168,67,0.2);
-    }
-    .brand-divider {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 28px;
-      margin-top: 6px;
-      width: 100%;
-    }
-    .divider-line {
-      width: 120px;
-      height: 4px;
-      border-radius: 2px;
-    }
-    .divider-line-left {
-      background: linear-gradient(90deg, transparent, #d4a843);
-    }
-    .divider-line-right {
-      background: linear-gradient(90deg, #d4a843, transparent);
-    }
-    .divider-icon svg {
-      color: #d4a843;
+      }
+      .tag-wrapper {
+        width: ${PARKING_TAG_VIEWPORT.width}px;
+        height: ${PARKING_TAG_VIEWPORT.height}px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        // background: transparent;
+        padding: 20px;
+      border-radius: 60px;
+      }
+      .tag-container {
+        background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);"
+        border-radius: 60px;
+          overflow: hidden;
+        // border: 2px solid rgba(255,255,255,0.3);
+        width: 100%;
+        height: 100%;
+        // box-shadow: 0 40px 80px -25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,215,0,0.1) inset;
+        display: flex;
+        overflow: hidden;
+        position: relative;
+        }
+        .gold-accent {
+          border-radius: 60px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 8px;
+          // background: linear-gradient(90deg, #d4a843, #f5d77b, #d4a843);
+          z-index: 10;
+          }
+          .left-section {
+            border-top-left-radius: 60px;
+  border-bottom-left-radius: 60px;
+            width: 50%;
+            // background: linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            background: #FEE11B;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            padding: 35px 30px;
+            position: relative;
+            }
+            .pattern-overlay {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-image: radial-gradient(circle at 20% 50%, rgba(212,168,67,0.05) 0%, transparent 50%);
+              pointer-events: none;
+              }
+              .brand-section {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                z-index: 2;
+                }
+                .brand-logo {
+                  display: flex;
+                  align-items: center;
+                  justify-content:center;
+                  flex-direction:column;
+                  gap: 10px;
+                  }
+                  .brand-icon {
+                    // width: 70px;
+                    // height: 70px;
+                    // background: linear-gradient(135deg, #d4a843, #f5d77b);
+                    border-radius: 28px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 80px;
+                    font-weight: 900;
+                    color: black;
+                    // box-shadow: 0 15px 30px -10px rgba(212,168,67,0.3);
+                    }
+                    .brand-name {
+                      font-size: 48px;
+                      font-weight: 800;
+                      letter-spacing: 12px;
+                      color: black;
+                      font-family: 'Playfair Display', serif;
+                      margin: 0;
+                      line-height: 1;
+                      text-shadow: 0 4px 20px rgba(212,168,67,0.2);
+                      }
+                      .brand-divider {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 28px;
+                        margin-top: 6px;
+                        width: 100%;
+                        }
+                        .divider-line {
+                          width: 120px;
+                          height: 4px;
+                          border-radius: 2px;
+                          }
+                          .divider-line-left {
+                            background: black;
+                            }
+                            .divider-line-right {
+                              background: black;
+                              }
+                              .divider-icon svg {
+                                color: black;
       width: 35px;
       height: 35px;
-    }
-
-    .tagline-box {
-      text-align: center;
-      position: relative;
-      z-index: 2;
-      background: rgba(212,168,67,0.08);
-      padding: 24px 48px;
-      border-radius: 32px;
-      border: 2px solid rgba(212,168,67,0.15);
-      backdrop-filter: blur(10px);
-    }
-    .tagline-sparkle {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 28px;
-      margin-bottom: 12px;
-    }
-    .sparkle-line {
-      width: 60px;
-      height: 2px;
-      border-radius: 1px;
-    }
-    .sparkle-line-left {
-      background: linear-gradient(90deg, transparent, rgba(212,168,67,0.5));
-    }
-    .sparkle-line-right {
-      background: linear-gradient(90deg, rgba(212,168,67,0.5), transparent);
+      }
+      
+      .tagline-box {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+        background: rgba(212,168,67,0.08);
+        padding: 24px 48px;
+        border-radius: 32px;
+        border: 2px solid rgba(212,168,67,0.15);
+        backdrop-filter: blur(10px);
+        }
+        .tagline-sparkle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 28px;
+          margin-bottom: 12px;
+          }
+          .sparkle-line {
+            width: 60px;
+            height: 2px;
+            border-radius: 1px;
+            }
+            .sparkle-line-left {
+              background: black;
+              }
+              .sparkle-line-right {
+                background: black;
     }
     .sparkle-icon svg {
       color: #d4a843;
       width: 35px;
       height: 35px;
-    }
+      }
     .tagline-title {
       font-size: 40px;
       font-weight: 700;
       letter-spacing: 18px;
-      color: #ffffff;
+      color: black;
       margin: 0;
       text-transform: uppercase;
-    }
-    .tagline-sub {
-      font-size: 22px;
-      font-weight: 500;
-      letter-spacing: 6px;
-      color: #d4a843;
-      margin: 10px 0 0 0;
-      opacity: 0.9;
-    }
+      }
+      .tagline-sub {
+        font-size: 22px;
+        font-weight: 500;
+        letter-spacing: 6px;
+        color: black;
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+        }
 
     .hindi-box {
       background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05));
@@ -255,37 +262,37 @@ function generateParkingTagHTML(card, colors) {
       position: relative;
       z-index: 2;
       backdrop-filter: blur(10px);
-    }
-    .hindi-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 32px;
-    }
-    .hindi-icon {
-      background: linear-gradient(135deg, #d4a843, #f5d77b);
-      padding: 14px;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #0a0a0a;
-      flex-shrink: 0;
-    }
-    .hindi-icon svg {
-      width: 38px;
-      height: 38px;
-    }
-    .hindi-text {
-      font-size: 28px;
-      font-weight: 600;
-      color: #e0e0e0;
-      letter-spacing: 1.5px;
-      margin: 0;
-      line-height: 1.4;
-      font-family: 'Noto Sans Devanagari', sans-serif;
-    }
-
+      }
+      .hindi-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+        }
+        .hindi-icon {
+          background: linear-gradient(135deg, #d4a843, #f5d77b);
+          padding: 14px;
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: black;
+          flex-shrink: 0;
+          }
+          .hindi-icon svg {
+            width: 38px;
+            height: 38px;
+            }
+            .hindi-text {
+              font-size: 28px;
+              font-weight: 600;
+              color: black;
+              letter-spacing: 1.5px;
+              margin: 0;
+              line-height: 1.4;
+              font-family: 'Noto Sans Devanagari', sans-serif;
+              }
+              
     .website-box {
       display: flex;
       align-items: center;
@@ -297,32 +304,36 @@ function generateParkingTagHTML(card, colors) {
       border-radius: 50px;
       background: rgba(255,255,255,0.05);
       border: 2px solid rgba(255,255,255,0.08);
-    }
-    .website-icon svg {
-      color: #d4a843;
-      width: 30px;
-      height: 30px;
-    }
-    .website-text {
-      font-size: 22px;
-      font-weight: 500;
-      color: #ffffff;
+      }
+      .website-icon svg {
+        color: black;
+        width: 30px;
+        height: 30px;
+        }
+        .website-text {
+          font-size: 22px;
+          font-weight: 500;
+          color: black;
       letter-spacing: 8px;
       margin: 0;
       font-family: 'Playfair Display', serif;
       opacity: 0.9;
-    }
-
-    .right-section {
-      width: 50%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 30px;
-      background: linear-gradient(160deg, #fafafa 0%, #f0f0f0 100%);
-      padding: 40px 35px;
-      position: relative;
+      }
+      
+      .right-section {
+         border-top-right-radius: 60px;
+  border-bottom-right-radius: 60px;
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        // background: linear-gradient(160deg, #fafafa 0%, #f0f0f0 100%);
+        background: #FEE11B;
+        padding: 40px 35px;
+        position: relative;
+        border-left: 2px solid black;
     }
 
     .qr-container {
@@ -413,7 +424,7 @@ function generateParkingTagHTML(card, colors) {
       font-size: 14px;
       font-weight: 600;
       letter-spacing: 5px;
-      color: #666;
+      color: black;
       text-transform: uppercase;
     }
     .label-line {
@@ -424,7 +435,7 @@ function generateParkingTagHTML(card, colors) {
     .activation-code {
       font-size: 32px;
       font-weight: 700;
-      color: #1a1a1a;
+      color: black;
       letter-spacing: 5px;
       margin: 0;
       font-family: 'Inter', monospace;
@@ -440,13 +451,13 @@ function generateParkingTagHTML(card, colors) {
       margin-top: 6px;
     }
     .secure-badge svg {
-      color: #d4a843;
+      color: black;
       width: 18px;
       height: 18px;
     }
     .secure-text {
       font-size: 12px;
-      color: #666;
+      color: black;
       letter-spacing: 2px;
       font-weight: 500;
     }
@@ -461,7 +472,7 @@ function generateParkingTagHTML(card, colors) {
   width: 100%;
   position: relative;
   z-index: 2;
-  border-top: 1px solid rgba(212, 168, 67, 0.12);
+  border-top: 1px solid black;
 }
 
 .action-item {
@@ -487,7 +498,7 @@ function generateParkingTagHTML(card, colors) {
 .action-icon-wrapper {
   width: 56px;
   height: 56px;
-  border: 2px solid rgba(255, 255, 255, 0.12);
+  border: 2px solid black;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -518,19 +529,14 @@ function generateParkingTagHTML(card, colors) {
 .action-icon {
   width: 28px;
   height: 28px;
-  color: #d4a843;
+  color: black;
   transition: all 0.3s ease;
-}
-
-.action-item:hover .action-icon {
-  transform: scale(1.1);
-  color: #f5d77b;
 }
 
 .action-label {
   font-size: 11px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: black;
   letter-spacing: 2px;
   text-transform: uppercase;
   text-align: center;
@@ -539,9 +545,6 @@ function generateParkingTagHTML(card, colors) {
   line-height: 1.2;
 }
 
-.action-item:hover .action-label {
-  color: #d4a843;
-}
 
 /* Active/Selected State */
 .action-item.active .action-icon-wrapper {
@@ -550,106 +553,6 @@ function generateParkingTagHTML(card, colors) {
   box-shadow: 0 0 30px rgba(212, 168, 67, 0.15);
 }
 
-.action-item.active .action-label {
-  color: #d4a843;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .quick-action {
-    gap: 20px;
-    padding: 8px 12px;
-    flex-wrap: wrap;
-  }
-  
-  .action-icon-wrapper {
-    width: 48px;
-    height: 48px;
-  }
-  
-  .action-icon {
-    width: 24px;
-    height: 24px;
-  }
-  
-  .action-label {
-    font-size: 9px;
-    letter-spacing: 1.5px;
-  }
-}
-
-@media (max-width: 480px) {
-  .quick-action {
-    gap: 12px;
-    padding: 6px 8px;
-  }
-  
-  .action-icon-wrapper {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .action-icon {
-    width: 20px;
-    height: 20px;
-  }
-  
-  .action-label {
-    font-size: 8px;
-    letter-spacing: 1px;
-  }
-}
-
-/* Dark Theme Support */
-.dark .action-icon-wrapper {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(212, 168, 67, 0.04);
-}
-
-.dark .action-label {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.dark .action-item:hover .action-label {
-  color: #d4a843;
-}
-
-/* Animation */
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.2);
-  }
-  100% {
-    box-shadow: 0 0 0 10px rgba(212, 168, 67, 0);
-  }
-}
-
-.action-item:focus-visible .action-icon-wrapper {
-  animation: pulse 1.5s ease-out;
-  outline: 2px solid #d4a843;
-  outline-offset: 2px;
-}
-
-/* Tooltip on Hover (Optional) */
-.action-item .tooltip {
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%) scale(0.8);
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
   /* Car Icon - Bigger Size */
 .action-item.car .action-icon-wrapper {
   width: 80px !important;
@@ -659,13 +562,13 @@ function generateParkingTagHTML(card, colors) {
 }
 
 .action-item.car .action-icon {
-  width: 50px !important;
-  height: 50px !important;
+  width: 60px !important;
+  height: 60px !important;
 }
 
 .action-item.car .action-label {
   font-size: 13px !important;
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: black !important;
 }
   </style>
 </head>
