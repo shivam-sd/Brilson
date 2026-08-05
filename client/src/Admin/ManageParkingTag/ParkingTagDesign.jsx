@@ -116,7 +116,7 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
           style={{
             width: "50%",
             background:
-              "linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%)",
+              "#FEE11B",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -174,7 +174,9 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
                   // boxShadow: "0 10px 20px -5px rgba(212,168,67,0.3)",
                 }}
               >
-                <IoCarSportSharp size={45} />
+                <p className="w-16 h-16 border border-gray-700/80 rounded-full p-2 flex items-center justify-center">
+                <IoCarSportSharp size={45} color="black" />
+                </p>
               </div>
               <div>
                 <h3
@@ -182,7 +184,7 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
                     fontSize: "38px",
                     fontWeight: "800",
                     letterSpacing: "8px",
-                    color: "#f5d77b",
+                    color: "black",
                     fontFamily: "'Playfair Display', serif",
                     margin: 0,
                     lineHeight: 1,
@@ -208,16 +210,16 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
                 style={{
                   width: "80px",
                   height: "2px",
-                  background: "linear-gradient(90deg, transparent, #d4a843)",
+                  background: "black",
                   borderRadius: "2px",
                 }}
               />
-              <GiSwirlString style={{ color: "#d4a843", fontSize: "26px" }} />
+              <GiSwirlString style={{fontSize: "26px" }} color="black" />
               <div
                 style={{
                   width: "80px",
                   height: "2px",
-                  background: "linear-gradient(90deg, #d4a843, transparent)",
+                  background: "black",
                   borderRadius: "2px",
                 }}
               />
@@ -233,7 +235,7 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
               background: "rgba(212,168,67,0.08)",
               padding: "16px 32px",
               borderRadius: "20px",
-              border: "1px solid rgba(212,168,67,0.15)",
+              border: "1px solid #59564d",
               backdropFilter: "blur(10px)",
             }}
           >
@@ -252,10 +254,11 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
                   height: "1px",
                   background:
                     "linear-gradient(90deg, transparent, rgba(212,168,67,0.5))",
+                    border:"1px solid black",
                 }}
               />
               <HiOutlineSparkles
-                style={{ color: "#d4a843", fontSize: "22px" }}
+                style={{ color: "black", fontSize: "22px" }}
               />
               <div
                 style={{
@@ -263,7 +266,8 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
                   height: "1px",
                   background:
                     "linear-gradient(90deg, rgba(212,168,67,0.5), transparent)",
-                }}
+                    border:"1px solid black",
+                  }}
               />
             </div>
             <h1
@@ -271,7 +275,7 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
                 fontSize: "27px",
                 fontWeight: "700",
                 letterSpacing: "12px",
-                color: "#ffffff",
+                color: "black",
                 margin: 0,
                 textTransform: "uppercase",
               }}
@@ -283,7 +287,7 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
                 fontSize: "16px",
                 fontWeight: "500",
                 letterSpacing: "4px",
-                color: "#d4a843",
+                color: "black",
                 margin: "6px 0 0 0",
                 opacity: 0.9,
               }}
@@ -298,7 +302,7 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
               background:
                 "linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05))",
               borderRadius: "16px",
-              border: "1px solid rgba(212,168,67,0.2)",
+              border: "1px solid #59564d",
               padding: "14px 24px",
               maxWidth: "90%",
               position: "relative",
@@ -322,7 +326,7 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "#0a0a0a",
+                  color: "black",
                   fontSize: "24px",
                   flexShrink: 0,
                 }}
@@ -332,8 +336,8 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
               <p
                 style={{
                   fontSize: "16px",
-                  fontWeight: "600",
-                  color: "#e0e0e0",
+                  fontWeight: "700",
+                  color: "black",
                   letterSpacing: "1px",
                   margin: 0,
                   lineHeight: 1.4,
@@ -357,15 +361,15 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
               padding: "8px 24px",
               borderRadius: "30px",
               background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              border: "1px solid #59564d",
             }}
           >
-            <TfiWorld style={{ color: "#d4a843", fontSize: "20px" }} />
+            <TfiWorld style={{ color: "black", fontSize: "20px" }} />
             <p
               style={{
                 fontSize: "16px",
                 fontWeight: "600",
-                color: "#ffffff",
+                color: "black",
                 letterSpacing: "4px",
                 margin: 0,
                 fontFamily: "'Playfair Display', serif",
@@ -378,30 +382,30 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
 
           {/* qucik action */}
 
-          <div className="quick-action flex items-center justify-center gap-8">
+          <div className="quick-action flex items-center justify-center gap-8 text-black">
             <div className="owner flex items-center justify-center flex-col gap-1">
               
-                <p className="w-15 h-15 border border-gray-300/30 rounded-full p-2 flex items-center justify-center">
+                <p className="w-15 h-15 border border-gray-700/80 rounded-full p-2 flex items-center justify-center">
                   <FaUserTie size={25} />
                 </p>
-                <span className="text-md font-medium text-gray-300 mt-2 w-full text-center">
+                <span className="text-md font-medium mt-2 w-full text-center text-black">
                   OWNER INFO
                 </span>
               
             </div>
             <div className="call flex items-center justify-center flex-col gap-1 ">
-              <p className="w-15 h-15 border border-gray-300/30 rounded-full p-2 flex items-center justify-center">
+              <p className="w-15 h-15 border border-gray-700/80 rounded-full p-2 flex items-center justify-center">
                 <MdWifiCalling3 size={25} />
               </p>
-              <span className="text-md font-medium text-gray-300 mt-2 w-full text-center">
+              <span className="text-md font-medium text-black mt-2 w-full text-center">
                 INSTANT CALL
               </span>
             </div>
             <div className="location flex items-center justify-center flex-col gap-1">
-              <p className="w-15 h-15 border border-gray-300/30 rounded-full p-2 flex items-center justify-center">
+              <p className="w-15 h-15 border border-gray-700/80 rounded-full p-2 flex items-center justify-center">
                 <IoLocationOutline size={25} />
               </p>
-              <span className="text-md font-medium text-gray-300 mt-2 w-full text-center">
+              <span className="text-md font-medium text-black mt-2 w-full text-center">
                 LOCATION
               </span>
             </div>
@@ -417,9 +421,10 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
             alignItems: "center",
             justifyContent: "center",
             gap: "32px",
-            background: "linear-gradient(160deg, #fafafa 0%, #f0f0f0 100%)",
+            background: "#FEE11B",
             padding: "30px 20px",
             position: "relative",
+            borderLeft:"2px solid black",
           }}
         >
           {/* Premium QR Code Container */}
@@ -533,7 +538,7 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
                 fontSize: "11px",
                 fontWeight: "600",
                 letterSpacing: "3px",
-                color: "#666",
+                color: "black",
                 textTransform: "uppercase",
               }}
             >
@@ -569,11 +574,11 @@ const ParkingTagDesign = forwardRef(({ activationCode = "#000000" }, ref) => {
                 marginTop: "4px",
               }}
             >
-              <FaShieldAlt style={{ color: "#d4a843", fontSize: "14px" }} />
+              <FaShieldAlt style={{ color: "black", fontSize: "14px" }} />
               <span
                 style={{
                   fontSize: "10px",
-                  color: "#999",
+                  color: "black",
                   letterSpacing: "1px",
                   fontWeight: "500",
                 }}

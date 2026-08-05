@@ -1,14 +1,13 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const JSZip = require('jszip');
-const Card = require('../models/AddParkingTag.model');
-const puppeteer = require('puppeteer');
-const path = require('path');
-const fs = require('fs');
+const JSZip = require("jszip");
+const Card = require("../models/AddParkingTag.model");
+const puppeteer = require("puppeteer");
+const path = require("path");
+const fs = require("fs");
 
-const QR_CODE_STYLING_BROWSER_BUNDLE = require.resolve(
-  'qr-code-styling/lib/qr-code-styling.js'
-);
+const QR_CODE_STYLING_BROWSER_BUNDLE =
+  require.resolve("qr-code-styling/lib/qr-code-styling.js");
 
 const PAGE_POOL_SIZE = Number(process.env.CARD_RENDER_CONCURRENCY) || 4;
 
@@ -20,24 +19,24 @@ let cachedLogoDataUrl = null;
 async function getLogoDataUrl() {
   if (cachedLogoDataUrl) return cachedLogoDataUrl;
 
-  const localPath = path.join(__dirname, '..', 'public', 'B.png');
+  const localPath = path.join(__dirname, "..", "public", "B.png");
   if (fs.existsSync(localPath)) {
     cachedLogoDataUrl = `data:image/png;base64,${fs
       .readFileSync(localPath)
-      .toString('base64')}`;
+      .toString("base64")}`;
     return cachedLogoDataUrl;
   }
 
   try {
-    const domain = process.env.VITE_DOMAIN || 'https://brilson.in';
+    const domain = process.env.VITE_DOMAIN || "https://brilson.in";
     const response = await fetch(`${domain}/B.png`);
     const arrayBuffer = await response.arrayBuffer();
-    cachedLogoDataUrl = `data:image/png;base64,${Buffer.from(arrayBuffer).toString(
-      'base64'
-    )}`;
+    cachedLogoDataUrl = `data:image/png;base64,${Buffer.from(
+      arrayBuffer,
+    ).toString("base64")}`;
     return cachedLogoDataUrl;
   } catch (err) {
-    console.error('[parking-tags] Could not load QR logo:', err.message);
+    console.error("[parking-tags] Could not load QR logo:", err.message);
     cachedLogoDataUrl = null;
     return null;
   }
@@ -55,13 +54,13 @@ const getIcons = () => ({
 
 function generateParkingTagHTML(card, colors) {
   const {
-    cardBgColor = '#FFFFFF',
-    cardTextColor = '#000000',
-    qrDotsColor = '#000000',
-    qrBgColor = '#ffffff'
+    cardBgColor = "#FFFFFF",
+    cardTextColor = "#000000",
+    qrDotsColor = "#000000",
+    qrBgColor = "#ffffff",
   } = colors;
 
-  const displayCode = card.activationCode || '52V28-91S28-6B799';
+  const displayCode = card.activationCode || "52V28-91S28-6B799";
   const icons = getIcons();
 
   return `<!DOCTYPE html>
@@ -69,7 +68,9 @@ function generateParkingTagHTML(card, colors) {
 <head>
   <meta charset="UTF-8">
   <title>Brilson Parking Tag</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@400;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <style>
     * { 
       margin: 0;
@@ -79,7 +80,7 @@ function generateParkingTagHTML(card, colors) {
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
       // background: transparent;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -173,7 +174,7 @@ function generateParkingTagHTML(card, colors) {
                       font-weight: 800;
                       letter-spacing: 12px;
                       color: black;
-                      font-family: 'Playfair Display', serif;
+                      font-family: 'Libre Franklin', sans-serif;
                       margin: 0;
                       line-height: 1;
                       text-shadow: 0 4px 20px rgba(212,168,67,0.2);
@@ -210,7 +211,7 @@ function generateParkingTagHTML(card, colors) {
         background: rgba(212,168,67,0.08);
         padding: 24px 48px;
         border-radius: 32px;
-        border: 2px solid rgba(212,168,67,0.15);
+        border: 2px solid #59564d;
         backdrop-filter: blur(10px);
         }
         .tagline-sparkle {
@@ -256,7 +257,7 @@ function generateParkingTagHTML(card, colors) {
     .hindi-box {
       background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05));
       border-radius: 28px;
-      border: 2px solid rgba(212,168,67,0.2);
+      border: 2px solid #59564d;
       padding: 22px 40px;
       max-width: 90%;
       position: relative;
@@ -290,7 +291,7 @@ function generateParkingTagHTML(card, colors) {
               letter-spacing: 1.5px;
               margin: 0;
               line-height: 1.4;
-              font-family: 'Noto Sans Devanagari', sans-serif;
+               font-family: 'Libre Franklin', sans-serif;
               }
               
     .website-box {
@@ -303,7 +304,7 @@ function generateParkingTagHTML(card, colors) {
       padding: 14px 40px;
       border-radius: 50px;
       background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255,255,255,0.08);
+      border: 2px solid #59564d;
       }
       .website-icon svg {
         color: black;
@@ -316,7 +317,7 @@ function generateParkingTagHTML(card, colors) {
           color: black;
       letter-spacing: 8px;
       margin: 0;
-      font-family: 'Playfair Display', serif;
+         font-family: 'Libre Franklin', sans-serif;
       opacity: 0.9;
       }
       
@@ -438,7 +439,7 @@ function generateParkingTagHTML(card, colors) {
       color: black;
       letter-spacing: 5px;
       margin: 0;
-      font-family: 'Inter', monospace;
+       font-family: 'Libre Franklin', sans-serif;
       background: linear-gradient(135deg, #1a1a1a, #333);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -541,7 +542,7 @@ function generateParkingTagHTML(card, colors) {
   text-transform: uppercase;
   text-align: center;
   transition: all 0.3s ease;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  font-family: 'Libre Franklin', sans-serif;
   line-height: 1.2;
 }
 
@@ -726,18 +727,18 @@ async function getBrowser() {
     return browserInstance;
   }
   browserInstance = await puppeteer.launch({
-    headless: 'new',
+    headless: "new",
     args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--font-render-hinting=none',
-      '--disable-web-security',
-      '--disable-features=IsolateOrigins,site-per-process'
-    ]
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--font-render-hinting=none",
+      "--disable-web-security",
+      "--disable-features=IsolateOrigins,site-per-process",
+    ],
   });
-  browserInstance.on('disconnected', () => {
+  browserInstance.on("disconnected", () => {
     browserInstance = null;
   });
   return browserInstance;
@@ -746,7 +747,9 @@ async function getBrowser() {
 async function createPreparedPage(browser, logoDataUrl) {
   const page = await browser.newPage();
   await page.setViewport(PARKING_TAG_VIEWPORT);
-  await page.setContent('<!DOCTYPE html><html><head></head><body></body></html>');
+  await page.setContent(
+    "<!DOCTYPE html><html><head></head><body></body></html>",
+  );
 
   await page.addScriptTag({ path: QR_CODE_STYLING_BROWSER_BUNDLE });
 
@@ -763,62 +766,66 @@ async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
       const qrCode = new window.QRCodeStyling({
         width: 420,
         height: 420,
-        type: 'svg',
+        type: "svg",
         data: url,
         image: window.__QR_LOGO__ || undefined,
         dotsOptions: {
           margin: 10,
-          type: 'dots',
-          color: qrDotsColor || '#1a1a1a',
+          type: "dots",
+          color: qrDotsColor || "#1a1a1a",
         },
         backgroundOptions: {
-          color: qrBgColor === 'transparent' ? '#ffffff' : (qrBgColor || '#ffffff'),
+          color:
+            qrBgColor === "transparent" ? "#ffffff" : qrBgColor || "#ffffff",
         },
         imageOptions: {
-          crossOrigin: 'anonymous',
+          crossOrigin: "anonymous",
           imageSize: 0.4,
           margin: 8,
         },
         cornersDotOptions: {
-          type: 'rounded',
-          color: '#d4a843',
+          type: "rounded",
+          color: "#d4a843",
         },
         cornersSquareOptions: {
-          type: 'extra-rounded',
-          color: '#1a1a1a',
+          type: "extra-rounded",
+          color: "#1a1a1a",
         },
       });
 
-      const blob = await qrCode.getRawData('png');
+      const blob = await qrCode.getRawData("png");
       const arrayBuffer = await blob.arrayBuffer();
 
-      let binary = '';
+      let binary = "";
       const bytes = new Uint8Array(arrayBuffer);
       for (let i = 0; i < bytes.byteLength; i++) {
         binary += String.fromCharCode(bytes[i]);
       }
       return btoa(binary);
     },
-    { url, qrDotsColor, qrBgColor }
+    { url, qrDotsColor, qrBgColor },
   );
 }
 
 async function renderParkingTagPng(page, { card, colors }) {
-  const profileUrl = `${process.env.VITE_DOMAIN || 'https://brilson.in'}/c/parking-tag/${
+  const profileUrl = `${process.env.VITE_DOMAIN || "https://brilson.in"}/c/parking-tag/${
     card.slug || card.activationCode
   }`;
 
   const qrBase64 = await renderQrBase64(page, {
     url: profileUrl,
-    qrDotsColor: colors.qrDotsColor || '#1a1a1a',
-    qrBgColor: colors.qrBgColor || '#ffffff'
+    qrDotsColor: colors.qrDotsColor || "#1a1a1a",
+    qrBgColor: colors.qrBgColor || "#ffffff",
   });
 
-  const html = generateParkingTagHTML(card, colors).replace('{{QR_DATA}}', qrBase64);
+  const html = generateParkingTagHTML(card, colors).replace(
+    "{{QR_DATA}}",
+    qrBase64,
+  );
 
-  await page.setContent(html, { 
-    waitUntil: 'networkidle0',
-    timeout: 30000 
+  await page.setContent(html, {
+    waitUntil: "networkidle0",
+    timeout: 30000,
   });
 
   // Wait for fonts to load
@@ -826,9 +833,9 @@ async function renderParkingTagPng(page, { card, colors }) {
     await document.fonts.ready;
   });
 
-  await page.waitForSelector('.qr-image', { timeout: 10000 });
+  await page.waitForSelector(".qr-image", { timeout: 10000 });
   await page.evaluate(() => {
-    const img = document.querySelector('.qr-image');
+    const img = document.querySelector(".qr-image");
     if (img.complete && img.naturalWidth > 0) return;
     return new Promise((resolve) => {
       img.onload = resolve;
@@ -836,17 +843,17 @@ async function renderParkingTagPng(page, { card, colors }) {
     });
   });
 
-  const tagHandle = await page.$('.tag-container');
+  const tagHandle = await page.$(".tag-container");
   if (!tagHandle) {
-    throw new Error('Parking tag element not found');
+    throw new Error("Parking tag element not found");
   }
-  
-  const screenshot = await tagHandle.screenshot({ 
-    type: 'png', 
+
+  const screenshot = await tagHandle.screenshot({
+    type: "png",
     omitBackground: true,
-    encoding: 'binary'
+    encoding: "binary",
   });
-  
+
   await tagHandle.dispose();
 
   return screenshot;
@@ -857,8 +864,8 @@ async function runWithPagePool(browser, items, poolSize, workerFn) {
 
   const pages = await Promise.all(
     Array.from({ length: Math.min(poolSize, items.length) }, () =>
-      createPreparedPage(browser, logoDataUrl)
-    )
+      createPreparedPage(browser, logoDataUrl),
+    ),
   );
 
   const results = new Array(items.length);
@@ -869,7 +876,12 @@ async function runWithPagePool(browser, items, poolSize, workerFn) {
       const index = cursor++;
       const item = items[index];
       try {
-        results[index] = { ok: true, index, item, buffer: await workerFn(page, item) };
+        results[index] = {
+          ok: true,
+          index,
+          item,
+          buffer: await workerFn(page, item),
+        };
       } catch (err) {
         results[index] = { ok: false, index, item, error: err.message };
       }
@@ -883,43 +895,56 @@ async function runWithPagePool(browser, items, poolSize, workerFn) {
 }
 
 // BULK DOWNLOAD ROUTE - Parking Tags
-router.post('/parking-tags/bulk-download', async (req, res) => {
+router.post("/parking-tags/bulk-download", async (req, res) => {
   try {
     const { cardIds, colors } = req.body;
 
     if (!Array.isArray(cardIds) || cardIds.length === 0) {
-      return res.status(400).json({ error: '`cardIds` must be a non-empty array.' });
+      return res
+        .status(400)
+        .json({ error: "`cardIds` must be a non-empty array." });
     }
 
     const MAX_TAGS_PER_REQUEST = 100;
     if (cardIds.length > MAX_TAGS_PER_REQUEST) {
       return res.status(400).json({
-        error: `Max ${MAX_TAGS_PER_REQUEST} tags per request. Split into batches.`
+        error: `Max ${MAX_TAGS_PER_REQUEST} tags per request. Split into batches.`,
       });
     }
 
-    const cards = await Card.find({ _id: { $in: cardIds } }).populate('owner profile');
+    const cards = await Card.find({ _id: { $in: cardIds } }).populate(
+      "owner profile",
+    );
 
     if (!cards || cards.length === 0) {
-      return res.status(404).json({ error: 'No cards found' });
+      return res.status(404).json({ error: "No cards found" });
     }
 
     const browser = await getBrowser();
 
     const items = cards.map((card) => ({ card, colors: colors || {} }));
 
-    const results = await runWithPagePool(browser, items, PAGE_POOL_SIZE, renderParkingTagPng);
+    const results = await runWithPagePool(
+      browser,
+      items,
+      PAGE_POOL_SIZE,
+      renderParkingTagPng,
+    );
 
     const failed = results.filter((r) => !r.ok);
     if (failed.length > 0) {
       console.error(
         `[parking-tags-bulk-download] ${failed.length}/${cards.length} tags failed:`,
-        failed.map((f) => ({ index: f.index, activationCode: f.item.card.activationCode, error: f.error }))
+        failed.map((f) => ({
+          index: f.index,
+          activationCode: f.item.card.activationCode,
+          error: f.error,
+        })),
       );
     }
 
     const zip = new JSZip();
-    const folder = zip.folder('brilson-parking-tags');
+    const folder = zip.folder("brilson-parking-tags");
 
     results.forEach((r) => {
       if (!r.ok) return;
@@ -929,54 +954,56 @@ router.post('/parking-tags/bulk-download', async (req, res) => {
 
     if (failed.length > 0) {
       folder.file(
-        'FAILED_TAGS.json',
+        "FAILED_TAGS.json",
         JSON.stringify(
           failed.map((f) => ({
             activationCode: f.item.card.activationCode,
-            error: f.error
+            error: f.error,
           })),
           null,
-          2
-        )
+          2,
+        ),
       );
     }
 
     const successfulCount = results.length - failed.length;
-    
-    res.setHeader('Content-Type', 'application/zip');
-    res.setHeader('Content-Disposition', `attachment; filename=brilson-parking-tags-${Date.now()}.zip`);
-    res.setHeader('X-Processed-Count', successfulCount);
-    res.setHeader('X-Failed-Count', failed.length);
 
-    const zipBuffer = await zip.generateAsync({ 
-      type: 'nodebuffer',
-      compression: 'DEFLATE',
-      compressionOptions: { level: 9 }
+    res.setHeader("Content-Type", "application/zip");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=brilson-parking-tags-${Date.now()}.zip`,
+    );
+    res.setHeader("X-Processed-Count", successfulCount);
+    res.setHeader("X-Failed-Count", failed.length);
+
+    const zipBuffer = await zip.generateAsync({
+      type: "nodebuffer",
+      compression: "DEFLATE",
+      compressionOptions: { level: 9 },
     });
 
     res.send(zipBuffer);
-
   } catch (error) {
-    console.error('Bulk download error:', error);
+    console.error("Bulk download error:", error);
     if (!res.headersSent) res.status(500).json({ error: error.message });
   }
 });
 
 // SINGLE PARKING TAG DOWNLOAD ROUTE
-router.get('/parking-tags/:id/download', async (req, res) => {
+router.get("/parking-tags/:id/download", async (req, res) => {
   let page = null;
   try {
-    const card = await Card.findById(req.params.id).populate('owner profile');
+    const card = await Card.findById(req.params.id).populate("owner profile");
 
     if (!card) {
-      return res.status(404).json({ error: 'Card not found' });
+      return res.status(404).json({ error: "Card not found" });
     }
 
     const colors = {
-      cardBgColor: req.query.cardBgColor || '#FFFFFF',
-      cardTextColor: req.query.cardTextColor || '#000000',
-      qrDotsColor: req.query.qrDotsColor || '#1a1a1a',
-      qrBgColor: req.query.qrBgColor || '#ffffff'
+      cardBgColor: req.query.cardBgColor || "#FFFFFF",
+      cardTextColor: req.query.cardTextColor || "#000000",
+      qrDotsColor: req.query.qrDotsColor || "#1a1a1a",
+      qrBgColor: req.query.qrBgColor || "#ffffff",
     };
 
     const browser = await getBrowser();
@@ -985,11 +1012,14 @@ router.get('/parking-tags/:id/download', async (req, res) => {
 
     const screenshot = await renderParkingTagPng(page, { card, colors });
 
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Content-Disposition', `attachment; filename=parking-tag-${card.activationCode}.png`);
+    res.setHeader("Content-Type", "image/png");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=parking-tag-${card.activationCode}.png`,
+    );
     res.send(screenshot);
   } catch (error) {
-    console.error('Download error:', error);
+    console.error("Download error:", error);
     if (!res.headersSent) res.status(500).json({ error: error.message });
   } finally {
     if (page) await page.close().catch(() => {});
@@ -997,11 +1027,11 @@ router.get('/parking-tags/:id/download', async (req, res) => {
 });
 
 // GRACEFUL SHUTDOWN
-process.on('SIGINT', async () => {
+process.on("SIGINT", async () => {
   if (browserInstance) await browserInstance.close().catch(() => {});
   process.exit(0);
 });
-process.on('SIGTERM', async () => {
+process.on("SIGTERM", async () => {
   if (browserInstance) await browserInstance.close().catch(() => {});
   process.exit(0);
 });
