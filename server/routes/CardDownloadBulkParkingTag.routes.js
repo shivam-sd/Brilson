@@ -68,10 +68,13 @@ function generateParkingTagHTML(card, colors) {
 <head>
   <meta charset="UTF-8">
   <title>Brilson Parking Tag</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+  
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap');
+
     * { 
       margin: 0;
       padding: 0;
@@ -80,7 +83,7 @@ function generateParkingTagHTML(card, colors) {
     body {
       margin: 0;
       padding: 0;
-      font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+      font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
       // background: transparent;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -164,91 +167,47 @@ function generateParkingTagHTML(card, colors) {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 80px;
+                    font-size: 90px;
+                    font:bold;
                     font-weight: 900;
                     color: black;
                     // box-shadow: 0 15px 30px -10px rgba(212,168,67,0.3);
                     }
                     .brand-name {
-                      font-size: 48px;
-                      font-weight: 800;
-                      letter-spacing: 12px;
+                      font-size: 75px;
+                      font-weight:900;
+                      letter-spacing: 8px;
                       color: black;
-                      font-family: 'Libre Franklin', sans-serif;
+                      font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
                       margin: 0;
                       line-height: 1;
                       text-shadow: 0 4px 20px rgba(212,168,67,0.2);
                       }
-                      .brand-divider {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        gap: 28px;
-                        margin-top: 6px;
-                        width: 100%;
-                        }
-                        .divider-line {
-                          width: 120px;
-                          height: 4px;
-                          border-radius: 2px;
-                          }
-                          .divider-line-left {
-                            background: black;
-                            }
-                            .divider-line-right {
-                              background: black;
-                              }
-                              .divider-icon svg {
-                                color: black;
-      width: 35px;
-      height: 35px;
-      }
+                     
       
       .tagline-box {
         text-align: center;
         position: relative;
         z-index: 2;
         background: rgba(212,168,67,0.08);
-        padding: 24px 48px;
-        border-radius: 32px;
-        border: 2px solid #59564d;
+        padding: 20px 35px;
+        border-radius: 28px;
+        border: 1px solid #59564d;
         backdrop-filter: blur(10px);
         }
-        .tagline-sparkle {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 28px;
-          margin-bottom: 12px;
-          }
-          .sparkle-line {
-            width: 60px;
-            height: 2px;
-            border-radius: 1px;
-            }
-            .sparkle-line-left {
-              background: black;
-              }
-              .sparkle-line-right {
-                background: black;
-    }
-    .sparkle-icon svg {
-      color: #d4a843;
-      width: 35px;
-      height: 35px;
-      }
+        
     .tagline-title {
-      font-size: 40px;
-      font-weight: 700;
-      letter-spacing: 18px;
+      font-size: 50px;
+      font-weight: 800;
+      letter-spacing: 12px;
       color: black;
       margin: 0;
       text-transform: uppercase;
       }
       .tagline-sub {
-        font-size: 22px;
-        font-weight: 500;
-        letter-spacing: 6px;
+        font-size: 35px;
+        font-weight: 600;
+        letter-spacing: 5px;
         color: black;
         margin: 10px 0 0 0;
         opacity: 0.9;
@@ -256,9 +215,9 @@ function generateParkingTagHTML(card, colors) {
 
     .hindi-box {
       background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05));
-      border-radius: 28px;
-      border: 2px solid #59564d;
-      padding: 22px 40px;
+      border-radius: 25px;
+      border: 1px solid #59564d;
+      padding: 22px 25px;
       max-width: 90%;
       position: relative;
       z-index: 2;
@@ -268,12 +227,12 @@ function generateParkingTagHTML(card, colors) {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 32px;
+        gap: 30px;
         }
         .hindi-icon {
           background: linear-gradient(135deg, #d4a843, #f5d77b);
           padding: 14px;
-          border-radius: 20px;
+          border-radius: 22px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -281,17 +240,17 @@ function generateParkingTagHTML(card, colors) {
           flex-shrink: 0;
           }
           .hindi-icon svg {
-            width: 38px;
-            height: 38px;
+            width: 45px;
+            height: 45px;
             }
             .hindi-text {
-              font-size: 28px;
-              font-weight: 600;
+              font-size: 32px;
+              font-weight: 700;
               color: black;
-              letter-spacing: 1.5px;
+              letter-spacing: 2px;
               margin: 0;
               line-height: 1.4;
-               font-family: 'Libre Franklin', sans-serif;
+               font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
               }
               
     .website-box {
@@ -301,10 +260,10 @@ function generateParkingTagHTML(card, colors) {
       gap: 20px;
       position: relative;
       z-index: 2;
-      padding: 14px 40px;
+      padding: 13px 40px;
       border-radius: 50px;
       background: rgba(255,255,255,0.05);
-      border: 2px solid #59564d;
+      border: 1px solid #59564d;
       }
       .website-icon svg {
         color: black;
@@ -312,12 +271,12 @@ function generateParkingTagHTML(card, colors) {
         height: 30px;
         }
         .website-text {
-          font-size: 22px;
-          font-weight: 500;
+          font-size: 23px;
+          font-weight: 700;
           color: black;
-      letter-spacing: 8px;
+      letter-spacing: 6px;
       margin: 0;
-         font-family: 'Libre Franklin', sans-serif;
+         font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
       opacity: 0.9;
       }
       
@@ -422,8 +381,8 @@ function generateParkingTagHTML(card, colors) {
       align-items: center;
       gap: 14px;
       opacity: 0.6;
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 18px;
+      font-weight: 900;
       letter-spacing: 5px;
       color: black;
       text-transform: uppercase;
@@ -439,7 +398,7 @@ function generateParkingTagHTML(card, colors) {
       color: black;
       letter-spacing: 5px;
       margin: 0;
-       font-family: 'Libre Franklin', sans-serif;
+       font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
       background: linear-gradient(135deg, #1a1a1a, #333);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -455,12 +414,13 @@ function generateParkingTagHTML(card, colors) {
       color: black;
       width: 18px;
       height: 18px;
+      opacity: 1;
     }
     .secure-text {
-      font-size: 12px;
+      font-size: 13px;
       color: black;
       letter-spacing: 2px;
-      font-weight: 500;
+      font-weight: 800;
     }
       /* Quick Action Section Styles */
 .quick-action {
@@ -499,7 +459,7 @@ function generateParkingTagHTML(card, colors) {
 .action-icon-wrapper {
   width: 56px;
   height: 56px;
-  border: 2px solid black;
+  border: 1px solid black;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -535,14 +495,15 @@ function generateParkingTagHTML(card, colors) {
 }
 
 .action-label {
-  font-size: 11px;
-  font-weight: 600;
+margin-top:8px;
+  font-size: 15px;
+  font-weight: 800;
   color: black;
   letter-spacing: 2px;
   text-transform: uppercase;
   text-align: center;
   transition: all 0.3s ease;
-  font-family: 'Libre Franklin', sans-serif;
+  font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
   line-height: 1.2;
 }
 
@@ -556,15 +517,15 @@ function generateParkingTagHTML(card, colors) {
 
   /* Car Icon - Bigger Size */
 .action-item.car .action-icon-wrapper {
-  width: 80px !important;
-  height: 80px !important;
+  width: 95px !important;
+  height: 95px !important;
   border-color: rgba(212, 168, 67, 0.3) !important;
   background: rgba(212, 168, 67, 0.1) !important;
 }
 
 .action-item.car .action-icon {
-  width: 60px !important;
-  height: 60px !important;
+  width: 75px !important;
+  height: 75px !important;
 }
 
 .action-item.car .action-label {
@@ -616,19 +577,9 @@ function generateParkingTagHTML(card, colors) {
 </div>
             <h1 class="brand-name">PARKING TAG</h1>
           </div>
-          <div class="brand-divider">
-            <div class="divider-line divider-line-left"></div>
-            <div class="divider-icon">${icons.swirl}</div>
-            <div class="divider-line divider-line-right"></div>
-          </div>
         </div>
 
         <div class="tagline-box">
-          <div class="tagline-sparkle">
-            <div class="sparkle-line sparkle-line-left"></div>
-            <div class="sparkle-icon">${icons.sparkle}</div>
-            <div class="sparkle-line sparkle-line-right"></div>
-          </div>
           <h2 class="tagline-title">SCAN THIS TAG</h2>
           <p class="tagline-sub">To Contact Vehicle Owner</p>
         </div>
