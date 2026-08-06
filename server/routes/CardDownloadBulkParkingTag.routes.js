@@ -68,10 +68,13 @@ function generateParkingTagHTML(card, colors) {
 <head>
   <meta charset="UTF-8">
   <title>Brilson Parking Tag</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+  
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap');
+
     * { 
       margin: 0;
       padding: 0;
@@ -80,7 +83,7 @@ function generateParkingTagHTML(card, colors) {
     body {
       margin: 0;
       padding: 0;
-      font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif;
+      font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
       // background: transparent;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -174,7 +177,7 @@ function generateParkingTagHTML(card, colors) {
                       font-weight: 800;
                       letter-spacing: 12px;
                       color: black;
-                      font-family: 'Libre Franklin', sans-serif;
+                      font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
                       margin: 0;
                       line-height: 1;
                       text-shadow: 0 4px 20px rgba(212,168,67,0.2);
@@ -291,7 +294,7 @@ function generateParkingTagHTML(card, colors) {
               letter-spacing: 1.5px;
               margin: 0;
               line-height: 1.4;
-               font-family: 'Libre Franklin', sans-serif;
+               font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
               }
               
     .website-box {
@@ -317,7 +320,7 @@ function generateParkingTagHTML(card, colors) {
           color: black;
       letter-spacing: 8px;
       margin: 0;
-         font-family: 'Libre Franklin', sans-serif;
+         font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
       opacity: 0.9;
       }
       
@@ -439,7 +442,7 @@ function generateParkingTagHTML(card, colors) {
       color: black;
       letter-spacing: 5px;
       margin: 0;
-       font-family: 'Libre Franklin', sans-serif;
+       font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
       background: linear-gradient(135deg, #1a1a1a, #333);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -542,7 +545,7 @@ function generateParkingTagHTML(card, colors) {
   text-transform: uppercase;
   text-align: center;
   transition: all 0.3s ease;
-  font-family: 'Libre Franklin', sans-serif;
+  font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
   line-height: 1.2;
 }
 
