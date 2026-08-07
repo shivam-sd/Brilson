@@ -110,7 +110,7 @@ const resetPassword = async (req, res) => {
       });
     }
 
-    // 🔐 verify token
+    //  verify token
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.RESET_TOKEN_SECRET);

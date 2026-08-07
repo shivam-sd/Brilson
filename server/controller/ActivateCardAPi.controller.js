@@ -40,14 +40,14 @@ const ActivateCardAPi = async (req, res) => {
       });
     }
 
-    const existingCard = await CardProfileModel.findOne({
-      owner: userId,
-      isActivated: true,
-    });
+    // const existingCard = await CardProfileModel.findOne({
+    //   owner: userId,
+    //   isActivated: true,
+    // });
 
-    if(existingCard){
-      return res.status(403).json({error:"you can activate only one card per account! Please use another account to activate more cards."});
-    }
+    // if(existingCard){
+    //   return res.status(403).json({error:"you can activate only one card per account! Please use another account to activate more cards."});
+    // }
 
     /*  ACTIVATE CARD  */
     card.isActivated = true;

@@ -122,6 +122,7 @@ app.use(fileUpload({
 
   // Routes
   app.use("/api/users", UserRouter);
+  app.use("/api/auth", authRoutesResetPassword);
   app.use("/api/admin", AdminRouter);
   app.use("/api/cart", CartRouter);
   app.use("/api", ReferralRouter);
@@ -153,7 +154,6 @@ app.use(fileUpload({
   app.use("/api/profile-cover", profileCoverPhotoRoute);
   app.use("/api", ServiceLayoutRouter);
 app.use("/", SharePublicProfilerouter);
-app.use("/api/auth", authRoutesResetPassword);
 app.use("/api/about", AboutPageRouter);
 app.use("/api/privacy-policy", PrivacyPolicyRouter);
 app.use("/api/terms-conditions", TermsConditionsRouter);
