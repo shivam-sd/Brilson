@@ -121,47 +121,47 @@ app.use(fileUpload({
 }));
 
   // Routes
-  app.use("/api/users", UserRouter);
-  app.use("/api/auth", authRoutesResetPassword);
-  app.use("/api/admin", AdminRouter);
-  app.use("/api/cart", CartRouter);
-  app.use("/api", ReferralRouter);
-  app.use("/api", OrderRouter);
-  app.use("/api/payment", PaymentRouter);
-  app.use("/api", getCardProfiles);
-  app.use("/api", ParkingtagRouter);
-  app.use("/api", GoogleReviewRouter);
-  app.use("/api/category", categoryRouter);
-  app.use("/api/badges", badgesRouter);
+  app.use("/api/users", UserRouter); // ✅
+  app.use("/api/auth", authRoutesResetPassword);  // ✅
+  app.use("/api/admin", AdminRouter); //✅
+  app.use("/api/cart", CartRouter); // ✅
+  app.use("/api", ReferralRouter); // ✅
+  app.use("/api", OrderRouter);  // ✅
+  app.use("/api/payment", PaymentRouter);  // ✅
+  app.use("/api", getCardProfiles);  // ✅
+  app.use("/api", ParkingtagRouter);  // ✅
+  app.use("/api", GoogleReviewRouter);  // ✅
+  app.use("/api/category", categoryRouter); // ✅
+  app.use("/api/badges", badgesRouter);  // ✅
   app.use("/api/config", ConfigRouter);
-  app.use("/api/admin", adminSalesRouter);
-  app.use("/api/invoice", invoiceRouter);
-  app.use("/api/admin/invoices", adminAllInvoicesRouter);
-  app.use("/api/admin", HomepageContentRouter);
-  app.use("/api/admin", PowerfulFeaturesRouter);
-  app.use("/api/admin", HowToUseRouter);
-  app.use("/api/admin",  TestimonialsRouter);
-  app.use("/api/admin", TransformNetwork);
-  app.use("/api/admin", FooterRouter);
-  app.use("/api/profile-products", ProfileProductRouter);
-  app.use("/api/profile-portfolio", ProfilePortfolioRouter);
-  app.use("/api/profile-services", ProfileServicesRouter);
-  app.use("/api/profile-gallery", ProfileGalleryRouter);
-  app.use("/api/profile-logo", ProfileLogoRouter);
-  app.use("/api/profile/payment-details", PaymentDetails);
-  app.use("/api/profile/location", LocationReviewRouter);
-  app.use("/api/profile/resume", ProfileResume);
-  app.use("/api/profile-cover", profileCoverPhotoRoute);
-  app.use("/api", ServiceLayoutRouter);
-app.use("/", SharePublicProfilerouter);
-app.use("/api/about", AboutPageRouter);
-app.use("/api/privacy-policy", PrivacyPolicyRouter);
-app.use("/api/terms-conditions", TermsConditionsRouter);
-app.use("/api/admin", AdminDashboardRouter);
-app.use("/api/admin", RefundpolicyRouter);
-app.use("/api", BulkCardDownloadRouter);
+  app.use("/api/admin", adminSalesRouter); // ✅
+  app.use("/api/invoice", invoiceRouter);  // ✅
+  app.use("/api/admin/invoices", adminAllInvoicesRouter); // ✅
+  app.use("/api/admin", HomepageContentRouter); // ✅
+  app.use("/api/admin", PowerfulFeaturesRouter);  // ✅
+  app.use("/api/admin", HowToUseRouter);  // ✅
+  app.use("/api/admin",  TestimonialsRouter); // ✅
+  app.use("/api/admin", TransformNetwork);  // ✅
+  app.use("/api/admin", FooterRouter);  // ✅
+  app.use("/api/profile-products", ProfileProductRouter);  // ✅
+  app.use("/api/profile-portfolio", ProfilePortfolioRouter); // ✅
+  app.use("/api/profile-services", ProfileServicesRouter);  // ✅
+  app.use("/api/profile-gallery", ProfileGalleryRouter); // ✅
+  app.use("/api/profile-logo", ProfileLogoRouter);  // ✅
+  app.use("/api/profile/payment-details", PaymentDetails);  // ✅
+  app.use("/api/profile/location", LocationReviewRouter);  // ✅
+  app.use("/api/profile/resume", ProfileResume);  // ✅
+  app.use("/api/profile-cover", profileCoverPhotoRoute); // ✅
+  app.use("/api", ServiceLayoutRouter);   
+app.use("/", SharePublicProfilerouter); // ✅
+app.use("/api/about", AboutPageRouter); // ✅
+app.use("/api/privacy-policy", PrivacyPolicyRouter); // ✅
+app.use("/api/terms-conditions", TermsConditionsRouter); // ✅
+app.use("/api/admin", AdminDashboardRouter); // ✅
+app.use("/api/admin", RefundpolicyRouter); // ✅
+app.use("/api", BulkCardDownloadRouter); 
 app.use("/api", BulkParkingTagDownloadRouter);
-app.use("/api", InvoiceAddressRouter);
+app.use("/api", InvoiceAddressRouter); // ✅
 
 
 

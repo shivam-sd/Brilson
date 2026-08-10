@@ -26,12 +26,12 @@ const ActivateCardAPi = async (req, res) => {
       });
     }
 
-    if (card.isActivated) {
-      return res.status(403).json({
-        error: "This card is already activated",
-        slug: card.slug,
-      });
-    }
+    // if (card.isActivated) {
+    //   return res.status(403).json({
+    //     error: "This card is already activated",
+    //     slug: card.slug,
+    //   });
+    // }
 
     const user = await UserModel.findById(userId);
     if (!user) {
