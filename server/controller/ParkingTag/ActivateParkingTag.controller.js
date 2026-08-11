@@ -29,12 +29,12 @@ const ActivateParkingTagAPi = async (req, res) => {
     }
 
     /* ALREADY ACTIVATED  */
-    if (tag.isActivated) {
-      return res.status(403).json({
-        error: "This Parking Tag is already activated",
-        slug: tag.slug,
-      });
-    }
+    // if (tag.isActivated) {
+    //   return res.status(403).json({
+    //     error: "This Parking Tag is already activated",
+    //     slug: tag.slug,
+    //   });
+    // }
 
     /*  USER EXISTS */
     const user = await UserModel.findById(userId);
@@ -44,14 +44,14 @@ const ActivateParkingTagAPi = async (req, res) => {
       });
     }
 
-    const existingTag = await ParkingTagModel.findOne({
-      owner:userId,
-      isActivated:true
-    });
+    // const existingTag = await ParkingTagModel.findOne({
+    //   owner:userId,
+    //   isActivated:true
+    // });
 
-    if(existingTag){
-      return res.status(403).json({error:"you can activate only one parking tag per account! Please use another account to activate more parking tags."});
-    }
+    // if(existingTag){
+    //   return res.status(403).json({error:"you can activate only one parking tag per account! Please use another account to activate more parking tags."});
+    // }
 
 
     /*  ACTIVATE PARKING TAG */
