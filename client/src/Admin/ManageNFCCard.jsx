@@ -12,6 +12,7 @@ import {
 import { FaDownload } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import {toast, Toaster} from "react-hot-toast";
 import { HexColorPicker } from "react-colorful";
 import NFCCardDesign from "./ManageNFCCard/NFCCardDesign";
 import CardPreviewModal from "./ManageNFCCard/CardPreviewModel";
@@ -46,9 +47,10 @@ const ManageNFCCard = () => {
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
+  const [copyLinkId, setCopyLinkId] = useState(null);
   const cardRef = useRef();
 
-  // ✅ Fetch cards
+  //  Fetch cards
   const fetchCards = useCallback(async (page = 1, search = "") => {
     try {
       setLoading(true);
@@ -70,6 +72,7 @@ const ManageNFCCard = () => {
       });
 
       const allCards = res.data.allCards || [];
+      // console.log("Fetched Cards:", allCards);
       setCards(allCards);
       setTotalCards(res.data.totalCards || 0);
       setTotalPages(res.data.totalPages || 1);
@@ -113,7 +116,7 @@ const ManageNFCCard = () => {
     fetchCards(1, "");
   };
 
-  // ✅ SINGLE CARD DOWNLOAD - Works perfectly
+  //  SINGLE CARD DOWNLOAD - Works perfectly
   const downloadCard = async (card) => {
     try {
       setSelectedCard(card);
@@ -407,6 +410,34 @@ const ManageNFCCard = () => {
     return pageNumbers;
   };
 
+
+
+  // handle Copy Profile Link
+
+  const handleCopyLinkProfile = (activationCode) => {
+    try{
+      const profilelink = `/public/profile/${activationCode}`;
+      setCopyLinkId(activationCode);
+      navigator.clipboard.writeText(profilelink).then(() => {
+        toast.success("Profile link copied!", {
+          position: "top-center",
+          autoClose: 3000
+        });
+      });
+      setTimeout(() => {
+        setCopyLinkId(null);
+      },2000);
+    }catch(err){
+      toast.error("Failed to copy profile link.", {
+        position: "top-center",
+        autoClose: 3000
+      });
+    }
+  }
+
+
+
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex justify-center items-center">
@@ -476,6 +507,7 @@ const ManageNFCCard = () => {
 
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-2 py-4 text-gray-200 max-w-full overflow-x-hidden">
+      <Toaster position="top-center" reverseOrder={false} />
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6 lg:mt-0 mt-11">
         <div className="w-full lg:w-auto text-center lg:text-left">
@@ -766,6 +798,7 @@ const ManageNFCCard = () => {
               <th className="p-3 text-center text-xs font-medium text-gray-300">Preview</th>
               <th className="p-3 text-center text-xs font-medium text-gray-300">Download</th>
               <th className="p-3 text-center text-xs font-medium text-gray-300">Profile</th>
+              <th className="p-3 text-center text-xs font-medium text-gray-300">Link</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700/30">
@@ -817,6 +850,17 @@ const ManageNFCCard = () => {
                     >
                       View
                     </Link>
+                  </td>
+                  <td className="p-3 text-center">
+                    <button
+                      onClick={() => handleCopyLinkProfile(card?.activationCode || card?.slug)}
+                      className="text-indigo-400 hover:text-indigo-300 transition text-xs font-medium hover:cursor-pointer"
+                      target="_blank"
+                    >
+                     {
+                      copyLinkId === card?.activationCode ? "✅" : "Copy"
+                     }
+                    </button>
                   </td>
                 </tr>
               ))
