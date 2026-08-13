@@ -29,12 +29,12 @@ const ActivateGoogleReview = async (req, res) => {
     }
 
     /* ALREADY ACTIVATED  */
-    // if (googleReview.isActivated) {
-    //   return res.status(403).json({
-    //     error: "This Google Review is already activated",
-    //     slug: googleReview.slug,
-    //   });
-    // }
+    if (googleReview.isActivated) {
+      return res.status(403).json({
+        error: "This Google Review is already activated",
+        slug: googleReview.slug,
+      });
+    }
 
     /*  USER EXISTS */
     const user = await UserModel.findById(userId);
@@ -44,14 +44,14 @@ const ActivateGoogleReview = async (req, res) => {
       });
     }
 
-    // const existingGoogleReview = await GoogleReviewsModel.findOne({
-    //   owner:userId,
-    //   isActivated:true
-    // });
+    const existingGoogleReview = await GoogleReviewsModel.findOne({
+      owner:userId,
+      isActivated:true
+    });
 
-    // if(existingGoogleReview){
-    //   return res.status(403).json({error:"you can activate only one Google Review per account! Please use another account to activate more Google Reviews."});
-    // }
+    if(existingGoogleReview){
+      return res.status(403).json({error:"you can activate only one Google Review per account! Please use another account to activate more Google Reviews."});
+    }
 
 
     /*  ACTIVATE Google Review */
