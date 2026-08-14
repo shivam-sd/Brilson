@@ -133,7 +133,7 @@ const colorStyles = [
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center text-4xl md:text-5xl font-extrabold mt-6 tracking-widest"
+          className="text-center text-4xl md:text-5xl font-semibold mt-6 tracking-widest font-Roboto"
         >
           Powerful <span className="text-yellow-400">Features</span>
         </motion.h2>
@@ -143,14 +143,14 @@ const colorStyles = [
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-center text-gray-400 mt-4 max-w-2xl mx-auto text-sm tracking-widest "
+          className="text-center text-gray-300 mt-4 max-w-2xl mx-auto text-md tracking-widest font-Roboto"
         >
           {subHeading}
           {/* Everything you need to make lasting impressions and grow your network effortlessly. */}
         </motion.p>
 
         {/* Features Grid */}
-        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 tracking-widest">
+        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 tracking-widest font-Roboto">
   {feature.map((item, index) => {
     const style = colorStyles[index % colorStyles.length];
 
@@ -187,12 +187,12 @@ const colorStyles = [
           </div>
 
           {/* 📝 Title */}
-          <h3 className="text-lg font-semibold text-white">
+          <h3 className="text-lg font-normal text-white">
             {item.title}
           </h3>
 
           {/* 📄 Desc */}
-          <p className="text-gray-400 text-sm mt-3 leading-relaxed ">
+          <p className="text-gray-300 text-sm mt-3 leading-relaxed ">
             {item.description}
           </p>
         </div>

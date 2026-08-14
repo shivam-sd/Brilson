@@ -71,7 +71,7 @@ const Testimonials = () => {
           <div className="text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 backdrop-blur-sm mb-6">
               <Sparkles className="w-4 h-4 text-cyan-300" />
-              <span className="text-cyan-300 text-sm font-medium tracking-wider">TESTIMONIALS</span>
+              <span className="text-cyan-300 text-sm font-medium tracking-widest font-Roboto">TESTIMONIALS</span>
             </div>
             <div className="animate-pulse">
               <div className="h-12 bg-gray-800 rounded-lg mb-4 w-3/4 mx-auto"></div>
@@ -107,20 +107,20 @@ const Testimonials = () => {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 backdrop-blur-sm mb-6">
             <Sparkles className="w-4 h-4 text-cyan-300" />
-            <span className="text-cyan-300 text-sm font-medium tracking-widest font-Playfair">TESTIMONIALS</span>
+            <span className="text-cyan-300 text-sm font-normal tracking-widest font-Roboto">TESTIMONIALS</span>
           </div>
           
-          <h2 className="text-5xl md:text-5xl font-bold mb-6">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-white tracking-widest font-Playfair">
+          <h2 className="text-5xl md:text-5xl font-normal mb-6">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-white tracking-widest font-Roboto">
               Loved by
             </span>
             <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 tracking-widest font-Playfair">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 tracking-widest font-semibold font-Roboto">
               Industry Leaders
             </span>
           </h2>
           
-          <p className="md:text-base lg:text-base text-sm text-gray-400 max-w-3xl mx-auto leading-relaxed tracking-widest font-Poppins">
+          <p className="md:text-base lg:text-base text-sm text-gray-300 max-w-3xl mx-auto leading-relaxed tracking-widest font-Poppins">
             Join thousands of professionals who have transformed their networking experience with our smart digital solutions.
           </p>
         </div>
@@ -172,7 +172,7 @@ const Testimonials = () => {
                         
                         {/* Review Content */}
                         <div className="mb-6">
-                          <p className="text-gray-300 text-lg leading-relaxed italic">"{testimonial.review}"</p>
+                          <p className="text-gray-300 text-lg leading-relaxed italic font-Roboto">"{testimonial.review}"</p>
                         </div>
                         
                         {/* Stars */}
@@ -201,9 +201,9 @@ const Testimonials = () => {
                             />
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-semibold text-white text-lg">{testimonial.name}</h4>
-                            <p className="text-gray-400 text-sm">{testimonial.role}</p>
-                            <div className={`inline-block mt-2 px-3 py-1 text-xs font-medium bg-gradient-to-r ${testimonial.color}/20 rounded-full border border-transparent`}>
+                            <h4 className="font-Roboto text-white text-lg">{testimonial.name}</h4>
+                            <p className="text-gray-400 text-sm font-Roboto">{testimonial.role}</p>
+                            <div className={`inline-block mt-2 px-3 py-1 text-xs font-medium bg-gradient-to-r ${testimonial.color}/20 rounded-full border border-transparent font-Roboto`}>
                               {testimonial.company}
                             </div>
                           </div>
@@ -230,7 +230,7 @@ const Testimonials = () => {
                   freeMode={true}
                   slidesPerView="auto"
                   spaceBetween={30}
-                  className="opacity-50 tracking-widest font-Playfair"
+                  className="opacity-50 tracking-widest font-Roboto"
                 >
                   {[...testimonials, ...testimonials].map((t, i) => (
                     <SwiperSlide key={i} className="!w-auto">

@@ -269,7 +269,7 @@ const OurSmartCard = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h3 className="text-xl md:text-3xl lg:text-3xl font-extrabold leading-tight tracking-widest font-Playfair">
+          <h3 className="text-xl md:text-3xl lg:text-3xl font-semibold leading-tight tracking-widest font-Roboto">
             Our{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
               Smart Cards
@@ -279,7 +279,7 @@ const OurSmartCard = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-gray-400 mt-4 max-w-2xl mx-auto lg:text-base text-sm tracking-wider font-Poppins"
+            className="text-gray-300 mt-4 max-w-2xl mx-auto lg:text-base text-sm tracking-wider font-Roboto"
           >
             Choose the perfect card for your professional needs. Every card
             includes lifetime updates and a free digital profile.
@@ -296,7 +296,7 @@ const OurSmartCard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -10 }}
-              className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-gray-900/70 to-gray-800/70 backdrop-blur-lg hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 group tracking-widest font-Playfair"
+              className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-gray-900/70 to-gray-800/70 backdrop-blur-lg hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 group tracking-widest font-Roboto"
               >
               {/* Product Badge */}
               {renderBadge(product.badge)}

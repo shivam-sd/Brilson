@@ -88,7 +88,7 @@ const Networking = () => {
           >
             <span className="relative inline-block px-6 py-2 text-xs md:text-sm font-medium tracking-wider uppercase text-cyan-400 rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,170,255,0.15)] backdrop-blur-sm">
               <span className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 animate-pulse" />
-              <span className="relative flex items-center gap-2 tracking-widest font-Playfair">
+              <span className="relative flex items-center gap-2 tracking-widest font-Roboto">
                 <FiZap size={14} className="text-cyan-400 " />
                 {data.badgeText || "Limited Time Offer – 40% OFF"}
               </span>
@@ -101,7 +101,7 @@ const Networking = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-widest font-Playfair"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-tight tracking-wide font-Roboto"
           >
             {data.heading ? (
               <span dangerouslySetInnerHTML={{ 
@@ -125,11 +125,11 @@ const Networking = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-gray-300 text-sm md:text-base lg:text-lg leading-relaxed max-w-2xl px-4 tracking-widest font-Playfair"
+            className="text-gray-300 text-sm md:text-base lg:text-lg leading-relaxed max-w-2xl px-4 tracking-widest font-Roboto"
           >
             {data.subHeading || (
               <>
-                Join <span className="font-semibold text-white">50,000+ professionals</span> who've already upgraded.
+                Join <span className="font-normal text-white">50,000+ professionals</span> who've already upgraded.
                 <br className="hidden sm:block" />
                 Get your smart card today and never run out of business cards again.
               </>
@@ -151,7 +151,7 @@ const Networking = () => {
             >
               
               
-              <span className="relative flex items-center gap-2 tracking-widest font-Playfair">
+              <span className="relative flex items-center gap-2 tracking-widest font-Roboto">
                 Get Started
                 <FiArrowRight className="group-hover:translate-x-1 transition-transform duration-300" />
               </span>
@@ -160,7 +160,7 @@ const Networking = () => {
             {/* Secondary CTA - Contact Sales */}
             <Link
               to="/contact-sale"
-              className="group inline-flex items-center justify-center px-8 sm:px-8 py-2 sm:py-2 rounded-full border-2 border-blue-500/50 text-white font-medium text-sm sm:text-base bg-transparent hover:bg-blue-500/10 hover:border-blue-400 transition-all duration-300 hover:scale-105 tracking-widest font-Playfair"
+              className="group inline-flex items-center justify-center px-8 sm:px-8 py-2 sm:py-2 rounded-full border-2 border-blue-500/50 text-white font-medium text-sm sm:text-base bg-transparent hover:bg-blue-500/10 hover:border-blue-400 transition-all duration-300 hover:scale-105 tracking-widest font-Roboto"
             >
               <span className="relative flex items-center gap-2">
                 Contact Sales
@@ -175,7 +175,7 @@ const Networking = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.6 }}
             viewport={{ once: true }}
-            className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 mt-2 border-t border-white/5 w-full max-w-3xl tracking-widest"
+            className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 mt-2 border-t border-white/5 w-full max-w-3xl tracking-widest font-Roboto"
           >
             {displayFeatures.map((item, index) => {
               const iconMap = {

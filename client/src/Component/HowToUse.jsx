@@ -90,16 +90,16 @@ const HowToUse = () => {
         viewport={{ once: true }}
         className="max-w-3xl mx-auto text-center mb-16 md:mb-24"
       >
-        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 tracking-widest ">
+        <h3 className="text-2xl md:text-3xl lg:text-4xl font-normal mb-4 tracking-widest font-Roboto">
           {info.heading}
         </h3>
-        <p className="text-gray-400 text-sm md:text-base tracking-widest ">
+        <p className="text-gray-300 text-sm md:text-base tracking-widest font-Roboto">
           {info.subHeading}
         </p>
       </div>
 
       {/* VIDEO STEPS SECTION */}
-      <div className="max-w-6xl mx-auto space-y-20 md:space-y-24">
+      <div className="max-w-6xl mx-auto space-y-20 md:space-y-24 font-Roboto">
         {videoSteps.map((step, index) => (
           <div
             key={index}
@@ -307,7 +307,7 @@ const HowToUse = () => {
         viewport={{ once: true }}
         className="max-w-6xl mx-auto mt-20 md:mt-32 text-center"
       >
-        <h4 className="text-xl md:text-2xl font-bold mb-8 md:mb-12 tracking-widest ">
+        <h4 className="text-xl md:text-2xl font-semibold mb-8 md:mb-12 tracking-widest font-Roboto">
           Why Use Smart Card?
         </h4>
 
@@ -322,7 +322,7 @@ const HowToUse = () => {
               key={i}
               className="bg-[#111] p-6 md:p-8 rounded-2xl shadow-lg"
             >
-              <h4 className="font-semibold text-base md:text-base text-sm">{benefit}</h4>
+              <h4 className="font-semibold  md:text-base text-sm font-Roboto">{benefit}</h4>
             </div>
           ))}
         </div>

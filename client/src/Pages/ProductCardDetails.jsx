@@ -92,10 +92,10 @@ const ProductCardPreference = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 mt-4 sm:mt-6 md:mt-10">
           
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base overflow-x-auto whitespace-nowrap pb-2 lg:mt-0 md:mt-0 mt-6">
+          <div className="flex items-center gap-2 text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base overflow-x-auto whitespace-nowrap pb-2 lg:mt-0 md:mt-0 mt-6 font-Roboto">
             <Link to="/" className="hover:text-cyan-400 transition">Home</Link>
             <FiChevronRight className="flex-shrink-0" />
-            <span className="text-white truncate">{product.title}</span>
+            <span className="text-white truncate ">{product.title}</span>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
@@ -104,7 +104,7 @@ const ProductCardPreference = () => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 sm:space-y-6">
               <div className="relative bg-gray-900/40 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/10">
                 {discount && (
-                  <span className="absolute top-3 sm:top-4 md:top-6 left-3 sm:left-4 md:left-6 bg-red-500 px-2 sm:px-3 md:px-4 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-bold z-10">
+                  <span className="absolute top-3 sm:top-4 md:top-6 left-3 sm:left-4 md:left-6 bg-red-500 px-2 sm:px-3 md:px-4 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-bold z-10 font-Roboto">
                     {discount}% OFF
                   </span>
                 )}
@@ -169,7 +169,7 @@ const ProductCardPreference = () => {
                     className="bg-gray-900/40 p-2 sm:p-3 md:p-4 rounded-xl text-center border border-white/10"
                   >
                     <Icon className="mx-auto text-cyan-400 mb-1 sm:mb-2" size={18} />
-                    <p className="text-xs sm:text-sm text-gray-300">{label}</p>
+                    <p className="text-xs sm:text-sm text-gray-300 font-Roboto">{label}</p>
                   </div>
                 ))}
               </div>
@@ -179,16 +179,16 @@ const ProductCardPreference = () => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 sm:space-y-6 md:space-y-8">
               
               <div>
-                <span className="px-2 sm:px-3 py-1 bg-cyan-500/10 text-cyan-400 rounded-full text-xs sm:text-sm inline-block">
+                <span className="px-2 sm:px-3 py-1 bg-cyan-500/10 text-cyan-400 rounded-full text-xs sm:text-sm inline-block font-Roboto">
                   {product.category || "Product"}
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-normal tracking-wider font-Roboto">
                 {product.title}
               </h1>
 
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3 font-Roboto">
                 <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-cyan-400">
                   ₹{product.price?.toLocaleString()}
                 </span>
@@ -199,14 +199,14 @@ const ProductCardPreference = () => {
                 )}
               </div>
 
-              <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed">
+              <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed font-Roboto">
                 {product.description}
               </p>
 
               {product.features?.length > 0 && (
                 <div>
-                  <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Key Features</h3>
-                  <div className="grid sm:grid-cols-2 gap-2 sm:gap-3">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 font-Roboto">Key Features</h3>
+                  <div className="grid sm:grid-cols-2 gap-2 sm:gap-3 font-Roboto">
                     {product.features.map((f, i) => (
                       <div key={i} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base">
                         <FiCheck className="text-cyan-400 flex-shrink-0 mt-0.5" size={16} />
@@ -226,7 +226,7 @@ const ProductCardPreference = () => {
       disabled={addingToCart}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer"
+      className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer font-Roboto"
     >
       {addingToCart ? (
         <>
@@ -247,7 +247,7 @@ const ProductCardPreference = () => {
     <Link
       // to={'/your-items'}
       onClick={handleAddtoCart}
-      className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg transition-all duration-300 shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 text-center"
+      className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg transition-all duration-300 shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 text-center font-Roboto"
     >
       <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 15v6" />
@@ -263,7 +263,7 @@ const ProductCardPreference = () => {
 
 
 
-              <div className="flex justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-400 pt-2">
+              <div className="flex justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-400 pt-2 font-Roboto">
                 <span className="flex gap-1 items-center"><FiShield size={14} /> Secure Checkout</span>
                 <span className="flex gap-1 items-center"><FiGlobe size={14} /> Worldwide Shipping</span>
               </div>

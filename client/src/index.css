@@ -10,6 +10,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
 
+
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+
 @import "tailwindcss";
 
 @theme{
@@ -22,6 +26,12 @@
     /* --font-Pacifico:"Space+Grotesk", "sans-serif" */
     /* --font-Roboto:"Merriweather", "sans-serif" */
     --font-Poppins:"Poppins", "sans-serif"
+    /* --font-Playfair:'Playfair Display', "serif" */
+}
+@theme{
+    /* --font-Pacifico:"Space+Grotesk", "sans-serif" */
+    /* --font-Roboto:"Merriweather", "sans-serif" */
+    --font-Roboto:"Roboto", "sans-serif",system-ui, -apple-system, "Segoe UI", "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
     /* --font-Playfair:'Playfair Display', "serif" */
 }
 

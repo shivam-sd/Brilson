@@ -47,7 +47,7 @@ const benefits = [
     desc: "No paper cards. One card forever.",
   },
 ];
-
+ 
 const HowItWorks = () => {
   return (
     <div className="bg-[#03060A] text-white overflow-hidden">

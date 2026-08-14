@@ -140,17 +140,17 @@ const { cartCount } = useCart();
             className="lg:flex hidden flex items-center text-white text-2xl font-semibold"
           >
             {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
-                         <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
-                Brilson
+                         <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
+                BRILSON
               </div>
           </motion.div>
         </Link>
 
         {/* DESKTOP MENU */}
-        <ul className="hidden md:flex gap-10 text-gray-300 tracking-widest font-Playfair font-bold">
-          <Link to="/" className="hover:text-white text-sm">Home</Link>
-          <Link to="/products" className="hover:text-white text-sm">Products</Link>
-          <Link to="/how-it-works" className="hover:text-white text-sm">How It Works</Link>
+        <ul className="hidden md:flex gap-10 text-gray-100 tracking-widest font-Roboto font-bold">
+          <Link to="/" className="hover:text-white text-lg">Home</Link>
+          <Link to="/products" className="hover:text-white text-lg">Products</Link>
+          <Link to="/how-it-works" className="hover:text-white text-lg">How It Works</Link>
         </ul>
 
         {/* DESKTOP ACTIONS */}
@@ -169,7 +169,8 @@ const { cartCount } = useCart();
           {!isLoggedIn ? (
             <Link
               to="/login"
-              className="flex items-center gap-2 border border-white/30 px-4 py-2 rounded-lg text-gray-300 hover:text-white tracking-widest font-Playfair"
+              className="flex items-center gap-2 border border-white/30 px-4 py-2 rounded-lg text-gray-300 hover:text-white tracking-widest 
+              font-Roboto"
             >
               <FaUser /> Login
             </Link>
@@ -204,20 +205,20 @@ const { cartCount } = useCart();
 
 <Link
                       to={`/admin/passTo/Profile`}
-                      className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-Playfair"
+                      className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-semibold font-Roboto"
                     >
                       My Admin
                     </Link>
 
 
 
-                  <Link to="/orders" className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white flex items-center tracking-widest font-Playfair">
+                  <Link to="/orders" className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white flex items-center tracking-widest font-Roboto font-semibold">
                     <span>My Orders</span>
                   </Link>
 
                   <button
                     onClick={handleLogout}
-                    className="px-3 py-1 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white flex items-center tracking-widest font-Playfair"
+                    className="px-3 py-1 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white flex items-center tracking-widest font-Roboto font-semibold cursor-pointer"
                   >
                     <span>Logout</span>
                   </button>
@@ -233,7 +234,7 @@ const { cartCount } = useCart();
   className="group inline-flex items-center gap-2 px-6 py-2 rounded-full
   text-white font-medium relative overflow-hidden border
 border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-500/40  shadow-gray-800 shadow-lg
-  transition-all duration-300 hover:scale-105 tracking-widest font-Playfair"
+  transition-all duration-300 hover:scale-105 tracking-widest font-Roboto"
   
   style={{
     textShadow: "2px 2px 3px rgba(136,0,136,0.5)",
@@ -294,7 +295,7 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
 <Link
                         to={`/admin/passTo/Profile`}
                         onClick={() => setMobileProfileOpen(false)}
-                        className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-Playfair"
+                        className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-Roboto"
                       >
                         My Admin
                       </Link>
@@ -310,7 +311,7 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
 
                     <button
                       onClick={handleLogout}
-                      className="px-3 py-2 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-Playfair"
+                      className="px-3 py-2 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-Roboto"
                     >
                       Logout
                     </button>
@@ -330,7 +331,7 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
             className="flex items-center text-white text-2xl font-semibold ml-8"
           >
             {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
-                         <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest ">
+                         <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest ">
                 Brilson
               </div>
           </div>
