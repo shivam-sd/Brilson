@@ -242,7 +242,7 @@ const OurSmartCard = () => {
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,#00eaff22,transparent_70%)]"></div>
         <div className="relative max-w-7xl mx-auto px-6">
           <h2 className="text-center text-4xl md:text-5xl font-extrabold">
-            Our <span className="text-cyan-400">Smart Cards</span>
+            Our <span className="text-cyan-400 font-Roboto">Smart Cards</span>
           </h2>
           <p className="text-center text-gray-400 mt-4">
             No products available at the moment.

@@ -9,10 +9,10 @@ const SmartNFCSection = () => {
 
       {/* Heading */}
       <div className="text-center mb-16 mt-10">
-        <h2 className="text-xl md:text-3xl font-bold text-white tracking-widest font-Playfair">
+        <h2 className="text-xl md:text-3xl font-bold text-white tracking-widest font-Roboto">
           Smart <span className="text-cyan-400">NFC Business Card</span>
         </h2>
-        <p className="text-gray-400 mt-4 max-w-2xl mx-auto text-sm md:text-base tracking-widest font-Poppins">
+        <p className="text-gray-400 mt-3 max-w-2xl mx-auto text-sm md:text-base tracking-widest font-Roboto">
           Share your contact instantly with just a tap.  
           No apps. No paper. Just smart networking.
         </p>
@@ -32,7 +32,7 @@ const SmartNFCSection = () => {
 
           {/* NFC Card */}
           <div className="absolute left-6 top-24 w-64 h-40 bg-black rounded-xl border border-white/10 shadow-2xl flex items-center justify-center text-white rotate-[-10deg]">
-            <span className="text-xl font-bold tracking-widest tracking-widest font-Playfair">
+            <span className="text-xl font-bold  tracking-widest font-Roboto">
               BRILSON™ NFC
             </span>
           </div>
@@ -43,12 +43,12 @@ const SmartNFCSection = () => {
 
               {/* Profile */}
               <div>
-                <p className="text-xl font-semibold tracking-widest font-Playfair">John Deo</p>
-                <p className="text-sm text-gray-400 tracking-widest font-Playfair">Product Designer</p>
+                <p className="text-xl font-semibold tracking-widest font-Roboto">John Deo</p>
+                <p className="text-sm text-gray-400 tracking-widest font-Roboto">Product Designer</p>
               </div>
 
               {/* Connect Button */}
-              <button className="mt-4 w-full bg-cyan-500 text-black py-2 rounded-xl font-semibold hover:bg-cyan-400 duration-300 tracking-widest font-Poppins">
+              <button className="mt-4 w-full bg-cyan-500 text-black py-2 rounded-xl font-semibold hover:bg-cyan-400 duration-300 tracking-widest font-Roboto">
                 CONNECT
               </button>
 
@@ -66,7 +66,7 @@ const SmartNFCSection = () => {
               </div>
 
               {/* Contact Details */}
-              <div className="mt-10 space-y-2 text-sm text-gray-300 tracking-widest font-Playfair">
+              <div className="mt-10 space-y-2 text-sm text-gray-300 tracking-widest font-Roboto">
                 <p>📧 john.doe@email.com</p>
                 <p>📞 +91 98765 43210</p>
               </div>
@@ -86,7 +86,7 @@ const SmartNFCSection = () => {
           <div className="flex items-start gap-4">
             <FaWifi className="text-cyan-400 text-3xl" />
             <div>
-              <h4 className="text-xl font-semibold tracking-widest font-Playfair">Tap with NFC</h4>
+              <h4 className="text-xl font-semibold tracking-widest font-Roboto">Tap with NFC</h4>
               <p className="text-gray-400 tracking-widest font-Poppins">
                 Just tap the NFC card on any compatible smartphone.
               </p>
@@ -96,7 +96,7 @@ const SmartNFCSection = () => {
           <div className="flex items-start gap-4">
             <FaMobileAlt className="text-cyan-400 text-3xl" />
             <div>
-              <h4 className="text-xl font-semibold tracking-widest font-Playfair">Profile Opens Instantly</h4>
+              <h4 className="text-xl font-semibold tracking-widest font-Roboto">Profile Opens Instantly</h4>
               <p className="text-gray-400 tracking-widest font-Poppins">
                 Digital profile opens automatically without any app.
               </p>
@@ -106,7 +106,7 @@ const SmartNFCSection = () => {
           <div className="flex items-start gap-4">
             <FaUserCheck className="text-cyan-400 text-3xl" />
             <div>
-              <h4 className="text-xl font-semibold tracking-widest font-Playfair">Connect & Save</h4>
+              <h4 className="text-xl font-semibold tracking-widest font-Roboto">Connect & Save</h4>
               <p className="text-gray-400 tracking-widest font-Poppins">
                 Save contact, follow socials or connect instantly.
               </p>

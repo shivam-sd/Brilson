@@ -134,11 +134,11 @@ animate={{ opacity: 1 }}
               <Gift size={18} className="text-white" />
             </div>
             <div className=''>
-              <h3 className="text-center text-white font-semibold flex items-center gap-2 tracking-widest font-Playfair">
+              <h3 className="text-center text-white font-semibold flex items-center gap-2 tracking-widest font-Roboto">
                 Referral Dashboard
                 <Sparkles size={14} className="text-indigo-400" />
               </h3>
-              <p className="text-xs text-gray-400 tracking-widest font-Poppins">Track your referrals & rewards</p>
+              <p className="text-xs text-gray-400 tracking-widest font-Roboto">Track your referrals & rewards</p>
             </div>
           </div>
           
@@ -146,7 +146,7 @@ animate={{ opacity: 1 }}
             onClick={() => setExpanded(!expanded)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="p-1.5 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 text-gray-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 text-gray-400 hover:text-white transition-colors cursor-pointer"
           >
             {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </motion.button>
@@ -163,10 +163,10 @@ animate={{ opacity: 1 }}
           >
             <div className="flex items-center justify-between mb-1">
               <Users size={16} className="text-indigo-400" />
-              <span className="text-[10px] text-gray-500">total</span>
+              <span className="text-[12px] text-gray-500">total</span>
             </div>
             <p className="text-xl font-bold text-white">{referralData?.totalReferrals || 0}</p>
-            <p className="text-[10px] text-gray-500 mt-1">referrals</p>
+            <p className="text-[12px] text-gray-500 mt-1">referrals</p>
           </motion.div>
 
           <motion.div 
@@ -176,10 +176,10 @@ animate={{ opacity: 1 }}
             >
             <div className="flex items-center justify-between mb-1">
               <CheckCircle size={16} className="text-emerald-400" />
-              <span className="text-[10px] text-gray-500">done</span>
+              <span className="text-[12px] text-gray-500">done</span>
             </div>
             <p className="text-xl font-bold text-white">{referralData?.completed || 0}</p>
-            <p className="text-[10px] text-gray-500 mt-1">completed</p>
+            <p className="text-[12px] text-gray-500 mt-1">completed</p>
           </motion.div>
 
           <motion.div 
@@ -189,10 +189,10 @@ animate={{ opacity: 1 }}
             >
             <div className="flex items-center justify-between mb-1">
               <TrendingUp size={16} className="text-amber-400" />
-              <span className="text-[10px] text-gray-500">left</span>
+              <span className="text-[12px] text-gray-500">left</span>
             </div>
             <p className="text-xl font-bold text-white">{referralData?.inProgress || 0}</p>
-            <p className="text-[10px] text-gray-500 mt-1">in progress</p>
+            <p className="text-[12px] text-gray-500 mt-1">in progress</p>
           </motion.div>
         </div>
 

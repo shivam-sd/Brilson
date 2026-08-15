@@ -72,16 +72,16 @@ const NfcCardFeatures = () => {
         >
             <div className="w-full flex items-center justify-center">
 
-          <span className="inline-block mb-4 px-4 py-1 text-sm rounded-full bg-cyan-500/10 text-cyan-400 tracking-widest font-Playfair">
+          <span className="inline-block mb-4 px-4 py-1 text-sm rounded-full bg-cyan-500/10 text-cyan-400 tracking-widest font-Roboto">
             Brilson NFC Smart Card
           </span>
             </div>
 
-          <h2 className="text-2xl md:text-3xl font-bold leading-tight text-center tracking-widest font-Playfair">
+          <h2 className="text-2xl md:text-3xl font-bold leading-tight text-center tracking-widest font-Roboto">
             The Future of <span className="text-cyan-400">Smart Networking</span>
           </h2>
 
-          <p className="mt-6 text-gray-300 md:text-base text-sm max-w-xl tracking-widest font-Poppins">
+          <p className="mt-3 text-gray-300 md:text-base text-sm max-w-xl tracking-widest font-Roboto">
             Replace traditional visiting cards with Brison’s premium NFC Smart
             Card  fast, secure, eco-friendly & built for modern businesses.
           </p>
@@ -107,10 +107,10 @@ const NfcCardFeatures = () => {
 
       {/*  FEATURES  */}
       <section className="max-w-7xl mx-auto px-6 lg:py-10">
-        <h2 className="text-2xl md:text-3xl font-bold text-center tracking-widest font-Playfair">
+        <h2 className="text-2xl md:text-3xl font-bold text-center tracking-widest font-Roboto">
           Powerful Features
         </h2>
-        <p className="text-center text-gray-400 mt-4 max-w-2xl mx-auto text-sm md:text-base tracking-widest font-Poppins">
+        <p className="text-center text-gray-400 mt-2 max-w-2xl mx-auto text-sm md:text-base tracking-widest font-Roboto">
           Designed for professionals, enterprises & modern brands.
         </p>
 
@@ -124,8 +124,8 @@ const NfcCardFeatures = () => {
               <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400 text-2xl mb-4">
                 {f.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-2 tracking-widest font-Playfair">{f.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed tracking-widest font-Poppins">{f.desc}</p>
+              <h3 className="text-xl font-semibold mb-2 tracking-widest font-Roboto">{f.title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed tracking-widest font-Roboto">{f.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -134,11 +134,11 @@ const NfcCardFeatures = () => {
       {/*  HOW IT WORKS  */}
       <section className="bg-[#060B14] lg:py-5 py-4 lg:mt-0 mt-10">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-center tracking-widest font-Playfair">
+          <h2 className="text-3xl md:text-4xl font-bold text-center tracking-widest font-Roboto">
             How It Works
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-10 mt-16">
+          <div className="grid md:grid-cols-3 gap-10 mt-10">
             {steps.map((s, i) => (
               <motion.div
                 key={i}
@@ -146,8 +146,8 @@ const NfcCardFeatures = () => {
                 className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center"
               >
                 <FiCheckCircle className="mx-auto text-cyan-400 text-3xl mb-4" />
-                <h3 className="text-xl font-semibold tracking-widest font-Playfair">{s.title}</h3>
-                <p className="text-gray-400 mt-3 tracking-widest font-Poppins">{s.desc}</p>
+                <h3 className="text-xl font-semibold tracking-widest font-Roboto">{s.title}</h3>
+                <p className="text-gray-400 mt-3 tracking-widest font-Roboto">{s.desc}</p>
               </motion.div>
             ))}
           </div>

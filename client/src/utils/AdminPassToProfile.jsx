@@ -450,7 +450,7 @@ const AdminPassToProfile = () => {
   const SectionHeader = ({ icon: Icon, title, count, hasItems, onActivate, loading, buttonText = "Activate Now", gradientColors = "from-cyan-500/20 to-blue-500/20", iconColor = "text-cyan-400" }) => (
     <div className="mb-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-3 tracking-widest font-Playfair">
+        <div className="flex items-center gap-3 tracking-widest font-Roboto">
           <div className={`p-3 rounded-xl bg-gradient-to-br ${gradientColors} border border-${iconColor.split('-')[1]}-500/30`}>
             <Icon className={iconColor} size={24} />
           </div>
@@ -527,11 +527,11 @@ const AdminPassToProfile = () => {
                     <Wallet className="text-cyan-400" size={28} />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400 tracking-widest font-Playfair">Available Balance</p>
+                    <p className="text-sm text-gray-400 tracking-widest font-Roboto">Available Balance</p>
                     {loadingBalance ? (
                       <div className="h-8 w-32 bg-gray-700/50 rounded-lg animate-pulse mt-1" />
                     ) : (
-                      <p className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent tracking-widest font-Playfair">
+                      <p className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent tracking-widest font-Roboto">
                         ₹{balance}
                       </p>
                     )}
@@ -548,11 +548,11 @@ const AdminPassToProfile = () => {
                       <Gift className="text-yellow-400" size={28} />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-400 tracking-widest font-Playfair">Referral Code</p>
+                      <p className="text-sm text-gray-400 tracking-widest font-Roboto">Referral Code</p>
                       {loadingReferral ? (
                         <div className="h-6 w-40 bg-gray-700/50 rounded-lg animate-pulse mt-1" />
                       ) : (
-                        <code className="text-xl font-bold text-yellow-300 tracking-widest font-Playfair">
+                        <code className="text-xl font-bold text-yellow-300 tracking-widest font-Roboto">
                           {referralCode}
                         </code>
                       )}
@@ -602,7 +602,7 @@ const AdminPassToProfile = () => {
             {loadingCards ? (
               <LoadingSkeleton />
             ) : cards.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 tracking-widest font-Playfair">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 tracking-widest font-Roboto">
                 {cards.map((card, index) => (
                   <CardItem key={card._id || index} card={card} index={index} />
                 ))}
@@ -647,7 +647,7 @@ const AdminPassToProfile = () => {
             {loadingTags ? (
               <LoadingSkeleton />
             ) : parkingTags.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 tracking-widest font-Playfair">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 tracking-widest font-Roboto">
                 {parkingTags.map((tag, index) => (
                   <ParkingTagItem key={tag._id || index} tag={tag} index={index} />
                 ))}
@@ -692,7 +692,7 @@ const AdminPassToProfile = () => {
             {loadingReviews ? (
               <LoadingSkeleton />
             ) : googleReviews.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 tracking-widest font-Playfair">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 tracking-widest font-Roboto">
                 {googleReviews.map((review, index) => (
                   <GoogleReviewItem key={review._id || index} review={review} index={index} />
                 ))}

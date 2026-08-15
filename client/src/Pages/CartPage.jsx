@@ -305,7 +305,7 @@ const CartPage = () => {
       <div className="relative max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 mt-10">
         
         {/* Header - Responsive */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 sm:mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 sm:mb-12 font-Roboto">
           <div className="w-full md:w-auto">
             <Link 
               to="/products" 
@@ -331,7 +331,7 @@ const CartPage = () => {
               exit={{ opacity: 0 }}
               className="text-center py-12 sm:py-20 px-4"
             >
-              <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8 rounded-full bg-gradient-to-br from-gray-900/50 to-gray-800/50 border border-white/10 flex items-center justify-center">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8 rounded-full bg-gradient-to-br from-gray-900/50 to-gray-800/50 border border-white/10 flex items-center justify-center font-Roboto">
                 <FiShoppingCart className="w-12 h-12 sm:w-16 sm:h-16 text-gray-600" />
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-gray-300 mb-3 sm:mb-4">
@@ -355,7 +355,7 @@ const CartPage = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl"
+                  className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl font-Roboto"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6 pb-4 border-b border-white/10">
                     <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2 sm:gap-3">

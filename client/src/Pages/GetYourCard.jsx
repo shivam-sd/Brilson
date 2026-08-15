@@ -7,8 +7,8 @@ import OurSmartCard from './HomePage/OurSmartCard'
 const GetYourCard = () => {
   return (
     <div> 
-      <SmartNFCSection />
-      {/* <ChooseYourCard /> */}
+      <SmartNFCSection /> 
+      {/* <ChooseYourCard /> */} 
       <OurSmartCard />
     </div>
   )

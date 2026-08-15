@@ -58,7 +58,7 @@ const HowItWorks = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="md:text-3xl text-xl font-bold tracking-widest"
+          className="md:text-3xl text-xl font-extrabold tracking-widest font-Roboto"
         >
           How <span className="text-cyan-400">NFC Smart Card</span> Works
         </motion.h4>
@@ -67,7 +67,7 @@ const HowItWorks = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-4 max-w-2xl text-gray-400 md:text-base text-sm"
+          className="mt-4 max-w-2xl text-gray-400 md:text-base text-sm font-Roboto"
         >
           Tap once. Share forever. No apps. No paper. Just smart networking.
         </motion.p>
@@ -154,7 +154,7 @@ const HowItWorks = () => {
 
       {/* BENEFITS */}
       <section className="py-5 px-6 bg-white/5">
-        <h2 className="text-xl md:text-2xl font-bold text-center mb-5 tracking-widest font-Playfair">
+        <h2 className="text-xl md:text-2xl font-bold text-center mb-5 tracking-widest font-Roboto">
           Why Choose <span className="text-cyan-400">Us?</span>
         </h2>
 
@@ -165,7 +165,7 @@ const HowItWorks = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="bg-[#03060A] border border-white/10 rounded-2xl p-6 flex gap-4 tracking-widest font-Poppins"
+              className="bg-[#03060A] border border-white/10 rounded-2xl p-6 flex gap-4 tracking-widest font-Roboto"
             >
               <div className="text-cyan-400 text-3xl">{b.icon}</div>
               <div>
@@ -178,11 +178,11 @@ const HowItWorks = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-24 text-center px-6 tracking-widest font-Playfair">
-        <h2 className="text-3xl md:text-4xl font-bold">
+      <section className="py-24 text-center px-6 tracking-widest font-Roboto">
+        <h2 className="text-3xl md:text-4xl font-semibold">
           Ready to <span className="text-cyan-400">Go Smart?</span>
         </h2>
-        <p className="text-gray-400 mt-4 font-Poppins">
+        <p className="text-gray-400 mt-3 font-semibold">
           Upgrade your networking with NFC smart cards.
         </p>
 
@@ -190,7 +190,7 @@ const HowItWorks = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           className="mt-8 px-10 py-3 rounded-xl 
-          bg-cyan-500 text-black font-semibold shadow-lg cursor-pointer font-Poppins"
+          bg-cyan-500 text-black font-bold shadow-lg cursor-pointer font-Roboto"
         >
             Get Your Card Now
         </motion.button>
