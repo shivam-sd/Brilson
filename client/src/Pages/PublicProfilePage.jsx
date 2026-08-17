@@ -336,7 +336,7 @@ const PublicProfilePage = () => {
         }} 
       />
       
-      <div className="profile bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 text-white bg-transparent">
+      <div className="profile bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 text-white bg-transparent font-Roboto">
         {/* Background Effects */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#E1C48A]/5 rounded-full blur-3xl" />
@@ -412,10 +412,10 @@ const PublicProfilePage = () => {
                 </div>
 
                 {/* Name and Title */}
-                <h2 className="text-4xl font-bold font-Playfair text-white mb-2">
+                <h2 className="text-4xl font-bold font-Roboto text-white mb-2">
                   {profileData.name}
                 </h2>
-                <p className="text-xl text-yellow-600 mb-1 font-Poppins">{profileData.title}</p>
+                <p className="text-xl text-yellow-600 mb-1 font-Roboto">{profileData.title}</p>
                 
                 {/* <p className="text-gray-400 mb-6 font-Poppins">{profileData.company}</p> */}
 
@@ -434,7 +434,7 @@ const PublicProfilePage = () => {
     </div>
     
     <div className="flex-1">
-      <p className="text-gray-300 text-lg md:text-xl font-light italic leading-relaxed">
+      <p className="text-gray-300 text-lg md:text-xl font-light leading-relaxed font-Roboto">
         {profileData.bio}
       </p>
       

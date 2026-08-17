@@ -98,7 +98,7 @@ const PrivacyPolicyPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white font-Roboto">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#E1C48A]/5 rounded-full blur-3xl animate-pulse" />
@@ -124,10 +124,10 @@ const PrivacyPolicyPage = () => {
             transition={{ duration: 0.8 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <h2 className="text-4xl md:text-6xl font-bold mt-5 mb-6 text-white">
+            <h3 className="text-4xl md:text-5xl font-bold mt-5 mb-3 text-white">
               {policyData.hero?.title || 'Privacy Policy'}
-            </h2>
-            <p className="text-xl text-gray-300 mb-5 max-w-2xl mx-auto">
+            </h3>
+            <p className="text-lg text-gray-300 mb-2 max-w-2xl mx-auto">
               {policyData.hero?.description || 'Your privacy is our top priority. Learn how BRILSON protects your data with enterprise-grade security and transparent practices.'}
             </p>
           </motion.div>
@@ -415,7 +415,7 @@ const PrivacyPolicyPage = () => {
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    className="p-8 rounded-2xl bg-transparent border-2 border-white/10 shadow-2xl cursor-pointer hover:scale-[1.02] transition-transform duration-300"
+                    className="p-8 rounded-2xl bg-transparent border-2 border-white/10 shadow-2xl cursor-pointer hover:scale-[1.02] transition-transform duration-300 font-Roboto"
                   >
                     <div className="flex items-center gap-3 mb-6">
                       <div className="p-3 rounded-xl bg-gradient-to-r from-indigo-500/20 to-violet-500/20">

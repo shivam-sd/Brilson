@@ -25,7 +25,7 @@ const ProfileResume = ({activationCode}) => {
   if (!resume) return null;
 
   return (
-    <div className="w-full max-w-7xl">
+    <div className="w-full max-w-7xl font-Roboto">
 
       {/* Main Card */}
       <div className="border border-slate-700/50 

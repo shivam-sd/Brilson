@@ -46,25 +46,25 @@ const handleSubmit = async (e) => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-16 px-6"
       >
-        <h4 className="text-xl md:text-3xl font-extrabold leading-tight">
+        <h4 className="text-xl md:text-3xl font-extrabold leading-tight font-Roboto">
           Contact <span className="text-cyan-400">Sales</span>
         </h4>
-        <p className="text-gray-400 mt-4 max-w-2xl mx-auto lg:text-base text-sm">
+        <p className="text-gray-400 mt-4 max-w-2xl mx-auto lg:text-base text-sm font-Roboto">
           Looking for bulk orders, corporate plans, or business solutions?  
           Our sales team is here to help you find the perfect smart card solution.
         </p>
       </motion.div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-14 px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-14 px-6 font-Roboto">
 
         {/*  Contact Form  */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-white/5 border border-white/10 p-10 rounded-2xl backdrop-blur-xl shadow-xl"
+          className="bg-white/5 border border-white/10 p-10 rounded-2xl backdrop-blur-xl shadow-xl "
         >
-          <h3 className="text-2xl font-semibold mb-6 text-center uppercase tracking-widest font-Playfair">Send us a message</h3>
+          <h3 className="text-2xl font-semibold mb-6 text-center uppercase tracking-widest font-Roboto">Send us a message</h3>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
 
@@ -137,24 +137,24 @@ const handleSubmit = async (e) => {
             <div className="flex items-start gap-5">
               <FiMail size={35} className="text-cyan-400" />
               <div>
-                <h4 className="text-lg font-semibold tracking-widest font-Playfair">Email Us</h4>
-                <p className="text-gray-400 tracking-widest font-Playfair">hello@brilson.com</p>
+                <h4 className="text-lg font-semibold tracking-widest font-Roboto">Email Us</h4>
+                <p className="text-gray-400 tracking-widest font-Roboto">hello@brilson.com</p>
               </div>
             </div>
 
             <div className="flex items-start gap-5">
               <FiPhone size={35} className="text-cyan-400" />
               <div>
-                <h4 className="text-lg font-semibold tracking-widest font-Playfair">Call Sales</h4>
-                <p className="text-gray-400 tracking-widest font-Playfair">+91 98765 43210</p>
+                <h4 className="text-lg font-semibold tracking-widest font-Roboto">Call Sales</h4>
+                <p className="text-gray-400 tracking-widest font-Roboto">+91 98765 43210</p>
               </div>
             </div>
 
             <div className="flex items-start gap-5">
               <FiMapPin size={35} className="text-cyan-400" />
               <div>
-                <h4 className="text-lg font-semibold tracking-widest font-Playfair">Office Address</h4>
-                <p className="text-gray-400 tracking-widest font-Playfair">Jaipur, Rajasthan, India</p>
+                <h4 className="text-lg font-semibold tracking-widest font-Roboto">Office Address</h4>
+                <p className="text-gray-400 tracking-widest font-Roboto">Jaipur, Rajasthan, India</p>
               </div>
             </div>
           </div>

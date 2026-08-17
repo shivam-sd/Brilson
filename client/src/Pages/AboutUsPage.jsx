@@ -224,7 +224,7 @@ const AboutUsPage = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <section className="relative pt-32 pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden font-Roboto">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
@@ -299,7 +299,7 @@ const AboutUsPage = () => {
               </motion.div>
 
               {/* Center Main Card */}
-              <div className="relative z-10 w-full max-w-md mx-auto">
+              <div className="relative z-10 w-full max-w-md mx-auto font-Roboto">
                 <div className="rounded-3xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 backdrop-blur-xl p-8 shadow-2xl">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] flex items-center justify-center">

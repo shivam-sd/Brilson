@@ -35,7 +35,7 @@ const ProfileLocation = ({ activationCode }) => {
 
 
   return (
-    <div className="w-full flex justify-center mt-2">
+    <div className="w-full flex justify-center mt-2 font-Roboto">
       <div className="w-full max-w-4xl rounded-3xl p-6 sm:p-8 ">
 
         {

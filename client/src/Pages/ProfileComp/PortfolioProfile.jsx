@@ -45,7 +45,7 @@ const id = activationCode;
 
 
   return (
-    <div className="mb-16" id="portfolio">
+    <div className="mb-16 font-Roboto " id="portfolio">
       {/* Portfolio Projects Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {portfolio.map((project, index) => (

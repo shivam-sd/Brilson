@@ -48,7 +48,7 @@ const token = localStorage.getItem('token');
   };
 
   return (
-    <div className="mb-16">
+    <div className="mb-16 font-Roboto">
      
      
      {/* Gallery Grid */}

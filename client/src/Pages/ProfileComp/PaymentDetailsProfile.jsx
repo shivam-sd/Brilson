@@ -52,7 +52,7 @@ const PaymentDetailsProfile = ({ activationCode }) => {
   }
 
   return (
-    <div className="w-full flex justify-center sm:px-6 lg:px-8 lg:py-10 md:py-10">
+    <div className="w-full flex justify-center sm:px-6 lg:px-8 lg:py-10 md:py-10 font-Roboto">
 
       <div className="
         w-full 
@@ -77,7 +77,7 @@ const PaymentDetailsProfile = ({ activationCode }) => {
           text-white 
           text-center 
           mb-8 sm:mb-10
-          flex justify-center items-center gap-2 sm:gap-3 tracking-widest font-Playfair
+          flex justify-center items-center gap-2 sm:gap-3 tracking-widest font-Roboto
         ">
           <CreditCard className="text-emerald-400 w-5 h-5 sm:w-6 sm:h-6" />
           Payment Details

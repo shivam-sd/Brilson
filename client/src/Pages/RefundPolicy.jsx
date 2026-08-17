@@ -168,7 +168,7 @@ const RefundPolicyPage = () => {
   const steps = refundProcess?.steps?.length > 0 ? refundProcess.steps : defaultSteps;
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white font-Roboto">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#E1C48A]/5 rounded-full blur-3xl" />
