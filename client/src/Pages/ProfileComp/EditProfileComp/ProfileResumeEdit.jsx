@@ -36,7 +36,7 @@ const ProfileResumeEdit = () => {
   }, [id]);
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 flex items-center justify-center">
+    <div className="min-h-screen p-4 sm:p-6 flex items-center justify-center font-Roboto">
 
       <div className="w-full max-w-4xl bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-6 sm:p-10 text-white">
 

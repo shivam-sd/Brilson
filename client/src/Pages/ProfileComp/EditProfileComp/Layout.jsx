@@ -156,7 +156,7 @@ const Layout = () => {
     <div className="flex min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-white relative">
       
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-gray-900 to-gray-950 border-b border-gray-800/50 px-4 py-3 flex items-center justify-between backdrop-blur-xl">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-gray-900 to-gray-950 border-b border-gray-800/50 px-4 py-3 flex items-center justify-between backdrop-blur-xl font-Roboto">
         <button
           id="menu-button"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -208,7 +208,7 @@ const Layout = () => {
       >
         {/* Mobile Sidebar Header */}
         {isMobile && (
-          <div className="sticky top-0 bg-gradient-to-b from-gray-900 to-gray-900/95 backdrop-blur-xl p-4 border-b border-gray-800/50 z-10">
+          <div className="sticky top-0 bg-gradient-to-b from-gray-900 to-gray-900/95 backdrop-blur-xl p-4 border-b border-gray-800/50 z-10 font-Roboto">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative">

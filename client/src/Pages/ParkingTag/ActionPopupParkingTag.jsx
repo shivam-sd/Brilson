@@ -72,7 +72,7 @@ const ActionPopupParkingTag = ({ number }) => {
                   </div>
                   
                   {/* Title */}
-                  <h2 className="text-2xl font-bold text-center bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent tracking-widest font-Playfair">
+                  <h2 className="text-2xl font-bold text-center bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent tracking-widest font-Roboto">
                     Contact Owner
                   </h2>
                 </div>
@@ -85,7 +85,7 @@ const ActionPopupParkingTag = ({ number }) => {
                     whileTap={{ scale: 0.98 }}
                     onClick={handleCall}
                     disabled={!number}
-                    className={`w-full py-4 rounded-xl font-semibold text-white flex items-center justify-center gap-3 transition-all duration-200 tracking-widest font-Playfair ${
+                    className={`w-full py-4 rounded-xl font-semibold text-white flex items-center justify-center gap-3 transition-all duration-200 tracking-widest font-Roboto ${
                       number
                         ? 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-800 hover:to-blue-700 shadow-lg hover:shadow-xl cursor-pointer'
                         : 'bg-gray-700 cursor-not-allowed opacity-50 tracking-widest font-Poppins'
@@ -101,7 +101,7 @@ const ActionPopupParkingTag = ({ number }) => {
                     whileTap={{ scale: 0.98 }}
                     onClick={handleWhatsApp}
                     disabled={!number}
-                    className={`w-full py-4 rounded-xl font-semibold text-white flex items-center justify-center gap-3 transition-all duration-200 font-Playfair tracking-widest ${
+                    className={`w-full py-4 rounded-xl font-semibold text-white flex items-center justify-center gap-3 transition-all duration-200 font-Roboto tracking-widest ${
                       number
                         ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 shadow-lg hover:shadow-xl cursor-pointer'
                         : 'bg-gray-700 cursor-not-allowed opacity-50'
@@ -115,12 +115,12 @@ const ActionPopupParkingTag = ({ number }) => {
                 {/* Footer Note */}
                 <div className="relative px-6 pb-6">
                   <div className="flex items-center justify-center gap-4 text-sm text-gray-300">
-                    <div className="flex items-center gap-1 font-Playfair tracking-widest font-bold">
+                    <div className="flex items-center gap-1 font-Roboto tracking-widest font-bold">
                       <Shield size={12} />
                       <span>Secure</span>
                     </div>
                     {/* <div className="w-1 h-1 bg-gray-400 rounded-full" /> */}
-                    <div className="flex items-center gap-1 font-Playfair font-bold tracking-widest">
+                    <div className="flex items-center gap-1 font-Roboto font-bold tracking-widest">
                       <Clock size={12} />
                       <span>24/7 Available</span>
                     </div>

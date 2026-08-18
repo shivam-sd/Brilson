@@ -14,7 +14,7 @@ const ProfileFooter = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative mt-16 bg-gradient-to-br from-gray-900 via-gray-950 to-black text-white overflow-hidden rounded-t-3xl border-t border-gray-800/50 shadow-2xl">
+    <footer className="relative mt-16 bg-gradient-to-br from-gray-900 via-gray-950 to-black text-white overflow-hidden rounded-t-3xl border-t border-gray-800/50 shadow-2xl font-Roboto">
       
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

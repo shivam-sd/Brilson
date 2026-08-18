@@ -63,7 +63,7 @@ const GalleryEditProfile = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 font-Roboto">
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <h2 className="text-3xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text">

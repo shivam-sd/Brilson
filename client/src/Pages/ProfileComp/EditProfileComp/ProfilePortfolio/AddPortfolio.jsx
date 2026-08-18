@@ -74,7 +74,7 @@ const AddPortfolio = () => {
       >
         {/* Header */}
         <div className="text-center space-y-2">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent tracking-widest font-Playfair">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent tracking-widest font-Roboto">
             Add Portfolio
           </h2>
           <p className="text-gray-400 text-sm tracking-widest font-Poppins">
@@ -105,7 +105,7 @@ const AddPortfolio = () => {
               name="image"
               accept="image/*"
               onChange={handleChange}
-              className="absolute inset-0 opacity-0 cursor-pointer tracking-widest font-Playfair"
+              className="absolute inset-0 opacity-0 cursor-pointer tracking-widest font-Roboto"
             />
           </div>
         </label>
@@ -116,7 +116,7 @@ const AddPortfolio = () => {
           value={form.title}
           onChange={handleChange}
           placeholder="Product Title"
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Roboto"
         />
 
         {/* Inputs */}
@@ -125,7 +125,7 @@ const AddPortfolio = () => {
           value={form.duration}
           onChange={handleChange}
           placeholder="Duration"
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Roboto"
         />
 
         <textarea
@@ -134,14 +134,14 @@ const AddPortfolio = () => {
           onChange={handleChange}
           placeholder="Product Description"
           rows={4}
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Roboto"
         />
 
         {/* Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-4 rounded-xl font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] active:scale-95 transition flex justify-center items-center gap-2 shadow-lg cursor-pointer tracking-widest font-Playfair"
+          className="w-full py-4 rounded-xl font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] active:scale-95 transition flex justify-center items-center gap-2 shadow-lg cursor-pointer tracking-widest font-Roboto"
         >
           {loading ? (
             <>

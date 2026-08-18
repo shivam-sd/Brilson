@@ -133,7 +133,7 @@ const UpdatePaymentDetails = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl space-y-6 shadow-2xl"
       >
-        <h2 className="text-3xl font-bold text-center text-white tracking-widest font-Playfair">
+        <h2 className="text-3xl font-bold text-center text-white tracking-widest font-Roboto">
           Update Payment Details
         </h2>
 
@@ -164,7 +164,7 @@ const UpdatePaymentDetails = () => {
           value={form.upi}
           onChange={handleChange}
           placeholder="UPI ID"
-          className="input tracking-widest font-Playfair"
+          className="input tracking-widest font-Roboto"
         />
 
         <div className="grid md:grid-cols-2 gap-4">
@@ -173,7 +173,7 @@ const UpdatePaymentDetails = () => {
             value={form.bankName}
             onChange={handleChange}
             placeholder="Bank Name"
-            className="input tracking-widest font-Playfair"
+            className="input tracking-widest font-Roboto"
           />
 
           <input
@@ -181,7 +181,7 @@ const UpdatePaymentDetails = () => {
             value={form.bankHolderName}
             onChange={handleChange}
             placeholder="Account Holder Name"
-            className="input tracking-widest font-Playfair"
+            className="input tracking-widest font-Roboto"
           />
 
           <input
@@ -189,7 +189,7 @@ const UpdatePaymentDetails = () => {
             value={form.accountNumber}
             onChange={handleChange}
             placeholder="Account Number"
-            className="input tracking-widest font-Playfair"
+            className="input tracking-widest font-Roboto"
           />
 
           <input
@@ -197,13 +197,13 @@ const UpdatePaymentDetails = () => {
             value={form.ifscCode}
             onChange={handleChange}
             placeholder="IFSC Code"
-            className="input tracking-widest font-Playfair"
+            className="input tracking-widest font-Roboto"
           />
         </div>
 
         <button
           disabled={loading}
-          className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold flex justify-center gap-2 hover:scale-105 transition cursor-pointer tracking-widest font-Playfair"
+          className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold flex justify-center gap-2 hover:scale-105 transition cursor-pointer tracking-widest font-Roboto"
         >
           {loading ? (
             <>

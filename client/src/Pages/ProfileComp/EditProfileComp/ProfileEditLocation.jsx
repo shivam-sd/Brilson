@@ -56,7 +56,7 @@ const ProfileEditLocation = () => {
   }
 
   return (
-    <div className="w-full flex justify-center px-4 py-12">
+    <div className="w-full flex justify-center px-4 py-12 font-Roboto">
 
       <div className="w-full max-w-3xl bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl p-8 relative overflow-hidden">
 

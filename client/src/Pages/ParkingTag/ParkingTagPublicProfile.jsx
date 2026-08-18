@@ -225,7 +225,7 @@ const ParkingTagPublicProfile = () => {
                   </div>
                 </div>
 
-                <h2 className="text-2xl font-bold text-white mt-4 tracking-widest font-Playfair ">
+                <h2 className="text-2xl font-bold text-white mt-4 tracking-widest font-Roboto ">
                   {profile.ownerName || "Owner Name"}
                 </h2>
               </motion.div>
@@ -237,28 +237,28 @@ const ParkingTagPublicProfile = () => {
                 transition={{ delay: 0.2 }}
                 className="bg-white/5 rounded-xl p-4 mb-4 border border-white/10"
               >
-                <h3 className="text-white font-semibold mb-3 flex items-center gap-2 tracking-widest font-Playfair">
+                <h3 className="text-white font-semibold mb-3 flex items-center gap-2 tracking-widest font-Roboto">
                   <Car size={18} className="text-purple-400" />
                   Vehicle Information
                 </h3>
 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                    <span className="text-gray-300 text-sm flex items-center gap-2 tracking-widest font-Playfair">
+                    <span className="text-gray-300 text-sm flex items-center gap-2 tracking-widest font-Roboto">
                       <Car size={14} className="text-cyan-400" />
                       Vehicle Number
                     </span>
-                    <span className="text-white text-sm tracking-widest font-Playfair font-extrabold">
+                    <span className="text-white text-sm tracking-widest font-Roboto font-extrabold">
                       {profile.vehicleNumber || "Not Added"}
                     </span>
                   </div>
 
                   <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                    <span className="text-gray-300 text-sm flex items-center gap-2 tracking-widest font-Playfair">
+                    <span className="text-gray-300 text-sm flex items-center gap-2 tracking-widest font-Roboto">
                       <MapPin size={14} className="text-cyan-400" />
                       Vehicle Type
                     </span>
-                    <span className="text-white font-bold text-sm tracking-widest font-Playfair uppercase">
+                    <span className="text-white font-bold text-sm tracking-widest font-Roboto uppercase">
                       {profile.vehicleType || "Not Specified"}
                     </span>
                   </div>
@@ -284,28 +284,28 @@ const ParkingTagPublicProfile = () => {
                 transition={{ delay: 0.3 }}
                 className="bg-white/5 rounded-xl p-4 mb-4 border border-white/10"
               >
-                <h3 className="text-white font-semibold mb-3 flex items-center gap-2 tracking-widest font-Playfair">
+                <h3 className="text-white font-semibold mb-3 flex items-center gap-2 tracking-widest font-Roboto">
                   <User size={18} className="text-purple-400" />
                   Contact Information
                 </h3>
 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                    <span className="text-gray-300 text-sm flex items-center gap-2 tracking-widest font-Playfair">
+                    <span className="text-gray-300 text-sm flex items-center gap-2 tracking-widest font-Roboto">
                       <User size={14} className="text-cyan-400" />
                       Owner Name
                     </span>
-                    <span className="text-white text-sm tracking-widest font-Playfair font-extrabold">
+                    <span className="text-white text-sm tracking-widest font-Roboto font-extrabold">
                       {profile.ownerName || "Not Provided"}
                     </span>
                   </div>
 
                   <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                    <span className="text-gray-300 text-sm flex items-center gap-2 tracking-widest font-Playfair">
+                    <span className="text-gray-300 text-sm flex items-center gap-2 tracking-widest font-Roboto">
                       <Phone size={14} className="text-cyan-400" />
                       Phone Number
                     </span>
-                    <span className="text-white text-sm tracking-widest font-Playfair font-extrabold">
+                    <span className="text-white text-sm tracking-widest font-Roboto font-extrabold">
                       {profile.phone || "Not Provided"}
                     </span>
                   </div>
@@ -331,18 +331,18 @@ const ParkingTagPublicProfile = () => {
                 transition={{ delay: 0.4 }}
                 className="bg-white/5 rounded-xl p-4 mb-6 border border-white/10"
               >
-                <h3 className="text-white font-semibold mb-3 flex items-center gap-2 tracking-widest font-Playfair">
+                <h3 className="text-white font-semibold mb-3 flex items-center gap-2 tracking-widest font-Roboto">
                   <Shield size={18} className="text-purple-400" />
                   Tag Details
                 </h3>
 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-300 text-sm flex items-center gap-2 tracking-widest font-Playfair">
+                    <span className="text-gray-300 text-sm flex items-center gap-2 tracking-widest font-Roboto">
                       <Calendar size={14} className="text-cyan-400" />
                       Activated On
                     </span>
-                    <span className="text-white text-sm flex items-center gap-1 tracking-widest font-Playfair font-extrabold">
+                    <span className="text-white text-sm flex items-center gap-1 tracking-widest font-Roboto font-extrabold">
                       <Clock size={12} />
                       {tag.activatedAt
                         ? new Date(tag.activatedAt).toLocaleDateString(

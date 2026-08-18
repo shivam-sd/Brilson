@@ -103,7 +103,7 @@ const ServiceCard = ({ service, index, onDelete, isEditMode, isCarousel }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
         
         {/* Price Badge */}
-        <div className="absolute top-3 right-3 bg-black/60 backdrop-blur px-3 py-1 rounded-full text-sm font-semibold text-emerald-400 border border-emerald-500/30 tracking-widest font-Playfair">
+        <div className="absolute top-3 right-3 bg-black/60 backdrop-blur px-3 py-1 rounded-full text-sm font-semibold text-emerald-400 border border-emerald-500/30 tracking-widest font-Roboto">
           ₹ {service.price}
         </div>
       </div>
@@ -111,7 +111,7 @@ const ServiceCard = ({ service, index, onDelete, isEditMode, isCarousel }) => {
       {/* Content Section */}
       <div className="p-6">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xl font-bold text-white group-hover:text-[#E1C48A] transition tracking-widest font-Playfair">
+          <h3 className="text-xl font-bold text-white group-hover:text-[#E1C48A] transition tracking-widest font-Roboto">
             {service.title}
           </h3>
           {service.link && (

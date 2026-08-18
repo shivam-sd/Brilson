@@ -129,7 +129,7 @@ setOriginalImage(imageUrl);
       >
         {/* Header */}
         <div className="text-center space-y-2">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent tracking-widest font-Playfair">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent tracking-widest font-Roboto">
             Add Product
           </h2>
           <p className="text-gray-400 text-sm tracking-widest font-Poppins">
@@ -160,7 +160,7 @@ setOriginalImage(imageUrl);
               name="image"
               accept="image/jpeg,image/png,image/jpg,image/gif,image/webp,image/svg+xml"
               onChange={handleChange}
-              className="absolute inset-0 opacity-0 cursor-pointer tracking-widest font-Playfair"
+              className="absolute inset-0 opacity-0 cursor-pointer tracking-widest font-Roboto"
             />
           </div>
         </label>
@@ -171,7 +171,7 @@ setOriginalImage(imageUrl);
           value={form.title}
           onChange={handleChange}
           placeholder="Product Title"
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Roboto"
         />
 
         {/* Price */}
@@ -180,7 +180,7 @@ setOriginalImage(imageUrl);
           value={form.price}
           onChange={handleChange}
           placeholder="Product Price"
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Roboto"
         />
 
 
@@ -190,7 +190,7 @@ setOriginalImage(imageUrl);
           value={form.link}
           onChange={handleChange}
           placeholder="Product Link"
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Roboto"
         />
 
         <textarea
@@ -199,14 +199,14 @@ setOriginalImage(imageUrl);
           onChange={handleChange}
           placeholder="Product Description"
           rows={4}
-          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Playfair"
+          className="w-full p-4 rounded-xl bg-gray-900/70 border border-gray-700 focus:border-blue-500 outline-none transition tracking-widest font-Roboto"
         />
 
         {/* Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-4 rounded-xl font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] active:scale-95 transition flex justify-center items-center gap-2 shadow-lg cursor-pointer tracking-widest font-Playfair"
+          className="w-full py-4 rounded-xl font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:scale-[1.02] active:scale-95 transition flex justify-center items-center gap-2 shadow-lg cursor-pointer tracking-widest font-Roboto"
         >
           {loading ? (
             <>

@@ -121,7 +121,7 @@ console.error('Crop complete error:', err);
         className="w-full max-w-xl bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl space-y-6"
       >
         {/* Header */}
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-2 font-Roboto">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             Add Gallery Item
           </h2>
