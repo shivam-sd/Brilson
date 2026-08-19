@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {getCardProfiles, getAllcardsProfile, getCardProfilesByID} = require("../controller/GetCardProfile.controller");
+const {getCardProfiles, getAllcardsProfile, copyUpdate , getCardProfilesByID} = require("../controller/GetCardProfile.controller");
 const {ActivateCardAPi, EditCardProfile, updateCountryCode, updateWaCountryCode, getMyReferrals} = require("../controller/ActivateCardAPi.controller");
 const bulkCreateCards = require("../controller/AdminBulkCardProfile.controller");
 const adminAuth = require("../middleware/authAdminToken");
@@ -32,6 +32,10 @@ router.get("/user/referral", authUserToken, getMyReferrals);
 router.get("/card/:slug", getCardProfiles);
 // router.get("/card/:id", getCardProfilesByID);
 router.get("/all/cards", getAllcardsProfile);
+
+// is api se url copy and update kara rha hu
+router.patch("/cards/:id/copy", copyUpdate);
+
 
 // PUT /api/card/:id/edit
 router.put("/card/:id/editCountryCode",authUserToken, updateCountryCode);

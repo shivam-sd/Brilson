@@ -70,6 +70,22 @@ josh:String,
 pinterest:String,
 reddit:String
     },
+
+    copyCount:{
+      type:Number,
+      default:0
+    },
+
+    lastCopiedAt:{
+      type:Date,
+      default:null
+    },
+
+    indicater:{
+      type:String,
+      default:"green"
+    }
+
   }, 
   { timestamps: true }
 );

@@ -414,27 +414,44 @@ const ManageNFCCard = () => {
 
   // handle Copy Profile Link
 
-  const handleCopyLinkProfile = (activationCode) => {
-    try{
-      const profilelink = `/public/profile/${activationCode}`;
-      setCopyLinkId(activationCode);
-      navigator.clipboard.writeText(profilelink).then(() => {
-        toast.success("Profile link copied!", {
-          position: "top-center",
-          autoClose: 3000
-        });
-      });
-      setTimeout(() => {
-        setCopyLinkId(null);
-      },2000);
-    }catch(err){
-      toast.error("Failed to copy profile link.", {
-        position: "top-center",
-        autoClose: 3000
-      });
-    }
+  const handleCopyLinkProfile = async (activationCode, card) => {
+  try {
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const profilelink = `https://brilson.in/profile/${activationCode}`;
+    setCopyLinkId(activationCode);
+    
+    // Copy to clipboard
+    await navigator.clipboard.writeText(profilelink);
+    
+    // Then update copy count
+    const { data } = await axios.patch(
+      `${baseUrl}/api/cards/${card._id}/copy`
+    );
+    
+    // Local UI update
+    setCards(prev =>
+      prev.map(item =>
+        item._id === card._id
+          ? { ...item, copyCount: data.copyCount }
+          : item
+      )
+    );
+    
+    toast.success("URL copied successfully");
+    
+    setTimeout(() => {
+      setCopyLinkId(null);
+    }, 1000);
+    
+  } catch (err) {
+    console.error("Copy error:", err);
+    toast.error("Failed to copy profile link.", {
+      position: "top-center",
+      autoClose: 3000
+    });
+    setCopyLinkId(null);
   }
-
+};
 
 
 
@@ -851,17 +868,87 @@ const ManageNFCCard = () => {
                       View
                     </Link>
                   </td>
+
                   <td className="p-3 text-center">
-                    <button
-                      onClick={() => handleCopyLinkProfile(card?.activationCode || card?.slug)}
-                      className="text-indigo-400 hover:text-indigo-300 transition text-xs font-medium hover:cursor-pointer"
-                      target="_blank"
-                    >
-                     {
-                      copyLinkId === card?.activationCode ? "✅" : "Copy"
-                     }
-                    </button>
-                  </td>
+  <div className="flex items-center justify-center gap-2">
+    {/* Copy Button with Icon */}
+    <button
+      onClick={() => handleCopyLinkProfile(card?.activationCode || card?.slug, card)}
+      className={`
+        group relative flex items-center flex-col gap-2 px-3 py-1.5 rounded-lg
+        transition-all duration-300 ease-in-out cursor-pointer font-Roboto
+        ${copyLinkId === card?.activationCode 
+          ? 'bg-green-500/20 text-green-400 ring-1 ring-green-500/50' 
+          : 'bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white'
+        }
+        ${card?.indicater === "green" ? 'hover:ring-1 hover:ring-green-500/30' : ''}
+        ${card?.indicater === "yellow" ? 'hover:ring-1 hover:ring-yellow-500/30' : ''}
+        ${card?.indicater === "red" ? 'hover:ring-1 hover:ring-red-500/30' : ''}
+        hover:scale-105 active:scale-95
+        disabled:opacity-50 disabled:cursor-not-allowed
+        `}
+        disabled={!card?.activationCode}
+        title="Copy profile link"
+        >
+      <div className="flex items-center gap-2">
+      {/* Icon */}
+      <svg 
+        className={`w-3.5 h-3.5 transition-transform duration-300 ${
+          copyLinkId === card?.activationCode ? 'scale-110' : 'group-hover:scale-110'
+        }`}
+        fill="none" 
+        stroke="currentColor" 
+        viewBox="0 0 24 24"
+      >
+        {copyLinkId === card?.activationCode ? (
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+        ) : (
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+        )}
+      </svg>
+
+      {/* Text */}
+      <span className="text-xs font-medium">
+        {copyLinkId === card?.activationCode ? '✅' : 'Copy'}
+      </span>
+
+      {/* Counter Badge */}
+      <span className={`
+        ml-0.5 px-2 py-0.5 rounded-full text-xs font-bold
+        transition-all duration-300
+        ${card?.indicater === "green" 
+          ? 'bg-green-500/20 text-green-400 ring-1 ring-green-500/30' 
+          : ''
+        }
+        ${card?.indicater === "yellow" 
+          ? 'bg-yellow-500/20 text-yellow-400 ring-1 ring-yellow-500/30' 
+          : ''
+        }
+        ${card?.indicater === "red" 
+          ? 'bg-red-500/20 text-red-400 ring-1 ring-red-500/30' 
+          : ''
+        }
+        ${!card?.indicater 
+          ? 'bg-gray-700/50 text-gray-400 ring-1 ring-gray-600/30' 
+          : ''
+        }
+        ${copyLinkId === card?.activationCode ? 'animate-pulse' : ''}
+      `}>
+        {card?.copyCount || 0}
+      </span>
+
+      {/* Tooltip on hover */}
+      <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+        <div className="bg-gray-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap border border-gray-700">
+          Click to copy profile link
+        </div>
+      </div>
+
+      </div>
+      <span className="text-[10px]">{ new Date(card?.lastCopiedAt).toLocaleString()}</span>
+    </button>
+  </div>
+</td>
                 </tr>
               ))
             ) : (

@@ -15,6 +15,56 @@ const getCardProfiles = async (req, res) => {
 };
 
 
+// ish controller se ham admin side mai jo url copy ho rha hai use update kar rhe hai.
+const copyUpdate = async (req, res) => {
+  try{
+    const card = await CardProfileModel.findByIdAndUpdate(req.params.id, {
+      $inc:{copyCount:1},
+      $set:{lastCopiedAt:new Date()}
+    },
+      {
+        new:true
+      }
+  )
+
+
+  if(!card){
+    return res.status(404).json({error:"Card Not Found"});
+  }
+
+
+   let colorIndicator = "green"; // Default
+
+
+    if (card.copyCount >= 3 && card.copyCount <= 5) {
+      colorIndicator = "yellow";
+    } else if (card.copyCount > 5) {
+      colorIndicator = "red";
+    }
+
+
+
+   card.indicater = colorIndicator
+await card.save();
+
+
+      res.status(200).json({
+      message: "Copy count updated",
+      copyCount: card.copyCount,
+      indicater:colorIndicator
+    });
+
+  }catch(err){
+   res.status(500).json({
+      message: "Failed to update copy count"
+    });
+    console.log("failed to update copy", err);
+  }
+} 
+
+
+
+
 const getAllcardsProfile = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -63,4 +113,4 @@ const getAllcardsProfile = async (req, res) => {
 
 
 
-module.exports = {getCardProfiles, getAllcardsProfile};
+module.exports = {getCardProfiles, getAllcardsProfile, copyUpdate};
