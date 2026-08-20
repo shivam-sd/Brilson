@@ -553,7 +553,7 @@ const AdminPassToProfile = () => {
                         <div className="h-6 w-40 bg-gray-700/50 rounded-lg animate-pulse mt-1" />
                       ) : (
                         <code className="text-xl font-bold text-yellow-300 tracking-widest font-Roboto">
-                          {referralCode}
+                          {referralCode ? referralCode : "Activate Your Card First!"}
                         </code>
                       )}
                     </div>

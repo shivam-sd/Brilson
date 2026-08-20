@@ -27,6 +27,8 @@ const ManageNFCCard = () => {
     activated: 0,
     inactive: 0,
   });
+  const [cardsStatus, setCardsStatus] = useState("all");
+  // console.log(cardsStatus)
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
 
@@ -51,13 +53,24 @@ const ManageNFCCard = () => {
   const cardRef = useRef();
 
   //  Fetch cards
-  const fetchCards = useCallback(async (page = 1, search = "") => {
+   const fetchCards = useCallback(async (page = 1, search = "", status = "all") => {
     try {
       setLoading(true);
       setIsSearching(!!search);
 
       const baseUrl = import.meta.env.VITE_BASE_URL || '';
-      const url = `${baseUrl}/api/all/cards?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+      const params = new URLSearchParams({
+        page,
+        limit,
+        search: search || ""
+      });
+      
+      // ✅ Add status to query params
+      if (status && status !== "all") {
+        params.append("status", status);
+      }
+      
+      const url = `${baseUrl}/api/all/cards?${params.toString()}`;
 
       const token = localStorage.getItem("adminToken");
       if (!token) {
@@ -71,18 +84,35 @@ const ManageNFCCard = () => {
         timeout: 30000,
       });
 
-      const allCards = res.data.allCards || [];
-      // console.log("Fetched Cards:", allCards);
+      console.log("API Response:", res.data); // ✅ Debug log
+
+      // ✅ Handle both response structures
+      const responseData = res.data.data || res.data;
+      const allCards = responseData.cards || responseData.allCards || [];
+      
       setCards(allCards);
-      setTotalCards(res.data.totalCards || 0);
-      setTotalPages(res.data.totalPages || 1);
-      setCurrentPage(res.data.page || 1);
+      setTotalCards(responseData.pagination?.totalCards || responseData.totalCards || 0);
+      setTotalPages(responseData.pagination?.totalPages || responseData.totalPages || 1);
+      setCurrentPage(responseData.pagination?.page || responseData.page || 1);
 
-      const total = res.data.totalCards || 0;
-      const activated = allCards.filter(card => card.isActivated).length;
-      const inactive = allCards.length - activated;
-
-      setStats({ total, activated, inactive });
+     // Update stats based on response
+      let statsData;
+      if (responseData.stats?.overall) {
+        // New response structure
+        statsData = responseData.stats.overall;
+      } else {
+        // Old response structure - calculate from current cards
+        const total = responseData.totalCards || allCards.length;
+        const activated = allCards.filter(card => card.isActivated).length;
+        const inactive = allCards.filter(card => !card.isActivated).length;
+        statsData = { total, activated, inactive };
+      }
+      
+      setStats({
+        total: statsData.total || 0,
+        activated: statsData.activated || 0,
+        inactive: statsData.inactive || 0
+      });
 
     } catch (err) {
       console.error("❌ Fetch error:", err);
@@ -92,14 +122,17 @@ const ManageNFCCard = () => {
     }
   }, [limit]);
 
+  //  useEffect with all dependencies
   useEffect(() => {
-    fetchCards(currentPage, searchQuery);
-  }, []);
+    fetchCards(currentPage, searchQuery, cardsStatus);
+  }, [fetchCards, currentPage, searchQuery, cardsStatus]);
+
+
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
       setCurrentPage(page);
-      fetchCards(page, searchQuery);
+      fetchCards(page, searchQuery, cardsStatus);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -107,13 +140,13 @@ const ManageNFCCard = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
-    fetchCards(1, searchQuery);
+    fetchCards(1, searchQuery, cardsStatus);
   };
 
-  const handleClearSearch = () => {
+ const handleClearSearch = () => {
     setSearchQuery("");
     setCurrentPage(1);
-    fetchCards(1, "");
+    fetchCards(1, "", cardsStatus);
   };
 
   //  SINGLE CARD DOWNLOAD - Works perfectly
@@ -203,7 +236,7 @@ const ManageNFCCard = () => {
     }
   };
 
-  // ✅ FIXED: BULK DOWNLOAD - Using the same approach as single download
+  // ✅ BULK DOWNLOAD - Using the same approach as single download
   const downloadCurrentPageCards = async () => {
     if (cards.length === 0) {
       alert("No cards available on this page to download");
@@ -472,7 +505,7 @@ const ManageNFCCard = () => {
     );
   }
 
-  const StatusBadge = ({ active }) => (
+ const StatusBadge = ({ active }) => (
     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
       active ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
     }`}>
@@ -523,8 +556,9 @@ const ManageNFCCard = () => {
   );
 
   return (
-    <div className="px-3 sm:px-4 md:px-6 lg:px-2 py-4 text-gray-200 max-w-full overflow-x-hidden">
+     <div className="px-3 sm:px-4 md:px-6 lg:px-2 py-4 text-gray-200 max-w-full overflow-x-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6 lg:mt-0 mt-11">
         <div className="w-full lg:w-auto text-center lg:text-left">
@@ -538,7 +572,23 @@ const ManageNFCCard = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-stretch sm:items-center">
-          {/* Bulk Download Button - Current Page */}
+          {/* ✅  Status Filter Dropdown */}
+          <select 
+            value={cardsStatus} 
+            onChange={(e) => {
+              const newStatus = e.target.value;
+              setCardsStatus(newStatus);
+              setCurrentPage(1); // Reset to first page
+              fetchCards(1, searchQuery, newStatus);
+            }}
+            className="px-3 py-2 bg-gray-800/50 rounded-lg text-gray-200 border border-gray-700/50 focus:outline-none focus:ring-1 focus:ring-indigo-400 cursor-pointer"
+          >
+            <option value="all">📋 All Cards </option>
+            <option value="active">✅ Active </option>
+            <option value="inactive">⏸️ Inactive </option>
+          </select>
+
+          {/* Bulk Download Button */}
           <button
             onClick={downloadCurrentPageCards}
             disabled={downloading || cards.length === 0}
@@ -578,7 +628,7 @@ const ManageNFCCard = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
+                placeholder="Search by name or code..."
                 className="bg-gray-900/60 backdrop-blur border-0 pl-9 pr-8 py-2.5 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white text-sm"
               />
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2">

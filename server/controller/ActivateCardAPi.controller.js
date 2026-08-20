@@ -58,6 +58,11 @@ const ActivateCardAPi = async (req, res) => {
 
     await card.save();
 
+// update referal code by the activation code
+    const owner = await UserModel.findById(card.owner);
+    owner.referralCode = activationCode;
+    await owner.save();
+
     /*  ADD CARD TO USER  */
     user.myCards.addToSet(card._id);
 
@@ -86,6 +91,7 @@ const ActivateCardAPi = async (req, res) => {
       await user.save();
       // await refferdByUser.save();
     }
+
 
     return res.status(200).json({
       message: "Card activated successfully",

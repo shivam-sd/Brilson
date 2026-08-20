@@ -2,7 +2,7 @@ const UserModel = require("../models/User.model");
 const ParkingTagModel = require("../models/AddParkingTag.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const generateReferralCode = require("../utils/generateReferralCode");
+// const generateReferralCode = require("../utils/generateReferralCode");
 const CardProfileModel = require("../models/CardProfile");
 const nodemailer = require("nodemailer");
 
@@ -55,12 +55,12 @@ const UserRegister = async (req, res) => {
     }
 
     //  Generate own referral code
-    const referCode = generateReferralCode(name);
+    // const referCode = generateReferralCode(name);
 
     //  Update same OTP user
     user.name = name;
     user.password = hashedPass;
-    user.referralCode = referCode;
+    // user.referralCode = referCode;
     user.referredBy = referredBy;
 
     // clear otp fields
