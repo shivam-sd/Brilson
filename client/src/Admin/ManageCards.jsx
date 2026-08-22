@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import QRCodeStyling from "qr-code-styling";
 import JSZip from "jszip";
+import {toast} from "react-toastify";
 import { HexColorPicker } from "react-colorful";
 
 /* Ultra High Resolution PNG Generator - 4000px for no pixelation */
@@ -268,31 +269,69 @@ const ManageCards = () => {
     setGeneratingQR(false);
   }, [qrDotsColor, qrBgColor, textColor, currentPage]);
 
-  const fetchCards = async (page = 1, search = "") => {
+    const fetchCards = useCallback(async (page = 1, search = "", status = "all") => {
     try {
       setLoading(true);
       setIsSearching(!!search);
       currentPageRef.current = page;
       
-      const url = `${import.meta.env.VITE_BASE_URL}/api/all/cards?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+      const baseUrl = import.meta.env.VITE_BASE_URL || '';
       
-      const res = await axios.get(url, { 
+    
+      const params = new URLSearchParams({
+        page,
+        limit,
+        search: search || ""
+      });
+    
+      if (status && status !== "all") {
+        params.append("status", status);
+      }
+      
+      const url = `${baseUrl}/api/all/cards?${params.toString()}`;
+      
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        setError("Please login again");
+        setLoading(false);
+        return;
+      }
+      
+      const res = await axios.get(url, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          Authorization: `Bearer ${token}`,
         },
+        timeout: 30000,
       });
       
-      const allCards = res.data.allCards || [];
+      console.log("API Response:", res.data); // Debug log
+      
+      
+      const responseData = res.data.data || res.data;
+      const allCards = responseData.cards || responseData.allCards || [];
+      
+      console.log("Cards fetched:", allCards.length);
+      
       setCards(allCards);
-      setTotalCards(res.data.totalCards || 0);
-      setTotalPages(res.data.totalPages || 1);
-      setCurrentPage(res.data.page || 1);
+      setTotalCards(responseData.pagination?.totalCards || responseData.totalCards || 0);
+      setTotalPages(responseData.pagination?.totalPages || responseData.totalPages || 1);
+      setCurrentPage(responseData.pagination?.page || responseData.page || 1);
       
-      const total = res.data.totalCards || 0;
-      const activated = allCards.filter(card => card.isActivated).length;
-      const inactive = allCards.length - activated;
+      let statsData;
+      if (responseData.stats?.overall) {
+        statsData = responseData.stats.overall;
+      } else {
+        const total = responseData.totalCards || allCards.length;
+        const activated = allCards.filter(card => card.isActivated).length;
+        const inactive = allCards.filter(card => !card.isActivated).length;
+        statsData = { total, activated, inactive };
+      }
       
-      setStats({ total, activated, inactive });
+      setStats({
+        total: statsData.total || 0,
+        activated: statsData.activated || 0,
+        inactive: statsData.inactive || 0
+      });
       
       // Clear previous page QR images
       setQrImages({});
@@ -301,24 +340,18 @@ const ManageCards = () => {
       await generateQRCodesForCurrentPage(allCards);
       
     } catch (err) {
-      console.error(err);
-      setError("Unable to fetch cards");
+      console.error("Fetch error:", err);
+      setError(err.message || "Unable to fetch cards");
+      toast.error("Failed to fetch cards");
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit, generateQRCodesForCurrentPage]);
 
-  // Color change par sirf current page ke QR regenerate karein
+  //  useEffect with all dependencies
   useEffect(() => {
-    if (cards.length > 0 && !loading) {
-      setQrImages({});
-      generateQRCodesForCurrentPage(cards);
-    }
-  }, [qrBgColor, qrDotsColor, textColor]);
-
-  useEffect(() => {
-    fetchCards(currentPage, searchQuery);
-  }, []);
+    fetchCards(currentPage, searchQuery, );
+  }, [fetchCards, currentPage, searchQuery, ]);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {

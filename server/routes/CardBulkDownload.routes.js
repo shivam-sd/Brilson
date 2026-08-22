@@ -36,7 +36,7 @@ async function getLogoDataUrl() {
   }
 
   try {
-    const domain = process.env.VITE_DOMAIN || 'https://brilson.in';
+    const domain = process.env.BASE_URL1 || 'https://brilson.in';
     const response = await fetch(`${domain}/B.png`);
     const arrayBuffer = await response.arrayBuffer();
     cachedLogoDataUrl = `data:image/png;base64,${Buffer.from(arrayBuffer).toString(
@@ -317,7 +317,7 @@ async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
 
 
 async function renderCardPng(page, { card, colors }) {
-  const profileUrl = `${process.env.VITE_DOMAIN || 'https://brilson.in'}/c/card/${
+  const profileUrl = `${process.env.BASE_URL1 || 'https://brilson.in'}/c/card/${
    card.activationCode
   }`;
 
