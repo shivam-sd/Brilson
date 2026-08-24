@@ -222,6 +222,40 @@ const userlogout = async (req, res) => {
 
 
 
+const AllUsers = async (req, res) => {
+  try{
+    const page = parseInt(req.query.page || 1);
+    const limit = 15;
+    const skip = (page - 1) * limit;
+    
+const totalPage =  Math.ceil(await UserModel.countDocuments() / limit);
+
+    const allUsers = await UserModel.find().skip(skip).limit(limit).lean()
+    
+    let Users = []
+
+    allUsers.map((u) => {
+       const obj = {id:u._id, name:u.name, phone:u.phone, joined:u.createdAt, totalOrders:u.totalOrders}
+       Users.push(obj);
+    });
+
+console.log(Users)
+
+    res.status(200).json({
+      page,
+      limit,
+      skip,
+      totalPage,
+      Users:Users
+    })
+
+  }catch(err){
+     res.status(500).json({error:"Internal Server Error"});
+  }
+}
+
+
+
 
 
 module.exports = {
@@ -229,5 +263,6 @@ module.exports = {
   UserLogin,
   findLoggedInUser,
   getMyActiveCard,
-  userlogout
+  userlogout,
+  AllUsers
 };

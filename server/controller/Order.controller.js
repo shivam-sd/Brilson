@@ -187,7 +187,7 @@ const allOrders = async (req, res) => {
       return new Date(order.createdAt) >= sevenDays
       });
 
-      console.log(lastSevenDaysOrder);
+      console.log(lastSevenDaysOrder); 
 
     res.status(200).json({
       success: true,

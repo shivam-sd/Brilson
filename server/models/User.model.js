@@ -117,6 +117,11 @@ hasReceivedFirstActivationReward: {
   { timestamps: true }
 );
 
+
+userSchema.index({ referredBy: 1 });                          
+userSchema.index({ referralStatus: 1 });           
+
+
 module.exports = mongoose.model("User", userSchema);
 
 // const referralLink = `${window.location.origin}/product/${productId}?ref=${user.referralCode}`;

@@ -107,6 +107,7 @@ import AboutPageAdmin from "./Admin/LandingPage/AboutPageAdmin";
 import TermsCondition from "./Admin/LandingPage/TermsCondition";
 import RefundPolicy from "./Admin/LandingPage/RefundPolicy";
 import AdminInvoiceAddress from "./Admin/AdminInvoiceAddress";
+import UsersList from "./Admin/UsersList";
 
 
 
@@ -250,6 +251,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AdminProducts />
+                </ProtectedRoute>
+              }
+              />
+            <Route
+              path="users/list"
+              element={
+                <ProtectedRoute>
+                  <UsersList />
                 </ProtectedRoute>
               }
               />

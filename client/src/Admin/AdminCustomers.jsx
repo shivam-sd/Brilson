@@ -7,10 +7,9 @@ const AdminCustomers = () => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchCustomersFromOrders();
-  }, []);
 
+  useEffect(() => {
+  
   const fetchCustomersFromOrders = async () => {
     try {
       const res = await axios.get(
@@ -22,35 +21,21 @@ const AdminCustomers = () => {
         }
       );
 
-      const orders = res.data.orders || [];
+      console.log(res)
+      const orders = res.data.lastSevenDaysOrder || [];
 
-      /*  CREATE UNIQUE CUSTOMERS  */
-      const customerMap = new Map();
-
-      orders.forEach((order) => {
-        const userId = order.userId || order.address?.email;
-
-        if (!customerMap.has(userId)) {
-          customerMap.set(userId, {
-            id: userId,
-            name: order.address?.name || "Unknown User",
-            email: order.address?.email || "N/A",
-            phone: order.address?.phone || "N/A",
-            joined: new Date(order.createdAt).toLocaleDateString(),
-            totalOrders: 1,
-          });
-        } else {
-          customerMap.get(userId).totalOrders += 1;
-        }
-      });
-
-      setCustomers([...customerMap.values()]);
+      setCustomers(orders);
       setLoading(false);
     } catch (err) {
       console.error("Customer Fetch Error:", err);
       setLoading(false);
     }
   };
+
+console.log(customers)
+    fetchCustomersFromOrders();
+  }, []);
+
 
   /*  UI  */
   if (loading) {
@@ -78,7 +63,7 @@ const AdminCustomers = () => {
                 <th className="p-4">Name</th>
                 <th className="p-4">Email</th>
                 <th className="p-4">Phone</th>
-                <th className="p-4">Orders</th>
+                <th className="p-4">Amount</th>
                 <th className="p-4">Joined</th>
               </tr>
             </thead>
@@ -89,14 +74,14 @@ const AdminCustomers = () => {
                   key={i}
                   className="border-t border-white/5 hover:bg-white/5 transition"
                 >
-                  <td className="p-4 break-all">{c.id}</td>
-                  <td className="p-4 font-medium">{c.name}</td>
-                  <td className="p-4">{c.email}</td>
-                  <td className="p-4">{c.phone}</td>
+                  <td className="p-4 break-all">{c?.userId}</td>
+                  <td className="p-4 font-medium">{c?.address?.name}</td>
+                  <td className="p-4">{c?.address?.email}</td>
+                  <td className="p-4">{c?.address?.phone}</td>
                   <td className="p-4 text-cyan-400 font-semibold">
-                    {c.totalOrders}
+                    {c.totalAmount}
                   </td>
-                  <td className="p-4 text-gray-400">{c.joined}</td>
+                  <td className="p-4 text-gray-400">{new Date(c?.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -110,21 +95,21 @@ const AdminCustomers = () => {
               key={i}
               className="bg-[#1B1F2D] border border-white/5 rounded-xl p-4 flex flex-col gap-2"
             >
-              <h2 className="font-semibold text-lg">{c.name}</h2>
+              <h2 className="font-semibold text-lg">{c?.address?.name}</h2>
 
               <p className="text-gray-400 text-xs break-all">
-                ID: {c.id}
+                ID: {c?.userId}
               </p>
 
-              <p className="text-gray-300 text-sm">📧 {c.email}</p>
-              <p className="text-gray-300 text-sm">📞 {c.phone}</p>
+              <p className="text-gray-300 text-sm">📧 {c?.address?.email}</p>
+              <p className="text-gray-300 text-sm">📞 {c?.address?.phone}</p>
 
               <p className="text-cyan-400 text-sm font-semibold">
-                🛒 Orders: {c.totalOrders}
+                ®️ Amount: {c?.totalAmount}
               </p>
 
               <p className="text-gray-400 text-xs">
-                📅 Joined: {c.joined}
+                📅 Joined: {new Date(c?.c?.createdAt).toLocaleDateString()}
               </p>
             </div>
           ))}

@@ -67,17 +67,17 @@ await card.save();
 
 const getAllcardsProfile = async (req, res) => {
   try {
-    // ✅ Parse query parameters
+    //  Parse query parameters
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 40));
     const search = req.query.search?.trim() || "";
     const status = req.query.status; // "active", "inactive", "all", or undefined
     const skip = (page - 1) * limit;
 
-    // ✅ Build search query - ONLY for search text
+    // Build search query - ONLY for search text
     let searchQuery = {};
 
-    // ✅ Add search conditions if search text exists
+    //  Add search conditions if search text exists
     if (search) {
       searchQuery.$or = [
         { "profile.name": { $regex: search, $options: "i" } },
@@ -85,7 +85,7 @@ const getAllcardsProfile = async (req, res) => {
       ];
     }
 
-    // ✅ Add status filter - CORRECT WAY
+    // Add status filter - CORRECT WAY
     if (status === "active") {
       searchQuery.isActivated = true;
     } else if (status === "inactive") {
@@ -108,18 +108,18 @@ const getAllcardsProfile = async (req, res) => {
       .lean(); // Better performance
 
     // ✅ Calculate counts for response
-    const activatedCount = allCards.filter(card => card.isActivated === true).length;
-    const inactiveCount = allCards.filter(card => card.isActivated === false).length;
+    // const activatedCount = allCards.filter(card => card.isActivated === true).length;
+    // const inactiveCount = allCards.filter(card => card.isActivated === false).length;
 
     // ✅ Get total counts across all pages (for accurate stats)
-    const totalActivated = await CardProfileModel.countDocuments({ 
-      ...searchQuery, 
-      isActivated: true 
-    });
-    const totalInactive = await CardProfileModel.countDocuments({ 
-      ...searchQuery, 
-      isActivated: false 
-    });
+    // const totalActivated = await CardProfileModel.countDocuments({ 
+    //   ...searchQuery, 
+    //   isActivated: true 
+    // });
+    // const totalInactive = await CardProfileModel.countDocuments({ 
+    //   ...searchQuery, 
+    //   isActivated: false 
+    // });
 
     return res.status(200).json({
       success: true,

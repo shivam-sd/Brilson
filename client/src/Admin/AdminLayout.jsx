@@ -20,6 +20,7 @@ import { MdManageAccounts } from "react-icons/md";
 import { FaLuggageCart } from "react-icons/fa";
 import { MdReviews } from "react-icons/md";
 import { FaFileInvoice } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa6";
 
 const AdminLayout = () => {
   const [open, setOpen] = useState(false);
@@ -33,6 +34,7 @@ const AdminLayout = () => {
   "/admindashboard": "Admin Dashboard",
   "/admindashboard/products/list": "Admin Products",
   "/admindashboard/orders/list": "Admin Orders",
+  "/admindashboard/users/list": "Users List",
   "/admindashboard/customers/list": "Admin Customers",
   "/admindashboard/manage-cards": "Admin Manage Cards (QR)",
   "/admindashboard/manage-cards/card": "Admin Manage Cards (CARD)",
@@ -102,6 +104,15 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
             onClick={() => setOpen(false)}
           >
             <FiShoppingBag size={18} /> Orders
+          </NavLink>
+
+
+          <NavLink
+            to="users/list"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
+            onClick={() => setOpen(false)}
+          >
+            <FaUsers size={18} /> Users List
           </NavLink>
 
           <NavLink
@@ -231,6 +242,14 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
             >
               <FiShoppingBag size={18} /> Orders
             </NavLink>
+
+            <NavLink
+              to="users/list"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-sm"
+            >
+              <FaUsers size={18} /> Users List
+            </NavLink>
+
 
             <NavLink
               to="customers/list"
