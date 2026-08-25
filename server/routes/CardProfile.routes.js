@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {getCardProfiles, getAllcardsProfile, copyUpdate , getCardProfilesByID} = require("../controller/GetCardProfile.controller");
-const {ActivateCardAPi, EditCardProfile, updateCountryCode, updateWaCountryCode, getMyReferrals} = require("../controller/ActivateCardAPi.controller");
+const {ActivateCardAPi, EditCardProfile, updateCountryCode, updateWaCountryCode, getMyReferrals, getAllReferralsForAdmin} = require("../controller/ActivateCardAPi.controller");
 const bulkCreateCards = require("../controller/AdminBulkCardProfile.controller");
 const adminAuth = require("../middleware/authAdminToken");
 const claimCardProfile = require("../controller/ClaimcardProfile.controller");
@@ -27,6 +27,9 @@ router.post("/card/activate", authUserToken, ActivateCardAPi);
 
 // POST /GET/Referral
 router.get("/user/referral", authUserToken, getMyReferrals);
+
+// POST /GET/All/Referral/ For Admin
+router.get("/admin/referrals", authUserToken, getAllReferralsForAdmin);
 
 // GET /api/card/:slug
 router.get("/card/:slug", getCardProfiles);

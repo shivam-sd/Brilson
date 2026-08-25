@@ -108,6 +108,7 @@ import TermsCondition from "./Admin/LandingPage/TermsCondition";
 import RefundPolicy from "./Admin/LandingPage/RefundPolicy";
 import AdminInvoiceAddress from "./Admin/AdminInvoiceAddress";
 import UsersList from "./Admin/UsersList";
+import ReferralManagement from "./Admin/ReferralManagement";
 
 
 
@@ -262,11 +263,21 @@ function App() {
                 </ProtectedRoute>
               }
               />
+
             <Route
               path="customers/list"
               element={
                 <ProtectedRoute>
                   <AdminCustomers />
+                </ProtectedRoute>
+              }
+              />
+
+            <Route
+              path="admin/referral"
+              element={
+                <ProtectedRoute>
+                  <ReferralManagement />
                 </ProtectedRoute>
               }
               />

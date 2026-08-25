@@ -239,7 +239,7 @@ const totalPage =  Math.ceil(await UserModel.countDocuments() / limit);
        Users.push(obj);
     });
 
-console.log(Users)
+// console.log(Users)
 
     res.status(200).json({
       page,

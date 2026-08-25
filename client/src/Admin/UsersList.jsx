@@ -8,6 +8,7 @@ import {
   FiUsers
 } from "react-icons/fi";
 
+
 const UsersList = () => {
   const token = localStorage.getItem("adminToken");
   
@@ -22,7 +23,7 @@ const UsersList = () => {
     try {
       setLoading(true);
       
-      const url = `${import.meta.env.VITE_BASE_URL}/api/users/all-users?page=${page}&limit=${limit}`;
+      const url = `${import.meta.env.VITE_BASE_URL}/api/users/all-users?page=${page}`;
       
       const res = await axios.get(url, {
         headers: {
@@ -32,11 +33,12 @@ const UsersList = () => {
       
       const usersData = res.data.Users || [];
       setUsers(usersData);
+      // console.log(usersData)
       setTotalPages(res.data.totalPage || 1);
       setTotalUsers(res.data.totalUsers || usersData.length);
       setCurrentPage(res.data.page || 1);
       
-
+      
       
     } catch (err) {
       console.error("Error fetching users:", err);
@@ -44,11 +46,12 @@ const UsersList = () => {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchUsers(currentPage);
   }, [currentPage]);
-
+  
+  // console.log(users)
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);

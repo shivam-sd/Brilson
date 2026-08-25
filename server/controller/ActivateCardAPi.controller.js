@@ -223,6 +223,97 @@ const getMyReferrals = async (req, res) => {
   }
 };
 
+
+
+
+const getAllReferralsForAdmin = async (req, res) => {
+  try {
+    const referrals = await UserModel.aggregate([
+      {
+        $match: {
+          referredBy: { $ne: null },
+        },
+      },
+
+      {
+        $group: {
+          _id: "$referredBy",
+
+          referrals: {
+            $push: {
+              _id: "$_id",
+              name: "$name",
+              phone: "$phone",
+              referralStatus: "$referralStatus",
+              createdAt: "$createdAt",
+            },
+          },
+
+          totalReferrals: {
+            $sum: 1,
+          },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "referrer",
+        },
+      },
+
+      {
+        $unwind: "$referrer",
+      },
+
+      {
+        $project: {
+          _id: 0,
+
+          user: {
+            _id: "$referrer._id",
+            name: "$referrer.name",
+            phone: "$referrer.phone",
+          },
+
+          totalReferrals: 1,
+          referrals: 1,
+        },
+      },
+
+      {
+        $sort: {
+          "user.name": 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      totalUsersWhoReferred: referrals.length,
+      referrals,
+    });
+  } catch (error) {
+    console.error("Admin referral error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+
 const EditCardProfile = async (req, res) => {
   try {
     const { id } = req.params;
@@ -317,4 +408,5 @@ module.exports = {
   updateCountryCode,
   updateWaCountryCode,
   getMyReferrals,
+  getAllReferralsForAdmin
 };

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Outlet, NavLink, Link, useLocation } from "react-router-dom";
+import { VscReferences } from "react-icons/vsc";
 import {
   FiHome,
   FiPackage,
@@ -35,6 +36,7 @@ const AdminLayout = () => {
   "/admindashboard/products/list": "Admin Products",
   "/admindashboard/orders/list": "Admin Orders",
   "/admindashboard/users/list": "Users List",
+  "/admindashboard/admin/referral": "Referral Management",
   "/admindashboard/customers/list": "Admin Customers",
   "/admindashboard/manage-cards": "Admin Manage Cards (QR)",
   "/admindashboard/manage-cards/card": "Admin Manage Cards (CARD)",
@@ -122,6 +124,14 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
           >
             <FiUsers size={18} /> Customers
           </NavLink>
+
+          {/* <NavLink
+            to="admin/referral"
+            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
+            onClick={() => setOpen(false)}
+          >
+            <VscReferences size={18} /> Referral Manage...
+          </NavLink> */}
 
           <NavLink
             to="manage-cards"
@@ -256,6 +266,14 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
               className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-sm"
             >
               <FiUsers size={18} /> Customers
+            </NavLink>
+
+
+            <NavLink
+              to="admin/referral"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-sm"
+            >
+              <VscReferences size={18} /> Referral Manage...
             </NavLink>
 
             <NavLink
