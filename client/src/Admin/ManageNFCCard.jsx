@@ -12,7 +12,7 @@ import {
 import { FaDownload } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import {toast, Toaster} from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 import { HexColorPicker } from "react-colorful";
 import NFCCardDesign from "./ManageNFCCard/NFCCardDesign";
 import CardPreviewModal from "./ManageNFCCard/CardPreviewModel";
@@ -73,11 +73,11 @@ const ManageNFCCard = () => {
         limit,
         search: search || ""
       });
-      
+
       if (status && status !== "all") {
         params.append("status", status);
       }
-      
+
       const url = `${baseUrl}/api/all/cards?${params.toString()}`;
 
       const token = localStorage.getItem("adminToken");
@@ -94,7 +94,7 @@ const ManageNFCCard = () => {
 
       const responseData = res.data.data || res.data;
       const allCards = responseData.cards || responseData.allCards || [];
-      
+
       setCards(allCards);
       setTotalCards(responseData.pagination?.totalCards || responseData.totalCards || 0);
       setTotalPages(responseData.pagination?.totalPages || responseData.totalPages || 1);
@@ -109,7 +109,7 @@ const ManageNFCCard = () => {
         const inactive = allCards.filter(card => !card.isActivated).length;
         statsData = { total, activated, inactive };
       }
-      
+
       setStats({
         total: statsData.total || 0,
         activated: statsData.activated || 0,
@@ -226,7 +226,7 @@ const ManageNFCCard = () => {
       if (loadingDiv && loadingDiv.parentNode) {
         document.body.removeChild(loadingDiv);
       }
-      
+
       let errorMessage = 'Failed to download card. Please try again.';
       if (error.response?.status === 401) {
         errorMessage = 'Session expired. Please login again.';
@@ -302,7 +302,7 @@ const ManageNFCCard = () => {
       if (loadingDiv && loadingDiv.parentNode) {
         document.body.removeChild(loadingDiv);
       }
-      
+
       let errorMessage = 'Failed to download visiting card. Please try again.';
       if (error.response?.status === 401) {
         errorMessage = 'Session expired. Please login again.';
@@ -352,7 +352,7 @@ const ManageNFCCard = () => {
       const failedCards = [];
       const successfulCards = [];
       const zip = new JSZip();
-      
+
       const updateProgress = (current, total) => {
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
@@ -396,7 +396,7 @@ const ManageNFCCard = () => {
             const fileName = `brilson-nfc-card-${card.activationCode}.png`;
             zip.file(fileName, response.data);
             successfulCards.push(card);
-            
+
             axios.patch(
               `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
               {},
@@ -419,7 +419,7 @@ const ManageNFCCard = () => {
         throw new Error('No cards could be downloaded. Please try again.');
       }
 
-      const zipBlob = await zip.generateAsync({ 
+      const zipBlob = await zip.generateAsync({
         type: 'blob',
         compression: 'DEFLATE',
         compressionOptions: { level: 6 }
@@ -456,7 +456,7 @@ const ManageNFCCard = () => {
 
     } catch (error) {
       console.error("Bulk download error:", error);
-      
+
       const loader = document.getElementById('bulk-download-loader');
       if (loader && loader.parentNode) {
         document.body.removeChild(loader);
@@ -471,7 +471,7 @@ const ManageNFCCard = () => {
         errorMessage = 'Session expired. Please login again.';
         localStorage.removeItem('adminToken');
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setDownloading(false);
@@ -519,7 +519,7 @@ const ManageNFCCard = () => {
       const failedCards = [];
       const successfulCards = [];
       const zip = new JSZip();
-      
+
       const updateProgress = (current, total) => {
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
@@ -585,7 +585,7 @@ const ManageNFCCard = () => {
         throw new Error('No visiting cards could be downloaded. Please try again.');
       }
 
-      const zipBlob = await zip.generateAsync({ 
+      const zipBlob = await zip.generateAsync({
         type: 'blob',
         compression: 'DEFLATE',
         compressionOptions: { level: 6 }
@@ -613,7 +613,7 @@ const ManageNFCCard = () => {
 
     } catch (error) {
       console.error("Bulk download error:", error);
-      
+
       const loader = document.getElementById('bulk-download-loader');
       if (loader && loader.parentNode) {
         document.body.removeChild(loader);
@@ -628,7 +628,7 @@ const ManageNFCCard = () => {
         errorMessage = 'Session expired. Please login again.';
         localStorage.removeItem('adminToken');
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setDownloading(false);
@@ -664,13 +664,13 @@ const ManageNFCCard = () => {
       const baseUrl = import.meta.env.VITE_BASE_URL;
       const profilelink = `https://brilson.in/profile/${activationCode}`;
       setCopyLinkId(activationCode);
-      
+
       await navigator.clipboard.writeText(profilelink);
-      
+
       const { data } = await axios.patch(
         `${baseUrl}/api/cards/${card._id}/copy`
       );
-      
+
       setCards(prev =>
         prev.map(item =>
           item._id === card._id
@@ -678,13 +678,13 @@ const ManageNFCCard = () => {
             : item
         )
       );
-      
+
       toast.success("URL copied successfully");
-      
+
       setTimeout(() => {
         setCopyLinkId(null);
       }, 1000);
-      
+
     } catch (err) {
       console.error("Copy error:", err);
       toast.error("Failed to copy profile link.");
@@ -710,9 +710,8 @@ const ManageNFCCard = () => {
   }
 
   const StatusBadge = ({ active }) => (
-    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-      active ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
-    }`}>
+    <span className={`px-2 py-1 rounded-full text-xs font-medium ${active ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
+      }`}>
       {active ? "Active" : "Inactive"}
     </span>
   );
@@ -740,10 +739,9 @@ const ManageNFCCard = () => {
         </button>
         {getPageNumbers().map((pageNum, index) => (
           <button key={index} onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
-            className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-xs sm:text-sm font-medium ${
-              currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
-              pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-            }`} disabled={pageNum === '...'}>
+            className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-xs sm:text-sm font-medium ${currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
+                pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`} disabled={pageNum === '...'}>
             {pageNum}
           </button>
         ))}
@@ -762,7 +760,7 @@ const ManageNFCCard = () => {
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-2 py-4 text-gray-200 max-w-full overflow-x-hidden">
       <Toaster position="top-center" reverseOrder={false} />
-      
+
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6 lg:mt-0 mt-11">
         <div className="w-full lg:w-auto text-center lg:text-left">
@@ -776,8 +774,8 @@ const ManageNFCCard = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-stretch sm:items-center">
-          <select 
-            value={cardsStatus} 
+          <select
+            value={cardsStatus}
             onChange={(e) => {
               const newStatus = e.target.value;
               setCardsStatus(newStatus);
@@ -795,11 +793,10 @@ const ManageNFCCard = () => {
           <button
             onClick={downloadBulkNFCCards}
             disabled={downloading || cards.length === 0}
-            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${
-              downloading || cards.length === 0
+            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${downloading || cards.length === 0
                 ? 'bg-gray-600 cursor-not-allowed opacity-50'
                 : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 hover:shadow-lg'
-            }`}
+              }`}
           >
             {downloading ? (
               <>
@@ -818,11 +815,10 @@ const ManageNFCCard = () => {
           <button
             onClick={downloadBulkVisitingCards}
             disabled={downloading || cards.length === 0}
-            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${
-              downloading || cards.length === 0
+            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${downloading || cards.length === 0
                 ? 'bg-gray-600 cursor-not-allowed opacity-50'
                 : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 hover:shadow-lg'
-            }`}
+              }`}
           >
             {downloading ? (
               <>
@@ -970,9 +966,9 @@ const ManageNFCCard = () => {
               <div className="bg-gray-800/50 rounded-xl p-4">
                 <p className="text-sm text-gray-400 text-center mb-3">💳 NFC Card Preview</p>
                 <div className="flex justify-center">
-                  <div 
+                  <div
                     className="relative w-full max-w-[360px] rounded-2xl overflow-hidden"
-                    style={{ 
+                    style={{
                       background: cardBgColor,
                       border: `2px solid ${cardTextColor === "#ffffff" ? "#333" : cardTextColor}`,
                       boxShadow: "0 0 20px rgba(0,0,0,0.2)",
@@ -982,29 +978,29 @@ const ManageNFCCard = () => {
                     <div className="p-5 relative w-full h-full flex">
                       <div className="flex-1 flex flex-col items-start justify-center gap-1">
                         <div className="flex flex-col items-center gap-0.5 mb-1">
-                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" 
-                            stroke={cardTextColor === "#ffffff" ? "#333" : cardTextColor} 
+                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
+                            stroke={cardTextColor === "#ffffff" ? "#333" : cardTextColor}
                             strokeWidth="2"
                           >
-                            <path d="M5 12.5a8 8 0 0 1 14 0"/>
-                            <path d="M8 16a4 4 0 0 1 8 0"/>
-                            <circle cx="12" cy="20" r="1.5" fill={cardTextColor === "#ffffff" ? "#333" : cardTextColor}/>
+                            <path d="M5 12.5a8 8 0 0 1 14 0" />
+                            <path d="M8 16a4 4 0 0 1 8 0" />
+                            <circle cx="12" cy="20" r="1.5" fill={cardTextColor === "#ffffff" ? "#333" : cardTextColor} />
                           </svg>
-                          <span className="font-bold text-lg leading-none" style={{ 
-                            color: cardTextColor === "#ffffff" ? "#333" : cardTextColor 
+                          <span className="font-bold text-lg leading-none" style={{
+                            color: cardTextColor === "#ffffff" ? "#333" : cardTextColor
                           }}>NFC</span>
                         </div>
-                        <h2 className="font-bold text-3xl leading-tight" style={{ 
-                          color: cardTextColor === "#ffffff" ? "#1a1a2e" : cardTextColor 
+                        <h2 className="font-bold text-3xl leading-tight" style={{
+                          color: cardTextColor === "#ffffff" ? "#1a1a2e" : cardTextColor
                         }}>Brilson</h2>
-                        <p className="text-xs leading-none" style={{ 
-                          color: cardTextColor === "#ffffff" ? "#666" : cardTextColor 
+                        <p className="text-xs leading-none" style={{
+                          color: cardTextColor === "#ffffff" ? "#666" : cardTextColor
                         }}>www.brilson.in</p>
                       </div>
 
                       <div className="flex-1 flex flex-col items-center justify-center gap-3">
-                        <div className="w-28 h-28 rounded-lg flex items-center justify-center" 
-                          style={{ 
+                        <div className="w-28 h-28 rounded-lg flex items-center justify-center"
+                          style={{
                             border: `2px solid ${cardTextColor === "#ffffff" ? "#333" : cardTextColor}`,
                             background: qrBgColor === "transparent" ? "transparent" : qrBgColor
                           }}
@@ -1023,11 +1019,11 @@ const ManageNFCCard = () => {
                           </div>
                         </div>
                         <div className="text-center">
-                          <p className="text-[8px] uppercase tracking-wider leading-none mb-1" style={{ 
-                            color: cardTextColor === "#ffffff" ? "#666" : cardTextColor 
+                          <p className="text-[8px] uppercase tracking-wider leading-none mb-1" style={{
+                            color: cardTextColor === "#ffffff" ? "#666" : cardTextColor
                           }}>Activation Key</p>
-                          <div className="font-mono font-bold text-xs px-2 py-0.5 rounded border inline-block" 
-                            style={{ 
+                          <div className="font-mono font-bold text-xs px-2 py-0.5 rounded border inline-block"
+                            style={{
                               color: cardTextColor,
                               borderColor: cardTextColor === "#ffffff" ? "#333" : cardTextColor,
                               background: cardBgColor === "#ffffff" ? "#f5f5f5" : "rgba(255,255,255,0.05)"
@@ -1080,10 +1076,15 @@ const ManageNFCCard = () => {
       </div>
 
       {/* TABLE VIEW */}
-      <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
+      <div
+        className="overflow-x-auto overflow-y-auto max-h-[60vh] rounded-xl border border-gray-700/50 bg-gray-900/20"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
         <table className="w-full min-w-[950px]">
-          <thead className="bg-gray-800/50 border-b border-gray-700/50">
+          <thead className="bg-gray-800/50 border-b border-gray-700/50 sticky top-0 z-10">
             <tr>
+              <th className="p-3 text-left text-xs font-medium text-gray-300">#</th>
               <th className="p-3 text-left text-xs font-medium text-gray-300">✓</th>
               <th className="p-3 text-left text-xs font-medium text-gray-300">Status</th>
               <th className="p-3 text-left text-xs font-medium text-gray-300">Owner</th>
@@ -1097,8 +1098,11 @@ const ManageNFCCard = () => {
           </thead>
           <tbody className="divide-y divide-gray-700/30">
             {cards.length > 0 ? (
-              cards.map((card) => (
+              cards.map((card, index) => (
                 <tr key={card._id} className="hover:bg-gray-800/20 transition-colors">
+                  <td className="p-3 text-xs text-gray-500 font-mono">
+                    {(currentPage - 1) * limit + index + 1}
+                  </td>
                   <td className="p-3">
                     <input checked={card.isDownloaded} readOnly type="checkbox" className="w-4 h-4 rounded" />
                   </td>
@@ -1126,7 +1130,7 @@ const ManageNFCCard = () => {
                       <FiEye className="w-4 h-4" />
                     </button>
                   </td>
-                  
+
                   {/* DOWNLOAD COLUMN - Two buttons */}
                   <td className="p-3 text-center">
                     <div className="flex items-center justify-center gap-1.5">
@@ -1139,7 +1143,7 @@ const ManageNFCCard = () => {
                       >
                         <FaDownload className="w-3 h-3 sm:w-4 sm:h-4" />
                       </button>
-                      
+
                       {/* Visiting Card Download */}
                       <button
                         onClick={() => downloadVisitingCard(card)}
@@ -1151,7 +1155,7 @@ const ManageNFCCard = () => {
                       </button>
                     </div>
                   </td>
-                  
+
                   <td className="p-3 text-center">
                     <Link
                       to={`${import.meta.env.VITE_DOMAIN}/public/profile/${card.slug}`}

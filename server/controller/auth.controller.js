@@ -20,6 +20,7 @@ const sendResetOTP = async (req, res) => {
     if (!user) {
       return res.status(200).json({
         message: "Invalid User or Number",
+        success: false,
       });
     }
 

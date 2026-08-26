@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import useCart from "./hooks/useCart";
 import {
   FiTrash2,
   FiShoppingCart,
@@ -40,10 +41,7 @@ const CartPage = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
-  /* FETCH CART with product details including GST and Discount */
-  useEffect(() => {
-    const fetchCart = async () => {
+const fetchCart = async () => {
       setLoading(true);
       try {
         if (isLoggedIn) {
@@ -98,7 +96,8 @@ const CartPage = () => {
         setLoading(false);
       }
     };
-
+  /* FETCH CART with product details including GST and Discount */
+  useEffect(() => {
     fetchCart();
   }, [isLoggedIn, token]);
 
@@ -154,7 +153,8 @@ const CartPage = () => {
     };
   };
 
-  /* REMOVE ITEM */
+  const { fetchCart: syncCartCount } = useCart();
+
   const handleRemoveItem = async (cartId) => {
     setRemovingId(cartId);
     try {
@@ -171,7 +171,7 @@ const CartPage = () => {
         localStorage.setItem("cart", JSON.stringify(updated));
         setCartItems(updated);
       }
-
+      syncCartCount();
       toast.success("Item removed from cart");
     } catch {
       toast.error("Failed to remove item");
@@ -762,7 +762,7 @@ const CartPage = () => {
                     {/* Security Note */}
                     <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
                       <div className="flex items-start gap-2 sm:gap-3">
-                        <FiShield className="text-green-400 mt-0.5 flex-shrink-0" size={16} className="sm:w-5 sm:h-5" />
+                        <FiShield className="text-green-400 mt-0.5 flex-shrink-0 sm:w-5 sm:h-5" size={16} />
                         <div>
                           <p className="text-green-400 font-medium text-xs sm:text-sm">Secure Checkout</p>
                           <p className="text-gray-400 text-xs sm:text-sm mt-0.5 sm:mt-1">

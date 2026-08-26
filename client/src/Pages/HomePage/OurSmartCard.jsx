@@ -82,7 +82,7 @@ const hasDiscount = (product) => {
       }
       return false;
     }
-    
+
     // If discount is a string, check if not empty
     if (typeof product.discount === 'string' && product.discount.trim() !== '') {
       return true;
@@ -111,20 +111,20 @@ const renderDiscount = (product) => {
   // ✅ FIXED: Get discount text from discount field safely
   if (product.discount) {
     let discountValue = "";
-    
+
     // If discount is an object
     if (typeof product.discount === 'object') {
       // Try to get value from different possible keys
-      discountValue = product.discount.value || 
-                      product.discount.text || 
-                      product.discount.label || 
-                      product.discount.discount;
-      
+      discountValue = product.discount.value ||
+        product.discount.text ||
+        product.discount.label ||
+        product.discount.discount;
+
       // If value is a number, format it
       if (typeof discountValue === 'number') {
         discountValue = `${discountValue}% OFF`;
       }
-    } 
+    }
     // If discount is a string
     else if (typeof product.discount === 'string') {
       discountValue = product.discount.trim();
@@ -151,11 +151,11 @@ const renderBadge = (badge) => {
   if (!badge) return null;
 
   let badgeText = "";
-  
+
   // If badge is an object
   if (typeof badge === 'object') {
     badgeText = badge.name || badge.text || badge.label || badge.title || "";
-  } 
+  }
   // If badge is a string
   else if (typeof badge === 'string') {
     badgeText = badge.trim();
@@ -287,81 +287,83 @@ const OurSmartCard = () => {
         </motion.div>
 
         {/* Products Grid */}
-        <div className="mt-8 grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
           {products.map((product, index) => (
-            <Link to={`/products/${product._id}`}>
-            <motion.div
+            <Link
+              to={`/products/${product._id}`}
               key={product._id || index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -10 }}
-              className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-gray-900/70 to-gray-800/70 backdrop-blur-lg hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 group tracking-widest font-Roboto"
+              className="h-full"
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -10 }}
+                className="relative h-full min-h-full p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-gray-900/70 to-gray-800/70 backdrop-blur-lg hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 group tracking-widest font-Roboto flex flex-col"
               >
-              {/* Product Badge */}
-              {renderBadge(product.badge)}
+                {/* Product Badge */}
+                {renderBadge(product.badge)}
 
-              {/* 🖼️ FIXED IMAGE SECTION */}
-              <div className="relative h-72 mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-white/5 group-hover:border-white/20 transition-all duration-300">
-                {/* Image with proper object-fit */}
-                <ProductImage product={product} />
-                
-                {/* Discount Badge */}
-                {renderDiscount(product)}
-              </div>
+                {/* Image */}
+                <div className="relative h-72 shrink-0 mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-white/5 group-hover:border-white/20 transition-all duration-300">
+                  <ProductImage product={product} />
+                  {renderDiscount(product)}
+                </div>
 
-              {/* Product Info */}
-              <div className="space-y-3">
-                <p className="text-cyan-400 text-xs font-semibold uppercase tracking-wider font-Poppins">
-                  {getCategoryName(product.category)}
-                </p>
-                <h3 className="text-xl font-semibold line-clamp-1">
-                  {product.title || "Untitled Product"}
-                </h3>
-
-                <div className="flex items-center gap-3">
-                  <p className="text-white font-bold text-2xl">
-                    {getPrice(product)}
+                {/* Product Info */}
+                <div className="space-y-3 flex-1">
+                  <p className="text-cyan-400 text-xs font-semibold uppercase tracking-wider font-Poppins">
+                    {getCategoryName(product.category)}
                   </p>
-                  {product.oldPrice &&
-                    parseFloat(product.oldPrice) > parseFloat(product.price) && (
-                      <p className="text-gray-400 line-through text-lg">
-                        ₹{parseFloat(product.oldPrice).toFixed(2)}
-                      </p>
+
+                  <h3 className="text-xl font-semibold line-clamp-1">
+                    {product.title || "Untitled Product"}
+                  </h3>
+
+                  <div className="flex items-center gap-3">
+                    <p className="text-white font-bold text-2xl">
+                      {getPrice(product)}
+                    </p>
+
+                    {product.oldPrice &&
+                      parseFloat(product.oldPrice) > parseFloat(product.price) && (
+                        <p className="text-gray-400 line-through text-lg">
+                          ₹{parseFloat(product.oldPrice).toFixed(2)}
+                        </p>
+                      )}
+
+                    {product.color && (
+                      <div className="ml-auto flex items-center gap-1">
+                        <span
+                          className="w-4 h-4 rounded-full border border-white/30"
+                          style={{ backgroundColor: product.color }}
+                          title={product.color}
+                        />
+                        <span className="text-xs text-gray-400">
+                          {product.color}
+                        </span>
+                      </div>
                     )}
-                  {product.color && (
-                    <div className="ml-auto flex items-center gap-1">
-                      <span
-                        className="w-4 h-4 rounded-full border border-white/30"
-                        style={{ backgroundColor: product.color }}
-                        title={product.color}
-                      />
-                      <span className="text-xs text-gray-400">
-                        {product.color}
-                      </span>
-                    </div>
+                  </div>
+
+                  {product.description && (
+                    <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 font-Poppins">
+                      {product.description}
+                    </p>
                   )}
                 </div>
 
-                {product.description && (
-                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 font-Poppins">
-                    {product.description}
-                  </p>
-                )}
-              </div>
-
-              {/* View Details Button */}
-              <Link
-                to={`/products/${product._id}`}
-                className="w-full mt-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 border border-cyan-500/30 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 hover:from-cyan-600/30 hover:to-blue-600/30 text-cyan-300 hover:text-white transition-all duration-300 group/btn"
+                {/* Button */}
+                <div
+                  className="w-full mt-6 py-3 rounded-xl font-medium flex items-center justify-center gap-2 border border-cyan-500/30 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 hover:from-cyan-600/30 hover:to-blue-600/30 text-cyan-300 hover:text-white transition-all duration-300 group/btn shrink-0"
                 >
-                <span>View Details</span>
-                <span className="group-hover/btn:translate-x-1 transition-transform">
-                  →
-                </span>
-              </Link>
-            </motion.div>
-                </Link>
+                  <span>View Details</span>
+                  <span className="group-hover/btn:translate-x-1 transition-transform">
+                    →
+                  </span>
+                </div>
+              </motion.div>
+            </Link>
           ))}
         </div>
       </div>

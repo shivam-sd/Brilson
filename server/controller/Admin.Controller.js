@@ -71,8 +71,23 @@ const adminLogin = async (req, res) => {
 };
 
 
+const adminLogout = (req, res) => {
+  try {
+    res.clearCookie("adminToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+    return res.status(200).json({ message: "Logout Successful" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Logout Failed" });
+  }
+};
+
 
 module.exports = {
     adminRegister,
-    adminLogin
+    adminLogin,
+    adminLogout
 }
