@@ -6,6 +6,7 @@ import ChooseYourCard from "./Pages/HomePage/ChooseYourCard";
 import Testimonials from './Pages/HomePage/Testimonials';
 import Networking from './Pages/HomePage/Networking';
 import HowToUse from './Component/HowToUse';
+import SmartCardBanner from './Pages/HomePage/SmartCardBanner';
 
 const HomePage = () => {
   return ( 
@@ -15,6 +16,7 @@ const HomePage = () => {
       <HowToUse />
       <Testimonials />
       <Networking />
+      <SmartCardBanner />
     </div>
   )
 }
