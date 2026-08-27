@@ -27,7 +27,7 @@ export default function ParkingTagBanner() {
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.04),transparent_60%)]" />
 
             <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-16 px-6 pb-5 pt-10 lg:flex-row lg:justify-between lg:gap-8 lg:px-12 lg:pt-8">
-                <div className="relative flex w-full max-w-sm items-center justify-center">
+                <div className="relative flex w-full max-w-md items-center justify-center lg:max-w-lg">
 
                     <div className="absolute -bottom-4 -left-4 z-10 flex items-center gap-2 rounded-xl bg-[#16181C] px-4 py-2.5 shadow-xl ring-1 ring-white/10">
                         <ShieldCheck className="h-4 w-4 text-[#4F8CFF]" />
@@ -36,9 +36,9 @@ export default function ParkingTagBanner() {
                         </span>
                     </div>
 
-                    <div className="float-card w-full max-w-xs overflow-hidden rounded-[28px] bg-white p-3 shadow-2xl ring-1 ring-white/10">
+                    <div className="float-card w-full max-w-sm overflow-hidden rounded-[28px] bg-white p-3 shadow-2xl ring-1 ring-white/10 lg:max-w-md">
                         <img
-                            src={"./parking-tag.jpeg"}
+                            src={"./parkingcard.png"}
                             alt="Brilson parking tag QR scan"
                             className="w-full rounded-[20px]"
                         />
