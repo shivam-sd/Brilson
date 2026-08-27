@@ -6,15 +6,21 @@ import ChooseYourCard from "./Pages/HomePage/ChooseYourCard";
 import Testimonials from './Pages/HomePage/Testimonials';
 import Networking from './Pages/HomePage/Networking';
 import HowToUse from './Component/HowToUse';
+import SmartCardBanner from './Pages/HomePage/SmartCardBanner';
+import NfcCardBanner from './Pages/HomePage/NfcCardBanner';
+import ParkingTagBanner from './Pages/HomePage/ParkingTagBanner';
 
 const HomePage = () => {
-  return ( 
+  return (
     <div>
       <HeroSection />
       <PowerFullFeature />
       <HowToUse />
       <Testimonials />
       <Networking />
+      <SmartCardBanner />
+      <NfcCardBanner />
+      <ParkingTagBanner />
     </div>
   )
 }

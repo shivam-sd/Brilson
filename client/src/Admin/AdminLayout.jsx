@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Outlet, NavLink, Link, useLocation } from "react-router-dom";
+import { Outlet, NavLink, Link, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { VscReferences } from "react-icons/vsc";
 import {
   FiHome,
@@ -26,33 +27,60 @@ import { FaUsers } from "react-icons/fa6";
 const AdminLayout = () => {
   const [open, setOpen] = useState(false);
   const [SideBar, setSideBar] = useState(true);
+  const navigate = useNavigate();
 
   const handleSideBarToggle = (val) => {
     setSideBar(val);
   };
 
-  const pageTitles = {
-  "/admindashboard": "Admin Dashboard",
-  "/admindashboard/products/list": "Admin Products",
-  "/admindashboard/orders/list": "Admin Orders",
-  "/admindashboard/users/list": "Users List",
-  "/admindashboard/admin/referral": "Referral Management",
-  "/admindashboard/customers/list": "Admin Customers",
-  "/admindashboard/manage-cards": "Admin Manage Cards (QR)",
-  "/admindashboard/manage-cards/card": "Admin Manage Cards (CARD)",
-  "/admindashboard/manage-parking-tag": "Admin Manage Parking Tag",
-  "/admindashboard/manage-google-reviews": "Admin Manage Google Reviews",
-  "/admindashboard/selling-overview": "Admin Selling Overview",
-  "/admindashboard/orders/invoices": "Admin Orders Invoices",
-  "/admindashboard/landing/page/content": "Admin Landing Page Content",
-  "/admindashboard/invoice/address": "invoice Address",
-  "/admindashboard/payment/gateway/isactive": "Admin Payment Gateway",
-  "/admindashboard/setting/config": "Admin Settings",
-};
+  const handleAdminLogout = async () => {
+    try {
+      const adminToken = localStorage.getItem("adminToken");
 
-const location = useLocation();
-console.log(location);
-const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
+      await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/admin/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      localStorage.removeItem("adminToken");
+
+      navigate("/admin/login");
+    } catch (err) {
+      console.error(
+        "Admin logout error:",
+        err.response?.data || err.message
+      );
+    }
+  };
+
+  const pageTitles = {
+    "/admindashboard": "Admin Dashboard",
+    "/admindashboard/products/list": "Admin Products",
+    "/admindashboard/orders/list": "Admin Orders",
+    "/admindashboard/users/list": "Users List",
+    "/admindashboard/admin/referral": "Referral Management",
+    "/admindashboard/customers/list": "Admin Customers",
+    "/admindashboard/manage-cards": "Admin Manage Cards (QR)",
+    "/admindashboard/manage-cards/card": "Admin Manage Cards (CARD)",
+    "/admindashboard/manage-parking-tag": "Admin Manage Parking Tag",
+    "/admindashboard/manage-google-reviews": "Admin Manage Google Reviews",
+    "/admindashboard/selling-overview": "Admin Selling Overview",
+    "/admindashboard/orders/invoices": "Admin Orders Invoices",
+    "/admindashboard/landing/page/content": "Admin Landing Page Content",
+    "/admindashboard/invoice/address": "invoice Address",
+    "/admindashboard/payment/gateway/isactive": "Admin Payment Gateway",
+    "/admindashboard/setting/config": "Admin Settings",
+  };
+
+  const location = useLocation();
+  console.log(location);
+  const currentTitle = pageTitles[location.pathname] || "Admin Dashboard";
 
 
   return (
@@ -69,9 +97,8 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
 
       {/* MOBILE SIDEBAR DRAWER */}
       <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-[#151822] z-50 p-8 flex flex-col transition-transform duration-300 overflow-auto md:hidden ${
-          open ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-full w-72 bg-[#151822] z-50 p-8 flex flex-col transition-transform duration-300 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:hidden ${open ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="flex justify-between items-center mb-10">
           <h4 className="text-xl font-bold">
@@ -187,7 +214,7 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
             className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
             onClick={() => setOpen(false)}
           >
-            <FaFileInvoice  size={18} /> Invoice Address
+            <FaFileInvoice size={18} /> Invoice Address
           </NavLink>
 
 
@@ -208,20 +235,22 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
           </NavLink>
         </nav>
 
-        <div className="mt-auto">
-          {/* <button className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition cursor-pointer">
+        <div className="mt-4">
+          <button
+            onClick={handleAdminLogout}
+            className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition cursor-pointer"
+          >
             <FiLogOut size={20} /> Logout
-          </button> */}
+          </button>
         </div>
       </aside>
 
       {/* DESKTOP SIDEBAR - SMOOTH TOGGLE */}
       <aside
-        className={`hidden md:flex flex-col h-full overflow-y-auto transition-all duration-500 ease-in-out ${
-          SideBar ? "w-72 opacity-100" : "w-0 opacity-0 overflow-hidden"
-        }`}
+        className={`hidden md:flex flex-col h-full bg-[#151822] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] transition-all duration-500 ease-in-out ${SideBar ? "w-72 opacity-100" : "w-0 opacity-0 overflow-hidden"
+          }`}
       >
-        <div className="w-72 bg-[#151822] border-r border-white/10 px-6 py-10 h-full flex flex-col">
+        <div className="w-72 bg-[#151822] border-r border-white/10 px-6 py-10 min-h-full flex flex-col">
           <div className="flex items-center justify-between mb-10">
             <h3 className="text-xl font-extrabold tracking-wide whitespace-nowrap">
               Brilson <span className="text-cyan-400">Admin</span>
@@ -327,13 +356,13 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
 
 
 
-          <NavLink
-            to="invoice/address"
-            className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
-            onClick={() => setOpen(false)}
-          >
-            <FaFileInvoice  size={18} /> Invoice Address
-          </NavLink>
+            <NavLink
+              to="invoice/address"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 text-sm"
+              onClick={() => setOpen(false)}
+            >
+              <FaFileInvoice size={18} /> Invoice Address
+            </NavLink>
 
 
             <NavLink
@@ -350,11 +379,21 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
               <FiSettings size={18} /> Settings
             </NavLink>
           </nav>
+          <div className="mt-auto pt-6 pb-6">
+            <button
+              onClick={handleAdminLogout}
+              className="group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-gray-300 shadow-sm transition-all duration-300 hover:border-red-500/30 hover:bg-red-500/[0.08] hover:text-red-400 hover:shadow-[0_0_20px_rgba(239,68,68,0.08)] active:scale-[0.98] cursor-pointer"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06] text-gray-400 transition-all duration-300 group-hover:bg-red-500/10 group-hover:text-red-400">
+                <FiLogOut size={18} />
+              </span>
 
-          <div className="mt-auto">
-            {/* <button className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition">
-              <FiLogOut size={20} /> Logout
-            </button> */}
+              <span className="flex-1 text-left">Logout</span>
+
+              <span className="text-xs text-gray-600 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-red-400/70">
+                →
+              </span>
+            </button>
           </div>
         </div>
       </aside>
@@ -372,7 +411,7 @@ const currentTitle = pageTitles[location.pathname] || "Admin Dashboard" ;
         </div>
 
         {/* SCROLLABLE PAGE CONTENT */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-10 py-6">
+        <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-4 sm:px-6 md:px-10 py-6">
           <Outlet />
         </div>
       </main>

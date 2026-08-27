@@ -5,6 +5,7 @@ import { FiUser, FiCalendar } from "react-icons/fi";
 import { FaDownload } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import { Eye } from "lucide-react";
 
 const AdminOrders = () => {
   const token = localStorage.getItem("token");
@@ -98,7 +99,7 @@ const AdminOrders = () => {
       );
     } catch (err) {
       console.error("Order Status Error", err);
-      
+
       toast.error(err?.response?.data?.error || "Order Status Change Error");
     }
   };
@@ -222,9 +223,10 @@ const AdminOrders = () => {
                   <td className="p-4">
                     <Link
                       to={`/admin/orders/detils/${order._id}`}
-                      className="bg-green-500 text-white px-3 py-2 rounded-md font-Playfair hover:bg-green-700 duration-300"
+                      className="inline-flex items-center justify-center gap-2 min-w-[130px] h-10 px-4 rounded-lg bg-green-500/15 border border-green-500/30 text-green-400 font-Playfair font-semibold hover:bg-green-500 hover:text-white hover:border-green-500 transition-all duration-300 shadow-sm hover:shadow-green-500/20"
                     >
-                      View Orders
+                      <Eye size={17} strokeWidth={2} />
+                      <span>View</span>
                     </Link>
                   </td>
                 </tr>

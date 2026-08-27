@@ -3,30 +3,32 @@ import { Link, replace } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaUser } from "react-icons/fa";
 import { FaRegUserCircle } from "react-icons/fa";
+import { MdLogout } from "react-icons/md";
 import { LuShoppingCart } from "react-icons/lu";
 import { IoIosArrowDown, IoMdArrowDropdownCircle, IoMdArrowDroprightCircle, IoMdMenu } from "react-icons/io";
 import axios from "axios";
 import LogoSection from "./LogoSection";
-import {BookCheck} from "lucide-react";
-import {useNavigate} from "react-router-dom";
+import { BookCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import useCart from "../Pages/hooks/useCart";
+import { toast } from "react-toastify";
 
 
 // import UserAllCards from "./UserAllCards";
 
 const Header = () => {
 
-const { cartCount } = useCart();
+  const { cartCount } = useCart();
 
   // const [cartCount, setCartCount] = useState(0);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [myCardProfile, setMyCardProfile] = useState(null);
   const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
-    const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState(null);
   // const [cards, setCards] = useState([]);
   // const [showAllCards, setShowAllCards] = useState(false);
   // const [open, setOpen] = useState(false);
-    const menuRef = useRef(null);
+  const menuRef = useRef(null);
 
   const isLoggedIn = !!token;
 
@@ -101,32 +103,30 @@ const { cartCount } = useCart();
   }, []);
 
   /* LOGOUT */
-    const handleLogout = async () => {
-  try {
-    if (token) {
-      await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/users/logout`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      navigate("/", {replace:true});
+  const handleLogout = async () => {
+    try {
+      if (token) {
+      const res = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/api/users/logout`,
+          {},
+          {
+            withCredentials: true,
+          }
+        );
+        navigate("/", { replace: true });
+        toast.success(res.data.message || "Logged out successfully");
+      }
+    } catch (err) {
+      console.log("Logout API error:", err);
+    } finally {
+      // Frontend cleanup 
+      localStorage.removeItem("adminToken");
+      setToken(null);
+      setMyCardProfile(null);
+      // setCartCount(0);
+      setMobileProfileOpen(false);
     }
-  } catch (err) {
-    console.log("Logout API error:", err);
-  } finally {
-    // Frontend cleanup 
-    localStorage.removeItem("token");
-    setToken(null);
-    setMyCardProfile(null);
-    // setCartCount(0);
-    setMobileProfileOpen(false);
-  }
-};
+  };
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-[#050505]/70 backdrop-blur-xl border-b border-white/10">
@@ -140,9 +140,9 @@ const { cartCount } = useCart();
             className="lg:flex hidden flex items-center text-white text-2xl font-semibold"
           >
             {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
-                         <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
-                BRILSON
-              </div>
+            <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
+              BRILSON
+            </div>
           </motion.div>
         </Link>
 
@@ -203,12 +203,12 @@ const { cartCount } = useCart();
                     </button>
                   )} */}
 
-<Link
-                      to={`/admin/passTo/Profile`}
-                      className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-semibold font-Roboto"
-                    >
-                      My Admin
-                    </Link>
+                  <Link
+                    to={`/admin/passTo/Profile`}
+                    className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-semibold font-Roboto"
+                  >
+                    My Admin
+                  </Link>
 
 
 
@@ -220,7 +220,7 @@ const { cartCount } = useCart();
                     onClick={handleLogout}
                     className="px-3 py-1 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white flex items-center tracking-widest font-Roboto font-semibold cursor-pointer"
                   >
-                    <span>Logout</span>
+                   <span className="mr-2">Logout</span><MdLogout size={20} /> 
                   </button>
 
                 </div>
@@ -229,29 +229,29 @@ const { cartCount } = useCart();
           )}
 
 
-<Link
-  to="/get-card"
-  className="group inline-flex items-center gap-2 px-6 py-2 rounded-full
+          <Link
+            to="/get-card"
+            className="group inline-flex items-center gap-2 px-6 py-2 rounded-full
   text-white font-medium relative overflow-hidden border
 border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-500/40  shadow-gray-800 shadow-lg
   transition-all duration-300 hover:scale-105 tracking-widest font-Roboto"
-  
-  style={{
-    textShadow: "2px 2px 3px rgba(136,0,136,0.5)",
-    backgroundPosition: "left center"
-  }}
->
 
-  {/* Text */}
-  <span>Get Your Card</span>
-</Link>
+            style={{
+              textShadow: "2px 2px 3px rgba(136,0,136,0.5)",
+              backgroundPosition: "left center"
+            }}
+          >
+
+            {/* Text */}
+            <span>Get Your Card</span>
+          </Link>
         </div>
 
         {/* MOBILE ACTIONS */}
         <div className="md:hidden flex items-center justify-between w-full">
 
 
-{/* PROFILE */}
+          {/* PROFILE */}
           {!isLoggedIn ? (
             <Link to="/login">
               <FaUser className="text-2xl text-white cursor-pointer" />
@@ -259,15 +259,15 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
           ) : (
             <div className="relative">
               <div className="p-2 rounded-full border-2 border-white/20 flex items-center justify-center">
-              <IoMdMenu
-                className="text-2xl text-white cursor-pointer"
-                onClick={() => setMobileProfileOpen(!mobileProfileOpen)}
+                <IoMdMenu
+                  className="text-2xl text-white cursor-pointer"
+                  onClick={() => setMobileProfileOpen(!mobileProfileOpen)}
                 />
-                </div>
+              </div>
 
               {mobileProfileOpen && (
                 <div className="absolute left-0 top-15 bg-gray-900 border border-white/20 rounded-lg shadow-xl min-w-[160px] z-50"
-                ref={menuRef}
+                  ref={menuRef}
                 >
                   <div className="flex flex-col p-2 gap-1">
 
@@ -292,13 +292,13 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
                       </button>
                     )} */}
 
-<Link
-                        to={`/admin/passTo/Profile`}
-                        onClick={() => setMobileProfileOpen(false)}
-                        className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-Roboto"
-                      >
-                        My Admin
-                      </Link>
+                    <Link
+                      to={`/admin/passTo/Profile`}
+                      onClick={() => setMobileProfileOpen(false)}
+                      className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-Roboto"
+                    >
+                      My Admin
+                    </Link>
 
 
                     {/* <Link
@@ -325,17 +325,17 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
 
 
           {/* LOGO */}
-        <Link to="/">
-          <div
-           
-            className="flex items-center text-white text-2xl font-semibold ml-8"
-          >
-            {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
-                         <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest ">
+          <Link to="/">
+            <div
+
+              className="flex items-center text-white text-2xl font-semibold ml-8"
+            >
+              {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
+              <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest ">
                 Brilson
               </div>
-          </div>
-        </Link>
+            </div>
+          </Link>
 
 
 
@@ -351,14 +351,14 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
           </Link>
 
 
-            <Link
-                      to="/orders"
-                      onClick={() => setMobileProfileOpen(false)}
-                      className="hover:bg-gray-800 rounded text-gray-300 hover:text-white"
-                    >
-                      {/* My Orders */}
-                      <BookCheck size={28} />
-                    </Link>
+          <Link
+            to="/orders"
+            onClick={() => setMobileProfileOpen(false)}
+            className="hover:bg-gray-800 rounded text-gray-300 hover:text-white"
+          >
+            {/* My Orders */}
+            <BookCheck size={28} />
+          </Link>
         </div>
 
       </div>

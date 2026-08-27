@@ -52,10 +52,15 @@ const ForgotPassword = () => {
         { phone }
       );
       localStorage.setItem("resetPhone", phone);
-      toast.success(res.data.message || "OTP sent successfully!");
-      setTimeout(() => {
-        navigate("/users/verify-otp/brilson");
-      }, 2000);
+      if(res.data.success){
+        toast.success(res.data.message || "OTP sent successfully!");
+        setTimeout(() => {
+          navigate("/users/verify-otp/brilson");
+        }, 2000);
+        
+      }else{
+        toast.error(res.data.message || "Failed to send OTPp");
+      }
     } catch (err) {
       console.log(err);
       toast.error(err.response?.data?.message || "Failed to send OTP");

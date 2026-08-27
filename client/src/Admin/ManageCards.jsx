@@ -5,14 +5,14 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import QRCodeStyling from "qr-code-styling";
 import JSZip from "jszip";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import { HexColorPicker } from "react-colorful";
 
 /* Ultra High Resolution PNG Generator - 4000px for no pixelation */
 const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent", size = 4000) => {
   const qrData = `${url}`;
-  
-  return new QRCodeStyling({ 
+
+  return new QRCodeStyling({
     width: size,
     height: size,
     data: qrData,
@@ -45,56 +45,56 @@ const addTextToUltraHighResPNG = async (qrCode, activationCode, profileName, tex
   try {
     const svgString = await qrCode.getRawData("svg");
     const svgText = await svgString.text();
-    
+
     const img = new Image();
     const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
     const svgUrl = URL.createObjectURL(svgBlob);
-    
+
     return new Promise((resolve) => {
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        
+
         const qrSize = 4000;
         const textHeight = 900;
         canvas.width = qrSize;
         canvas.height = qrSize + textHeight;
-        
+
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
-        
+
         if (bgColor === 'transparent') {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
         } else {
           ctx.fillStyle = bgColor;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-        
+
         ctx.drawImage(img, 0, 0, qrSize, qrSize);
-        
+
         const line1Y = qrSize + 150;
         const codeY = qrSize + 350;
         const line2Y = qrSize + 400;
         const nameY = qrSize + 700;
-        
+
         ctx.strokeStyle = textColor;
         ctx.globalAlpha = 0.3;
         ctx.beginPath();
         ctx.moveTo(200, line1Y);
         ctx.stroke();
-        
+
         ctx.font = 'bold 300px "Courier New", monospace';
         ctx.fillStyle = textColor;
         ctx.globalAlpha = 1;
         ctx.textAlign = 'center';
         ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, codeY);
-        
+
         ctx.strokeStyle = textColor;
         ctx.globalAlpha = 0.3;
         ctx.beginPath();
         ctx.moveTo(200, line2Y);
         ctx.stroke();
-        
+
         if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
           let displayName = profileName;
           if (displayName.length > 35) {
@@ -106,15 +106,15 @@ const addTextToUltraHighResPNG = async (qrCode, activationCode, profileName, tex
           ctx.fillText(displayName, canvas.width / 2, nameY);
           ctx.globalAlpha = 1;
         }
-        
+
         canvas.toBlob((newBlob) => {
           const finalUrl = URL.createObjectURL(newBlob);
           resolve(finalUrl);
         }, 'image/png', 1.0);
-        
+
         URL.revokeObjectURL(svgUrl);
       };
-      
+
       img.src = svgUrl;
     });
   } catch (error) {
@@ -132,34 +132,34 @@ const generateThumbnailPNG = async (qrCode, activationCode, profileName, textCol
     const img = new Image();
     const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
     const svgUrl = URL.createObjectURL(svgBlob);
-    
+
     return new Promise((resolve) => {
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        
+
         const qrSize = 200;
         const textHeight = 80;
         canvas.width = qrSize;
         canvas.height = qrSize + textHeight;
-        
+
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
-        
+
         if (bgColor === 'transparent') {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
         } else {
           ctx.fillStyle = bgColor;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-        
+
         ctx.drawImage(img, 0, 0, qrSize, qrSize);
-        
+
         ctx.font = 'bold 12px monospace';
         ctx.fillStyle = textColor;
         ctx.textAlign = 'center';
         ctx.fillText(activationCode.substring(0, 10), canvas.width / 2, qrSize + 30);
-        
+
         if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
           let shortName = profileName.substring(0, 12);
           ctx.font = '10px Arial';
@@ -168,12 +168,12 @@ const generateThumbnailPNG = async (qrCode, activationCode, profileName, textCol
           ctx.fillText(shortName, canvas.width / 2, qrSize + 55);
           ctx.globalAlpha = 1;
         }
-        
+
         canvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob);
           resolve(url);
         }, 'image/png', 0.9);
-        
+
         URL.revokeObjectURL(svgUrl);
       };
       img.src = svgUrl;
@@ -197,20 +197,20 @@ const ManageCards = () => {
   const [qrImages, setQrImages] = useState({});
   const [downloadingDate, setDownloadingDate] = useState(null);
   const [generatingQR, setGeneratingQR] = useState(false);
-  
+
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [qrBgColor, setQrBgColor] = useState("transparent");
   const [qrDotsColor, setQrDotsColor] = useState("#000000");
   const [textColor, setTextColor] = useState("#000000");
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCards, setTotalCards] = useState(0);
   const [limit] = useState(100);
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  
+
   const isGeneratingRef = useRef(false);
   const currentPageRef = useRef(currentPage);
 
@@ -218,24 +218,24 @@ const ManageCards = () => {
   const generateQRCodesForCurrentPage = useCallback(async (cardsList) => {
     if (!cardsList || cardsList.length === 0) return;
     if (isGeneratingRef.current) return;
-    
+
     isGeneratingRef.current = true;
     setGeneratingQR(true);
-    
+
     const qrMap = {};
-    
+
     // Chunk size 5 - ek saath 5 QR generate honge
     const chunkSize = 5;
-    
+
     for (let i = 0; i < cardsList.length; i += chunkSize) {
       // Check if we're still on the same page
       if (currentPageRef.current !== currentPage) {
         console.log("Page changed, stopping QR generation");
         break;
       }
-      
+
       const chunk = cardsList.slice(i, i + chunkSize);
-      
+
       await Promise.all(chunk.map(async (card) => {
         if (card.qrUrl && !qrImages[card._id]) {
           try {
@@ -247,7 +247,7 @@ const ManageCards = () => {
               textColor,
               qrBgColor
             );
-            
+
             qrMap[card._id] = thumbnailUrl;
           } catch (err) {
             console.error(`Error generating QR for ${card._id}:`, err);
@@ -257,66 +257,66 @@ const ManageCards = () => {
           qrMap[card._id] = null;
         }
       }));
-      
+
       // Update UI with current batch
       setQrImages(prev => ({ ...prev, ...qrMap }));
-      
+
       // Small delay to prevent UI freezing
       await new Promise(resolve => setTimeout(resolve, 50));
     }
-    
+
     isGeneratingRef.current = false;
     setGeneratingQR(false);
   }, [qrDotsColor, qrBgColor, textColor, currentPage]);
 
-    const fetchCards = useCallback(async (page = 1, search = "", status = "all") => {
+  const fetchCards = useCallback(async (page = 1, search = "", status = "all") => {
     try {
       setLoading(true);
       setIsSearching(!!search);
       currentPageRef.current = page;
-      
+
       const baseUrl = import.meta.env.VITE_BASE_URL || '';
-      
-    
+
+
       const params = new URLSearchParams({
         page,
         limit,
         search: search || ""
       });
-    
+
       if (status && status !== "all") {
         params.append("status", status);
       }
-      
+
       const url = `${baseUrl}/api/all/cards?${params.toString()}`;
-      
+
       const token = localStorage.getItem("adminToken");
       if (!token) {
         setError("Please login again");
         setLoading(false);
         return;
       }
-      
+
       const res = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         timeout: 30000,
       });
-      
+
       console.log("API Response:", res.data); // Debug log
-      
-      
+
+
       const responseData = res.data.data || res.data;
       const allCards = responseData.cards || responseData.allCards || [];
-      
+
       console.log("Cards fetched:", allCards.length);
-      
+
       setCards(allCards);
       setTotalCards(responseData.pagination?.totalCards || responseData.totalCards || 0);
       setTotalPages(responseData.pagination?.totalPages || responseData.totalPages || 1);
       setCurrentPage(responseData.pagination?.page || responseData.page || 1);
-      
+
       let statsData;
       if (responseData.stats?.overall) {
         statsData = responseData.stats.overall;
@@ -326,19 +326,19 @@ const ManageCards = () => {
         const inactive = allCards.filter(card => !card.isActivated).length;
         statsData = { total, activated, inactive };
       }
-      
+
       setStats({
         total: statsData.total || 0,
         activated: statsData.activated || 0,
         inactive: statsData.inactive || 0
       });
-      
+
       // Clear previous page QR images
       setQrImages({});
-      
+
       // Generate QR codes for current page only
       await generateQRCodesForCurrentPage(allCards);
-      
+
     } catch (err) {
       console.error("Fetch error:", err);
       setError(err.message || "Unable to fetch cards");
@@ -350,8 +350,8 @@ const ManageCards = () => {
 
   //  useEffect with all dependencies
   useEffect(() => {
-    fetchCards(currentPage, searchQuery, );
-  }, [fetchCards, currentPage, searchQuery, ]);
+    fetchCards(currentPage, searchQuery,);
+  }, [fetchCards, currentPage, searchQuery,]);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
@@ -382,7 +382,7 @@ const ManageCards = () => {
   const getPageNumbers = () => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
-    
+
     if (totalPages <= maxPagesToShow) {
       for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
@@ -396,7 +396,7 @@ const ManageCards = () => {
         pageNumbers.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
       }
     }
-    
+
     return pageNumbers;
   };
 
@@ -416,11 +416,11 @@ const ManageCards = () => {
       alert("No QR URL available for this card");
       return;
     }
-    
+
     const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 2000);
     const previewUrl = await addTextToUltraHighResPNG(
-      qr, 
-      card.activationCode, 
+      qr,
+      card.activationCode,
       card.owner?.name || card.profile?.name || '',
       textColor,
       qrBgColor
@@ -523,24 +523,24 @@ const ManageCards = () => {
       alert("No QR URL available for download");
       return;
     }
-    
+
     try {
       const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 4000);
       const finalImageUrl = await addTextToUltraHighResPNG(
-        qr, 
-        card.activationCode, 
+        qr,
+        card.activationCode,
         card.owner?.name || card.profile?.name || '',
         textColor,
         qrBgColor
       );
-      
+
       const link = document.createElement('a');
       link.href = finalImageUrl;
       link.download = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       URL.revokeObjectURL(finalImageUrl);
 
       if (!card.isDownloaded) {
@@ -577,7 +577,7 @@ const ManageCards = () => {
     }
 
     const validCards = cardsList.filter(card => card.qrUrl);
-    
+
     if (validCards.length === 0) {
       alert("No cards with QR available for this date");
       return;
@@ -601,13 +601,13 @@ const ManageCards = () => {
           try {
             const qr = createHighQualityQR(card.qrUrl, qrDotsColor, qrBgColor, 4000);
             const finalImageUrl = await addTextToUltraHighResPNG(
-              qr, 
-              card.activationCode, 
+              qr,
+              card.activationCode,
               card.owner?.name || card.profile?.name || '',
               textColor,
               qrBgColor
             );
-            
+
             const response = await fetch(finalImageUrl);
             const blob = await response.blob();
             const filename = `card-${card.activationCode}-${(card.owner?.name || card.profile?.name || 'unknown').replace(/\s+/g, '-')}.png`;
@@ -669,11 +669,10 @@ const ManageCards = () => {
 
   const StatusBadge = ({ active }) => (
     <span
-      className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-        active
+      className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${active
           ? "bg-green-500/20 text-green-400"
           : "bg-yellow-500/20 text-yellow-400"
-      }`}
+        }`}
     >
       {active ? "Active" : "Inactive"}
     </span>
@@ -683,7 +682,7 @@ const ManageCards = () => {
     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 mt-4 sm:mt-6 px-2 sm:px-4 py-3 sm:py-4 bg-gray-800/30 rounded-lg">
       <div className="text-[10px] sm:text-xs md:text-sm text-gray-400 text-center sm:text-left">
         Page <span className="font-medium text-gray-300">{currentPage}</span> of{" "}
-        <span className="font-medium text-gray-300">{totalPages}</span> • 
+        <span className="font-medium text-gray-300">{totalPages}</span> •
         Showing <span className="font-medium text-gray-300">{(currentPage - 1) * limit + 1}</span> to{" "}
         <span className="font-medium text-gray-300">
           {Math.min(currentPage * limit, totalCards)}
@@ -700,7 +699,7 @@ const ManageCards = () => {
           </span>
         )}
       </div>
-      
+
       <div className="flex items-center gap-0.5 sm:gap-1 flex-wrap justify-center">
         <button onClick={() => handlePageChange(1)} disabled={currentPage === 1}
           className={`p-1.5 sm:p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
@@ -710,17 +709,16 @@ const ManageCards = () => {
           className={`p-1.5 sm:p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronLeft size={14} className="sm:w-4 sm:h-4" />
         </button>
-        
+
         {getPageNumbers().map((pageNum, index) => (
           <button key={index} onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
-            className={`min-w-[28px] sm:min-w-[35px] h-7 sm:h-9 flex items-center justify-center rounded-lg text-[10px] sm:text-xs md:text-sm font-medium ${
-              currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
-              pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-            }`} disabled={pageNum === '...'}>
+            className={`min-w-[28px] sm:min-w-[35px] h-7 sm:h-9 flex items-center justify-center rounded-lg text-[10px] sm:text-xs md:text-sm font-medium ${currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
+                pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`} disabled={pageNum === '...'}>
             {pageNum}
           </button>
         ))}
-        
+
         <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}
           className={`p-1.5 sm:p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronRight size={14} className="sm:w-4 sm:h-4" />
@@ -735,11 +733,11 @@ const ManageCards = () => {
 
   const QRThumbnail = ({ cardId }) => {
     const imageData = qrImages[cardId];
-    
+
     if (!imageData) {
       return <img src="/qr.png" alt="QR" className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />;
     }
-    
+
     return (
       <img
         src={imageData}
@@ -789,7 +787,7 @@ const ManageCards = () => {
                 className="bg-gray-900/60 backdrop-blur border-0 pl-8 sm:pl-9 pr-7 sm:pr-8 py-2 sm:py-2.5 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white text-xs sm:text-sm"
               />
               <div className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2">
-                <FiSearch className="text-gray-400" size={12} className="sm:w-[14px] sm:h-[14px]" />
+                <FiSearch size={12} className="sm:w-[14px] sm:h-[14px] text-gray-400" />
               </div>
               {searchQuery && (
                 <button
@@ -1026,7 +1024,7 @@ const ManageCards = () => {
                             <span className="font-medium text-gray-300 text-xs sm:text-sm">{new Date(date).toLocaleDateString("en-GB")}</span>
                             <span className="text-[10px] sm:text-xs bg-gray-700 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-gray-300">{list.length} cards</span>
                           </div>
-                          <button onClick={() => downloadAllByDate(date, list)} disabled={downloadingDate === date} 
+                          <button onClick={() => downloadAllByDate(date, list)} disabled={downloadingDate === date}
                             className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-medium ${downloadingDate === date ? 'bg-gray-600 cursor-not-allowed opacity-50' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg'}`}>
                             {downloadingDate === date ? (<><div className="w-2.5 h-2.5 sm:w-3 sm:h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Downloading...</span></>) : (<><FiDownloadCloud size={12} className="sm:w-[14px] sm:h-[14px]" /><span>Download All ({list.length})</span></>)}
                           </button>

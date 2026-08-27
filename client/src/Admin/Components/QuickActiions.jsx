@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import {useNavigate} from "react-router-dom"
-import { 
-  Package, 
-  ShoppingBag, 
-  Users, 
-  BarChart3, 
+import { useNavigate } from "react-router-dom"
+import {
+  Package,
+  ShoppingBag,
+  Users,
+  BarChart3,
   CreditCard,
   ChevronRight
 } from 'lucide-react';
 
 const QuickActions = () => {
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
 
   const actions = [
@@ -79,27 +79,27 @@ const QuickActions = () => {
 
   const handleActionClick = (actionId) => {
     console.log(`Action triggered: ${actionId}`);
-    if(actionId === "add-card"){
-        navigate("/api/cards/bulk");
+    if (actionId === "add-card") {
+      navigate("/api/cards/bulk");
     }
-    if(actionId === "add-product"){
-        navigate("/admin/add/products");
+    if (actionId === "add-product") {
+      navigate("/admin/add/products");
     }
-    if(actionId === "view-orders"){
-        navigate("/admindashboard/orders/list");
+    if (actionId === "view-orders") {
+      navigate("/admindashboard/orders/list");
     }
-    if(actionId === "customers"){
-        navigate("/admindashboard/customers/list");
+    if (actionId === "customers") {
+      navigate("/admindashboard/customers/list");
     }
-    if(actionId === "add-card"){
-        navigate("/api/cards/bulk", {replace:true});
+    if (actionId === "add-card") {
+      navigate("/api/cards/bulk", { replace: true });
     }
   };
 
   return (
     <div className="w-full   bg-[#0f172a] border-[#1e293b] rounded-2xl mt-3 px-2 py-4">
       <div className="relative px-4 sm:px-6 lg:px-1 py-4 lg:py-5">
-        
+
         {/* Header Section */}
         <div className="mb-6 lg:mb-8">
           <h3 className="text-xl md:text-2xl lg:text-2xl font-bold text-white text-start">
@@ -108,45 +108,50 @@ const QuickActions = () => {
         </div>
 
         {/* Actions Grid - Sleek cards with proper proportions */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-stretch">
           {actions.map((action) => {
             const Icon = action.icon;
-            
+
             return (
               <div
                 key={action.id}
-                className="group relative"
-                >
+                className="group relative h-full"
+              >
                 {/* Glow effect on hover */}
-                <div className={`absolute -inset-0.5 bg-gradient-to-r ${action.color} rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500 ${action.bgGlow}`}></div>
-                
-                {/* Card - Sleek and compact */}
-                <div 
+                <div
+                  className={`absolute -inset-0.5 bg-gradient-to-r ${action.color} rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500 ${action.bgGlow}`}
+                />
+
+                {/* Card */}
+                <div
                   onClick={() => handleActionClick(action.id)}
-                  className={`relative bg-[#0f172a] border-white/20 rounded-xl p-4 cursor-pointer transition-all duration-300 transform group-hover:-translate-y-1 border ${action.borderHover} shadow-sm hover:shadow-lg overflow-hidden`}
+                  className={`relative h-full min-h-full bg-[#0f172a] border-white/20 rounded-xl p-4 cursor-pointer transition-all duration-300 transform group-hover:-translate-y-1 border ${action.borderHover} shadow-sm hover:shadow-lg overflow-hidden flex`}
                 >
                   {/* Hover gradient background */}
-                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 `}></div>
-                  
+                  <div
+                    className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                  />
+
                   {/* Content */}
-                  <div className="relative z-10">
+                  <div className="relative z-10 w-full flex items-center">
                     {/* Icon and Title Row */}
-                    <div className="flex items-center justify-center gap-3">
-                      {/* Icon with gradient background */}
-                      <div className={`w-8 h-8 rounded-lg ${action.iconBg} shadow-md flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110`}>
-                        <Icon className="w-5 h-5 text-white" strokeWidth={1.8} />
+                    <div className="flex items-center justify-center gap-3 w-full">
+
+                      {/* Icon */}
+                      <div
+                        className={`w-8 h-8 shrink-0 rounded-lg ${action.iconBg} shadow-md flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110`}
+                      >
+                        <Icon
+                          className="w-5 h-5 text-white"
+                          strokeWidth={1.8}
+                        />
                       </div>
-                      
+
                       {/* Title */}
-                      <h3 className="text-base font-Playfair font-bold tracking-wider text-white  transition-colors">
+                      <h3 className="text-base font-Playfair font-bold tracking-wider text-white transition-colors">
                         {action.title}
                       </h3>
                     </div>
-
-                      {/* <p className="text-base font-semibold text-white  transition-colors mt-2 text-center">
-                        {action.description}
-                      </p> */}
-
                   </div>
                 </div>
               </div>

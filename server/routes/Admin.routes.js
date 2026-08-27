@@ -1,5 +1,5 @@
 const express = require("express");
-const { adminRegister, adminLogin } = require("../controller/Admin.Controller");
+const { adminRegister, adminLogin, adminLogout } = require("../controller/Admin.Controller");
 const router = express.Router();
 const authAdminToken = require("../middleware/authAdminToken");
 const { createProduct, editProduct, deleteProduct, getAllProduct, findProductById } = require("../controller/Products.controller");
@@ -11,6 +11,7 @@ const updateGSTDiscountPricing = require("../controller/UpdateGSTDiscountPricing
 // admin routes
 router.post("/register", adminRegister);
 router.post("/login", adminLogin);
+router.post("/logout", authAdminToken, adminLogout);
 
  
 // products routes
