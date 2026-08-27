@@ -13,12 +13,12 @@ import ParkingTagBanner from './Pages/HomePage/ParkingTagBanner';
 const HomePage = () => {
   return (
     <div>
-      <HeroSection />
+      <SmartCardBanner />
+      {/* <HeroSection /> */}
       <PowerFullFeature />
       <HowToUse />
       <Testimonials />
       <Networking />
-      <SmartCardBanner />
       <NfcCardBanner />
       <ParkingTagBanner />
     </div>
