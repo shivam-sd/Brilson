@@ -3,33 +3,40 @@ import { FaWhatsapp } from 'react-icons/fa';
 
 const SmartCardBanner = () => {
   return (
-    <section className="p-4 md:p-8 bg-gray-100 min-h-screen flex items-center justify-center">
-      <div className="relative w-full max-w-7xl bg-[#1e1b4b] rounded-[40px] overflow-hidden px-8 py-12 md:px-16 md:py-20 flex flex-col md:flex-row items-center justify-between shadow-2xl">
+    <section className="w-full bg-gray-100 px-4 py-8 sm:px-5 md:px-6 lg:py-16">
+      <div className="relative mx-auto flex w-full flex-col justify-center overflow-hidden rounded-[16px] bg-[#1e1b4b] px-6 py-8 shadow-2xl sm:rounded-[18px] sm:px-8 sm:py-10 md:min-h-[320px] md:max-w-7xl md:flex-row md:items-center md:justify-start md:rounded-[20px] md:px-10 md:py-0 lg:px-16">
 
-        <div className="z-10 w-full md:w-3/5 text-left space-y-8">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl text-white leading-tight">
-            The Smart Business Card <br />
-            Designed for Professionals to <br />
-            Connect Instantly
-          </h1>
+        <div className="relative z-10 w-full md:w-[58%] lg:w-[60%]">
+          <div className="mb-0 flex flex-col gap-0">
+            <h2 className="m-0 text-[26px] font-bold leading-[1.3] text-white sm:text-[28px] md:text-[32px] lg:text-[38px]">
+              The Smart Business Card
+            </h2>
+            <h2 className="m-0 text-[26px] font-bold leading-[1.3] text-white sm:text-[28px] md:text-[32px] lg:text-[38px]">
+              Designed for Professionals to
+            </h2>
+            <h2 className="m-0 text-[26px] font-bold leading-[1.3] text-white sm:text-[28px] md:text-[32px] lg:text-[38px]">
+              Connect Instantly
+            </h2>
+          </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <button className="px-10 py-3 border-2 border-white text-white font-semibold text-lg rounded-md hover:bg-white hover:text-[#1e1b4b] transition-all duration-300">
+
+          <div className="mt-6 flex flex-row items-center gap-3 md:mt-5 lg:mt-6">
+            <button className="h-[44px] flex-1 rounded-md border-2 border-white px-4 text-[13px] font-semibold text-white transition-all duration-300 hover:bg-white hover:text-[#1e1b4b] active:scale-95 sm:h-[46px] sm:text-[14px] md:h-[44px] md:flex-none md:px-7 md:text-[15px] lg:h-[48px] lg:px-8 lg:text-[16px]">
               Buy Now
             </button>
 
-            <button className="px-8 py-3 bg-[#2ecc71] text-white font-semibold text-lg rounded-md flex items-center justify-center gap-3 hover:bg-[#27ae60] transition-all duration-300">
-              <FaWhatsapp className="text-2xl" />
+            <button className="flex h-[44px] flex-1 items-center justify-center gap-2 rounded-md bg-[#2ecc71] px-4 text-[13px] font-semibold text-white transition-all duration-300 hover:bg-[#27ae60] active:scale-95 sm:h-[46px] sm:text-[14px] md:h-[44px] md:flex-none md:px-6 md:text-[15px] lg:h-[48px] lg:px-7 lg:text-[16px]">
+              <FaWhatsapp className="text-[18px] sm:text-[19px] md:text-[20px]" />
               Contact Us
             </button>
           </div>
         </div>
 
-        <div className="relative w-full md:w-2/5 mt-12 md:mt-0 flex justify-center md:justify-end">
+        <div className="hidden md:absolute md:right-[-10px] md:top-1/2 md:flex md:w-[43%] md:-translate-y-1/2 md:justify-end lg:right-0 lg:w-[40%]">
           <img
             src="/smartcardbanner.png"
             alt="Smart Business Card Mockup"
-            className="w-full max-w-[450px] object-contain drop-shadow-2xl"
+            className="block w-full max-w-[380px] object-contain drop-shadow-2xl lg:max-w-[410px]"
           />
         </div>
       </div>
