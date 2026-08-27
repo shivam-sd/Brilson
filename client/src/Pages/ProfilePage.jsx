@@ -119,24 +119,24 @@ const ProfilePage = () => {
     }
   }, [slug]);
 
-  const scrollToSection = (sectionId) => {
-    const sections = {
-      about: aboutRef,
-      connect: connectRef,
-      products: productsRef,
-      portfolio: portfolioRef,
-      services: servicesRef,
-      gallery: galleryRef,
-    };
+  // const scrollToSection = (sectionId) => {
+  //   const sections = {
+  //     about: aboutRef,
+  //     connect: connectRef,
+  //     products: productsRef,
+  //     portfolio: portfolioRef,
+  //     services: servicesRef,
+  //     gallery: galleryRef,
+  //   };
 
-    const section = sections[sectionId];
-    if (section && section.current) {
-      section.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  };
+  //   const section = sections[sectionId];
+  //   if (section && section.current) {
+  //     section.current.scrollIntoView({
+  //       behavior: "smooth",
+  //       block: "start",
+  //     });
+  //   }
+  // };
 
   // const copyText = (text) => {
   //   if (!text) return;

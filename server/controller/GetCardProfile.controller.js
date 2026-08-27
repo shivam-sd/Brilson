@@ -85,7 +85,7 @@ const getAllcardsProfile = async (req, res) => {
       ];
     }
 
-    // Add status filter - CORRECT WAY
+    // Add status filter 
     if (status === "active") {
       searchQuery.isActivated = true;
     } else if (status === "inactive") {
@@ -93,10 +93,10 @@ const getAllcardsProfile = async (req, res) => {
     }
     // If status is "all" or undefined, no filter applied
 
-    // ✅ Get total count with filters
+    //  Get total count with filters
     const totalCards = await CardProfileModel.countDocuments(searchQuery);
 
-    // ✅ Get filtered cards from database
+    //  Get filtered cards from database
     const allCards = await CardProfileModel.find(searchQuery)
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -107,11 +107,11 @@ const getAllcardsProfile = async (req, res) => {
       })
       .lean(); // Better performance
 
-    // ✅ Calculate counts for response
+    //  Calculate counts for response
     // const activatedCount = allCards.filter(card => card.isActivated === true).length;
     // const inactiveCount = allCards.filter(card => card.isActivated === false).length;
 
-    // ✅ Get total counts across all pages (for accurate stats)
+    // Get total counts across all pages (for accurate stats)
     // const totalActivated = await CardProfileModel.countDocuments({ 
     //   ...searchQuery, 
     //   isActivated: true 

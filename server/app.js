@@ -57,6 +57,7 @@ const AdminDashboardRouter = require("./routes/AdminDashboardAPI/AdminDashboard.
 const BulkCardDownloadRouter = require("./routes/CardBulkDownload.routes");
 const BulkParkingTagDownloadRouter = require("./routes/CardDownloadBulkParkingTag.routes");
 const bulkVisitingcardDownlaod = require("./routes/bulkvisitingcard.download.routes")
+const bulkGoogleReviewDownload = require("./routes/CardBulkGoogleReview.routes")
 const InvoiceAddressRouter = require("./routes/InvoiceAddress.route");
 
 
@@ -163,6 +164,7 @@ app.use("/api/admin", RefundpolicyRouter); // ✅
 app.use("/api", BulkCardDownloadRouter); 
 app.use("/api", BulkParkingTagDownloadRouter);
 app.use("/api", bulkVisitingcardDownlaod);
+app.use("/api", bulkGoogleReviewDownload);
 app.use("/api", InvoiceAddressRouter); // ✅
 
 
