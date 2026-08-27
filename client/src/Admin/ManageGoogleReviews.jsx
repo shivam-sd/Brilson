@@ -1,222 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { FiPlus, FiAlertCircle, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiSearch, FiDownloadCloud, FiStar } from "react-icons/fi";
-import { FaDownload, FaEye, FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { FiPlus, FiAlertCircle, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiSearch, FiDownloadCloud, FiEye } from "react-icons/fi";
+import { FaDownload } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import QRCodeStyling from "qr-code-styling";
-import JSZip from "jszip";
-import { HexColorPicker } from "react-colorful";
-
-/* SVG QR Code Generator - Higher Quality with Dotted Pattern */
-const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent", size = 800) => {
-  const qrData = `${url}`;
-  
-  return new QRCodeStyling({ 
-    width: size,
-    height: size,
-    data: qrData,
-    type: "svg",
-    margin: 5,
-    dotsOptions: {
-      color: dotsColor,
-      type: "dots",
-    },
-    cornersSquareOptions: {
-      type: "extra-rounded",
-    },
-    cornersDotOptions: {
-      type: "dot",
-    },
-    backgroundOptions: {
-      color: bgColor,
-      round: 25
-    },
-    imageOptions: {
-      crossOrigin: "anonymous",
-      margin: 10,
-      imageSize: 0.2
-    },
-    image: "/B.png",
-  });
-};
-
-/* Helper function to safely render SVG thumbnail */
-const renderSVGThumbnail = (svgDataUrl) => {
-  if (!svgDataUrl || !svgDataUrl.startsWith('data:image/svg')) {
-    return null;
-  }
-  
-  try {
-    const svgString = decodeURIComponent(svgDataUrl.split(',')[1]);
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = svgString;
-    const svgElement = tempDiv.querySelector('svg');
-    
-    if (svgElement) {
-      svgElement.setAttribute('width', '40');
-      svgElement.setAttribute('height', '40');
-      svgElement.setAttribute('viewBox', `0 0 ${svgElement.getAttribute('viewBox')?.split(' ')[2] || '800'} ${svgElement.getAttribute('viewBox')?.split(' ')[3] || '920'}`);
-      
-      const serializer = new XMLSerializer();
-      const modifiedSvgString = serializer.serializeToString(svgElement);
-      
-      return { __html: modifiedSvgString };
-    }
-  } catch (error) {
-    console.error("Error rendering SVG thumbnail:", error);
-  }
-  
-  return null;
-};
-
-/* Add text to SVG QR Code */
-const addTextToSVG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
-  try {
-    const svgString = await qrCode.getRawData("svg");
-    const svgText = await svgString.text();
-    
-    const container = document.createElement('div');
-    container.innerHTML = svgText;
-    const svgElement = container.querySelector('svg');
-    
-    if (!svgElement) {
-      throw new Error("No SVG element found");
-    }
-    
-    const originalWidth = parseInt(svgElement.getAttribute('width') || '800');
-    const originalHeight = parseInt(svgElement.getAttribute('height') || '800');
-    
-    const textHeight = 160;
-    const newHeight = originalHeight + textHeight;
-    
-    const newSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    newSvg.setAttribute("width", originalWidth.toString());
-    newSvg.setAttribute("height", newHeight.toString());
-    newSvg.setAttribute("viewBox", `0 0 ${originalWidth} ${newHeight}`);
-    newSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    
-    if (bgColor !== 'transparent') {
-      const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      bgRect.setAttribute("width", "100%");
-      bgRect.setAttribute("height", "100%");
-      bgRect.setAttribute("fill", bgColor);
-      newSvg.appendChild(bgRect);
-    }
-    
-    const qrGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    const originalChildren = svgElement.children;
-    for (let i = 0; i < originalChildren.length; i++) {
-      const child = originalChildren[i].cloneNode(true);
-      qrGroup.appendChild(child);
-    }
-    newSvg.appendChild(qrGroup);
-    
-    const centerX = originalWidth / 2;
-    const separatorY = originalHeight + 30;
-    const codeY = originalHeight + 90;
-    const nameY = originalHeight + 125;
-    
-    const codeText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    codeText.setAttribute("x", centerX.toString());
-    codeText.setAttribute("y", codeY.toString());
-    codeText.setAttribute("text-anchor", "middle");
-    codeText.setAttribute("font-family", "monospace");
-    codeText.setAttribute("font-size", "45");
-    codeText.setAttribute("font-weight", "bold");
-    codeText.setAttribute("fill", textColor);
-    codeText.textContent = `Code: ${activationCode}`;
-    newSvg.appendChild(codeText);
-    
-    if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
-      let displayName = profileName;
-      if (displayName.length > 25) {
-        displayName = displayName.substring(0, 22) + '...';
-      }
-      
-      const nameText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      nameText.setAttribute("x", centerX.toString());
-      nameText.setAttribute("y", nameY.toString());
-      nameText.setAttribute("text-anchor", "middle");
-      nameText.setAttribute("font-family", "Arial, sans-serif");
-      nameText.setAttribute("font-size", "30");
-      nameText.setAttribute("fill", textColor);
-      nameText.setAttribute("fill-opacity", "0.8");
-      nameText.textContent = displayName;
-      newSvg.appendChild(nameText);
-    }
-    
-    const serializer = new XMLSerializer();
-    const svgStringOutput = serializer.serializeToString(newSvg);
-    const dataUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStringOutput);
-    
-    return dataUrl;
-  } catch (error) {
-    console.error("Error creating SVG QR:", error);
-    const blob = await qrCode.getRawData("png");
-    return URL.createObjectURL(blob);
-  }
-};
-
-/* High resolution PNG */
-const addTextToHighResPNG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
-  try {
-    const blob = await qrCode.getRawData("png");
-    const img = new Image();
-    const imageUrl = URL.createObjectURL(blob);
-    
-    return new Promise((resolve) => {
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        const qrSize = 800;
-        const textHeight = 100;
-        canvas.width = qrSize;
-        canvas.height = qrSize + textHeight;
-        
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        
-        if (bgColor === 'transparent') {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        } else {
-          ctx.fillStyle = bgColor;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-        
-        ctx.drawImage(img, 0, 0, qrSize, qrSize);
-        
-        ctx.font = 'bold 35px "Courier New", monospace';
-        ctx.fillStyle = textColor;
-        ctx.textAlign = 'center';
-        ctx.fillText(`Code: ${activationCode}`, canvas.width / 2, qrSize + 55);
-        
-        if (profileName && profileName !== '—' && profileName !== 'No Name' && profileName !== '') {
-          let displayName = profileName;
-          if (displayName.length > 30) {
-            displayName = displayName.substring(0, 27) + '...';
-          }
-          ctx.font = '35px Arial, sans-serif';
-          ctx.fillStyle = textColor;
-          ctx.globalAlpha = 0.8;
-          ctx.fillText(displayName, canvas.width / 2, qrSize + 85);
-          ctx.globalAlpha = 1;
-        }
-        
-        canvas.toBlob((newBlob) => {
-          const finalUrl = URL.createObjectURL(newBlob);
-          resolve(finalUrl);
-        }, 'image/png', 1.0);
-      };
-      
-      img.src = imageUrl;
-    });
-  } catch (error) {
-    console.error("Error adding text to high-res PNG:", error);
-    const blob = await qrCode.getRawData("png");
-    return URL.createObjectURL(blob);
-  }
-};
+import { toast, Toaster } from "react-hot-toast";
+import JSZip from 'jszip';
 
 const ManageGoogleReviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -228,14 +16,9 @@ const ManageGoogleReviews = () => {
     activated: 0,
     inactive: 0,
   });
-  const [qrImages, setQrImages] = useState({});
-  const [downloadingDate, setDownloadingDate] = useState(null);
-  const [useSVG, setUseSVG] = useState(true);
-  
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  const [qrBgColor, setQrBgColor] = useState("transparent");
-  const [qrDotsColor, setQrDotsColor] = useState("#000000");
-  const [textColor, setTextColor] = useState("#000000");
+  // const [reviewsStatus, setReviewsStatus] = useState("all");
+  const [downloading, setDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
   
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -245,98 +28,78 @@ const ManageGoogleReviews = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
-  const fetchReviews = async (page = 1, search = "") => {
+  // Fetch Reviews
+  const fetchReviews = useCallback(async (page = 1, search = "", status = "all") => {
     try {
       setLoading(true);
       setIsSearching(!!search);
+
+      const baseUrl = import.meta.env.VITE_BASE_URL || '';
+      const params = new URLSearchParams({
+        page,
+        limit,
+        search: search || ""
+      });
       
-      const url = `${import.meta.env.VITE_BASE_URL}/api/all/google-reviews?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+      if (status && status !== "all") {
+        params.append("status", status);
+      }
       
-      const res = await axios.get(url, { 
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-        },
+      const url = `${baseUrl}/api/all/google-reviews?${params.toString()}`;
+
+      const token = localStorage.getItem("adminToken");
+      if (!token) {
+        setError("Please login again");
+        setLoading(false);
+        return;
+      }
+
+      const res = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 30000,
       });
 
-      const allReviews = res.data.allGoogleReview || [];
+      const responseData = res.data.data || res.data;
+      const allReviews = responseData.cards || responseData.allGoogleReview || [];
+      
       setReviews(allReviews);
+      setTotalReviews(responseData.pagination?.totalCards || responseData.totleGoogleReview || 0);
+      setTotalPages(responseData.pagination?.totalPages || responseData.totalPages || 1);
+      setCurrentPage(responseData.pagination?.page || responseData.page || 1);
+
+      let statsData;
+      if (responseData.stats?.overall) {
+        statsData = responseData.stats.overall;
+      } else {
+        const total = responseData.totleGoogleReview || allReviews.length;
+        const activated = allReviews.filter(review => review.isActivated).length;
+        const inactive = allReviews.filter(review => !review.isActivated).length;
+        statsData = { total, activated, inactive };
+      }
       
-      setTotalReviews(res.data.totleGoogleReview || 0);
-      setTotalPages(res.data.totalPages || 1);
-      setCurrentPage(res.data.page || 1);
-      
-      const total = res.data.totleGoogleReview || 0;
-      const activated = allReviews.filter(review => review.isActivated).length;
-      const inactive = allReviews.length - activated;
-      
-      setStats({ total, activated, inactive });
-      
-      await generateHighQualityQRCodes(allReviews);
-      
+      setStats({
+        total: statsData.total || 0,
+        activated: statsData.activated || 0,
+        inactive: statsData.inactive || 0
+      });
+
     } catch (err) {
-      console.error(err);
-      setError("Unable to fetch google reviews");
+      console.error("❌ Fetch error:", err);
+      setError(err.message || "Unable to fetch google reviews");
     } finally {
       setLoading(false);
     }
-  };
-
-  const generateHighQualityQRCodes = async (reviewsList = reviews) => {
-    const qrPromises = reviewsList.map(async (review) => {
-      if (review.qrUrl) {
-        try {
-          const qr = createHighQualityQR(review.qrUrl, qrDotsColor, qrBgColor, 800);
-          
-          let finalImageUrl;
-          if (useSVG) {
-            finalImageUrl = await addTextToSVG(
-              qr, 
-              review.activationCode, 
-              review.owner?.name || review.profile?.brandName || '',
-              textColor,
-              qrBgColor
-            );
-          } else {
-            finalImageUrl = await addTextToHighResPNG(
-              qr, 
-              review.activationCode, 
-              review.owner?.name || review.profile?.brandName || '',
-              textColor,
-              qrBgColor
-            );
-          }
-          
-          return { reviewId: review._id, imageUrl: finalImageUrl };
-        } catch (err) {
-          console.error(`Error generating QR for ${review._id}:`, err);
-          return { reviewId: review._id, imageUrl: null };
-        }
-      }
-      return { reviewId: review._id, imageUrl: null };
-    });
-
-    const qrResults = await Promise.all(qrPromises);
-    const qrMap = {};
-    qrResults.forEach(result => {
-      qrMap[result.reviewId] = result.imageUrl;
-    });
-    setQrImages(qrMap);
-  };
-
-  useEffect(() => {
-    if (reviews.length > 0) {
-      generateHighQualityQRCodes();
-    }
-  }, [qrBgColor, qrDotsColor, textColor, useSVG]);
+  }, [limit]);
 
   useEffect(() => {
     fetchReviews(currentPage, searchQuery);
-  }, []);
+  }, [fetchReviews, currentPage, searchQuery]);
 
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
       setCurrentPage(page);
       fetchReviews(page, searchQuery);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -350,6 +113,251 @@ const ManageGoogleReviews = () => {
     setSearchQuery("");
     setCurrentPage(1);
     fetchReviews(1, "");
+  };
+
+  //  SINGLE GOOGLE REVIEW CARD DOWNLOAD
+  const downloadReviewCard = async (review) => {
+    try {
+      const loadingDiv = document.createElement('div');
+      loadingDiv.style.cssText = `
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        flex-direction: column;
+        gap: 15px;
+      `;
+      loadingDiv.innerHTML = `
+        <div class="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-white text-lg">Generating Google Review Card...</p>
+        <p class="text-gray-400 text-sm">${review.activationCode}</p>
+      `;
+      document.body.appendChild(loadingDiv);
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/google-review-cards/${review._id}/download`,
+        {
+          responseType: 'blob',
+          headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
+          timeout: 60000
+        }
+      );
+
+      if (loadingDiv.parentNode) {
+        document.body.removeChild(loadingDiv);
+      }
+
+      if (!response.data || response.data.size === 0) {
+        toast.error('Download failed: Empty response');
+        return;
+      }
+
+      const url = URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `google-review-card-${review.activationCode}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+      try {
+        await axios.patch(
+          `${import.meta.env.VITE_BASE_URL}/api/google-review/${review._id}/downloaded`,
+          {},
+          { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+        );
+        setReviews(prev =>
+          prev.map(r =>
+            r._id === review._id ? { ...r, isDownloaded: true } : r
+          )
+        );
+      } catch (err) {
+        console.error('Failed to mark as downloaded:', err);
+      }
+
+      toast.success("Google Review Card downloaded successfully!");
+
+    } catch (error) {
+      console.error("Download Error:", error);
+      const loadingDiv = document.querySelector('div[style*="fixed"]');
+      if (loadingDiv && loadingDiv.parentNode) {
+        document.body.removeChild(loadingDiv);
+      }
+      
+      let errorMessage = 'Failed to download card. Please try again.';
+      if (error.response?.status === 401) {
+        errorMessage = 'Session expired. Please login again.';
+        localStorage.removeItem('adminToken');
+      }
+      toast.error(errorMessage);
+    }
+  };
+
+  // BULK GOOGLE REVIEW CARDS DOWNLOAD
+  const downloadBulkReviews = async () => {
+    if (reviews.length === 0) {
+      toast.error("No reviews available on this page to download");
+      return;
+    }
+
+    setDownloading(true);
+    setDownloadProgress({ current: 0, total: reviews.length });
+
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'bulk-download-loader';
+    loadingDiv.style.cssText = `
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 20px;
+      backdrop-filter: blur(5px);
+    `;
+    loadingDiv.innerHTML = `
+      <div class="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-white text-xl font-semibold">Downloading ${reviews.length} Google Review Cards...</p>
+      <p class="text-gray-400 text-sm">Page ${currentPage} of ${totalPages}</p>
+      <div class="w-64 bg-gray-700 rounded-full h-2.5">
+        <div id="progress-bar" class="bg-indigo-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+      <p id="progress-text" class="text-gray-400 text-sm">0 / ${reviews.length} cards</p>
+      <p id="failed-text" class="text-red-400 text-sm hidden">Failed: 0</p>
+    `;
+    document.body.appendChild(loadingDiv);
+
+    try {
+      const failedReviews = [];
+      const successfulReviews = [];
+      const zip = new JSZip();
+      
+      const updateProgress = (current, total) => {
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        if (progressBar) {
+          const percentage = (current / total) * 100;
+          progressBar.style.width = `${Math.min(percentage, 100)}%`;
+        }
+        if (progressText) {
+          progressText.textContent = `${current} / ${total} cards`;
+        }
+        setDownloadProgress({ current, total });
+      };
+
+      const updateFailed = (count) => {
+        const failedText = document.getElementById('failed-text');
+        if (failedText) {
+          failedText.classList.remove('hidden');
+          failedText.textContent = `Failed: ${count}`;
+        }
+      };
+
+      for (let i = 0; i < reviews.length; i++) {
+        const review = reviews[i];
+        try {
+          updateProgress(i, reviews.length);
+
+          const response = await axios.get(
+            `${import.meta.env.VITE_BASE_URL}/api/google-review-cards/${review._id}/download`,
+            {
+              responseType: 'blob',
+              headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
+              timeout: 60000
+            }
+          );
+
+          if (response.data && response.data.size > 0) {
+            const fileName = `google-review-card-${review.activationCode}.png`;
+            zip.file(fileName, response.data);
+            successfulReviews.push(review);
+            
+            axios.patch(
+              `${import.meta.env.VITE_BASE_URL}/api/google-review/${review._id}/downloaded`,
+              {},
+              { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+            ).catch(err => console.error('Failed to mark as downloaded:', err));
+          } else {
+            failedReviews.push(review);
+            updateFailed(failedReviews.length);
+          }
+        } catch (error) {
+          console.error(`Failed to download review ${review.activationCode}:`, error);
+          failedReviews.push(review);
+          updateFailed(failedReviews.length);
+        }
+      }
+
+      updateProgress(reviews.length, reviews.length);
+
+      if (successfulReviews.length === 0) {
+        throw new Error('No cards could be downloaded. Please try again.');
+      }
+
+      const zipBlob = await zip.generateAsync({ 
+        type: 'blob',
+        compression: 'DEFLATE',
+        compressionOptions: { level: 6 }
+      });
+
+      const loader = document.getElementById('bulk-download-loader');
+      if (loader && loader.parentNode) {
+        document.body.removeChild(loader);
+      }
+
+      const url = URL.createObjectURL(zipBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `brilson-google-review-cards-page-${currentPage}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+      setReviews(prev =>
+        prev.map(r => {
+          if (successfulReviews.find(sr => sr._id === r._id)) {
+            return { ...r, isDownloaded: true };
+          }
+          return r;
+        })
+      );
+
+      if (failedReviews.length > 0) {
+        toast.success(`Downloaded ${successfulReviews.length} cards, ${failedReviews.length} failed`);
+      } else {
+        toast.success(`All ${successfulReviews.length} cards downloaded successfully!`);
+      }
+
+    } catch (error) {
+      console.error("Bulk download error:", error);
+      
+      const loader = document.getElementById('bulk-download-loader');
+      if (loader && loader.parentNode) {
+        document.body.removeChild(loader);
+      }
+
+      let errorMessage = 'Download failed. Please try again.';
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.code === 'ECONNABORTED') {
+        errorMessage = 'Request timed out.';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Session expired. Please login again.';
+        localStorage.removeItem('adminToken');
+      }
+      
+      toast.error(errorMessage);
+    } finally {
+      setDownloading(false);
+      setDownloadProgress({ current: 0, total: 0 });
+    }
   };
 
   const getPageNumbers = () => {
@@ -383,277 +391,6 @@ const ManageGoogleReviews = () => {
   const filteredGroupedReviews = Object.entries(groupedReviews).filter(
     ([date]) => !selectedDate || date === selectedDate
   );
-
-  const previewQR = async (review) => {
-    if (!review.qrUrl) {
-      alert("No QR URL available for this review");
-      return;
-    }
-    
-    const qr = createHighQualityQR(review.qrUrl, qrDotsColor, qrBgColor, 600);
-    let previewUrl;
-    
-    if (useSVG) {
-      previewUrl = await addTextToSVG(
-        qr, 
-        review.activationCode, 
-        review.owner?.name || review.profile?.brandName || '',
-        textColor,
-        qrBgColor
-      );
-    } else {
-      previewUrl = await addTextToHighResPNG(
-        qr, 
-        review.activationCode, 
-        review.owner?.name || review.profile?.brandName || '',
-        textColor,
-        qrBgColor
-      );
-    }
-
-    const win = window.open("", "_blank", "width=800,height=900");
-    win.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Google Review QR - ${review.activationCode}</title>
-        <style>
-          body {
-            margin: 0;
-            background: #0b1220;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            padding: 40px;
-            min-height: 100vh;
-          }
-          .qr-container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-          }
-          .qr-container img, .qr-container svg {
-            max-width: 600px;
-            width: 100%;
-            height: auto;
-          }
-          .info {
-            background: #1a1a2e;
-            padding: 20px 40px;
-            border-radius: 12px;
-            border: 1px solid #333;
-            text-align: center;
-          }
-          .info p {
-            color: #888;
-            font-size: 14px;
-            margin: 0 0 5px 0;
-          }
-          .info h2 {
-            color: #00ff00;
-            font-size: 28px;
-            font-weight: bold;
-            margin: 0;
-            letter-spacing: 2px;
-            font-family: monospace;
-          }
-          .quality-badge {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.7);
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            color: #4ade80;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="qr-container">
-          ${useSVG ? 
-            `<div>${previewUrl.startsWith('data:image/svg') ? 
-              decodeURIComponent(previewUrl.split(',')[1]) : 
-              `<img src="${previewUrl}" alt="QR Code" />`}</div>` : 
-            `<img src="${previewUrl}" alt="QR Code" />`}
-        </div>
-        <div class="info">
-          <p>Activation Code</p>
-          <h2>${review.activationCode}</h2>
-        </div>
-        <div class="quality-badge">
-          ${useSVG ? '🔷 Vector Quality (SVG)' : '📸 High Resolution PNG'}
-        </div>
-      </body>
-      </html>
-    `);
-  };
-
-  const downloadQR = async (review) => {
-    if (!review.qrUrl) {
-      alert("No QR URL available for download");
-      return;
-    }
-    
-    try {
-      const qr = createHighQualityQR(review.qrUrl, qrDotsColor, qrBgColor, 1200);
-      let finalImageUrl;
-      let fileExtension = useSVG ? 'svg' : 'png';
-      
-      if (useSVG) {
-        finalImageUrl = await addTextToSVG(
-          qr, 
-          review.activationCode, 
-          review.owner?.name || review.profile?.brandName || '',
-          textColor,
-          qrBgColor
-        );
-      } else {
-        finalImageUrl = await addTextToHighResPNG(
-          qr, 
-          review.activationCode, 
-          review.owner?.name || review.profile?.brandName || '',
-          textColor,
-          qrBgColor
-        );
-      }
-      
-      const link = document.createElement('a');
-      link.href = finalImageUrl;
-      link.download = `google-review-${review.activationCode}-${(review.owner?.name || review.profile?.brandName || 'unknown').replace(/\s+/g, '-')}.${fileExtension}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      if (!useSVG) {
-        URL.revokeObjectURL(finalImageUrl);
-      }
-
-      if (!review.isDownloaded) {
-        try {
-          await axios.patch(
-            `${import.meta.env.VITE_BASE_URL}/api/google-review/${review._id}/downloaded`,
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-              },
-            }
-          );
-
-          setReviews((prev) =>
-            prev.map((r) =>
-              r._id === review._id ? { ...r, isDownloaded: true } : r
-            )
-          );
-        } catch (error) {
-          console.error("Error marking as downloaded:", error);
-        }
-      }
-    } catch (error) {
-      console.error("Error downloading QR:", error);
-      alert("Error downloading QR code. Please try again.");
-    }
-  };
-
-  const downloadAllByDate = async (date, reviewsList) => {
-    if (!reviewsList || reviewsList.length === 0) {
-      alert("No google reviews available for this date");
-      return;
-    }
-
-    const validReviews = reviewsList.filter(review => review.qrUrl);
-    
-    if (validReviews.length === 0) {
-      alert("No reviews with QR available for this date");
-      return;
-    }
-
-    setDownloadingDate(date);
-
-    try {
-      const zip = new JSZip();
-      const folderName = `google-reviews-${date}-${useSVG ? 'vector' : 'highres'}`;
-      const folder = zip.folder(folderName);
-
-      const chunkSize = 3;
-      const results = [];
-
-      for (let i = 0; i < validReviews.length; i += chunkSize) {
-        const chunk = validReviews.slice(i, i + chunkSize);
-        const chunkPromises = chunk.map(async (review) => {
-          try {
-            const qr = createHighQualityQR(review.qrUrl, qrDotsColor, qrBgColor, 1200);
-            let fileExtension = useSVG ? 'svg' : 'png';
-            
-            if (useSVG) {
-              const finalImageUrl = await addTextToSVG(
-                qr, 
-                review.activationCode, 
-                review.owner?.name || review.profile?.brandName || '',
-                textColor,
-                qrBgColor
-              );
-              
-              const svgString = decodeURIComponent(finalImageUrl.split(',')[1]);
-              const blob = new Blob([svgString], { type: 'image/svg+xml' });
-              const filename = `google-review-${review.activationCode}-${(review.owner?.name || review.profile?.brandName || 'unknown').replace(/\s+/g, '-')}.${fileExtension}`;
-              folder.file(filename, blob);
-            } else {
-              const finalImageUrl = await addTextToHighResPNG(
-                qr, 
-                review.activationCode, 
-                review.owner?.name || review.profile?.brandName || '',
-                textColor,
-                qrBgColor
-              );
-              
-              const response = await fetch(finalImageUrl);
-              const blob = await response.blob();
-              const filename = `google-review-${review.activationCode}-${(review.owner?.name || review.profile?.brandName || 'unknown').replace(/\s+/g, '-')}.${fileExtension}`;
-              folder.file(filename, blob);
-              URL.revokeObjectURL(finalImageUrl);
-            }
-
-            return { success: true, review };
-          } catch (error) {
-            console.error(`Error processing review ${review.activationCode}:`, error);
-            return { success: false, review };
-          }
-        });
-
-        const chunkResults = await Promise.all(chunkPromises);
-        results.push(...chunkResults);
-      }
-
-      const zipContent = await zip.generateAsync({ type: "blob" });
-      const zipUrl = URL.createObjectURL(zipContent);
-
-      const link = document.createElement('a');
-      link.href = zipUrl;
-      link.download = `all-google-reviews-${date}-${useSVG ? 'vector' : 'highres'}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      URL.revokeObjectURL(zipUrl);
-
-      const successful = results.filter(r => r.success).length;
-      const failed = results.filter(r => !r.success).length;
-
-      alert(`Download complete!\n✅ Successful: ${successful}\n❌ Failed: ${failed}\n📐 Format: ${useSVG ? 'Vector (SVG)' : 'High Resolution PNG'}`);
-
-    } catch (error) {
-      console.error("Error in bulk download:", error);
-      alert("Error downloading google reviews. Please try again.");
-    } finally {
-      setDownloadingDate(null);
-    }
-  };
 
   if (loading) {
     return (
@@ -699,6 +436,11 @@ const ManageGoogleReviews = () => {
             (Search results)
           </span>
         )}
+        {downloading && (
+          <span className="ml-2 text-yellow-400">
+            (Downloading: {downloadProgress.current}/{downloadProgress.total})
+          </span>
+        )}
       </div>
       
       <div className="flex items-center gap-1 flex-wrap justify-center">
@@ -733,35 +475,10 @@ const ManageGoogleReviews = () => {
     </div>
   );
 
-  const QRThumbnail = ({ reviewId }) => {
-    const imageData = qrImages[reviewId];
-    
-    if (!imageData) {
-      return <img src="/qr.png" alt="QR" className="w-8 h-8 sm:w-10 sm:h-10" />;
-    }
-    
-    if (useSVG && imageData.startsWith('data:image/svg')) {
-      const svgContent = renderSVGThumbnail(imageData);
-      if (svgContent) {
-        return <div className="w-8 h-8 sm:w-10 sm:h-10" dangerouslySetInnerHTML={svgContent} />;
-      }
-    }
-    
-    return (
-      <img
-        src={imageData}
-        alt="QR Code"
-        className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src = "/qr.png";
-        }}
-      />
-    );
-  };
-
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-full overflow-x-hidden mt-8 lg:mt-0 md:mt-0">
+      <Toaster position="top-center" reverseOrder={false} />
+      
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6">
         <div className="w-full lg:w-auto text-center lg:text-left">
@@ -775,45 +492,46 @@ const ManageGoogleReviews = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto items-stretch sm:items-center">
-          {/* Quality Toggle Button */}
-          <button
-            onClick={() => setUseSVG(!useSVG)}
-            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer text-sm sm:text-base ${
-              useSVG 
-                ? 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600' 
-                : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'
-            } text-white shadow-lg`}
+          {/* Status Filter Dropdown */}
+          {/* <select 
+            value={reviewsStatus} 
+            onChange={(e) => {
+              const newStatus = e.target.value;
+              setReviewsStatus(newStatus);
+              setCurrentPage(1);
+              fetchReviews(1, searchQuery, newStatus);
+            }}
+            className="px-3 py-2.5 bg-gray-800/50 rounded-lg text-gray-200 border border-gray-700/50 focus:outline-none focus:ring-1 focus:ring-indigo-400 cursor-pointer text-sm"
           >
-            {useSVG ? (
+            <option value="all">📋 All Reviews</option>
+            <option value="active">✅ Active</option>
+            <option value="inactive">⏸️ Inactive</option>
+          </select> */}
+
+          {/* Bulk Download Button */}
+          <button
+            onClick={downloadBulkReviews}
+            disabled={downloading || reviews.length === 0}
+            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${
+              downloading || reviews.length === 0
+                ? 'bg-gray-600 cursor-not-allowed opacity-50'
+                : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg'
+            }`}
+          >
+            {downloading ? (
               <>
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-                <span>SVG</span>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>{downloadProgress.current}/{downloadProgress.total}</span>
               </>
             ) : (
               <>
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M4 4h16v16H4z M8 8h8v8H8z"/>
-                </svg>
-                <span>PNG</span>
+                <FiDownloadCloud size={16} />
+                <span>Download Cards ({reviews.length})</span>
               </>
             )}
           </button>
 
-          {/* COLOR CUSTOMIZATION BUTTON */}
-          <button
-            onClick={() => setShowColorPicker(!showColorPicker)}
-            className="px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center gap-2 text-white hover:shadow-lg transition-all cursor-pointer text-sm sm:text-base"
-          >
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-white" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}></div>
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-white" style={{ backgroundColor: qrDotsColor }}></div>
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-white" style={{ backgroundColor: textColor }}></div>
-            <span className="hidden xs:inline">Customize</span>
-            <span className="xs:hidden">Colors</span>
-          </button>
-
-          {/* SEARCH BAR */}
+          {/* Search Bar */}
           <form onSubmit={handleSearch} className="relative w-full sm:w-56">
             <div className="relative">
               <input
@@ -866,129 +584,6 @@ const ManageGoogleReviews = () => {
         </div>
       </div>
 
-      {/* COLOR PICKER MODAL */}
-      {showColorPicker && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-center p-4">
-          <div className="bg-gray-900 rounded-2xl max-w-md w-full border border-gray-700 shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-white">Customize QR Colors</h3>
-              <button onClick={() => setShowColorPicker(false)} className="text-gray-400 hover:text-white">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">QR Background Color</label>
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <HexColorPicker color={qrBgColor === 'transparent' ? '#ffffff' : qrBgColor} onChange={(color) => setQrBgColor(color)} />
-                  <div className="flex flex-row sm:flex-col gap-2 mt-3 sm:mt-0">
-                    <button onClick={() => setQrBgColor("transparent")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700">
-                      Transparent
-                    </button>
-                    <button onClick={() => setQrBgColor("#ffffff")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-white border border-gray-600 rounded"></div>
-                      White
-                    </button>
-                    <button onClick={() => setQrBgColor("#000000")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-black border border-gray-600 rounded"></div>
-                      Black
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">QR Dots Color</label>
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <HexColorPicker color={qrDotsColor} onChange={setQrDotsColor} />
-                  <div className="flex flex-row sm:flex-col gap-2 mt-3 sm:mt-0">
-                    <button onClick={() => setQrDotsColor("#000000")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-black rounded"></div>
-                      Black
-                    </button>
-                    <button onClick={() => setQrDotsColor("#E1C48A")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
-                      Gold
-                    </button>
-                    <button onClick={() => setQrDotsColor("#3B82F6")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                      Blue
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Text Color</label>
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <HexColorPicker color={textColor} onChange={setTextColor} />
-                  <div className="flex flex-row sm:flex-col gap-2 mt-3 sm:mt-0">
-                    <button onClick={() => setTextColor("#000000")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-black rounded"></div>
-                      Black
-                    </button>
-                    <button onClick={() => setTextColor("#E1C48A")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-[#E1C48A] rounded"></div>
-                      Gold
-                    </button>
-                    <button onClick={() => setTextColor("#ffffff")}
-                      className="px-3 py-2 bg-gray-800 rounded-lg text-white text-sm hover:bg-gray-700 flex items-center gap-2">
-                      <div className="w-4 h-4 bg-white rounded"></div>
-                      White
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-700">
-                <p className="text-sm text-gray-400 text-center mb-3">Live Preview</p>
-                <div className="bg-gray-800 rounded-lg p-4 flex justify-center">
-                  <div className="w-32 h-32 rounded-lg flex items-center justify-center" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}>
-                    <div className="w-24 h-24 flex items-center justify-center">
-                      <svg viewBox="0 0 100 100" className="w-20 h-20">
-                        <rect x="20" y="20" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="35" y="20" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="50" y="20" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="20" y="35" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="50" y="35" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="20" y="50" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="35" y="50" width="10" height="10" fill={qrDotsColor} />
-                        <rect x="50" y="50" width="10" height="10" fill={qrDotsColor} />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-center text-xs mt-2" style={{ color: textColor }}>
-                  Code: ABC123XYZ
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 flex gap-3">
-              <button onClick={() => setShowColorPicker(false)}
-                className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white transition-colors">
-                Close
-              </button>
-              <button onClick={() => setShowColorPicker(false)}
-                className="flex-1 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-lg text-white transition-colors cursor-pointer">
-                Apply Colors
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 md:mb-8">
         <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 backdrop-blur-sm">
@@ -998,7 +593,7 @@ const ManageGoogleReviews = () => {
               <p className="text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">{stats.total}</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
-              <FiStar className="text-indigo-400 text-lg" />
+              <span className="text-indigo-400 text-lg">⭐</span>
             </div>
           </div>
         </div>
@@ -1043,15 +638,15 @@ const ManageGoogleReviews = () => {
                     </span>
                   </div>
                   <button
-                    onClick={() => downloadAllByDate(date, list)}
-                    disabled={downloadingDate === date}
+                    onClick={() => downloadBulkReviews()}
+                    disabled={downloading}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium w-full sm:w-auto justify-center ${
-                      downloadingDate === date
+                      downloading
                         ? 'bg-gray-600 cursor-not-allowed opacity-50'
                         : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
                     }`}
                   >
-                    {downloadingDate === date ? (
+                    {downloading ? (
                       <>
                         <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         <span>Downloading...</span>
@@ -1079,23 +674,14 @@ const ManageGoogleReviews = () => {
                         <p className="text-xs text-indigo-400 font-mono mt-1 break-all">{review.activationCode}</p>
                         <p className="text-xs text-gray-500 mt-1">Created: {new Date(review.createdAt).toLocaleDateString()}</p>
                       </div>
-                      <div className="flex-shrink-0">
-                        <div className="w-14 h-14 bg-white p-1.5 rounded-lg shadow-md overflow-hidden">
-                          <QRThumbnail reviewId={review._id} />
-                        </div>
-                      </div>
                     </div>
                     <div className="flex gap-2 mt-3 pt-2 border-t border-gray-700/50">
-                      <button onClick={() => previewQR(review)} disabled={!review.qrUrl}
-                        className="flex-1 py-1.5 bg-blue-500/20 rounded-lg text-blue-400 text-xs flex items-center justify-center gap-1">
-                        <FaEye size={12} /> Preview
-                      </button>
-                      <button onClick={() => downloadQR(review)} disabled={!review.qrUrl}
-                        className="flex-1 py-1.5 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg text-cyan-400 text-xs flex items-center justify-center gap-1">
+                      <button onClick={() => downloadReviewCard(review)} disabled={!review.qrUrl}
+                        className="flex-1 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg text-white text-xs flex items-center justify-center gap-1 hover:from-cyan-600 hover:to-blue-600 transition-all">
                         <FaDownload size={12} /> Download
                       </button>
-                      <Link to={`${import.meta.env.VITE_DOMAIN}/public/google-review/${review.slug}`} target="_blank"
-                        className="flex-1 py-1.5 bg-indigo-500/20 rounded-lg text-indigo-400 text-xs flex items-center justify-center gap-1">
+                      <Link to={`${import.meta.env.VITE_DOMAIN}/profile/google-review/public${review.slug}`} target="_blank"
+                        className="flex-1 py-1.5 bg-indigo-500/20 rounded-lg text-indigo-400 text-xs flex items-center justify-center gap-1 hover:bg-indigo-500/30 transition-all">
                         View
                       </Link>
                     </div>
@@ -1125,8 +711,6 @@ const ManageGoogleReviews = () => {
                 <th className="p-3 text-left text-xs font-medium text-gray-300">Owner</th>
                 <th className="p-3 text-left text-xs font-medium text-gray-300">Activation Code</th>
                 <th className="p-3 text-left text-xs font-medium text-gray-300">Created</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300">QR</th>
-                <th className="p-3 text-center text-xs font-medium text-gray-300">Preview</th>
                 <th className="p-3 text-center text-xs font-medium text-gray-300">Download</th>
                 <th className="p-3 text-center text-xs font-medium text-gray-300">Profile</th>
               </tr>
@@ -1137,7 +721,7 @@ const ManageGoogleReviews = () => {
                 filteredGroupedReviews.map(([date, list]) => (
                   <React.Fragment key={date}>
                     <tr className="bg-gray-800/30">
-                      <td colSpan="9" className="p-3">
+                      <td colSpan="7" className="p-3">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
                             <span className="text-base">📅</span>
@@ -1147,15 +731,15 @@ const ManageGoogleReviews = () => {
                             </span>
                           </div>
                           <button
-                            onClick={() => downloadAllByDate(date, list)}
-                            disabled={downloadingDate === date}
+                            onClick={downloadBulkReviews}
+                            disabled={downloading}
                             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${
-                              downloadingDate === date
+                              downloading
                                 ? 'bg-gray-600 cursor-not-allowed opacity-50'
                                 : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg'
                             }`}
                           >
-                            {downloadingDate === date ? (
+                            {downloading ? (
                               <>
                                 <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                 <span>Downloading...</span>
@@ -1193,31 +777,17 @@ const ManageGoogleReviews = () => {
                           {new Date(review.createdAt).toLocaleDateString()}
                         </td>
                         <td className="p-3 text-center">
-                          <div className="w-10 h-10 bg-white p-1 rounded-lg flex items-center justify-center mx-auto shadow-md">
-                            <QRThumbnail reviewId={review._id} />
-                          </div>
-                        </td>
-                        <td className="p-3 text-center">
                           <button
-                            onClick={() => previewQR(review)}
+                            onClick={() => downloadReviewCard(review)}
                             disabled={!review.qrUrl}
-                            className="text-gray-400 hover:text-white transition p-1.5 rounded-lg hover:bg-gray-800/50"
-                          >
-                            <FaEye className="w-4 h-4" />
-                          </button>
-                        </td>
-                        <td className="p-3 text-center">
-                          <button
-                            onClick={() => downloadQR(review)}
-                            disabled={!review.qrUrl}
-                            className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 p-1.5 rounded-lg text-white transition-all"
+                            className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 p-1.5 rounded-lg cursor-pointer text-white transition-all"
                           >
                             <FaDownload className="w-3 h-3 sm:w-4 sm:h-4" />
                           </button>
                         </td>
                         <td className="p-3 text-center">
                           <Link 
-                            to={`/profile/google-review/public/${review.slug}`}
+                            to={`${import.meta.env.VITE_DOMAIN}/profile/google-review/public/${review.slug}`}
                             className="text-indigo-400 hover:text-indigo-300 transition text-xs font-medium hover:underline"
                             target="_blank"
                           >
@@ -1230,7 +800,7 @@ const ManageGoogleReviews = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="9" className="p-6 text-center">
+                  <td colSpan="7" className="p-6 text-center">
                     <div className="text-gray-400">
                       <FiAlertCircle className="w-12 h-12 mx-auto mb-3 text-gray-500" />
                       <p className="text-sm">No google reviews available</p>
