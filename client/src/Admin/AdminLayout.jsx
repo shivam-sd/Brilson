@@ -379,12 +379,20 @@ const AdminLayout = () => {
               <FiSettings size={18} /> Settings
             </NavLink>
           </nav>
-          <div className="mt-auto pt-6">
+          <div className="mt-auto pt-6 pb-6">
             <button
               onClick={handleAdminLogout}
-              className="flex items-center gap-3 text-gray-400 hover:text-red-400 transition cursor-pointer whitespace-nowrap text-sm"
+              className="group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-gray-300 shadow-sm transition-all duration-300 hover:border-red-500/30 hover:bg-red-500/[0.08] hover:text-red-400 hover:shadow-[0_0_20px_rgba(239,68,68,0.08)] active:scale-[0.98] cursor-pointer"
             >
-              <FiLogOut size={20} /> Logout
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06] text-gray-400 transition-all duration-300 group-hover:bg-red-500/10 group-hover:text-red-400">
+                <FiLogOut size={18} />
+              </span>
+
+              <span className="flex-1 text-left">Logout</span>
+
+              <span className="text-xs text-gray-600 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-red-400/70">
+                →
+              </span>
             </button>
           </div>
         </div>
