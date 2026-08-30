@@ -47,18 +47,26 @@ const SmartCardBanner = () => {
           />
         </div>
 
-        <div className="relative z-10 grid grid-cols-2 gap-x-6 gap-y-5 [grid-area:features] justify-items-center sm:grid-cols-4 sm:gap-x-3 sm:gap-y-4 md:justify-items-stretch">
+        <div className="relative z-10 grid grid-cols-2 gap-x-6 gap-y-5 [grid-area:features] justify-items-center lg:grid-cols-4 lg:gap-x-3 lg:gap-y-4 lg:justify-items-stretch">
           {FEATURES.map(({ icon: Icon, title, subtitle }) => (
-            <div key={title} className="flex w-full max-w-[150px] flex-row items-center gap-2.5 sm:max-w-none">
+            <div
+              key={title}
+              className="flex w-full max-w-[150px] flex-row items-center gap-2.5 lg:max-w-none"
+            >
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-[#3B82F6]/30 bg-[#3B82F6]/15 shadow-[0_0_12px_rgba(59,130,246,0.35)]">
                 <Icon
                   className="h-5 w-5 text-[#8EC5FF] drop-shadow-[0_0_6px_rgba(91,158,255,0.9)]"
                   strokeWidth={2}
                 />
               </div>
+
               <div className="leading-tight">
-                <p className="m-0 text-[13px]  text-white sm:text-[13px]">{title}</p>
-                <p className="m-0 text-[13px] text-white sm:text-[13px]">{subtitle}</p>
+                <p className="m-0 text-[13px] text-white lg:text-[13px]">
+                  {title}
+                </p>
+                <p className="m-0 text-[13px] text-white lg:text-[13px]">
+                  {subtitle}
+                </p>
               </div>
             </div>
           ))}

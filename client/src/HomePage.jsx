@@ -17,10 +17,10 @@ const HomePage = () => {
       {/* <HeroSection /> */}
       <PowerFullFeature />
       <HowToUse />
-      <Testimonials />
       <Networking />
       <NfcCardBanner />
       <ParkingTagBanner />
+      <Testimonials />
     </div>
   )
 }
