@@ -44,14 +44,14 @@ const Footer = () => {
           <div className="flex items-center">
             {/* <img src="./logo2.png" alt="" className="w-6" loading="lazy" />
             <h2 className="text-3xl font-semibold text-white">RILSON</h2> */}
-               <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
-                BRILSON
-              </div>
+            <div className="lg:text-4xl text-2xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
+              BRILSON
+            </div>
           </div>
 
           <p className="text-gray-300 text-sm leading-relaxed tracking-widest font-Roboto">{description}</p>
 
-          
+
         </div>
 
         {/* Products */}
@@ -127,26 +127,26 @@ const Footer = () => {
       </div>
 
 
-{/* Social Icons */}
-<div className="flex items-center justify-center mt-5">
+      {/* Social Icons */}
+      <div className="flex items-center justify-center mt-5">
 
-          <div className="flex gap-8 mt-6">
-            {[
-              { Icon: FaTwitter, link: Social.twitter },
-              { Icon: FaInstagram, link: Social.instagram },
-              { Icon: FaLinkedin, link: Social.linkedin },
-            ].map(({ Icon, link }, i) => (
-              <Link
+        <div className="flex gap-8 mt-6">
+          {[
+            { Icon: FaTwitter, link: Social.twitter },
+            { Icon: FaInstagram, link: Social.instagram },
+            { Icon: FaLinkedin, link: Social.linkedin },
+          ].map(({ Icon, link }, i) => (
+            <Link
               key={i}
               to={link}
               target="_blank"
               className="p-2 rounded-lg bg-[#1a2234] hover:bg-blue-500/20 hover:scale-110 duration-300 cursor-pointer"
-              >
-                <Icon className="text-xl text-white" />
-              </Link>
-            ))}
-          </div>
-            </div>
+            >
+              <Icon className="text-xl text-white" />
+            </Link>
+          ))}
+        </div>
+      </div>
 
 
       {/* Divider */}
@@ -154,7 +154,7 @@ const Footer = () => {
 
       {/* Bottom Footer */}
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center mt-6 text-xs sm:text-sm text-gray-400 gap-3 tracking-widest font-Roboto">
-        
+
         <p>© {new Date().getFullYear()} Brilson. All rights reserved.</p>
 
         <div className="flex gap-6">

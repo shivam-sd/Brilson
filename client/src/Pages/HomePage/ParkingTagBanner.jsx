@@ -1,9 +1,9 @@
 import { Car, Phone, ScanLine, ArrowRight, BellRing, ShieldCheck } from "lucide-react";
-
+import { Link } from "react-router-dom";
 
 export default function ParkingTagBanner() {
     return (
-        <div className="relative w-full overflow-hidden bg-[#0A0B0D] font-[Inter]">
+        <div className="relative w-full overflow-hidden bg-black font-[Inter]">
             <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
         .font-display { font-family: 'Space Grotesk', sans-serif; }
@@ -61,25 +61,18 @@ export default function ParkingTagBanner() {
 
                     <p className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-[#8B92A0] lg:mx-0">
                         Stick it on your dashboard. Anyone can scan it to call or message
-                        you instantly, without ever seeing your real number.
+                        you instantly
                     </p>
 
-                    <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
-                        <span className="font-display text-sm font-medium text-[#8B92A0]">
-                            Starting at
-                        </span>
-                        <span className="font-display text-4xl font-bold text-[#F5F6F7]">₹299</span>
-                        <span className="text-sm text-[#8B92A0]">/ one-time</span>
-                    </div>
 
                     <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start">
-                        <button className="group flex items-center justify-center gap-2 rounded-xl bg-[#4F8CFF] px-7 py-3.5 font-display text-sm font-semibold text-[#0A0B0D] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]">
+                        <Link to="/products" className="group flex items-center justify-center gap-2 rounded-xl bg-[#4F8CFF] px-7 py-3.5 font-display text-sm font-semibold text-[#0A0B0D] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]">
                             Get Your Tag
                             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
-                        </button>
-                        <button className="rounded-xl border border-white/15 px-7 py-3.5 font-display text-sm font-semibold text-[#F5F6F7] transition-colors duration-200 hover:bg-white/5">
+                        </Link>
+                        <Link to={"/how-it-works"} className="rounded-xl border border-white/15 px-7 py-3.5 font-display text-sm font-semibold text-[#F5F6F7] transition-colors duration-200 hover:bg-white/5">
                             See How It Works
-                        </button>
+                        </Link>
                     </div>
 
                     <div className="mt-10 flex items-center justify-center gap-6 text-xs text-[#8B92A0] lg:justify-start">
