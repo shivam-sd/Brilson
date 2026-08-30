@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import useCart from "../Pages/hooks/useCart";
 import { toast } from "react-toastify";
 
-
 // import UserAllCards from "./UserAllCards";
 
 const Header = () => {
@@ -32,6 +31,18 @@ const Header = () => {
 
   const isLoggedIn = !!token;
 
+  // Get user data to check if Google user
+  const getUserData = () => {
+    try {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        return JSON.parse(userStr);
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -47,10 +58,7 @@ const Header = () => {
     };
   }, []);
 
-
-
   const navigate = useNavigate();
-
 
   /* CART COUNT */
   const getCartCount = async () => {
@@ -102,29 +110,60 @@ const Header = () => {
     // return () => window.removeEventListener("cartUpdate", handleCartUpdate);
   }, []);
 
-  /* LOGOUT */
+  /* ============================================ */
+  /* 🚪 LOGOUT - UPDATED FOR NORMAL + GOOGLE USER */
+  /* ============================================ */
+
   const handleLogout = async () => {
     try {
       if (token) {
-      const res = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/api/users/logout`,
+        // 🔥 Check if user is Google user
+        const user = getUserData();
+        const isGoogleUser = user?.isGoogleUser || false;
+
+        // 🔥 Choose correct logout endpoint
+        const logoutEndpoint = isGoogleUser
+          ? `${import.meta.env.VITE_BASE_URL}/api/auth/google/logout`
+          : `${import.meta.env.VITE_BASE_URL}/api/auth/logout`;
+
+        const res = await axios.post(
+          logoutEndpoint,
           {},
           {
             withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
         );
+
         navigate("/", { replace: true });
         toast.success(res.data.message || "Logged out successfully");
       }
     } catch (err) {
-      console.log("Logout API error:", err);
+      // console.log("Logout API error:", err);
+      
+      // 🔥 Even if API fails, show appropriate message
+      if (err.response?.data?.message) {
+        toast.error(err.response.data.message);
+      } else {
+        toast.error("Logout failed. Please try again.");
+      }
     } finally {
-      // Frontend cleanup 
+      // Frontend cleanup (same for both)
       localStorage.removeItem("adminToken");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("googleUser");
       setToken(null);
       setMyCardProfile(null);
       // setCartCount(0);
       setMobileProfileOpen(false);
+      
+      // 🔥 Force navigation to home after cleanup
+      setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 100);
     }
   };
 
@@ -185,32 +224,12 @@ const Header = () => {
               <div className="absolute top-12 right-0 bg-gray-900 border border-white/20 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all min-w-[160px]">
                 <div className="flex flex-col p-2 gap-1 relative">
 
-                  {/* {myCardProfile ? (
-                    <Link
-                      to={`/admin/passTo/Profile`}
-                      className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
-                    >
-                      My Admin
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={() =>
-                        window.location.href = `${import.meta.env.VITE_DOMAIN}/card/activate`
-                      }
-                      className="px-3 py-2 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white"
-                    >
-                      My Admin
-                    </button>
-                  )} */}
-
                   <Link
                     to={`/admin/passTo/Profile`}
                     className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-semibold font-Roboto"
                   >
                     My Admin
                   </Link>
-
-
 
                   <Link to="/orders" className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white flex items-center tracking-widest font-Roboto font-semibold">
                     <span>My Orders</span>
@@ -228,28 +247,23 @@ const Header = () => {
             </div>
           )}
 
-
           <Link
             to="/get-card"
             className="group inline-flex items-center gap-2 px-6 py-2 rounded-full
   text-white font-medium relative overflow-hidden border
 border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-500/40  shadow-gray-800 shadow-lg
   transition-all duration-300 hover:scale-105 tracking-widest font-Roboto"
-
             style={{
               textShadow: "2px 2px 3px rgba(136,0,136,0.5)",
               backgroundPosition: "left center"
             }}
           >
-
-            {/* Text */}
             <span>Get Your Card</span>
           </Link>
         </div>
 
         {/* MOBILE ACTIONS */}
         <div className="md:hidden flex items-center justify-between w-full">
-
 
           {/* PROFILE */}
           {!isLoggedIn ? (
@@ -271,27 +285,6 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
                 >
                   <div className="flex flex-col p-2 gap-1">
 
-                    {/* {myCardProfile ? (
-                      <Link
-                        to={`/admin/passTo/Profile`}
-                        onClick={() => setMobileProfileOpen(false)}
-                        className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
-                      >
-                        My Admin
-                      </Link>
-
-                    ) : (
-                      <button
-                        onClick={() => {
-                          setMobileProfileOpen(false);
-                          window.location.href = `${import.meta.env.VITE_DOMAIN}/card/activate`;
-                        }}
-                        className="px-3 py-2 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white"
-                      >
-                        My Admin
-                      </button>
-                    )} */}
-
                     <Link
                       to={`/admin/passTo/Profile`}
                       onClick={() => setMobileProfileOpen(false)}
@@ -299,15 +292,6 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
                     >
                       My Admin
                     </Link>
-
-
-                    {/* <Link
-                      to="/orders"
-                      onClick={() => setMobileProfileOpen(false)}
-                      className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white"
-                    >
-                      My Orders
-                    </Link> */}
 
                     <button
                       onClick={handleLogout}
@@ -322,12 +306,9 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
             </div>
           )}
 
-
-
           {/* LOGO */}
           <Link to="/">
             <div
-
               className="flex items-center text-white text-2xl font-semibold ml-8"
             >
               {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
@@ -336,9 +317,6 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
               </div>
             </div>
           </Link>
-
-
-
 
           {/* CART */}
           <Link to="/your-items" className="relative text-2xl text-white">
@@ -350,13 +328,11 @@ border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-5
             )}
           </Link>
 
-
           <Link
             to="/orders"
             onClick={() => setMobileProfileOpen(false)}
             className="hover:bg-gray-800 rounded text-gray-300 hover:text-white"
           >
-            {/* My Orders */}
             <BookCheck size={28} />
           </Link>
         </div>

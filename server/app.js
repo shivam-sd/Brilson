@@ -59,6 +59,7 @@ const BulkParkingTagDownloadRouter = require("./routes/CardDownloadBulkParkingTa
 const bulkVisitingcardDownlaod = require("./routes/bulkvisitingcard.download.routes")
 const bulkGoogleReviewDownload = require("./routes/CardBulkGoogleReview.routes")
 const InvoiceAddressRouter = require("./routes/InvoiceAddress.route");
+const GoogleAuthRouter = require("./routes/GoogleAuthRoute/GoogleAuthRouter.routes");
 
 
 // Runtime config
@@ -125,6 +126,7 @@ app.use(fileUpload({
   // Routes
   app.use("/api/users", UserRouter); // ✅
   app.use("/api/auth", authRoutesResetPassword);  // ✅
+  app.use("/api/auth", GoogleAuthRouter);  
   app.use("/api/admin", AdminRouter); //✅
   app.use("/api/cart", CartRouter); // ✅
   app.use("/api", ReferralRouter); // ✅

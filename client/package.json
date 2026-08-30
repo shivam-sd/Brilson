@@ -12,6 +12,7 @@
   "dependencies": {
     "@cashfreepayments/cashfree-js": "^1.0.7",
     "@hcaptcha/react-hcaptcha": "^2.0.2",
+    "@react-oauth/google": "^0.13.5",
     "@tailwindcss/vite": "^4.1.17",
     "animate.css": "^4.1.1",
     "axios": "^1.13.2",
