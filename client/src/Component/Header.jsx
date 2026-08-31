@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaUser } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
@@ -11,48 +11,26 @@ import {
 } from "react-icons/io";
 import axios from "axios";
 import { BookCheck } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { selectCartCount } from "../store/slices/cartSlice";
+import { selectToken, selectUser, logoutAction } from "../store/slices/authSlice";
 
 import LogoSection from "./LogoSection";
 
 const Header = () => {
+  const dispatch = useDispatch();
   const cartCount = useSelector(selectCartCount);
+  const token = useSelector(selectToken);
+  const user = useSelector(selectUser);
 
-  const [token, setToken] = useState(
-    localStorage.getItem("token")
-  );
-
-  const [myCardProfile, setMyCardProfile] =
-    useState(null);
-
-  const [mobileProfileOpen, setMobileProfileOpen] =
-    useState(false);
-
+  const [myCardProfile, setMyCardProfile] = useState(null);
+  const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
   const [userId, setUserId] = useState(null);
 
   const menuRef = useRef(null);
-
   const isLoggedIn = !!token;
-
   const navigate = useNavigate();
-
-  const getUserData = () => {
-    try {
-      const userStr =
-        localStorage.getItem("user");
-
-      if (userStr) {
-        return JSON.parse(userStr);
-      }
-
-      return null;
-    } catch {
-      return null;
-    }
-  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -85,18 +63,16 @@ const Header = () => {
       }
 
       const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL} /api/users / my - active - card`,
+        `${import.meta.env.VITE_BASE_URL}/api/users/my-active-card`,
         {
           headers: {
-            Authorization: `Bearer ${token} `,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       setMyCardProfile(
-        res.data?.hasCard
-          ? res.data
-          : null
+        res.data?.hasCard ? res.data : null
       );
 
       setUserId(res.data.userId);
@@ -112,15 +88,11 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       if (token) {
-        const user = getUserData();
+        const isGoogleUser = user?.isGoogleUser || false;
 
-        const isGoogleUser =
-          user?.isGoogleUser || false;
-
-        const logoutEndpoint =
-          isGoogleUser
-            ? `${import.meta.env.VITE_BASE_URL} /api/auth / google / logout`
-            : `${import.meta.env.VITE_BASE_URL} /api/auth / logout`;
+        const logoutEndpoint = isGoogleUser
+          ? `${import.meta.env.VITE_BASE_URL}/api/auth/google/logout`
+          : `${import.meta.env.VITE_BASE_URL}/api/auth/logout`;
 
         const res = await axios.post(
           logoutEndpoint,
@@ -128,56 +100,32 @@ const Header = () => {
           {
             withCredentials: true,
             headers: {
-              Authorization: `Bearer ${token} `,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
 
-        navigate("/", {
-          replace: true,
-        });
-
         toast.success(
-          res.data.message ||
-          "Logged out successfully"
+          res.data?.message || "Logged out successfully"
         );
       }
     } catch (err) {
       if (err.response?.data?.message) {
-        toast.error(
-          err.response.data.message
-        );
+        toast.error(err.response.data.message);
       } else {
-        toast.error(
-          "Logout failed. Please try again."
-        );
+        toast.error("Logout failed. Please try again.");
       }
     } finally {
-      localStorage.removeItem(
-        "adminToken"
-      );
-
-      localStorage.removeItem("token");
-
-      localStorage.removeItem("user");
-
-      localStorage.removeItem(
-        "googleUser"
-      );
-
-      setToken(null);
-
+      dispatch(logoutAction());
       setMyCardProfile(null);
-
       setMobileProfileOpen(false);
 
       setTimeout(() => {
-        navigate("/", {
-          replace: true,
-        });
+        navigate("/", { replace: true });
       }, 100);
     }
   };
+
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-[#050505]/70 backdrop-blur-xl border-b border-white/10">

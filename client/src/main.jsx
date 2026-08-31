@@ -1,26 +1,26 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import App from './App.jsx';
 import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { CartProvider } from "./Pages/ContaxtAPI/CartContext.jsx";
-import { GoogleOAuthProvider } from "@react-oauth/google"
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Provider } from "react-redux";
-import { store } from './store/index.js';
+import { PersistGate } from "redux-persist/integration/react";
+import { store, persistor } from './store/index.js';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <BrowserRouter>
-        <ToastContainer position="top-right" />
-        <CartProvider>
-          <Provider store={store}>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <BrowserRouter>
+            <ToastContainer position="top-right" />
             <App />
-          </Provider>
-        </CartProvider>
-      </BrowserRouter>
+          </BrowserRouter>
+        </PersistGate>
+      </Provider>
     </GoogleOAuthProvider>
   </StrictMode>,
-)
+);

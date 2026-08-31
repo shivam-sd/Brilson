@@ -5,15 +5,16 @@ import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { VscReferences } from "react-icons/vsc";
-import { FiEyeOff } from "react-icons/fi";
-import { FiEye } from "react-icons/fi";
+import { FiEyeOff, FiEye } from "react-icons/fi";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../store/slices/authSlice";
 
-//  Import Google Components
 import GoogleLoginAuth from "./GoogleAuth/GoogleLoginAuth";
 import GooglePhoneInput from "./GoogleAuth/GooglePhoneInput";
 import GoogleOTPInput from "./GoogleAuth/GoogleOTPInput";
 
 const SignupPage = () => {
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -31,11 +32,11 @@ const SignupPage = () => {
   const [seePassword, setSeePassword] = useState(false);
   const [seePassword1, setSeePassword1] = useState(false);
 
-  // Google States
   const [googleStep, setGoogleStep] = useState(null); 
   const [googleUserData, setGoogleUserData] = useState(null);
 
   const navigate = useNavigate();
+
 
   
 
@@ -138,9 +139,9 @@ const SignupPage = () => {
       );
 
       if (res.data?.token) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        dispatch(setCredentials({ token: res.data.token, user: res.data.user }));
       }
+
 
       toast.success("Account registered successfully!");
       setTimeout(() => navigate("/"), 500);

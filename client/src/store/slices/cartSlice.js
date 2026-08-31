@@ -1,33 +1,11 @@
-
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const getToken = () => {
-    return localStorage.getItem("token");
-};
-
-const getLocalCart = () => {
-    try {
-        return JSON.parse(
-            localStorage.getItem("cart") || "[]"
-        );
-    } catch {
-        return [];
-    }
-};
-
-const saveLocalCart = (cart) => {
-    localStorage.setItem(
-        "cart",
-        JSON.stringify(cart)
-    );
-};
-
 export const fetchCart = createAsyncThunk(
     "cart/fetchCart",
-    async (_, { rejectWithValue }) => {
+    async (_, { getState, rejectWithValue }) => {
         try {
-            const token = getToken();
+            const token = getState().auth.token;
 
             if (token) {
                 const res = await axios.get(
@@ -42,7 +20,7 @@ export const fetchCart = createAsyncThunk(
                 return res.data.cartItems || [];
             }
 
-            return getLocalCart();
+            return getState().cart.cartItems || [];
         } catch (error) {
             return rejectWithValue(
                 error.response?.data?.message ||
@@ -54,9 +32,9 @@ export const fetchCart = createAsyncThunk(
 
 export const addToCart = createAsyncThunk(
     "cart/addToCart",
-    async (product, { rejectWithValue }) => {
+    async (product, { getState, rejectWithValue }) => {
         try {
-            const token = getToken();
+            const token = getState().auth.token;
 
             if (token) {
                 const res = await axios.post(
@@ -74,12 +52,11 @@ export const addToCart = createAsyncThunk(
 
                 return {
                     type: "server",
-                    cartItems:
-                        res.data.cartItems || null,
+                    cartItems: res.data.cartItems || null,
                 };
             }
 
-            const cart = getLocalCart();
+            const cart = getState().cart.cartItems || [];
 
             const index = cart.findIndex((item) => {
                 const productId =
@@ -98,8 +75,7 @@ export const addToCart = createAsyncThunk(
                         itemIndex === index
                             ? {
                                 ...item,
-                                quantity:
-                                    (item.quantity || 0) + 1,
+                                quantity: (item.quantity || 0) + 1,
                             }
                             : item
                 );
@@ -125,8 +101,6 @@ export const addToCart = createAsyncThunk(
                 ];
             }
 
-            saveLocalCart(updatedCart);
-
             return {
                 type: "local",
                 cartItems: updatedCart,
@@ -142,9 +116,9 @@ export const addToCart = createAsyncThunk(
 
 export const removeFromCart = createAsyncThunk(
     "cart/removeFromCart",
-    async (cartId, { rejectWithValue }) => {
+    async (cartId, { getState, rejectWithValue }) => {
         try {
-            const token = getToken();
+            const token = getState().auth.token;
 
             if (token) {
                 await axios.delete(
@@ -161,19 +135,16 @@ export const removeFromCart = createAsyncThunk(
                 };
             }
 
-            const cart = getLocalCart();
+            const cart = getState().cart.cartItems || [];
 
-            const updatedCart =
-                cart.filter((item) => {
-                    const productId =
-                        typeof item.productId === "object"
-                            ? item.productId?._id
-                            : item.productId;
+            const updatedCart = cart.filter((item) => {
+                const productId =
+                    typeof item.productId === "object"
+                        ? item.productId?._id
+                        : item.productId;
 
-                    return productId !== cartId;
-                });
-
-            saveLocalCart(updatedCart);
+                return productId !== cartId;
+            });
 
             return {
                 cartId,
@@ -190,12 +161,9 @@ export const removeFromCart = createAsyncThunk(
 
 export const updateCartQuantity = createAsyncThunk(
     "cart/updateCartQuantity",
-    async (
-        { cartId, quantity },
-        { rejectWithValue }
-    ) => {
+    async ({ cartId, quantity }, { getState, rejectWithValue }) => {
         try {
-            const token = getToken();
+            const token = getState().auth.token;
 
             if (token) {
                 await axios.put(
@@ -214,7 +182,7 @@ export const updateCartQuantity = createAsyncThunk(
                 };
             }
 
-            const cart = getLocalCart();
+            const cart = getState().cart.cartItems || [];
 
             const updatedCart = cart.map((item) => {
                 const productId =
@@ -231,8 +199,6 @@ export const updateCartQuantity = createAsyncThunk(
 
                 return item;
             });
-
-            saveLocalCart(updatedCart);
 
             return {
                 cartId,
@@ -299,8 +265,7 @@ const cartSlice = createSlice({
                 state.actionItemId = null;
 
                 if (action.payload?.cartItems) {
-                    state.cartItems =
-                        action.payload.cartItems;
+                    state.cartItems = action.payload.cartItems;
                 }
             })
 
@@ -323,14 +288,11 @@ const cartSlice = createSlice({
                     state.actionItemId = null;
 
                     if (action.payload.cartItems) {
-                        state.cartItems =
-                            action.payload.cartItems;
-
+                        state.cartItems = action.payload.cartItems;
                         return;
                     }
 
-                    const { cartId } =
-                        action.payload;
+                    const { cartId } = action.payload;
 
                     state.cartItems =
                         state.cartItems.filter(
@@ -355,8 +317,7 @@ const cartSlice = createSlice({
                 updateCartQuantity.pending,
                 (state, action) => {
                     state.actionLoading = true;
-                    state.actionItemId =
-                        action.meta.arg.cartId;
+                    state.actionItemId = action.meta.arg.cartId;
                     state.error = null;
                 }
             )
@@ -368,22 +329,17 @@ const cartSlice = createSlice({
                     state.actionItemId = null;
 
                     if (action.payload.cartItems) {
-                        state.cartItems =
-                            action.payload.cartItems;
-
+                        state.cartItems = action.payload.cartItems;
                         return;
                     }
 
-                    const {
-                        cartId,
-                        quantity,
-                    } = action.payload;
+                    const { cartId, quantity } = action.payload;
 
                     const item =
                         state.cartItems.find(
                             (item) =>
                                 item._id === cartId ||
-                                item.productId?._id === cartId ||
+                                item.productId?._id !== cartId ||
                                 item.productId === cartId
                         );
 

@@ -4,16 +4,17 @@ import { Lock, Phone } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
-import { FiEyeOff } from "react-icons/fi";
-import { FiEye } from "react-icons/fi";
+import { FiEyeOff, FiEye } from "react-icons/fi";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../store/slices/authSlice";
 
-// Import Google Components
 import GoogleLoginAuth from "./GoogleAuth/GoogleLoginAuth";
 import GooglePhoneInput from "./GoogleAuth/GooglePhoneInput";
 import GoogleOTPInput from "./GoogleAuth/GoogleOTPInput";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [seePassword, setSeePassword] = useState(false);
   const [form, setForm] = useState({
@@ -23,15 +24,12 @@ const LoginPage = () => {
 
   const [loading, setLoading] = useState(false);
 
-  //  Google States
   const [googleStep, setGoogleStep] = useState(null); 
   const [googleUserData, setGoogleUserData] = useState(null);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
- 
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -62,16 +60,12 @@ const LoginPage = () => {
       );
       
       if (res.data?.token) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        dispatch(setCredentials({ token: res.data.token, user: res.data.user }));
       }
       
       toast.success("Login successful");
       setTimeout(() => navigate("/"), 500);
     } catch (err) {
-      // console.log(err);
-      
-      //  Better error handling for Google users
       if (err.response?.data?.error === "This account is linked with Google. Please sign in with Google.") {
         toast.error("This account uses Google Sign-In. Please click the Google button below.");
       } else {
@@ -85,6 +79,7 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
 
   // ==========================================
   // GOOGLE FLOW HANDLERS
