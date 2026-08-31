@@ -9,6 +9,7 @@ const generateToken = (id) => {
   return jwt.sign({ userId: id }, process.env.BRILSON_SECRET_KEY);
 };
 
+
 // Google Sign-In
 
 
@@ -23,7 +24,6 @@ const GoogleAuthController = async (req, res) => {
       });
     }
 
-    // Exchange Google code for tokens
     const { tokens } = await oauth2Client.getToken(code);
 
     if (!tokens.access_token) {
@@ -35,7 +35,6 @@ const GoogleAuthController = async (req, res) => {
 
     oauth2Client.setCredentials(tokens);
 
-    // Get Google user information
     const userRes = await axios.get(
       "https://www.googleapis.com/oauth2/v1/userinfo",
       {
@@ -68,13 +67,14 @@ const GoogleAuthController = async (req, res) => {
       });
     }
 
-    // Check if user exists with Google ID
     let user = await UserModel.findOne({ googleId });
 
     if (user) {
+      //  SET isGoogleUser to true
       if (!user.isGoogleUser) {
         user.isGoogleUser = true;
         await user.save();
+        console.log("✅ Fixed isGoogleUser for user:", user._id);
       }
 
       if (user.phone && user.isVerified) {
@@ -228,7 +228,7 @@ const GoogleAuthController = async (req, res) => {
 };
 
 
-//  Complete Google Profile with Phone
+// Complete Google Profile with Phone
 
 
 const completeGoogleLogin = async (req, res) => {
@@ -279,7 +279,7 @@ const completeGoogleLogin = async (req, res) => {
       });
     }
 
-    //  Always set isGoogleUser to true if googleId exists
+    //  Always set isGoogleUser to true
     user.isGoogleUser = true;
 
     if (user.phone && user.isVerified) {
@@ -327,7 +327,8 @@ const completeGoogleLogin = async (req, res) => {
   }
 };
 
-//  Verify OTP for Google User
+
+// Verify OTP for Google User
 
 
 const verifyGoogleOTP = async (req, res) => {
@@ -401,7 +402,6 @@ const verifyGoogleOTP = async (req, res) => {
 
   } catch (err) {
     console.error("Verify Google OTP Error:", err);
-
     return res.status(500).json({
       success: false,
       message: "OTP verification failed",
@@ -461,7 +461,6 @@ const resendGoogleOTP = async (req, res) => {
 
   } catch (err) {
     console.error("Resend Google OTP Error:", err);
-
     return res.status(500).json({
       success: false,
       message: "Failed to resend OTP",
