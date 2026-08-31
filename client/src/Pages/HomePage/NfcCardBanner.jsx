@@ -3,8 +3,12 @@ import { ArrowRight, Wifi, Share2, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CARD_IMAGES = [
-    "/brilson-nfc-card-y.png",
-    "/brilson-nfc-card-r.png",
+    "/nfc_cards/brilson-nfc-card-1.png",
+    "/nfc_cards/brilson-nfc-card-3.png",
+    "/nfc_cards/brilson-nfc-card-4.png",
+    "/nfc_cards/brilson-nfc-card-5.png",
+    "/nfc_cards/brilson-nfc-card-7.png",
+    "/nfc_cards/brilson-nfc-card-8.png",
 ];
 
 const IMAGE_COUNT = CARD_IMAGES.length;
