@@ -69,7 +69,7 @@ const LoginPage = () => {
       toast.success("Login successful");
       setTimeout(() => navigate("/"), 500);
     } catch (err) {
-      // console.log(err);
+      console.log(err);
       
       //  Better error handling for Google users
       if (err.response?.data?.error === "This account is linked with Google. Please sign in with Google.") {
@@ -100,13 +100,13 @@ const LoginPage = () => {
   };
 
   const handleGooglePhoneRequired = (data) => {
-    // console.log("Google phone required:", data);
+    console.log("Google phone required:", data);
     setGoogleUserData(data);
     setGoogleStep('phone');
   };
 
   const handleGooglePhoneComplete = (data) => {
-    // console.log("Google phone complete:", data);
+    console.log("Google phone complete:", data);
     setGoogleUserData(prev => ({ ...prev, ...data }));
     setGoogleStep('otp');
     toast.success("OTP sent to your phone");

@@ -10,13 +10,13 @@ const GoogleLoginAuth = ({ onSuccess, onError, onPhoneRequired, onOTPRequired })
     
     try {
       if (authResult.code) {
-        // console.log("Google auth code received:", authResult.code);
+        console.log("Google auth code received:", authResult.code);
         
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/auth/google-auth?code=${authResult.code}`
         );
 
-        // console.log("Backend response:", response.data);
+        console.log("Backend response:", response.data);
         const { data } = response;
 
         if (data.success) {
@@ -43,7 +43,7 @@ const GoogleLoginAuth = ({ onSuccess, onError, onPhoneRequired, onOTPRequired })
         }
       }
     } catch (error) {
-      // console.error("Google Auth Error:", error);
+      console.error("Google Auth Error:", error);
       if (onError) {
         onError(error.response?.data?.message || "Google authentication failed");
       }
@@ -55,7 +55,7 @@ const GoogleLoginAuth = ({ onSuccess, onError, onPhoneRequired, onOTPRequired })
   const googleLogin = useGoogleLogin({
     onSuccess: responseGoogle,
     onError: (error) => {
-      // console.error("Google Sign-In Error:", error);
+      console.error("Google Sign-In Error:", error);
       setLoading(false);
       if (onError) {
         onError("Google sign-in failed. Please try again.");

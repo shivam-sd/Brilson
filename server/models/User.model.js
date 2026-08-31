@@ -13,12 +13,22 @@ const userSchema = new mongoose.Schema(
   default: null
 },
 
-    // email: {
-    //   type: String,
-    //   // required: true,
-    //   lowercase: true,
-    //   trim: true,
-    // },
+    email: {
+      type: String,
+      lowercase: true,
+      trim: true,
+    },
+
+       googleId: {
+      type: String,
+      sparse: true,
+      index: true,
+    },
+    
+    isGoogleUser:{
+      type:Boolean,
+      default:false
+    },
 
     phone: {
       type: String,
@@ -40,6 +50,9 @@ const userSchema = new mongoose.Schema(
 
     resetPasswordToken: String,
 resetPasswordExpire: Date,
+
+
+
 
     // referral
 
@@ -119,7 +132,8 @@ hasReceivedFirstActivationReward: {
 
 
 userSchema.index({ referredBy: 1 });                          
-userSchema.index({ referralStatus: 1 });           
+userSchema.index({ referralStatus: 1 });  
+userSchema.index({ email: 1 });         
 
 
 module.exports = mongoose.model("User", userSchema);

@@ -37,7 +37,7 @@ const GoogleOTPInput = ({ userId, phone, onSuccess, onBack }) => {
         { userId, otp }
       );
 
-    //   console.log("Verify OTP response:", response.data);
+      console.log("Verify OTP response:", response.data);
 
       if (response.data.success && response.data.status === "SUCCESS") {
         localStorage.setItem('token', response.data.data.token);
@@ -48,7 +48,7 @@ const GoogleOTPInput = ({ userId, phone, onSuccess, onBack }) => {
         }
       }
     } catch (error) {
-    //   console.error("OTP verification error:", error);
+      console.error("OTP verification error:", error);
       setError(error.response?.data?.message || "Invalid OTP. Please try again.");
     } finally {
       setLoading(false);
@@ -71,7 +71,7 @@ const GoogleOTPInput = ({ userId, phone, onSuccess, onBack }) => {
         toast.success('OTP resent successfully');
       }
     } catch (error) {
-    //   console.error("Resend OTP error:", error);
+      console.error("Resend OTP error:", error);
       setError(error.response?.data?.message || "Failed to resend OTP");
     } finally {
       setLoading(false);

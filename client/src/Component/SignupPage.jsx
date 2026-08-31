@@ -61,7 +61,7 @@ const SignupPage = () => {
       setOtpSent(true);
       toast.success("OTP sent successfully to your phone");
     } catch (err) {
-      // console.log(err.response?.data?.message);
+      console.log(err.response?.data?.message);
       toast.error(err.response?.data?.message || "Failed to send OTP");
     } finally {
       setOtpLoading(false);
@@ -166,20 +166,20 @@ const SignupPage = () => {
   };
 
   const handleGooglePhoneRequired = (data) => {
-    // console.log("Google phone required:", data);
+    console.log("Google phone required:", data);
     setGoogleUserData(data);
     setGoogleStep('phone');
   };
 
   const handleGooglePhoneComplete = (data) => {
-    // console.log("Google phone complete:", data);
+    console.log("Google phone complete:", data);
     setGoogleUserData(prev => ({ ...prev, ...data }));
     setGoogleStep('otp');
     toast.success("OTP sent to your phone");
   };
 
   const handleGoogleOTPSuccess = (data) => {
-    // console.log("Google OTP success:", data);
+    console.log("Google OTP success:", data);
     toast.success("Login successful!");
     navigate("/");
   };
@@ -228,9 +228,9 @@ const SignupPage = () => {
             </p>
           </div>
 
-          {/* ========================================== */}
+     
           {/* 🆕 GOOGLE SIGN-IN SECTION */}
-          {/* ========================================== */}
+       
 
           {!googleStep && (
             <div className="mb-6">

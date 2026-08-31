@@ -117,14 +117,14 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       if (token) {
-        // 🔥 Check if user is Google user
+        //  Check if user is Google user
         const user = getUserData();
         const isGoogleUser = user?.isGoogleUser || false;
 
-        // 🔥 Choose correct logout endpoint
+        //  Choose correct logout endpoint
         const logoutEndpoint = isGoogleUser
           ? `${import.meta.env.VITE_BASE_URL}/api/auth/google/logout`
-          : `${import.meta.env.VITE_BASE_URL}/api/auth/logout`;
+          : `${import.meta.env.VITE_BASE_URL}/api/users/logout`;
 
         const res = await axios.post(
           logoutEndpoint,
@@ -143,7 +143,7 @@ const Header = () => {
     } catch (err) {
       // console.log("Logout API error:", err);
       
-      // 🔥 Even if API fails, show appropriate message
+      //  Even if API fails, show appropriate message
       if (err.response?.data?.message) {
         toast.error(err.response.data.message);
       } else {

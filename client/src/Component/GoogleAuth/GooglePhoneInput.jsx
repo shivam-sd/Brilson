@@ -26,7 +26,7 @@ const GooglePhoneInput = ({ userData, onComplete, onBack }) => {
         }
       );
 
-    //   console.log("Complete profile response:", response.data);
+      console.log("Complete profile response:", response.data);
 
       if (response.data.success && response.data.status === "OTP_REQUIRED") {
         if (onComplete) {
@@ -37,7 +37,7 @@ const GooglePhoneInput = ({ userData, onComplete, onBack }) => {
         }
       }
     } catch (error) {
-    //   console.error("Phone submission error:", error);
+      console.error("Phone submission error:", error);
       setError(error.response?.data?.message || "Failed to complete profile");
     } finally {
       setLoading(false);
