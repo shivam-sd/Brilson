@@ -1,33 +1,42 @@
 import React, { useState } from 'react';
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../store/slices/authSlice";
 
 const GoogleLoginAuth = ({ onSuccess, onError, onPhoneRequired, onOTPRequired }) => {
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const responseGoogle = async (authResult) => {
     setLoading(true);
     
     try {
       if (authResult.code) {
+<<<<<<< HEAD
         console.log("Google auth code received:", authResult.code);
         
+=======
+>>>>>>> 6cb9552e0df60ad79343fb317f357237ff867cf9
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/auth/google-auth?code=${authResult.code}`
         );
 
+<<<<<<< HEAD
         console.log("Backend response:", response.data);
+=======
+>>>>>>> 6cb9552e0df60ad79343fb317f357237ff867cf9
         const { data } = response;
 
         if (data.success) {
           if (data.status === "SUCCESS") {
-            localStorage.setItem('token', data.data.token);
-            localStorage.setItem('user', JSON.stringify(data.data.user));
+            dispatch(setCredentials({ token: data.data.token, user: data.data.user }));
             
             if (onSuccess) {
               onSuccess(data.data);
             }
-          } else if (data.status === "PHONE_REQUIRED") {
+          }
+ else if (data.status === "PHONE_REQUIRED") {
             if (onPhoneRequired) {
               onPhoneRequired(data.data);
             }

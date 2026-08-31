@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../store/slices/authSlice';
 
 const GoogleOTPInput = ({ userId, phone, onSuccess, onBack }) => {
   const [otp, setOtp] = useState('');
@@ -8,6 +10,7 @@ const GoogleOTPInput = ({ userId, phone, onSuccess, onBack }) => {
   const [error, setError] = useState('');
   const [timer, setTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (timer > 0) {
@@ -37,16 +40,19 @@ const GoogleOTPInput = ({ userId, phone, onSuccess, onBack }) => {
         { userId, otp }
       );
 
+<<<<<<< HEAD
       console.log("Verify OTP response:", response.data);
 
+=======
+>>>>>>> 6cb9552e0df60ad79343fb317f357237ff867cf9
       if (response.data.success && response.data.status === "SUCCESS") {
-        localStorage.setItem('token', response.data.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        dispatch(setCredentials({ token: response.data.data.token, user: response.data.data.user }));
         
         if (onSuccess) {
           onSuccess(response.data.data);
         }
       }
+
     } catch (error) {
       console.error("OTP verification error:", error);
       setError(error.response?.data?.message || "Invalid OTP. Please try again.");
