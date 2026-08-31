@@ -228,7 +228,7 @@ const GoogleAuthController = async (req, res) => {
 };
 
 
-// STEP 2: Complete Google Profile with Phone
+//  Complete Google Profile with Phone
 
 
 const completeGoogleLogin = async (req, res) => {
@@ -278,8 +278,11 @@ const completeGoogleLogin = async (req, res) => {
       });
     }
 
+    
+
     if (!user.isGoogleUser) {
       user.isGoogleUser = true;
+      await user.save();
     }
 
     if (user.phone && user.isVerified) {
