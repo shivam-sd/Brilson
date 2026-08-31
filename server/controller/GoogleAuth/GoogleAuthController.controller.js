@@ -271,6 +271,7 @@ const completeGoogleLogin = async (req, res) => {
       });
     }
 
+    // Check googleId instead of isGoogleUser
     if (!user.googleId) {
       return res.status(400).json({
         success: false,
@@ -278,12 +279,8 @@ const completeGoogleLogin = async (req, res) => {
       });
     }
 
-    
-
-    if (!user.isGoogleUser) {
-      user.isGoogleUser = true;
-      await user.save();
-    }
+    //  Always set isGoogleUser to true if googleId exists
+    user.isGoogleUser = true;
 
     if (user.phone && user.isVerified) {
       return res.status(400).json({
@@ -322,7 +319,6 @@ const completeGoogleLogin = async (req, res) => {
 
   } catch (err) {
     console.error("Complete Google Login Error:", err);
-
     return res.status(500).json({
       success: false,
       message: "Failed to complete Google login",
@@ -330,7 +326,6 @@ const completeGoogleLogin = async (req, res) => {
     });
   }
 };
-
 
 //  Verify OTP for Google User
 
