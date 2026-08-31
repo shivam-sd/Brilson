@@ -13,19 +13,10 @@ const GoogleLoginAuth = ({ onSuccess, onError, onPhoneRequired, onOTPRequired })
     
     try {
       if (authResult.code) {
-<<<<<<< HEAD
-        console.log("Google auth code received:", authResult.code);
-        
-=======
->>>>>>> 6cb9552e0df60ad79343fb317f357237ff867cf9
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/auth/google-auth?code=${authResult.code}`
         );
 
-<<<<<<< HEAD
-        console.log("Backend response:", response.data);
-=======
->>>>>>> 6cb9552e0df60ad79343fb317f357237ff867cf9
         const { data } = response;
 
         if (data.success) {

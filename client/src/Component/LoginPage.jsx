@@ -66,12 +66,6 @@ const LoginPage = () => {
       toast.success("Login successful");
       setTimeout(() => navigate("/"), 500);
     } catch (err) {
-<<<<<<< HEAD
-      console.log(err);
-      
-      //  Better error handling for Google users
-=======
->>>>>>> 6cb9552e0df60ad79343fb317f357237ff867cf9
       if (err.response?.data?.error === "This account is linked with Google. Please sign in with Google.") {
         toast.error("This account uses Google Sign-In. Please click the Google button below.");
       } else {

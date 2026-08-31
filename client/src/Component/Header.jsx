@@ -88,16 +88,8 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       if (token) {
-<<<<<<< HEAD
-        //  Check if user is Google user
-        const user = getUserData();
         const isGoogleUser = user?.isGoogleUser || false;
 
-        //  Choose correct logout endpoint
-=======
-        const isGoogleUser = user?.isGoogleUser || false;
-
->>>>>>> 6cb9552e0df60ad79343fb317f357237ff867cf9
         const logoutEndpoint = isGoogleUser
           ? `${import.meta.env.VITE_BASE_URL}/api/auth/google/logout`
           : `${import.meta.env.VITE_BASE_URL}/api/users/logout`;
@@ -118,12 +110,6 @@ const Header = () => {
         );
       }
     } catch (err) {
-<<<<<<< HEAD
-      // console.log("Logout API error:", err);
-      
-      //  Even if API fails, show appropriate message
-=======
->>>>>>> 6cb9552e0df60ad79343fb317f357237ff867cf9
       if (err.response?.data?.message) {
         toast.error(err.response.data.message);
       } else {

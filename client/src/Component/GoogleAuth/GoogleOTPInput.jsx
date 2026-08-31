@@ -40,11 +40,6 @@ const GoogleOTPInput = ({ userId, phone, onSuccess, onBack }) => {
         { userId, otp }
       );
 
-<<<<<<< HEAD
-      console.log("Verify OTP response:", response.data);
-
-=======
->>>>>>> 6cb9552e0df60ad79343fb317f357237ff867cf9
       if (response.data.success && response.data.status === "SUCCESS") {
         dispatch(setCredentials({ token: response.data.data.token, user: response.data.data.user }));
         
