@@ -15,11 +15,11 @@ const HomePage = () => {
     <div>
       <SmartCardBanner />
       {/* <HeroSection /> */}
+      <NfcCardBanner />
+      <ParkingTagBanner />
       <PowerFullFeature />
       <HowToUse />
       <Networking />
-      <NfcCardBanner />
-      <ParkingTagBanner />
       <Testimonials />
     </div>
   )

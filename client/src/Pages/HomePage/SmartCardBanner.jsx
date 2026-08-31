@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
-import { Wifi, Leaf, UserCheck, TrendingUp, ArrowRight, Sparkles, Zap, Shield, Star } from 'lucide-react';
+import { Wifi, Leaf, UserCheck, TrendingUp, ArrowRight, Sparkles, Zap, Shield, Star, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const FEATURES = [
@@ -12,9 +12,9 @@ const FEATURES = [
 
 const SmartCardBanner = () => {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-[#050B2E] px-4 py-8 sm:px-6 md:px-10 lg:px-16">
+    <section className="relative w-full overflow-hidden bg-[#050B2E] px-4 py-8 sm:px-6 md:px-10 lg:px-16 min-h-[80vh] lg:min-h-[85vh] xl:min-h-[90vh] lg:mt-15">
       {/* Modern Animated Background */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient"/>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient" />
       
       {/* Floating Gradient Orbs */}
       <div className="pointer-events-none absolute -left-32 top-1/4 h-[400px] w-[400px] rounded-full bg-[#0B5FFF]/15 blur-[130px] animate-pulse" />
@@ -24,71 +24,64 @@ const SmartCardBanner = () => {
       {/* Animated Grid Pattern */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:60px_60px]" />
 
-      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-y-6 lg:grid-cols-2 lg:gap-x-16 lg:gap-y-0 min-h-[calc(100vh-4rem)] items-start lg:items-center lg:mt-4 mt-14">
+      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-y-4 lg:grid-cols-2 lg:gap-x-12 lg:gap-y-0 items-center h-full py-4 lg:py-6 mt-10 lg:mt-0 md:mt-0">
         
         {/* Left Content */}
-        <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-4 lg:space-y-6">
-
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-3xl lg:text-4xl xl:text-6xl lg:leading-18 md:leading-18">
+        <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-3 lg:space-y-4 lg:py-6 md:py-6">
+          <h2 className="text-3xl font-bold text-white sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl lg:leading-15 tracking-tight">
             The{' '}
             <span className="bg-gradient-to-r from-[#3B9EFF] via-[#5FB4FF] to-[#8EC5FF] bg-clip-text text-transparent">
               Smart Business Card
             </span>
             <br />
-            <span className="text-white/90">Designed for Professionals <br /> </span>{' '}
+            <span className="text-white/90">Designed for Professionals</span>{' '}
             <span className="bg-gradient-to-r from-[#3B9EFF] to-[#5FB4FF] bg-clip-text text-transparent">
               Connect Instantly
             </span>
           </h2>
 
-          <p className="text-base text-white/60 sm:text-lg lg:text-xl max-w-2xl lg:max-w-full ">
+          <p className="text-sm text-white/60 sm:text-base lg:text-lg max-w-2xl lg:max-w-full">
             Share your profile instantly, grow your network, and make every connection count with our next-generation digital business cards.
           </p>
 
-          {/* Buttons */}
-          <div className="hidden lg:flex md:flex w-full flex-col gap-3 sm:flex-row sm:gap-4 pt-15 ">
+          {/* Buttons - Desktop */}
+          <div className="hidden lg:flex w-full flex-col gap-3 sm:flex-row sm:gap-4 pt-2">
             <Link
               to="/products"
-              className="group relative flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#337ef6] to-[#0447c2] px-12 text-base font-semibold tracking-wider text-white shadow-[0_8px_32px_-8px_rgba(47,128,255,0.6)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_12px_40px_-8px_rgba(47,128,255,0.8)] active:scale-95 sm:w-auto"
+              className="group relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#337ef6] to-[#0447c2] px-10 text-sm font-semibold tracking-wider text-white shadow-[0_8px_32px_-8px_rgba(47,128,255,0.6)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_12px_40px_-8px_rgba(47,128,255,0.8)] active:scale-95 sm:w-auto"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Get Started
-                <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
               </span>
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:translate-x-full transition-transform duration-700" />
             </Link>
 
             <Link
-              to="/contact-sale"
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-12 tracking-wider text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 hover:border-white/30 active:scale-95 sm:w-auto"
+              to="/how-it-works"
+              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-10 text-sm font-semibold tracking-wider text-white transition-all duration-300 hover:bg-white/10 hover:border-white/30 active:scale-95 sm:w-auto"
             >
-              <FaWhatsapp className="text-xl text-[#25D366]" />
-              Contact Us
+              How It Works
             </Link>
           </div>
         </div>
 
-        {/* Right Content - Image with Modern Effects */}
-        <div className="relative flex items-center justify-center lg:justify-end">
-          {/* Glow behind image */}
+        {/* Right Content - Image */}
+        <div className="relative flex items-center justify-center lg:justify-end lg:py-6 md:py-6">
           <div className="pointer-events-none absolute -inset-10 bg-gradient-to-r from-[#2F80FF]/20 to-[#5FB4FF]/20 blur-3xl" />
           
-          {/* Floating Features */}
           <div className="relative">
-            {/* Main Image */}
             <div className="relative">
               <img
                 src="banner.png"
                 alt="Brilson smart business card and mobile app mockup"
-                className="relative z-10 w-full max-w-[400px] object-contain drop-shadow-2xl sm:max-w-[450px] md:max-w-[500px] lg:max-w-[550px] xl:max-w-[600px]"
+                className="relative z-10 w-full max-w-[320px] object-contain drop-shadow-2xl sm:max-w-[380px] md:max-w-[420px] lg:max-w-[480px] xl:max-w-[520px] 2xl:max-w-[560px]"
               />
-              
-              {/* Animated glow ring */}
               <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-[#3B9EFF]/20 to-[#5FB4FF]/20 blur-2xl animate-pulse" />
             </div>
 
             {/* Floating Feature Tags */}
-            <div className="absolute -right-18 top-4 hidden rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-sm shadow-lg lg:block animate-float">
+            <div className="absolute -right-4 top-4 hidden rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-sm shadow-lg lg:block animate-float">
               <div className="flex items-center gap-2">
                 <Zap className="h-4 w-4 text-yellow-400" />
                 <span className="text-xs font-medium text-white/90">Instant Share</span>
@@ -103,49 +96,47 @@ const SmartCardBanner = () => {
           </div>
         </div>
 
-        {/* Features Grid - Mobile: below buttons, Desktop: inline */}
-        <div className="col-span-1 lg:col-span-2 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 pt-6 lg:pt-0 lg:mt-0">
-  {FEATURES.map(({ icon: Icon, title, subtitle }) => (
-    <div
-      key={title}
-      className="group relative flex items-center gap-3 rounded-xl border border-white/10 lg:bg-white/5 md:bg-white/5 p-3 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:border-[#3B82F6]/40 hover:bg-white/10 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(59,130,246,0.2)]"
-    >
-      {/* Glass reflection effect */}
-      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      
-      <div className="relative flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#3B82F6]/30 to-[#2563EB]/20 border border-[#3B82F6]/30 shadow-[0_0_20px_rgba(59,130,246,0.25)] transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] group-hover:border-[#3B82F6]/50">
-        <Icon className="h-5 w-5 text-[#93BBFF] drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]" strokeWidth={2} />
-      </div>
-      
-      <div className="relative leading-tight">
-        <p className="text-sm font-semibold text-white lg:tracking-widest md:tracking-widest">{title}</p>
-        <p className="text-xs text-white/70 lg:tracking-wide md:tracking-wide lg:mt-1 md:mt-1">{subtitle}</p>
-      </div>
-    </div>
-  ))}
-</div>
-
-{/* Buttons */}
-          <div className="lg:hidden sm:flex flex w-full flex-col gap-3 sm:flex-row sm:gap-4 pt-2">
-            <Link
-              to="/products"
-              className="group relative flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-[#337ef6] to-[#0447c2] px-8 text-base font-semibold text-white shadow-[0_8px_32px_-8px_rgba(47,128,255,0.6)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_12px_40px_-8px_rgba(47,128,255,0.8)] active:scale-95 sm:w-auto"
+        {/* Features Grid */}
+        <div className="col-span-1 lg:col-span-2 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 pt-4 lg:pt-3">
+          {FEATURES.map(({ icon: Icon, title, subtitle }) => (
+            <div
+              key={title}
+              className="group relative flex items-center gap-3 rounded-xl border border-white/10 lg:bg-white/5 md:bg-white/5 p-2.5 lg:p-3 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:border-[#3B82F6]/40 hover:bg-white/10 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(59,130,246,0.2)]"
             >
-              <span className="relative z-10 flex items-center gap-2">
-                Get Started
-                <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-              </span>
-              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:translate-x-full transition-transform duration-700" />
-            </Link>
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              <div className="relative flex h-10 w-10 lg:h-11 lg:w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#3B82F6]/30 to-[#2563EB]/20 border border-[#3B82F6]/30 shadow-[0_0_20px_rgba(59,130,246,0.25)] transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] group-hover:border-[#3B82F6]/50">
+                <Icon className="h-4 w-4 lg:h-5 lg:w-5 text-[#93BBFF] drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]" strokeWidth={2} />
+              </div>
+              
+              <div className="relative leading-tight">
+                <p className="text-xs lg:text-sm font-semibold text-white lg:tracking-widest md:tracking-widest">{title}</p>
+                <p className="text-[10px] lg:text-xs text-white/70 lg:tracking-wide md:tracking-wide lg:mt-1 md:mt-1">{subtitle}</p>
+              </div>
+            </div>
+          ))}
+        </div>
 
-            <Link
-              to="/contact-sale"
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-8 text-base font-semibold text-white transition-all duration-300 hover:bg-white/10 hover:border-white/30 active:scale-95 sm:w-auto"
-            >
-              <FaWhatsapp className="text-xl text-[#25D366]" />
-              Contact Us
-            </Link>
-          </div>
+        {/* Buttons - Mobile */}
+        <div className="lg:hidden flex w-full flex-col gap-3 sm:flex-row sm:gap-4 pt-2">
+          <Link
+            to="/products"
+            className="group text-center relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-[#337ef6] to-[#0447c2] px-6 text-sm font-semibold text-white shadow-[0_8px_32px_-8px_rgba(47,128,255,0.6)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_12px_40px_-8px_rgba(47,128,255,0.8)] active:scale-95 sm:w-auto"
+          >
+            <span className="relative z-10 flex items-center gap-2">
+              Get Started
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </span>
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:translate-x-full transition-transform duration-700" />
+          </Link>
+
+          <Link
+            to="/how-it-works"
+            className="flex text-center h-11 w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-6 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/10 hover:border-white/30 active:scale-95 sm:w-auto"
+          >
+           How It Works
+          </Link>
+        </div>
       </div>
     </section>
   );
