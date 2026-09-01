@@ -12,20 +12,23 @@ const FEATURES = [
 
 const SmartCardBanner = () => {
   return (
-    <section className="relative w-full overflow-hidden bg-[#050B2E] px-4 py-8 sm:px-6 md:px-10 lg:px-16 min-h-[80vh] lg:min-h-[85vh] xl:min-h-[90vh] lg:mt-15">
+    <section className="  bg-gradient-to-r
+    from-[#07133d]
+    via-[#0c1e4a]
+    to-[#142d5a] relative w-full overflow-hidden  px-4 py-8 sm:px-6 md:px-10 lg:px-16 min-h-[80vh] lg:min-h-[85vh] xl:min-h-[90vh] lg:mt-15">
       {/* Modern Animated Background */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient" />
-      
+
       {/* Floating Gradient Orbs */}
       <div className="pointer-events-none absolute -left-32 top-1/4 h-[400px] w-[400px] rounded-full bg-[#0B5FFF]/15 blur-[130px] animate-pulse" />
       <div className="pointer-events-none absolute right-0 top-1/3 h-[500px] w-[500px] rounded-full bg-[#2F80FF]/10 blur-[150px] animate-pulse animation-delay-2000" />
       <div className="pointer-events-none absolute left-1/2 bottom-0 h-[300px] w-[300px] -translate-x-1/2 rounded-full bg-[#5FB4FF]/5 blur-[120px]" />
-      
+
       {/* Animated Grid Pattern */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:60px_60px]" />
 
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-y-4 lg:grid-cols-2 lg:gap-x-12 lg:gap-y-0 items-center h-full py-4 lg:py-6 mt-10 lg:mt-0 md:mt-0">
-        
+
         {/* Left Content */}
         <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-3 lg:space-y-4 lg:py-6 md:py-6">
           <h2 className="text-3xl font-bold text-white sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl lg:leading-15 tracking-tight">
@@ -69,7 +72,7 @@ const SmartCardBanner = () => {
         {/* Right Content - Image */}
         <div className="relative flex items-center justify-center lg:justify-end lg:py-6 md:py-6">
           <div className="pointer-events-none absolute -inset-10 bg-gradient-to-r from-[#2F80FF]/20 to-[#5FB4FF]/20 blur-3xl" />
-          
+
           <div className="relative">
             <div className="relative">
               <img
@@ -104,11 +107,11 @@ const SmartCardBanner = () => {
               className="group relative flex items-center gap-3 rounded-xl border border-white/10 lg:bg-white/5 md:bg-white/5 p-2.5 lg:p-3 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:border-[#3B82F6]/40 hover:bg-white/10 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(59,130,246,0.2)]"
             >
               <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
+
               <div className="relative flex h-10 w-10 lg:h-11 lg:w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#3B82F6]/30 to-[#2563EB]/20 border border-[#3B82F6]/30 shadow-[0_0_20px_rgba(59,130,246,0.25)] transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] group-hover:border-[#3B82F6]/50">
                 <Icon className="h-4 w-4 lg:h-5 lg:w-5 text-[#93BBFF] drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]" strokeWidth={2} />
               </div>
-              
+
               <div className="relative leading-tight">
                 <p className="text-xs lg:text-sm font-semibold text-white lg:tracking-widest md:tracking-widest">{title}</p>
                 <p className="text-[10px] lg:text-xs text-white/70 lg:tracking-wide md:tracking-wide lg:mt-1 md:mt-1">{subtitle}</p>
@@ -134,7 +137,7 @@ const SmartCardBanner = () => {
             to="/how-it-works"
             className="flex text-center h-11 w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-6 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/10 hover:border-white/30 active:scale-95 sm:w-auto"
           >
-           How It Works
+            How It Works
           </Link>
         </div>
       </div>
