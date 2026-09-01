@@ -51,7 +51,7 @@ const ReferralDashboard = () => {
     fetchReferrals();
   }, []);
 
-  // ===== HELPER FUNCTIONS =====
+
   
   // Group referrals by date
   const groupByDate = (referrals) => {
