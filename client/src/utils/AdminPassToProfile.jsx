@@ -14,8 +14,14 @@ import axios from "axios";
 import Header from "../Component/Header";
 import Footer from "../Component/Footer";
 import ReferralDashboard from "./ReferralDashboard";
+import {useSelector} from "react-redux";
+
 
 const AdminPassToProfile = () => {
+
+const token = useSelector((state) => state.auth.token);
+
+
   const [referralCode, setReferralCode] = useState('');
   const [copied, setCopied] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -32,7 +38,7 @@ const AdminPassToProfile = () => {
   const [loadingReferral, setLoadingReferral] = useState(true);
 
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  // const token = localStorage.getItem("token");
 
   // Fetch balance and referral code
   const fetchBalance = async () => {

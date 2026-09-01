@@ -12,9 +12,9 @@ import {useSelector} from "react-redux";
 const ReferralDashboard = () => {
 
   const token = useSelector((state) => state.auth.token);
-  const user = useSelector((state) => state.auth.user);
-  console.log("Token from Redux Store:", token); 
-  console.log("User from Redux Store:", user); 
+  // const user = useSelector((state) => state.auth.user);
+  // console.log("Token from Redux Store:", token); 
+  // console.log("User from Redux Store:", user); 
 
   // ===== STATES =====
   const [referralData, setReferralData] = useState(null);
@@ -27,7 +27,6 @@ const ReferralDashboard = () => {
     try {
       setLoading(true);
       // const token = localStorage.getItem('token');
-      // console.log("token lelo",token)
 
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/user/referral`,
