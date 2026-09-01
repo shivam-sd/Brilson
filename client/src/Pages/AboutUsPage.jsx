@@ -33,7 +33,7 @@ const AboutUsPage = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Default data (will be shown if API returns no data)
+  // Default data 
   const defaultData = {
     hero: {
       title: "Redefining",
