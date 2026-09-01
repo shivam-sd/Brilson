@@ -3,7 +3,10 @@ import { Link } from "react-router-dom";
 
 export default function ParkingTagBanner() {
     return (
-        <div className="relative w-full overflow-hidden bg-black font-[Inter]">
+        <div className="relative w-full overflow-hidden  bg-gradient-to-r
+    from-[#07133d]
+    via-[#0d204c]
+    to-[#142d5a] font-[Inter]">
             <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
         .font-display { font-family: 'Space Grotesk', sans-serif; }
