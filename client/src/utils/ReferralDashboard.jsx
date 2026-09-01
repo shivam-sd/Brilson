@@ -6,20 +6,29 @@ import {
   ChevronDown, ChevronUp, Award, Clock, CheckCircle,
   XCircle, Gift, TrendingUp, Sparkles
 } from 'lucide-react';
+import {useSelector} from "react-redux";
+
 
 const ReferralDashboard = () => {
+
+  const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
+  console.log("Token from Redux Store:", token); 
+  console.log("User from Redux Store:", user); 
+
   // ===== STATES =====
   const [referralData, setReferralData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [selectedDate, setSelectedDate] = useState('all');
-
+  
   // ===== API CALL =====
   const fetchReferrals = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      
+      // const token = localStorage.getItem('token');
+      // console.log("token lelo",token)
+
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/user/referral`,
         {

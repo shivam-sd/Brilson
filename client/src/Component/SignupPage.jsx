@@ -55,7 +55,7 @@ const SignupPage = () => {
     try {
       setOtpLoading(true);
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/auth/send-otp`,
+        `${import.meta.env.VITE_BASE_URL}/api/users/send-otp`,
         { phone: form.phone }
       );
       
@@ -83,7 +83,7 @@ const SignupPage = () => {
     try {
       setVerifyLoading(true);
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/auth/verify-otp`,
+        `${import.meta.env.VITE_BASE_URL}/api/users/verify-otp`,
         { phone: form.phone, otp }
       );
       
