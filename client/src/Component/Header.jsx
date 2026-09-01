@@ -13,7 +13,7 @@ import axios from "axios";
 import { BookCheck } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { selectCartCount } from "../store/slices/cartSlice";
+import { selectCartCount, clearCart } from "../store/slices/cartSlice";
 import { selectToken, selectUser, logoutAction } from "../store/slices/authSlice";
 
 import LogoSection from "./LogoSection";
@@ -117,6 +117,7 @@ const Header = () => {
       }
     } finally {
       dispatch(logoutAction());
+      dispatch(clearCart());
       setMyCardProfile(null);
       setMobileProfileOpen(false);
 

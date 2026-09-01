@@ -11,6 +11,7 @@ import { setCredentials } from "../store/slices/authSlice";
 import GoogleLoginAuth from "./GoogleAuth/GoogleLoginAuth";
 import GooglePhoneInput from "./GoogleAuth/GooglePhoneInput";
 import GoogleOTPInput from "./GoogleAuth/GoogleOTPInput";
+import { fetchCart } from "../store/slices/cartSlice";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const LoginPage = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const [googleStep, setGoogleStep] = useState(null); 
+  const [googleStep, setGoogleStep] = useState(null);
   const [googleUserData, setGoogleUserData] = useState(null);
 
   const handleChange = (e) => {
@@ -33,23 +34,23 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     if (!form.phone || !form.password) {
       return toast.error("Phone and password are required");
     }
-    
+
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(form.phone)) {
       return toast.error("Phone number must be exactly 10 digits");
     }
-    
+
     if (form.password.length < 6) {
       return toast.error("Password must be at least 6 characters");
     }
-    
+
     try {
       setLoading(true);
-      
+
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/users/login`,
         {
@@ -58,11 +59,11 @@ const LoginPage = () => {
         },
         { withCredentials: true }
       );
-      
+
       if (res.data?.token) {
         dispatch(setCredentials({ token: res.data.token, user: res.data.user }));
       }
-      
+
       toast.success("Login successful");
       setTimeout(() => navigate("/"), 500);
     } catch (err) {
@@ -70,13 +71,14 @@ const LoginPage = () => {
         toast.error("This account uses Google Sign-In. Please click the Google button below.");
       } else {
         toast.error(
-          err.response?.data?.error || 
-          err.response?.data?.message || 
+          err.response?.data?.error ||
+          err.response?.data?.message ||
           "Login failed. Please check your credentials."
         );
       }
     } finally {
       setLoading(false);
+      dispatch(fetchCart());
     }
   };
 
@@ -128,14 +130,14 @@ const LoginPage = () => {
 
   return (
     <>
-      <Toaster 
-        position="top-right" 
+      <Toaster
+        position="top-right"
         toastOptions={{
           style: {
             zIndex: 999999,
             marginTop: 100
           }
-        }} 
+        }}
       />
       <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#050505] via-[#0b0c10] to-[#050505] px-4 py-10">
         <motion.div
@@ -154,9 +156,9 @@ const LoginPage = () => {
             </p>
           </div>
 
-  
+
           {/* 🆕 GOOGLE SIGN-IN SECTION */}
-      
+
 
           {!googleStep && (
             <div className="mb-6">
@@ -269,8 +271,8 @@ const LoginPage = () => {
           {!googleStep && (
             <>
               <div className="lg:flex items-center justify-center gap-20 mt-8 pt-6 border-t border-gray-800 hidden">
-                <Link 
-                  className="text-sm mb-3 text-cyan-400 hover:underline" 
+                <Link
+                  className="text-sm mb-3 text-cyan-400 hover:underline"
                   to={"/users/forgot-password/brilson"}
                 >
                   Forgot Password
@@ -291,8 +293,8 @@ const LoginPage = () => {
                     Create One
                   </Link>
                 </p>
-                <Link 
-                  className="text-sm mb-3 text-cyan-400 hover:underline" 
+                <Link
+                  className="text-sm mb-3 text-cyan-400 hover:underline"
                   to={"/users/forgot-password/brilson"}
                 >
                   Forgot Password
@@ -304,8 +306,8 @@ const LoginPage = () => {
           {/* Google flow indicator */}
           {googleStep && (
             <div className="mt-4 text-center text-gray-400 text-sm">
-              {googleStep === 'phone' 
-                ? '📱 Enter your phone number to continue' 
+              {googleStep === 'phone'
+                ? '📱 Enter your phone number to continue'
                 : '🔑 Enter OTP to verify your phone'
               }
             </div>
