@@ -47,7 +47,7 @@ const benefits = [
     desc: "No paper cards. One card forever.",
   },
 ];
- 
+
 const HowItWorks = () => {
   return (
     <div className="bg-[#03060A] text-white overflow-hidden">
@@ -73,15 +73,15 @@ const HowItWorks = () => {
         </motion.p>
 
         {/* Floating Card */}
-             
-             <motion.div
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1, y: [0, -8, 0] }}
-               transition={{
-                 y: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-                 opacity: { duration: 0.6 }
-               }}
-               className="
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, y: [0, -8, 0] }}
+          transition={{
+            y: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+            opacity: { duration: 0.6 }
+          }}
+          className="
                  relative
                  w-full max-w-[360px]   
                  h-[210px]             
@@ -96,61 +96,61 @@ const HowItWorks = () => {
                  cursor-pointer
                  hover:scale-110 duration-300
                "
-             >
-       
-               {/* Glow */}
-               <div className="absolute inset-0 bg-cyan-400/40 blur-3xl opacity-30"></div>
-       
-               {/* Top Icons */}
-               <div className="relative flex justify-between items-center">
-                 <div className="w-12 h-12 rounded-xl bg-cyan-500/50 border border-cyan-300 flex items-center justify-center">
-                   <img
-                     src="https://img.freepik.com/premium-vector/smart-card-vector-outline-icon-design-illustration-symbol-white-background-eps-10-file_848977-2875.jpg"
-                     className="w-9 h-9 rounded-sm"
-                     alt=""
-                   />
-                 </div>
-       
-                 <div className="w-12 h-12 rounded-xl bg-cyan-400 border border-cyan-300 flex items-center justify-center">
-                   <img
-                     src="https://static.thenounproject.com/png/1119914-200.png"
-                     className="w-6 h-6"
-                     alt=""
-                   />
-                 </div>
-               </div>
-       
-               {/* Name */}
-               <div className="relative mt-4">
-                 <p className="text-xl font-semibold text-white tracking-widest font-Playfair">
-                   Brilson
-                 </p>
-                 {/* <p className="text-sm text-gray-300">
+        >
+
+          {/* Glow */}
+          <div className="absolute inset-0 bg-cyan-400/40 blur-3xl opacity-30"></div>
+
+          {/* Top Icons */}
+          <div className="relative flex justify-between items-center">
+            <div className="w-12 h-12 rounded-xl bg-cyan-500/50 border border-cyan-300 flex items-center justify-center">
+              <img
+                src="https://img.freepik.com/premium-vector/smart-card-vector-outline-icon-design-illustration-symbol-white-background-eps-10-file_848977-2875.jpg"
+                className="w-9 h-9 rounded-sm"
+                alt=""
+              />
+            </div>
+
+            <div className="w-12 h-12 rounded-xl bg-cyan-400 border border-cyan-300 flex items-center justify-center">
+              <img
+                src="https://static.thenounproject.com/png/1119914-200.png"
+                className="w-6 h-6"
+                alt=""
+              />
+            </div>
+          </div>
+
+          {/* Name */}
+          <div className="relative mt-4">
+            <p className="text-xl font-semibold text-white tracking-widest font-Playfair">
+              Brilson
+            </p>
+            {/* <p className="text-sm text-gray-300">
                    Product Designer
                  </p> */}
-               </div>
-       
-               {/* Footer */}
-               <div className="absolute bottom-4 left-5 right-5 flex justify-between items-center text-xs text-gray-300">
-                 <div className="flex items-center gap-1 tracking-widest font-Playfair">
-                   <RiVerifiedBadgeLine className="text-yellow-400" />
-                   NFC Enabled
-                 </div>
-       
-                 <span className="text-cyan-300 font-medium tracking-widest font-Playfair">
-                   brilson.me/JohnDeo
-                 </span>
-               </div>
-       
-             </motion.div>
-           
+          </div>
+
+          {/* Footer */}
+          <div className="absolute bottom-4 left-5 right-5 flex justify-between items-center text-xs text-gray-300">
+            <div className="flex items-center gap-1 tracking-widest font-Playfair">
+              <RiVerifiedBadgeLine className="text-yellow-400" />
+              NFC Enabled
+            </div>
+
+            <span className="text-cyan-300 font-medium tracking-widest font-Playfair">
+              brilson.me/JohnDeo
+            </span>
+          </div>
+
+        </motion.div>
+
       </section>
 
-      
-      
 
 
-<NfcCardFeatures />
+
+
+      <NfcCardFeatures />
 
       {/* BENEFITS */}
       <section className="py-5 px-6 bg-white/5">
@@ -187,14 +187,14 @@ const HowItWorks = () => {
         </p>
 
         <Link to={'/products'}>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          className="mt-8 px-10 py-3 rounded-xl 
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            className="mt-8 px-10 py-3 rounded-xl 
           bg-cyan-500 text-black font-bold shadow-lg cursor-pointer font-Roboto"
-        >
-            Get Your Card Now
-        </motion.button>
-          </Link>
+          >
+            Get Your NFC Card Now
+          </motion.button>
+        </Link>
       </section>
     </div>
   );

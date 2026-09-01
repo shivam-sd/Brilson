@@ -33,10 +33,7 @@ export default function NfcCardBanner() {
     };
 
     return (
-        <div className="relative w-full overflow-hidden   bg-gradient-to-r
-    from-[#07133d]
-    via-[#0c1e4a]
-    to-[#142d5a] font-[Inter]">
+        <div className="relative w-full overflow-hidden   bg-gradient-to-r from-[#07133d] via-[#0c1e4a] to-[#142d5a] font-[Inter]">
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 
@@ -111,7 +108,7 @@ export default function NfcCardBanner() {
                             to="/products"
                             className="group border border-white/15 flex items-center justify-center gap-2 rounded-xl  px-7 py-3.5 font-display text-sm font-semibold text-white transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98] hover:bg-white/5"
                         >
-                            Get Your Card
+                            Get Your NFC Card
 
                             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
                         </Link>

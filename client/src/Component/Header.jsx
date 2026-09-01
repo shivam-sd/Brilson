@@ -254,7 +254,7 @@ const Header = () => {
             }}
           >
             <span>
-              Get Your Card
+              Get Your NFC Card
             </span>
           </Link>
 
