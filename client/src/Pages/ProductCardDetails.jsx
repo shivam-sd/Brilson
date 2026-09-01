@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { toast } from "react-toastify";
-import useCart from "./hooks/useCart";
-import {useNavigate} from "react-router-dom"
+import { useDispatch } from "react-redux";
+import { addToCart } from "../store/slices/cartSlice";
 import {
   FiTruck,
   FiShield,
@@ -23,6 +23,7 @@ import HowItWorks from "./HowitWorks";
 const ProductCardPreference = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,9 +31,6 @@ const ProductCardPreference = () => {
   const [activeImage, setActiveImage] = useState("");
   const [showLightbox, setShowLightbox] = useState(false);
 
-  const { addToCart } = useCart();
-
-  /* FETCH PRODUCT */
   useEffect(() => {
     const getProduct = async () => {
       try {
@@ -56,21 +54,20 @@ const ProductCardPreference = () => {
     getProduct();
   }, [id]);
 
-  /* ADD TO CART */
   const handleAddtoCart = async () => {
     if (!product || addingToCart) return;
     setAddingToCart(true);
     try {
-      await addToCart(product);
+      await dispatch(addToCart(product)).unwrap();
       toast.success("Added to cart 🛒");
-    } catch {
-      toast.error("Failed to add to cart");
+      navigate("/your-items");
+    } catch (err) {
+      toast.error(err || "Failed to add to cart");
     } finally {
       setAddingToCart(false);
     }
-    navigate("/your-items")
-    window.location.reload();
   };
+
 
   if (loading) {
     return (
