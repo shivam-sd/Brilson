@@ -94,7 +94,7 @@ const PowerFullFeatures = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center text-4xl md:text-5xl font-semibold mt-6 tracking-widest font-Roboto"
+          className="text-center text-3xl md:text-5xl font-semibold mt-6 tracking-widest font-Roboto"
         >
           Powerful <span className="text-yellow-400">Features</span>
         </motion.h2>

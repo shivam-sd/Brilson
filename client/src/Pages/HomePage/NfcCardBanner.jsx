@@ -92,13 +92,13 @@ export default function NfcCardBanner() {
                         </span>
                     </div>
 
-                    <h1 className="font-display text-5xl font-bold leading-[1.05] tracking-tight text-[#F5F6F7] sm:text-6xl">
-                        Your details,
+                    <h2 className="font-display text-3xl font-bold leading-[1.05] tracking-tight text-[#F5F6F7] sm:text-5xl">
+                        Your Details,
                         <br />
-                        delivered in one tap
-                    </h1>
+                        Delivered In One Tap
+                    </h2>
 
-                    <p className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-[#8B92A0] lg:mx-0">
+                    <p className="mx-auto mt-6 max-w-md text-md leading-relaxed text-[#8B92A0] lg:mx-0">
                         Hold your Brilson card near any phone and your contact, socials and portfolio
                         open instantly. No app, no typing, no reprints when your details change.
                     </p>
