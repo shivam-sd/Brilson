@@ -231,7 +231,7 @@ const RecentCards = () => {
         const chunkSize = 5;
 
         for (let i = 0; i < cardsList.length; i += chunkSize) {
-            // Check if we're still on the same page
+        
             if (currentPageRef.current !== currentPage) {
                 console.log("Page changed, stopping QR generation");
                 break;
