@@ -16,8 +16,11 @@ import axios from "axios";
 import ParkingTagDesign from "./ManageParkingTag/ParkingTagDesign";
 import ParkingTagPreviewModal from "./ManageParkingTag/PreviewParkingTag";
 import JSZip from 'jszip';
+import { selectAdminToken } from "../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const ManageParkingTag = () => {
+  const token = useSelector(selectAdminToken);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -49,7 +52,7 @@ const ManageParkingTag = () => {
 
       const url = `${import.meta.env.VITE_BASE_URL}/api/all/tags?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
 
-      const token = localStorage.getItem("adminToken");
+      // const token = localStorage.getItem("adminToken");
       if (!token) {
         setError("Please login again");
         setLoading(false);
@@ -178,7 +181,7 @@ const ManageParkingTag = () => {
       if (loadingDiv && loadingDiv.parentNode) {
         document.body.removeChild(loadingDiv);
       }
-      
+
       let errorMessage = 'Failed to download parking tag. Please try again.';
       if (error.response?.status === 401) {
         errorMessage = 'Session expired. Please login again.';
@@ -228,7 +231,7 @@ const ManageParkingTag = () => {
       const failedCards = [];
       const successfulCards = [];
       const zip = new JSZip();
-      
+
       const updateProgress = (current, total) => {
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
@@ -268,7 +271,7 @@ const ManageParkingTag = () => {
             const fileName = `parking-tag-${card.activationCode}.png`;
             zip.file(fileName, response.data);
             successfulCards.push(card);
-            
+
             axios.patch(
               `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
               {},
@@ -291,7 +294,7 @@ const ManageParkingTag = () => {
         throw new Error('No parking tags could be downloaded. Please try again.');
       }
 
-      const zipBlob = await zip.generateAsync({ 
+      const zipBlob = await zip.generateAsync({
         type: 'blob',
         compression: 'DEFLATE',
         compressionOptions: { level: 6 }
@@ -328,7 +331,7 @@ const ManageParkingTag = () => {
 
     } catch (error) {
       console.error("Bulk download error:", error);
-      
+
       const loader = document.getElementById('bulk-download-loader');
       if (loader && loader.parentNode) {
         document.body.removeChild(loader);
@@ -343,7 +346,7 @@ const ManageParkingTag = () => {
         errorMessage = 'Session expired. Please login again.';
         localStorage.removeItem('adminToken');
       }
-      
+
       alert(`❌ ${errorMessage}`);
     } finally {
       setDownloading(false);
@@ -392,9 +395,8 @@ const ManageParkingTag = () => {
   }
 
   const StatusBadge = ({ active }) => (
-    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-      active ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
-    }`}>
+    <span className={`px-2 py-1 rounded-full text-xs font-medium ${active ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"
+      }`}>
       {active ? "Active" : "Inactive"}
     </span>
   );
@@ -422,10 +424,9 @@ const ManageParkingTag = () => {
         </button>
         {getPageNumbers().map((pageNum, index) => (
           <button key={index} onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
-            className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-xs sm:text-sm font-medium ${
-              currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
-              pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-            }`} disabled={pageNum === '...'}>
+            className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-xs sm:text-sm font-medium ${currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
+                pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`} disabled={pageNum === '...'}>
             {pageNum}
           </button>
         ))}
@@ -460,11 +461,10 @@ const ManageParkingTag = () => {
           <button
             onClick={downloadCurrentPageTags}
             disabled={downloading || cards.length === 0}
-            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${
-              downloading || cards.length === 0
+            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${downloading || cards.length === 0
                 ? 'bg-gray-600 cursor-not-allowed opacity-50'
                 : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg'
-            }`}
+              }`}
           >
             {downloading ? (
               <>
@@ -504,7 +504,7 @@ const ManageParkingTag = () => {
               )}
             </div>
           </form>
-       <Link
+          <Link
             to="/api/tags/bulk"
             className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:shadow-lg text-xs w-full sm:w-auto"
           >

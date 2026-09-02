@@ -23,11 +23,14 @@ import { FaLuggageCart } from "react-icons/fa";
 import { MdReviews } from "react-icons/md";
 import { FaFileInvoice } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa6";
+import { selectAdminToken } from "../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AdminLayout = () => {
   const [open, setOpen] = useState(false);
   const [SideBar, setSideBar] = useState(true);
   const navigate = useNavigate();
+  const adminToken = useSelector(selectAdminToken);
 
   const handleSideBarToggle = (val) => {
     setSideBar(val);
@@ -35,7 +38,7 @@ const AdminLayout = () => {
 
   const handleAdminLogout = async () => {
     try {
-      const adminToken = localStorage.getItem("adminToken");
+      // const adminToken = localStorage.getItem("adminToken");
 
       await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/admin/logout`,

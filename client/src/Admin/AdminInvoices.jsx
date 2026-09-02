@@ -9,9 +9,12 @@ import {
   FiUser,
   FiMail,
 } from "react-icons/fi";
+import { selectAdminToken } from "../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AdminInvoices = () => {
-  const token = localStorage.getItem("adminToken");
+  // const token = localStorage.getItem("adminToken");
+  const adminToken = useSelector(selectAdminToken);
 
   const [invoices, setInvoices] = useState([]);
   const [page, setPage] = useState(1);

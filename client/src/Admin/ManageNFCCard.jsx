@@ -17,6 +17,8 @@ import { HexColorPicker } from "react-colorful";
 import NFCCardDesign from "./ManageNFCCard/NFCCardDesign";
 import CardPreviewModal from "./ManageNFCCard/CardPreviewModel";
 import JSZip from 'jszip';
+import { selectAdminToken } from "../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 // ✅ VISITING CARD FIXED COLORS
 const VISITING_CARD_COLORS = {
@@ -28,6 +30,8 @@ const VISITING_CARD_COLORS = {
 };
 
 const ManageNFCCard = () => {
+
+  const token = useSelector(selectAdminToken);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -80,7 +84,7 @@ const ManageNFCCard = () => {
 
       const url = `${baseUrl}/api/all/cards?${params.toString()}`;
 
-      const token = localStorage.getItem("adminToken");
+      // const token = localStorage.getItem("adminToken");
       if (!token) {
         setError("Please login again");
         setLoading(false);
@@ -740,7 +744,7 @@ const ManageNFCCard = () => {
         {getPageNumbers().map((pageNum, index) => (
           <button key={index} onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
             className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-xs sm:text-sm font-medium ${currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
-                pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
               }`} disabled={pageNum === '...'}>
             {pageNum}
           </button>
@@ -794,8 +798,8 @@ const ManageNFCCard = () => {
             onClick={downloadBulkNFCCards}
             disabled={downloading || cards.length === 0}
             className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${downloading || cards.length === 0
-                ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 hover:shadow-lg'
+              ? 'bg-gray-600 cursor-not-allowed opacity-50'
+              : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 hover:shadow-lg'
               }`}
           >
             {downloading ? (
@@ -816,8 +820,8 @@ const ManageNFCCard = () => {
             onClick={downloadBulkVisitingCards}
             disabled={downloading || cards.length === 0}
             className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${downloading || cards.length === 0
-                ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 hover:shadow-lg'
+              ? 'bg-gray-600 cursor-not-allowed opacity-50'
+              : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 hover:shadow-lg'
               }`}
           >
             {downloading ? (
