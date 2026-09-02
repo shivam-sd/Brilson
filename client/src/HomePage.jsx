@@ -18,7 +18,7 @@ const HomePage = () => {
       <NfcCardBanner />
       <ParkingTagBanner />
       <PowerFullFeature />
-      <HowToUse />
+      {/* <HowToUse /> */}
       <Networking />
       <Testimonials />
     </div>
