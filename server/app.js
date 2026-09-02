@@ -60,6 +60,7 @@ const bulkVisitingcardDownlaod = require("./routes/bulkvisitingcard.download.rou
 const bulkGoogleReviewDownload = require("./routes/CardBulkGoogleReview.routes")
 const InvoiceAddressRouter = require("./routes/InvoiceAddress.route");
 const GoogleAuthRouter = require("./routes/GoogleAuthRoute/GoogleAuthRouter.routes");
+const ShippingAddressRouter = require("./routes/ShippingAddress.routes");
 
 
 // Runtime config
@@ -168,6 +169,7 @@ app.use("/api", BulkParkingTagDownloadRouter);
 app.use("/api", bulkVisitingcardDownlaod);
 app.use("/api", bulkGoogleReviewDownload);
 app.use("/api", InvoiceAddressRouter); // ✅
+app.use("/api", ShippingAddressRouter);
 
 
 

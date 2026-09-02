@@ -17,15 +17,12 @@ import {
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
-
-
 const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { Razorpay } = useRazorpay();
 
-  
-  const token = useSelector((state) =>  state.auth.token);
+  const token = useSelector((state) => state.auth.token);
 
   const [loading, setLoading] = useState(false);
   const [orderItems, setOrderItems] = useState([]);
@@ -33,8 +30,9 @@ const Checkout = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [gateway, setGateway] = useState("razorpay");
   const [showPayPopup, setShowPayPopup] = useState(false);
+  const [isAddressLoading, setIsAddressLoading] = useState(true);
 
-  // Address state
+  // ===== ADDRESS STATE =====
   const [address, setAddress] = useState({
     name: "",
     phone: "",
@@ -47,12 +45,83 @@ const Checkout = () => {
   // Checkout data from cart
   const checkoutData = location.state?.checkoutData || {};
 
+  // ===== FETCH SAVED ADDRESS =====
+  const fetchSavedAddress = async () => {
+    if (!token) return;
+
+    try {
+      setIsAddressLoading(true);
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/shipping-address`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (res.data.success && res.data.shippingAddress) {
+        const savedAddress = res.data.shippingAddress;
+        setAddress({
+          name: savedAddress.fullName || "",
+          phone: savedAddress.phoneNumber || "",
+          email: savedAddress.email || "",
+          city: savedAddress.address?.city || "",
+          state: savedAddress.address?.state || "",
+          pincode: savedAddress.address?.pincode || "",
+        });
+      }
+    } catch (error) {
+      // 404 means no address found, it's okay
+      if (error.response?.status !== 404) {
+        console.error("Error fetching address:", error);
+      }
+    } finally {
+      setIsAddressLoading(false);
+    }
+  };
+
+  // ===== SAVE/UPDATE ADDRESS =====
+  const saveAddress = async (addressData) => {
+    try {
+      const payload = {
+        fullName: addressData.name,
+        phoneNumber: addressData.phone,
+        email: addressData.email,
+        address: {
+          city: addressData.city,
+          state: addressData.state,
+          pincode: addressData.pincode,
+        },
+      };
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/shipping-address`,
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (res.data.success) {
+        toast.success(res.data.message || "Address saved successfully");
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error saving address:", error);
+      toast.error("Failed to save address");
+      return false;
+    }
+  };
+
   /*  LOAD CART DATA */
   useEffect(() => {
     if (!token) {
       navigate("/login", { replace: true });
       return;
     }
+
+    // Fetch saved address first
+    fetchSavedAddress();
 
     // If checkout data is passed from cart
     if (checkoutData.items) {
@@ -68,16 +137,13 @@ const Checkout = () => {
     const fetchGateway = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/payment/isactive/gateway`,
+          `${import.meta.env.VITE_BASE_URL}/api/payment/isactive/gateway`
         );
-
         setGateway(res.data.gateway);
-        console.log(res);
       } catch (err) {
         console.log(err);
       }
     };
-
     fetchGateway();
   }, []);
 
@@ -87,28 +153,24 @@ const Checkout = () => {
         `${import.meta.env.VITE_BASE_URL}/api/cart/user`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        },
+        }
       );
 
       const items = res.data.cartItems || [];
 
-      // Map cart items with GST and discount calculations
       const mapped = items.map((item) => {
         const product = item.productId || {};
         const basePrice = item.price || 0;
         const quantity = item.quantity || 1;
         const itemTotal = basePrice * quantity;
 
-        // Get GST settings
         const gstEnabled = product.gst?.enabled || false;
         const gstRate = product.gst?.rate || 0;
 
-        // Get discount settings
         const discountEnabled = product.discount?.enabled || false;
         const discountType = product.discount?.type || "percentage";
         const discountValue = product.discount?.value || 0;
 
-        // Calculate discount amount
         let discountAmount = 0;
         if (discountEnabled) {
           if (discountType === "percentage") {
@@ -118,7 +180,6 @@ const Checkout = () => {
           }
         }
 
-        // Calculate GST amount
         let gstAmount = 0;
         if (gstEnabled) {
           const taxableAmount = itemTotal - discountAmount;
@@ -132,8 +193,6 @@ const Checkout = () => {
           productTitle: item.productTitle || item.title || product.title,
           basePrice,
           quantity,
-
-          // Product settings
           gst: {
             enabled: gstEnabled,
             rate: gstRate,
@@ -143,8 +202,6 @@ const Checkout = () => {
             type: discountType,
             value: discountValue,
           },
-
-          // Calculated amounts
           discountAmount,
           gstAmount,
           finalPrice,
@@ -159,9 +216,8 @@ const Checkout = () => {
     }
   };
 
-  /* AMOUNT CALCULATION using data from cart or local calculation */
+  /* AMOUNT CALCULATION */
   const { subtotal, totalDiscount, totalGst, total } = useMemo(() => {
-    // If we have totals from cart, use them
     if (checkoutData.subtotal !== undefined) {
       return {
         subtotal: checkoutData.subtotal || 0,
@@ -171,7 +227,6 @@ const Checkout = () => {
       };
     }
 
-    // Otherwise calculate from orderItems
     let subtotal = 0;
     let totalDiscount = 0;
     let totalGst = 0;
@@ -187,15 +242,15 @@ const Checkout = () => {
     return { subtotal, totalDiscount, totalGst, total };
   }, [orderItems, checkoutData]);
 
-  /*  ADDRESS VALIDATION */
+  /* ADDRESS VALIDATION */
   const isAddressValid =
     address.name &&
-    /^\d{10}/.test(address.phone) &&
+    /^\d{10}$/.test(address.phone) &&
     address.city &&
     address.state &&
     /^\d{6}$/.test(address.pincode);
 
-  /*  CREATE ORDER */
+  /* CREATE ORDER */
   const handleCreateOrder = async () => {
     if (!isAddressValid) {
       toast.error("Please enter a valid address");
@@ -210,27 +265,31 @@ const Checkout = () => {
     try {
       setLoading(true);
 
+      // ===== SAVE ADDRESS FIRST =====
+      const addressSaved = await saveAddress(address);
+      if (!addressSaved) {
+        toast.error("Please fill all address fields correctly");
+        setLoading(false);
+        return;
+      }
+
       const orderPayload = {
         items: orderItems.map((item) => ({
           productId: item.productId,
           productTitle: item.productTitle,
-          price: item.basePrice, // Original price
+          price: item.basePrice,
           quantity: item.quantity,
-
-          // Pass GST and discount settings
           gst: item.gst,
           discount: item.discount,
-
-          // Pass calculated amounts for verification
           discountAmount: item.discountAmount,
           gstAmount: item.gstAmount,
           finalPrice: item.finalPrice,
         })),
         address,
-        totalAmount: total, // Final amount after GST and discount
+        totalAmount: total,
         subtotal,
         discount: totalDiscount,
-        tax: totalGst, // GST is considered as tax
+        tax: totalGst,
       };
 
       const res = await axios.post(
@@ -238,14 +297,14 @@ const Checkout = () => {
         orderPayload,
         {
           headers: { Authorization: `Bearer ${token}` },
-        },
+        }
       );
 
       setCreatedOrder(res.data.order);
       setShowPayPopup(true);
       toast.success("Order created successfully");
 
-      // Clear cart after successful order creation
+      // Clear cart
       try {
         await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/cart/clear`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -263,9 +322,9 @@ const Checkout = () => {
 
   const handleClosePopup = () => {
     setShowPayPopup(false);
-  }
+  };
 
-  /*  PAYMENT */
+  /* PAYMENT */
   const handlePayment = async () => {
     if (!createdOrder) {
       toast.error("Please create order first");
@@ -279,9 +338,9 @@ const Checkout = () => {
         `${import.meta.env.VITE_BASE_URL}/api/payment/create`,
         {
           orderId: createdOrder._id,
-          amount: Math.round(total * 100), // Convert to paise
+          amount: Math.round(total * 100),
         },
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       const options = {
@@ -301,7 +360,7 @@ const Checkout = () => {
                 razorpay_signature: response.razorpay_signature,
                 orderId: createdOrder._id,
               },
-              { headers: { Authorization: `Bearer ${token}` } },
+              { headers: { Authorization: `Bearer ${token}` } }
             );
 
             if (verifyRes.data.success) {
@@ -323,7 +382,7 @@ const Checkout = () => {
           email: address.email || "customer@example.com",
         },
         theme: {
-          color: "#06b6d4", // Cyan color
+          color: "#06b6d4",
         },
         modal: {
           ondismiss: () => {
@@ -341,7 +400,15 @@ const Checkout = () => {
     }
   };
 
-  /*  UI */
+  // ===== ADDRESS CHANGE HANDLER =====
+  const handleAddressChange = (field, value) => {
+    setAddress((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  /* UI */
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#05070a] via-gray-900 to-[#05070a] text-white px-4 sm:px-6 py-8 sm:py-20">
       {/* Background Effects */}
@@ -365,7 +432,9 @@ const Checkout = () => {
           <h4 className="text-2xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent uppercase">
             Checkout
           </h4>
-          <p className="text-gray-400 mt-2 lg:text-base text-sm">Complete your purchase</p>
+          <p className="text-gray-400 mt-2 lg:text-base text-sm">
+            Complete your purchase
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
@@ -376,6 +445,15 @@ const Checkout = () => {
               <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
                 <FiTruck className="text-cyan-400 w-5 h-5 sm:w-6 sm:h-6" />
                 Shipping Address
+                {isAddressLoading ? (
+                  <FiLoader className="animate-spin text-cyan-400 w-4 h-4 ml-2" />
+                ) : (
+                  address.name && (
+                    <span className="text-xs text-green-400 ml-2">
+                      ✓ Saved
+                    </span>
+                  )
+                )}
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -386,7 +464,7 @@ const Checkout = () => {
                   <input
                     value={address.name}
                     onChange={(e) =>
-                      setAddress({ ...address, name: e.target.value })
+                      handleAddressChange("name", e.target.value)
                     }
                     placeholder="Enter Your Full Name"
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
@@ -401,7 +479,7 @@ const Checkout = () => {
                   <input
                     value={address.phone}
                     onChange={(e) =>
-                      setAddress({ ...address, phone: e.target.value })
+                      handleAddressChange("phone", e.target.value)
                     }
                     placeholder="Enter Your Mobile No."
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
@@ -417,7 +495,7 @@ const Checkout = () => {
                     type="email"
                     value={address.email}
                     onChange={(e) =>
-                      setAddress({ ...address, email: e.target.value })
+                      handleAddressChange("email", e.target.value)
                     }
                     placeholder="Enter Your Email"
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
@@ -431,7 +509,7 @@ const Checkout = () => {
                   <input
                     value={address.city}
                     onChange={(e) =>
-                      setAddress({ ...address, city: e.target.value })
+                      handleAddressChange("city", e.target.value)
                     }
                     placeholder="Enter Your City"
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
@@ -446,7 +524,7 @@ const Checkout = () => {
                   <input
                     value={address.state}
                     onChange={(e) =>
-                      setAddress({ ...address, state: e.target.value })
+                      handleAddressChange("state", e.target.value)
                     }
                     placeholder="Enter Your State"
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
@@ -461,7 +539,7 @@ const Checkout = () => {
                   <input
                     value={address.pincode}
                     onChange={(e) =>
-                      setAddress({ ...address, pincode: e.target.value })
+                      handleAddressChange("pincode", e.target.value)
                     }
                     placeholder="Enter Pin-Code"
                     className="w-full px-4 py-3 bg-gray-900/50 border border-white/10 rounded-xl focus:border-cyan-500 focus:outline-none transition placeholder:opacity-50"
@@ -506,8 +584,7 @@ const Checkout = () => {
             </button>
           </div>
 
-
-{/* RIGHT COLUMN - Order Summary */}
+          {/* RIGHT COLUMN - Order Summary */}
           <div className="space-y-6 sm:space-y-8">
             <div className="sticky top-6 bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl">
               <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
@@ -585,7 +662,6 @@ const Checkout = () => {
                 </div>
 
                 {/* Payment Button */}
-
                 {isProcessingPayment ? (
                   <button
                     disabled
@@ -596,18 +672,16 @@ const Checkout = () => {
                   </button>
                 ) : (
                   <>
-                    {/* Razorpay */}
                     {gateway === "razorpay" && createdOrder && (
                       <button
                         onClick={handlePayment}
                         disabled={!createdOrder}
-                        className="w-full mt-4 sm:mt-6 py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full mt-4 sm:mt-6 py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
-                        Pay ₹{total} <SiRazorpay />
+                        Pay ₹{total.toFixed(2)} <SiRazorpay />
                       </button>
                     )}
 
-                    {/* Cashfree */}
                     {gateway === "cashfree" && createdOrder && (
                       <CashfreePayment
                         createdOrder={createdOrder}
@@ -615,7 +689,6 @@ const Checkout = () => {
                       />
                     )}
 
-                    {/* PayU */}
                     {gateway === "payu" && createdOrder && (
                       <PayUPayment createdOrder={createdOrder} total={total} />
                     )}
@@ -647,167 +720,6 @@ const Checkout = () => {
               </div>
             </div>
           </div>
-
-
-{
-  showPayPopup && (<>
-  
-
-  {/* RIGHT COLUMN - Order Summary */}
-  <div className="lg:hidden md:hidden w-full h-full bg-black/40 backdrop-blur-sm fixed top-0 left-0 flex items-center justify-center p-4">
-
-          <div className="absolute top-40 space-y-6 sm:space-y-8">
-            <div className="sticky top-6 bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl">
-              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
-                <FiShoppingBag className="text-cyan-400 w-5 h-5 sm:w-6 sm:h-6" />
-                Order Summary
-              </h2>
-
-              <button onClick={handleClosePopup} className="absolute top-4 right-4 text-gray-400 hover:text-white">
-                <RxCross1 className="w-5 h-5" />
-              </button>
-
-              <div className="space-y-3 sm:space-y-4">
-                {/* Subtotal */}
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm sm:text-base">
-                    Subtotal
-                  </span>
-                  <span className="font-medium text-sm sm:text-base">
-                    ₹{subtotal.toFixed(2)}
-                  </span>
-                </div>
-
-                {/* Discount */}
-                {totalDiscount > 0 && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400 text-sm sm:text-base">
-                      Discount
-                    </span>
-                    <span className="text-green-400 font-medium text-sm sm:text-base">
-                      -₹{totalDiscount.toFixed(2)}
-                    </span>
-                  </div>
-                )}
-
-                {/* GST */}
-                {totalGst > 0 && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400 text-sm sm:text-base">
-                      GST
-                    </span>
-                    <span className="text-blue-400 font-medium text-sm sm:text-base">
-                      +₹{totalGst.toFixed(2)}
-                    </span>
-                  </div>
-                )}
-
-                {/* Shipping */}
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm sm:text-base">
-                    Shipping
-                  </span>
-                  <span className="text-green-400 text-sm sm:text-base">
-                    FREE
-                  </span>
-                </div>
-
-                {/* Divider */}
-                <div className="border-t border-white/10 my-2 sm:my-4"></div>
-
-                {/* Total */}
-                <div className="flex justify-between items-center">
-                  <div>
-                    <span className="font-bold text-base sm:text-lg">
-                      Total Amount
-                    </span>
-                    <p className="text-xs sm:text-sm text-gray-400">
-                      Including GST and discount
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                      ₹{total.toFixed(2)}
-                    </div>
-                    <p className="text-xs text-gray-400">
-                      {orderItems.length}{" "}
-                      {orderItems.length === 1 ? "item" : "items"}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Payment Button */}
-
-                {isProcessingPayment ? (
-                  <button
-                  disabled
-                  className="w-full mt-4 sm:mt-6 py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 sm:gap-3 opacity-70"
-                  >
-                    <FiLoader className="animate-spin w-4 h-4 sm:w-5 sm:h-5" />
-                    Processing Payment...
-                  </button>
-                ) : (
-                  <>
-                    {/* Razorpay */}
-                    {gateway === "razorpay" && createdOrder && (
-                      <button
-                      onClick={handlePayment}
-                      disabled={!createdOrder}
-                      className="w-full mt-4 sm:mt-6 py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Pay ₹{total} <SiRazorpay />
-                      </button>
-                    )}
-
-                    {/* Cashfree */}
-                    {gateway === "cashfree" && createdOrder && (
-                      <CashfreePayment
-                      createdOrder={createdOrder}
-                      total={total}
-                      />
-                    )}
-
-                    {/* PayU */}
-                    {gateway === "payu" && createdOrder && (
-                      <PayUPayment createdOrder={createdOrder} total={total} />
-                    )}
-                  </>
-                )}
-
-                {/* Security Note */}
-                <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
-                  <div className="flex items-start gap-2">
-                    <FiShield className="text-green-400 mt-0.5 flex-shrink-0 w-4 h-4" />
-                    <div>
-                      <p className="text-green-400 font-medium text-xs">
-                        100% Secure Payment
-                      </p>
-                      <p className="text-gray-400 text-xs mt-0.5">
-                        Your payment is secured with Razorpay
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Info Note */}
-                <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-xl">
-                  <p className="text-xs text-cyan-400">
-                    Note: The amount shown includes all applicable taxes (GST)
-                    and discounts as per product settings.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-</div>
-  
-  </>)
-}
-
-
-
-
-          
         </div>
       </div>
     </div>
