@@ -15,13 +15,17 @@ import {
   FiShield,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+
+
 
 const Checkout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { Razorpay } = useRazorpay();
 
-  const token = localStorage.getItem("token");
+  
+  const token = useSelector((state) =>  state.auth.token);
 
   const [loading, setLoading] = useState(false);
   const [orderItems, setOrderItems] = useState([]);

@@ -3,10 +3,11 @@ import axios from "axios";
 import { FiShoppingBag, FiPackage, FiDownload } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Orders = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
   window.history.replaceState(null, "", "/orders");

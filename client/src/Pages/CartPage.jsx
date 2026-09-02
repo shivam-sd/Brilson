@@ -872,16 +872,16 @@ const CartPage = () => {
                         Order Summary
                       </span>
 
-                      {isSummaryExpanded ? (
+                      {/* {isSummaryExpanded ? (
                         <FiChevronUp />
                       ) : (
                         <FiChevronDown />
-                      )}
+                      )} */}
                     </button>
 
                     <AnimatePresence>
 
-                      {isSummaryExpanded && (
+                      {/* {isSummaryExpanded && ( */}
                         <motion.div
                           initial={{
                             height: 0,
@@ -1025,7 +1025,7 @@ const CartPage = () => {
                           </div>
 
                         </motion.div>
-                      )}
+                      {/* )} */}
 
                     </AnimatePresence>
 
