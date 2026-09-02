@@ -1,11 +1,11 @@
 import React, { Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async"; 
+import { HelmetProvider } from "react-helmet-async";
 const HomePage = React.lazy(() => import("./HomePage"));
 import ReactLenis from "lenis/react";
 import HowitWorks from "./Pages/HowitWorks";
 import BestSeller from "./Component/BestSeller";
-import PersonalCard from "./Component/PersonalCards"; 
+import PersonalCard from "./Component/PersonalCards";
 import BusinessCard from "./Component/BusinessCards";
 import Pricing from "./Pages/Pricing";
 import LoginPage from "./Component/LoginPage";
@@ -109,445 +109,454 @@ import RefundPolicy from "./Admin/LandingPage/RefundPolicy";
 import AdminInvoiceAddress from "./Admin/AdminInvoiceAddress";
 import UsersList from "./Admin/UsersList";
 import ReferralManagement from "./Admin/ReferralManagement";
+import RecentCards from "./Admin/RecentCards";
 
 
 
 function App() {
   return (
     <>
-    
+
       <div>
         <HelmetProvider>
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <ReactLenis
-              root
-              options={{
-                lerp: 0.1,
-                duration: 1.2,
-                orientation: "vertical",
-                gestureOrientation: "vertical",
-                smoothWheel: true,
-                wheelMultiplier: 1,
-                smoothTouch: true,
-                touchMultiplier: 2,
-              }}
-              >
-                <Master />
-              </ReactLenis>
-            }
-          >
+          <Routes>
             <Route
               path="/"
               element={
-                <Suspense fallback={<div className="app-loader"></div>}>
-                  <HomePage />
-                </Suspense>
+                <ReactLenis
+                  root
+                  options={{
+                    lerp: 0.1,
+                    duration: 1.2,
+                    orientation: "vertical",
+                    gestureOrientation: "vertical",
+                    smoothWheel: true,
+                    wheelMultiplier: 1,
+                    smoothTouch: true,
+                    touchMultiplier: 2,
+                  }}
+                >
+                  <Master />
+                </ReactLenis>
               }
-            />
-            <Route path="/how-it-works" element={<HowitWorks />} />
-            <Route path="/products" element={<OurSmartCard />} />
-            <Route path="/bestseller-card" element={<BestSeller />} />
+            >
+              <Route
+                path="/"
+                element={
+                  <Suspense fallback={<div className="app-loader"></div>}>
+                    <HomePage />
+                  </Suspense>
+                }
+              />
+              <Route path="/how-it-works" element={<HowitWorks />} />
+              <Route path="/products" element={<OurSmartCard />} />
+              <Route path="/bestseller-card" element={<BestSeller />} />
+              <Route path="/personal-card" element={<PersonalCard />} />
+              <Route path="/business-card" element={<BusinessCard />} />
+              <Route path="/products/:id" element={<ProductCardDetails />} />
+              <Route path="/contact-sale" element={<ContactSales />} />
+              <Route path="/your-items" element={<CartPage />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/paymentsucess" element={<PaymentSuccessPage />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/get-card" element={<GetYourCard />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/help-center" element={<HelpCenter />} />
+              <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+              <Route path="/refund-policy" element={<RefundPolicyPage />} />
+              <Route path="/about-us" element={<AboutUsPage />} />
+              <Route path="/careers" element={<CareersPage />} />
+            </Route>
+
+            <Route path="/c/card/:activationCode" element={<CheckStatusPage />} />
+            <Route path="/c/parking-tag/:activationCode" element={<CheckParkingTagStatus />} />
+
+            <Route path="/c/google-review/:activationCode" element={<CheckGoogleReviewStatus />} />
+
+            <Route path="/admin/passTo/Profile" element={<AdminPassToProfile />} />
+            <Route path="/profile/:slug" element={<ProfilePage />} />
+            <Route path="/profile/P/:slug" element={<ParkingTagProfile />} />
+            <Route path="/profile/P/public/:slug" element={<ParkingTagPublicProfile />} />
+
+            <Route path="/profile/google-review/:slug" element={<GoogleReviewProfile />} />
+            <Route path="/profile/google-review/public/:slug" element={<GoogleReviewsPublicProfile />} />
+
+
+
+            <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
+            <Route path="/profile/P/edit/:slug" element={<EditParkingTagProfile />} />
+            <Route path="/profile/google-review/edit/:activationCode" element={<EditGoogleReviewsProfile />} />
+            <Route path="/card/activate" element={<ActivateCard />} />
+            <Route path="/parking-tag/activate" element={<ActivateParkingTag />} />
+            <Route path="/google-reviews/activate" element={<ActivateGoogleReview />} />
+
+
+            <Route path="/profile/edit/:id" element={<Layout />}>
+              <Route index element={<EditProfile />} />
+              <Route path="profile-logo" element={<ProfileLogoEdit />} />
+              <Route path="profile-cover" element={<ProfileCoverEdit />} />
+              <Route path="update-social-links" element={<EditProfileSocialMedia />} />
+              {/* <Route path="update-contact" element={<UpdateProfileConatct />} /> */}
+              <Route path="portfolio" element={<PortfolioEditProfile />} />
+              <Route path="services" element={<ServicesEditProfile />} />
+              <Route path="products" element={<ProductsEditProfile />} />
+              <Route path="gallery" element={<GalleryEditProfile />} />
+              <Route path="payment-details" element={<PaymentDetailsPage />} />
+              <Route path="location&review" element={<ProfileEditLocation />} />
+              <Route path="resume" element={<ProfileResumeEdit />} />
+            </Route>
+
+
+            <Route path="/profile/products/add/:id" element={<AddProduct />} />
+            <Route path="/profile/products/update/:id" element={<UpdateProduct />} />
+            <Route path="/profile/portfolio/add/:id" element={<AddPortfolio />} />
+            <Route path="/profile/portfolio/update/:id" element={<UpdatePortfolio />} />
+            <Route path="/profile/services/add/:id" element={<AddServices />} />
+            <Route path="/profile/services/update/:id" element={<UpdateServices />} />
+            <Route path="/profile/gallery/add/:id" element={<AddGallery />} />
+            <Route path="/profile/gallery/update/:id" element={<UpdateGallery />} />
+            <Route path="/profile/payment-details/add/:id" element={<AddPaymentDetails />} />
+            <Route path="/profile/payment-details/update/:id" element={<UpdatePaymentDetails />} />
+            <Route path="/profile/location/add/:id" element={<AddProfileLocation />} />
+            <Route path="/profile/location/update/:id" element={<UpdateProfileLocation />} />
+            <Route path="/profile/resume/add/:id" element={<AddResume />} />
+            <Route path="/profile/resume/update/:id" element={<UpdateResume />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+
+
+
+            <Route path="/best-seller" element={<BestSeller />} />
             <Route path="/personal-card" element={<PersonalCard />} />
             <Route path="/business-card" element={<BusinessCard />} />
-            <Route path="/products/:id" element={<ProductCardDetails />} />
-            <Route path="/contact-sale" element={<ContactSales />} />
-            <Route path="/your-items" element={<CartPage />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/paymentsucess" element={<PaymentSuccessPage />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/get-card" element={<GetYourCard />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/help-center" element={<HelpCenter />} />
-            <Route path="/terms-conditions" element={<TermsConditionsPage />} />
-            <Route path="/refund-policy" element={<RefundPolicyPage />} />
-            <Route path="/about-us" element={<AboutUsPage />} />
-            <Route path="/careers" element={<CareersPage />} /> 
-          </Route>
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
 
-          <Route path="/c/card/:activationCode" element={<CheckStatusPage />} />
-          <Route path="/c/parking-tag/:activationCode" element={<CheckParkingTagStatus />} />
-
-          <Route path="/c/google-review/:activationCode" element={<CheckGoogleReviewStatus />} />
-          
-          <Route path="/admin/passTo/Profile" element={<AdminPassToProfile />} />
-          <Route path="/profile/:slug" element={<ProfilePage />} />
-          <Route path="/profile/P/:slug" element={<ParkingTagProfile />} />
-          <Route path="/profile/P/public/:slug" element={<ParkingTagPublicProfile />} />
-
-          <Route path="/profile/google-review/:slug" element={<GoogleReviewProfile />} />
-          <Route path="/profile/google-review/public/:slug" element={<GoogleReviewsPublicProfile />} />
-
-
-
-          <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
-  <Route path="/profile/P/edit/:slug" element={<EditParkingTagProfile />} />
-  <Route path="/profile/google-review/edit/:activationCode" element={<EditGoogleReviewsProfile />} />
-          <Route path="/card/activate" element={<ActivateCard />} />
-           <Route path="/parking-tag/activate" element={<ActivateParkingTag />} />
-           <Route path="/google-reviews/activate" element={<ActivateGoogleReview />} />
-
-
-          <Route path="/profile/edit/:id" element={<Layout />}>
-  <Route index element={<EditProfile />} />
-  <Route path="profile-logo" element={<ProfileLogoEdit />} />
-  <Route path="profile-cover" element={<ProfileCoverEdit />} />
-  <Route path="update-social-links" element={<EditProfileSocialMedia />} />
-  {/* <Route path="update-contact" element={<UpdateProfileConatct />} /> */}
-  <Route path="portfolio" element={<PortfolioEditProfile />} />
-  <Route path="services" element={<ServicesEditProfile />} />
-  <Route path="products" element={<ProductsEditProfile />} />
-  <Route path="gallery" element={<GalleryEditProfile />} />
-  <Route path="payment-details" element={<PaymentDetailsPage />} />
-  <Route path="location&review" element={<ProfileEditLocation />} />
-  <Route path="resume" element={<ProfileResumeEdit />} />
-</Route>
-
-
-  <Route path="/profile/products/add/:id" element={<AddProduct />} />
-  <Route path="/profile/products/update/:id" element={<UpdateProduct />} />
-  <Route path="/profile/portfolio/add/:id" element={<AddPortfolio />} />
-  <Route path="/profile/portfolio/update/:id" element={<UpdatePortfolio />} />
-  <Route path="/profile/services/add/:id" element={<AddServices />} />
-  <Route path="/profile/services/update/:id" element={<UpdateServices />} />
-  <Route path="/profile/gallery/add/:id" element={<AddGallery />} />
-  <Route path="/profile/gallery/update/:id" element={<UpdateGallery />} />
-  <Route path="/profile/payment-details/add/:id" element={<AddPaymentDetails />} />
-  <Route path="/profile/payment-details/update/:id" element={<UpdatePaymentDetails />} />
-  <Route path="/profile/location/add/:id" element={<AddProfileLocation />} />
-  <Route path="/profile/location/update/:id" element={<UpdateProfileLocation />} />
-  <Route path="/profile/resume/add/:id" element={<AddResume />} />
-  <Route path="/profile/resume/update/:id" element={<UpdateResume />} />
-  <Route path="/payment-success" element={<PaymentSuccess />} />
-
-
-
-          <Route path="/best-seller" element={<BestSeller />} />
-          <Route path="/personal-card" element={<PersonalCard />} />
-          <Route path="/business-card" element={<BusinessCard />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-
-          <Route
-            path="admindashboard"
-            element={
-              <ProtectedRoute>
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
             <Route
-              index
+              path="admindashboard"
               element={
                 <ProtectedRoute>
-                  <AdminDashboard />{" "}
+                  <AdminLayout />
                 </ProtectedRoute>
               }
-            />
-            <Route
-              path="products/list"
-              element={
-                <ProtectedRoute>
-                  <AdminProducts />
-                </ProtectedRoute>
-              }
+            >
+              <Route
+                index
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />{" "}
+                  </ProtectedRoute>
+                }
               />
-            <Route
-              path="users/list"
-              element={
-                <ProtectedRoute>
-                  <UsersList />
-                </ProtectedRoute>
-              }
+              <Route
+                path="products/list"
+                element={
+                  <ProtectedRoute>
+                    <AdminProducts />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="users/list"
+                element={
+                  <ProtectedRoute>
+                    <UsersList />
+                  </ProtectedRoute>
+                }
               />
 
-            <Route
-              path="customers/list"
-              element={
-                <ProtectedRoute>
-                  <AdminCustomers />
-                </ProtectedRoute>
-              }
+              <Route
+                path="customers/list"
+                element={
+                  <ProtectedRoute>
+                    <AdminCustomers />
+                  </ProtectedRoute>
+                }
               />
 
-            <Route
-              path="admin/referral"
-              element={
-                <ProtectedRoute>
-                  <ReferralManagement />
-                </ProtectedRoute>
-              }
+              <Route
+                path="admin/referral"
+                element={
+                  <ProtectedRoute>
+                    <ReferralManagement />
+                  </ProtectedRoute>
+                }
               />
 
-            <Route
-              path="landing/page/content"
-              element={
-                <ProtectedRoute>
-                  <LandingPageContent />
-                </ProtectedRoute>
-              }
-            />
-
-
-            <Route
-              path="payment/gateway/isactive"
-              element={
-                <ProtectedRoute>
-                  <AdminPaymentGateway />
-                </ProtectedRoute>
-              }
+              <Route
+                path="landing/page/content"
+                element={
+                  <ProtectedRoute>
+                    <LandingPageContent />
+                  </ProtectedRoute>
+                }
               />
 
 
-            <Route
-              path="setting/config"
-              element={
-                <ProtectedRoute>
-                  <AdminConfig />
-                </ProtectedRoute>
-              }
-              />
-
-            <Route
-              path="orders/list"
-              element={
-                <ProtectedRoute>
-                  <AdminOrders />
-                </ProtectedRoute>
-              }
-            />
-
-
-
-
-            <Route
-              path="manage-cards"
-              element={
-                <ProtectedRoute>
-                  <ManageCards />
-                </ProtectedRoute>
-              }
-              />
-
-            <Route
-              path="manage-cards/card"
-              element={
-                <ProtectedRoute>
-                  <ManageNFCCards />
-                </ProtectedRoute>
-              }
-              />
-
-            <Route
-              path="manage-google-reviews"
-              element={
-                <ProtectedRoute>
-                  <ManageGoogleReviews />
-                </ProtectedRoute>
-              }
-              />
-
-            <Route
-              path="manage-parking-tag"
-              element={
-                <ProtectedRoute>
-                  <ManageParkingTag />
-                </ProtectedRoute>
-              }
-              />
-
-            <Route
-              path="selling-overview"
-              element={
-                <ProtectedRoute>
-                  <SellingOverview />
-                </ProtectedRoute>
-              }
+              <Route
+                path="payment/gateway/isactive"
+                element={
+                  <ProtectedRoute>
+                    <AdminPaymentGateway />
+                  </ProtectedRoute>
+                }
               />
 
 
-            <Route
-              path="orders/invoices"
-              element={
-                <ProtectedRoute>
-                  <AdminInvoices />
-                </ProtectedRoute>
-              }
+              <Route
+                path="setting/config"
+                element={
+                  <ProtectedRoute>
+                    <AdminConfig />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="orders/list"
+                element={
+                  <ProtectedRoute>
+                    <AdminOrders />
+                  </ProtectedRoute>
+                }
               />
 
 
-            <Route
-              path="invoice/address"
-              element={
-                <ProtectedRoute>
-                  <AdminInvoiceAddress />
-                </ProtectedRoute>
-              }
+
+
+              <Route
+                path="manage-cards"
+                element={
+                  <ProtectedRoute>
+                    <ManageCards />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="recent-cards"
+                element={
+                  <ProtectedRoute>
+                    <RecentCards />
+                  </ProtectedRoute>
+                }
               />
 
-            {/* <Route path='settings' element={<Settings />} /> */}
-          </Route>
-          <Route
-            path="/api/cards/bulk"
-            element={
-              <ProtectedRoute>
-                <BulkCreateCardsModal />
-              </ProtectedRoute>
-            }
+              <Route
+                path="manage-cards/card"
+                element={
+                  <ProtectedRoute>
+                    <ManageNFCCards />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="manage-google-reviews"
+                element={
+                  <ProtectedRoute>
+                    <ManageGoogleReviews />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="manage-parking-tag"
+                element={
+                  <ProtectedRoute>
+                    <ManageParkingTag />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="selling-overview"
+                element={
+                  <ProtectedRoute>
+                    <SellingOverview />
+                  </ProtectedRoute>
+                }
+              />
+
+
+              <Route
+                path="orders/invoices"
+                element={
+                  <ProtectedRoute>
+                    <AdminInvoices />
+                  </ProtectedRoute>
+                }
+              />
+
+
+              <Route
+                path="invoice/address"
+                element={
+                  <ProtectedRoute>
+                    <AdminInvoiceAddress />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* <Route path='settings' element={<Settings />} /> */}
+            </Route>
+            <Route
+              path="/api/cards/bulk"
+              element={
+                <ProtectedRoute>
+                  <BulkCreateCardsModal />
+                </ProtectedRoute>
+              }
             />
 
-          <Route
-            path="/api/google-reviews/bulk"
-            element={
-              <ProtectedRoute>
-                <BulkCreateGoogleReviews />
-              </ProtectedRoute>
-            }
+            <Route
+              path="/api/google-reviews/bulk"
+              element={
+                <ProtectedRoute>
+                  <BulkCreateGoogleReviews />
+                </ProtectedRoute>
+              }
             />
 
-          <Route
-            path="/api/tags/bulk"
-            element={
-              <ProtectedRoute>
-                <BulkCreateTags />
-              </ProtectedRoute>
-            }
-            />
-
-
-          {/* Products Route */}
-          <Route
-            path="/admin/add/products"
-            element={
-              <ProtectedRoute>
-                <AdminAddProduct />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/edit/products/:id"
-            element={
-              <ProtectedRoute>
-                <AdminEditProduct />
-              </ProtectedRoute>
-            }
-            />
-
-          {/* add dynamic categories */}
-          <Route
-            path="/admin/add/category"
-            element={
-              <ProtectedRoute>
-                <AdminCategories />
-              </ProtectedRoute>
-            }
-            />
-
-         
-
-          {/* add dynamic badegs */}
-          <Route
-            path="/admin/add/badges"
-            element={
-              <ProtectedRoute>
-                <AdminBadges />
-              </ProtectedRoute>
-            }
-            />
-
-          {/* landing Page */}
-
-          <Route
-            path="/admin/landing/hero"
-            element={
-              <ProtectedRoute>
-                <HomePageContent />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/landing/features"
-            element={
-              <ProtectedRoute>
-                <PowerFullFeatures />
-              </ProtectedRoute>
-            }
-            />
-          <Route
-            path="/admin/landing/howtouse"
-            element={
-              <ProtectedRoute>
-                <HowToUseAdmin />
-              </ProtectedRoute>
-            }
-            />
-          <Route
-            path="/admin/landing/testimonials"
-            element={
-              <ProtectedRoute>
-                <Testimonials />
-              </ProtectedRoute>
-            }
-            />
-          <Route
-            path="/admin/landing/transform/network"
-            element={
-              <ProtectedRoute>
-                <TransformNetworkAdmin />
-              </ProtectedRoute>
-            }
-            />
-
-          <Route
-            path="/admin/landing/about-page"
-            element={
-              <ProtectedRoute>
-                <AboutPageAdmin />
-              </ProtectedRoute>
-            }
-            />
-
-          <Route
-            path="/admin/landing/privacy-policy"
-            element={
-              <ProtectedRoute>
-                <PrivacyPolicyPage />
-              </ProtectedRoute>
-            }
-            />
-
-          <Route
-            path="/admin/landing/terms-conditions"
-            element={
-              <ProtectedRoute>
-                <TermsCondition />
-              </ProtectedRoute>
-            }
-            />
-
-          <Route
-            path="/admin/landing/refund-policy"
-            element={
-              <ProtectedRoute>
-                <RefundPolicy />
-              </ProtectedRoute>
-            }
-            />
-            
-          <Route
-            path="/admin/landing/footer"
-            element={
-              <ProtectedRoute>
-                <FooterAdmin />
-              </ProtectedRoute>
-            }
+            <Route
+              path="/api/tags/bulk"
+              element={
+                <ProtectedRoute>
+                  <BulkCreateTags />
+                </ProtectedRoute>
+              }
             />
 
 
-               <Route
+            {/* Products Route */}
+            <Route
+              path="/admin/add/products"
+              element={
+                <ProtectedRoute>
+                  <AdminAddProduct />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/edit/products/:id"
+              element={
+                <ProtectedRoute>
+                  <AdminEditProduct />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* add dynamic categories */}
+            <Route
+              path="/admin/add/category"
+              element={
+                <ProtectedRoute>
+                  <AdminCategories />
+                </ProtectedRoute>
+              }
+            />
+
+
+
+            {/* add dynamic badegs */}
+            <Route
+              path="/admin/add/badges"
+              element={
+                <ProtectedRoute>
+                  <AdminBadges />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* landing Page */}
+
+            <Route
+              path="/admin/landing/hero"
+              element={
+                <ProtectedRoute>
+                  <HomePageContent />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/landing/features"
+              element={
+                <ProtectedRoute>
+                  <PowerFullFeatures />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/landing/howtouse"
+              element={
+                <ProtectedRoute>
+                  <HowToUseAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/landing/testimonials"
+              element={
+                <ProtectedRoute>
+                  <Testimonials />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/landing/transform/network"
+              element={
+                <ProtectedRoute>
+                  <TransformNetworkAdmin />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/landing/about-page"
+              element={
+                <ProtectedRoute>
+                  <AboutPageAdmin />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/landing/privacy-policy"
+              element={
+                <ProtectedRoute>
+                  <PrivacyPolicyPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/landing/terms-conditions"
+              element={
+                <ProtectedRoute>
+                  <TermsCondition />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/landing/refund-policy"
+              element={
+                <ProtectedRoute>
+                  <RefundPolicy />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/landing/footer"
+              element={
+                <ProtectedRoute>
+                  <FooterAdmin />
+                </ProtectedRoute>
+              }
+            />
+
+
+            <Route
               path="/admin/orders/detils/:orderId"
               element={
                 <ProtectedRoute>
@@ -556,19 +565,19 @@ function App() {
               }
             />
 
-<Route path="/login" element={<LoginPage />} />
-<Route path="/signup" element={<SignupPage />} />
-<Route path="/users/forgot-password/brilson" element={<ForgotPassword />} />
-<Route path="/users/verify-otp/brilson" element={<VerifyResetOtp />} />
-<Route path="/users/reset-password/brilson" element={<ResetPassword />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/users/forgot-password/brilson" element={<ForgotPassword />} />
+            <Route path="/users/verify-otp/brilson" element={<VerifyResetOtp />} />
+            <Route path="/users/reset-password/brilson" element={<ResetPassword />} />
 
 
-          {/* error Page */}
-          <Route path="*" element={<ErrorPage />} />
-        </Routes>
-            </HelmetProvider>
+            {/* error Page */}
+            <Route path="*" element={<ErrorPage />} />
+          </Routes>
+        </HelmetProvider>
       </div>
-      
+
     </>
   );
 }
