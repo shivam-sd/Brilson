@@ -3,10 +3,12 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../store/slices/authSlice";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,7 +22,7 @@ const AdminLogin = () => {
       [e.target.name]: e.target.value,
     });
   };
-// console.log(formData)
+  // console.log(formData)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -28,7 +30,7 @@ const AdminLogin = () => {
     try {
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/admin/login`,
         formData,
-        { withCredentials: true } 
+        { withCredentials: true }
       );
 
       // console.log(res);
@@ -36,8 +38,10 @@ const AdminLogin = () => {
       toast.success(res.data.message, {
         position: "top-center",
       });
-
-      localStorage.setItem("adminToken", res.data.token);
+      if (res.data.token) {
+        // localStorage.setItem("adminToken", res.data.token);
+        dispatch(setCredentials({ adminToken: res.data.token }));
+      }
 
       setTimeout(() => {
         navigate("/admindashboard");
@@ -109,10 +113,9 @@ const AdminLogin = () => {
             whileTap={{ scale: 0.96 }}
             disabled={loading}
             className={`w-full mt-4 py-3 rounded-xl font-semibold transition duration-300
-              ${
-                loading
-                  ? "bg-gray-500 cursor-not-allowed text-white"
-                  : "bg-blue-500 hover:bg-blue-400 text-white"
+              ${loading
+                ? "bg-gray-500 cursor-not-allowed text-white"
+                : "bg-blue-500 hover:bg-blue-400 text-white"
               }`}
           >
             {loading ? "Logging in..." : "Login"}

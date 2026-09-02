@@ -7,6 +7,8 @@ import QRCodeStyling from "qr-code-styling";
 import JSZip from "jszip";
 import { toast } from "react-toastify";
 import { HexColorPicker } from "react-colorful";
+import { selectAdminToken } from "../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 /* Ultra High Resolution PNG Generator - 4000px for no pixelation */
 const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent", size = 4000) => {
@@ -185,6 +187,7 @@ const generateThumbnailPNG = async (qrCode, activationCode, profileName, textCol
 };
 
 const ManageCards = () => {
+  const token = useSelector(selectAdminToken);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -290,7 +293,7 @@ const ManageCards = () => {
 
       const url = `${baseUrl}/api/all/cards?${params.toString()}`;
 
-      const token = localStorage.getItem("adminToken");
+      // const token = localStorage.getItem("adminToken");
       if (!token) {
         setError("Please login again");
         setLoading(false);
@@ -670,8 +673,8 @@ const ManageCards = () => {
   const StatusBadge = ({ active }) => (
     <span
       className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${active
-          ? "bg-green-500/20 text-green-400"
-          : "bg-yellow-500/20 text-yellow-400"
+        ? "bg-green-500/20 text-green-400"
+        : "bg-yellow-500/20 text-yellow-400"
         }`}
     >
       {active ? "Active" : "Inactive"}
@@ -713,7 +716,7 @@ const ManageCards = () => {
         {getPageNumbers().map((pageNum, index) => (
           <button key={index} onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
             className={`min-w-[28px] sm:min-w-[35px] h-7 sm:h-9 flex items-center justify-center rounded-lg text-[10px] sm:text-xs md:text-sm font-medium ${currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
-                pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
               }`} disabled={pageNum === '...'}>
             {pageNum}
           </button>

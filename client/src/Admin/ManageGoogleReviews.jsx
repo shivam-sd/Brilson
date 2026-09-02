@@ -5,8 +5,11 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import JSZip from 'jszip';
+import { selectAdminToken } from "../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const ManageGoogleReviews = () => {
+  const token = useSelector(selectAdminToken);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,12 +22,12 @@ const ManageGoogleReviews = () => {
   // const [reviewsStatus, setReviewsStatus] = useState("all");
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalReviews, setTotalReviews] = useState(0);
   const [limit] = useState(100);
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
@@ -40,14 +43,14 @@ const ManageGoogleReviews = () => {
         limit,
         search: search || ""
       });
-      
+
       if (status && status !== "all") {
         params.append("status", status);
       }
-      
+
       const url = `${baseUrl}/api/all/google-reviews?${params.toString()}`;
 
-      const token = localStorage.getItem("adminToken");
+      // const token = localStorage.getItem("adminToken");
       if (!token) {
         setError("Please login again");
         setLoading(false);
@@ -61,7 +64,7 @@ const ManageGoogleReviews = () => {
 
       const responseData = res.data.data || res.data;
       const allReviews = responseData.cards || responseData.allGoogleReview || [];
-      
+
       setReviews(allReviews);
       setTotalReviews(responseData.pagination?.totalCards || responseData.totleGoogleReview || 0);
       setTotalPages(responseData.pagination?.totalPages || responseData.totalPages || 1);
@@ -76,7 +79,7 @@ const ManageGoogleReviews = () => {
         const inactive = allReviews.filter(review => !review.isActivated).length;
         statsData = { total, activated, inactive };
       }
-      
+
       setStats({
         total: statsData.total || 0,
         activated: statsData.activated || 0,
@@ -187,7 +190,7 @@ const ManageGoogleReviews = () => {
       if (loadingDiv && loadingDiv.parentNode) {
         document.body.removeChild(loadingDiv);
       }
-      
+
       let errorMessage = 'Failed to download card. Please try again.';
       if (error.response?.status === 401) {
         errorMessage = 'Session expired. Please login again.';
@@ -237,7 +240,7 @@ const ManageGoogleReviews = () => {
       const failedReviews = [];
       const successfulReviews = [];
       const zip = new JSZip();
-      
+
       const updateProgress = (current, total) => {
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
@@ -277,7 +280,7 @@ const ManageGoogleReviews = () => {
             const fileName = `google-review-card-${review.activationCode}.png`;
             zip.file(fileName, response.data);
             successfulReviews.push(review);
-            
+
             axios.patch(
               `${import.meta.env.VITE_BASE_URL}/api/google-review/${review._id}/downloaded`,
               {},
@@ -300,7 +303,7 @@ const ManageGoogleReviews = () => {
         throw new Error('No cards could be downloaded. Please try again.');
       }
 
-      const zipBlob = await zip.generateAsync({ 
+      const zipBlob = await zip.generateAsync({
         type: 'blob',
         compression: 'DEFLATE',
         compressionOptions: { level: 6 }
@@ -337,7 +340,7 @@ const ManageGoogleReviews = () => {
 
     } catch (error) {
       console.error("Bulk download error:", error);
-      
+
       const loader = document.getElementById('bulk-download-loader');
       if (loader && loader.parentNode) {
         document.body.removeChild(loader);
@@ -352,7 +355,7 @@ const ManageGoogleReviews = () => {
         errorMessage = 'Session expired. Please login again.';
         localStorage.removeItem('adminToken');
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setDownloading(false);
@@ -363,7 +366,7 @@ const ManageGoogleReviews = () => {
   const getPageNumbers = () => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
-    
+
     if (totalPages <= maxPagesToShow) {
       for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
@@ -377,7 +380,7 @@ const ManageGoogleReviews = () => {
         pageNumbers.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
       }
     }
-    
+
     return pageNumbers;
   };
 
@@ -411,11 +414,10 @@ const ManageGoogleReviews = () => {
 
   const StatusBadge = ({ active }) => (
     <span
-      className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-        active
+      className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${active
           ? "bg-green-500/20 text-green-400"
           : "bg-yellow-500/20 text-yellow-400"
-      }`}
+        }`}
     >
       {active ? "Active" : "Inactive"}
     </span>
@@ -425,7 +427,7 @@ const ManageGoogleReviews = () => {
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-2 py-4 bg-gray-800/30 rounded-lg">
       <div className="text-sm text-gray-400 text-center sm:text-left">
         Page <span className="font-medium text-gray-300">{currentPage}</span> of{" "}
-        <span className="font-medium text-gray-300">{totalPages}</span> • 
+        <span className="font-medium text-gray-300">{totalPages}</span> •
         Showing <span className="font-medium text-gray-300">{(currentPage - 1) * limit + 1}</span> to{" "}
         <span className="font-medium text-gray-300">
           {Math.min(currentPage * limit, totalReviews)}
@@ -442,7 +444,7 @@ const ManageGoogleReviews = () => {
           </span>
         )}
       </div>
-      
+
       <div className="flex items-center gap-1 flex-wrap justify-center">
         <button onClick={() => handlePageChange(1)} disabled={currentPage === 1}
           className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
@@ -452,17 +454,16 @@ const ManageGoogleReviews = () => {
           className={`p-2 rounded-lg ${currentPage === 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronLeft size={18} />
         </button>
-        
+
         {getPageNumbers().map((pageNum, index) => (
           <button key={index} onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
-            className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-sm font-medium ${
-              currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
-              pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-            }`} disabled={pageNum === '...'}>
+            className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-sm font-medium ${currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
+                pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`} disabled={pageNum === '...'}>
             {pageNum}
           </button>
         ))}
-        
+
         <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}
           className={`p-2 rounded-lg ${currentPage === totalPages ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'}`}>
           <FiChevronRight size={18} />
@@ -478,7 +479,7 @@ const ManageGoogleReviews = () => {
   return (
     <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-5 md:py-6 text-gray-200 max-w-full overflow-x-hidden mt-8 lg:mt-0 md:mt-0">
       <Toaster position="top-center" reverseOrder={false} />
-      
+
       {/* HEADER */}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-4 mb-6">
         <div className="w-full lg:w-auto text-center lg:text-left">
@@ -512,11 +513,10 @@ const ManageGoogleReviews = () => {
           <button
             onClick={downloadBulkReviews}
             disabled={downloading || reviews.length === 0}
-            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${
-              downloading || reviews.length === 0
+            className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${downloading || reviews.length === 0
                 ? 'bg-gray-600 cursor-not-allowed opacity-50'
                 : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg'
-            }`}
+              }`}
           >
             {downloading ? (
               <>
@@ -640,11 +640,10 @@ const ManageGoogleReviews = () => {
                   <button
                     onClick={() => downloadBulkReviews()}
                     disabled={downloading}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium w-full sm:w-auto justify-center ${
-                      downloading
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium w-full sm:w-auto justify-center ${downloading
                         ? 'bg-gray-600 cursor-not-allowed opacity-50'
                         : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
-                    }`}
+                      }`}
                   >
                     {downloading ? (
                       <>
@@ -696,7 +695,7 @@ const ManageGoogleReviews = () => {
             <p className="text-gray-400 text-sm">No google reviews available</p>
           </div>
         )}
-        
+
         {totalPages > 1 && <Pagination />}
       </div>
 
@@ -733,11 +732,10 @@ const ManageGoogleReviews = () => {
                           <button
                             onClick={downloadBulkReviews}
                             disabled={downloading}
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${
-                              downloading
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${downloading
                                 ? 'bg-gray-600 cursor-not-allowed opacity-50'
                                 : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg'
-                            }`}
+                              }`}
                           >
                             {downloading ? (
                               <>
@@ -786,7 +784,7 @@ const ManageGoogleReviews = () => {
                           </button>
                         </td>
                         <td className="p-3 text-center">
-                          <Link 
+                          <Link
                             to={`${import.meta.env.VITE_DOMAIN}/profile/google-review/public/${review.slug}`}
                             className="text-indigo-400 hover:text-indigo-300 transition text-xs font-medium hover:underline"
                             target="_blank"
@@ -811,7 +809,7 @@ const ManageGoogleReviews = () => {
             </tbody>
           </table>
         </div>
-        
+
         {totalPages > 1 && <Pagination />}
       </div>
     </div>

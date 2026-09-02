@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom"
 
 
 const RecentCards = ({ cards }) => {
@@ -26,7 +26,7 @@ const RecentCards = ({ cards }) => {
           rounded-lg
           hover:bg-[#334155]
           "
-          to={"/admindashboard/manage-cards"}
+          to={"/admindashboard/recent-cards"}
         >
           View All Cards
         </Link>
@@ -49,7 +49,7 @@ const RecentCards = ({ cards }) => {
               <th className="text-left text-gray-400 text-sm pb-3">
                 Card ID
               </th>
-{/* 
+              {/* 
               <th className="text-left text-gray-400 text-sm pb-3">
                 Owner
               </th> */}
@@ -97,11 +97,10 @@ const RecentCards = ({ cards }) => {
                   <span
                     className={`
                     px-3 py-1 rounded-full text-xs font-medium
-                    ${
-                      card.isActivated
+                    ${card.isActivated
                         ? "bg-green-500/15 text-green-400"
                         : "bg-yellow-500/15 text-yellow-400"
-                    }
+                      }
                   `}
                   >
                     {card.isActivated

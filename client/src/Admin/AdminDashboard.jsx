@@ -44,8 +44,8 @@ const AdminDashboard = () => {
   }, []);
 
   if (!data) {
-    return(<>
-    <ModernLoader />
+    return (<>
+      <ModernLoader />
     </>);
   }
 
@@ -61,7 +61,7 @@ const AdminDashboard = () => {
    rounded-xl
    "
     >
-      <StatsCards data={data} />
+      <StatsCards data={data.data} />
 
       <div
         className="
@@ -75,29 +75,29 @@ const AdminDashboard = () => {
         </div>
 
         <CardsStatus
-          activeCards={data.activeCards}
-          inactiveCards={data.inactiveCards}
+          activeCards={data.data.activeCards}
+          inactiveCards={data.data.inactiveCards}
         />
       </div>
 
 
-<div className="grid lg:grid-cols-12 gap-6 mt-6">
+      <div className="grid lg:grid-cols-12 gap-6 mt-6">
 
-  <div className="lg:col-span-7">
-    <RecentOrders
-      orders={data.recentOrders}
-    />
-  </div>
+        <div className="lg:col-span-7">
+          <RecentOrders
+            orders={data.data.recentOrders}
+          />
+        </div>
 
-  <div className="lg:col-span-5">
-    <RecentCards
-      cards={data.recentCards}
-    />
-  </div>
+        <div className="lg:col-span-5">
+          <RecentCards
+            cards={data.data.recentCards}
+          />
+        </div>
 
-</div>
+      </div>
 
-<QuickActions />
+      <QuickActions />
 
     </div>
   );

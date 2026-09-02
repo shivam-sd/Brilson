@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { 
-  FiUser, 
-  FiPhone, 
-  FiCalendar, 
-  FiShoppingBag, 
+import {
+  FiUser,
+  FiPhone,
+  FiCalendar,
+  FiShoppingBag,
   FiUsers
 } from "react-icons/fi";
+import { selectAdminToken } from "../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 
 const UsersList = () => {
-  const token = localStorage.getItem("adminToken");
-  
+  // const token = localStorage.getItem("adminToken");
+  const token = useSelector(selectAdminToken);
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,35 +25,35 @@ const UsersList = () => {
   const fetchUsers = async (page = 1) => {
     try {
       setLoading(true);
-      
+
       const url = `${import.meta.env.VITE_BASE_URL}/api/users/all-users?page=${page}`;
-      
+
       const res = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       const usersData = res.data.Users || [];
       setUsers(usersData);
       // console.log(usersData)
       setTotalPages(res.data.totalPage || 1);
       setTotalUsers(res.data.totalUsers || usersData.length);
       setCurrentPage(res.data.page || 1);
-      
-      
-      
+
+
+
     } catch (err) {
       console.error("Error fetching users:", err);
     } finally {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchUsers(currentPage);
   }, [currentPage]);
-  
+
   // console.log(users)
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -61,7 +64,7 @@ const UsersList = () => {
   const getPageNumbers = () => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
-    
+
     if (totalPages <= maxPagesToShow) {
       for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
@@ -81,10 +84,10 @@ const UsersList = () => {
   const formatDate = (date) => {
     if (!date) return "N/A";
     const d = new Date(date);
-    return d.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return d.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
   };
 
@@ -95,7 +98,7 @@ const UsersList = () => {
 
   const getRandomColor = (id) => {
     const colors = [
-      'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-pink-500', 
+      'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-pink-500',
       'bg-yellow-500', 'bg-indigo-500', 'bg-red-500', 'bg-teal-500'
     ];
     const index = id.toString().length % colors.length;
@@ -134,8 +137,8 @@ const UsersList = () => {
         </div>
       </div>
 
-        
-      
+
+
       {/* User List */}
       <div className="bg-gray-800/30 border border-gray-700/50 rounded-xl overflow-hidden">
         {users.length === 0 ? (
@@ -188,11 +191,10 @@ const UsersList = () => {
                         </div>
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
-                          user.totalOrders > 0 
-                            ? 'bg-green-500/20 text-green-400' 
-                            : 'bg-gray-600/20 text-gray-400'
-                        }`}>
+                        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${user.totalOrders > 0
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-gray-600/20 text-gray-400'
+                          }`}>
                           <FiShoppingBag size={14} />
                           {user.totalOrders || 0}
                         </span>
@@ -227,7 +229,7 @@ const UsersList = () => {
                           </span>
                         )}
                       </div>
-                      
+
                       <div className="mt-2 space-y-1.5">
                         {user.phone && (
                           <div className="flex items-center gap-2 text-gray-300 text-sm">
@@ -256,27 +258,26 @@ const UsersList = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center mt-6 px-2 py-4 bg-gray-800/30 rounded-xl">
-         
+
           <div className="flex items-center gap-1 justify-center">
-            
+
             {getPageNumbers().map((pageNum, index) => (
-              <button 
-                key={index} 
+              <button
+                key={index}
                 onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
-                className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
-                  currentPage === pageNum 
-                    ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25' 
-                    : pageNum === '...' 
-                      ? 'text-gray-400 cursor-default' 
-                      : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-                }`}
+                className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${currentPage === pageNum
+                  ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25'
+                  : pageNum === '...'
+                    ? 'text-gray-400 cursor-default'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                  }`}
                 disabled={pageNum === '...'}
               >
                 {pageNum}
               </button>
             ))}
-            
-    
+
+
           </div>
         </div>
       )}

@@ -5,36 +5,36 @@ import {
   FiDollarSign
 } from "react-icons/fi";
 
-const StatsCards = ({data}) => {
+const StatsCards = ({ data }) => {
 
-  const revenue = data.totalRevenue.toFixed(2)
-  
+  const revenue = data.totalRevenue.toLocaleString('en-IN')
+
   const cards = [
     {
-      title:"Orders",
-      value:data.totalOrders,
-      icon:<FiShoppingBag/>
+      title: "Orders",
+      value: data.totalOrders,
+      icon: <FiShoppingBag />
     },
     {
-      title:"Customers",
-      value:data.totalCustomers,
-      icon:<FiUsers/>
+      title: "Customers",
+      value: data.totalCustomers,
+      icon: <FiUsers />
     },
     {
-      title:"Cards",
-      value:data.totalCards,
-      icon:<FiCreditCard/>
+      title: "Cards",
+      value: data.totalCards,
+      icon: <FiCreditCard />
     },
     {
-      title:"Revenue",
-      value:`₹${revenue}`,
-      icon:<FiDollarSign/>
+      title: "Revenue",
+      value: `₹${revenue}`,
+      icon: <FiDollarSign />
     }
   ];
 
   return (
     <div className="grid md:grid-cols-4 lg:grid-cols-4 grid-cols-2 gap-6">
-      {cards.map((item,index)=>(
+      {cards.map((item, index) => (
         <div
           key={index}
           className="bg-[#111827]
@@ -47,10 +47,10 @@ const StatsCards = ({data}) => {
           "
         >
           <div className="text-white flex items-center justify-center gap-2">
-          <span>{item.icon}</span>
-          <p className="text-gray-400 text-md">
-            {item.title}
-          </p>
+            <span>{item.icon}</span>
+            <p className="text-gray-400 text-md">
+              {item.title}
+            </p>
           </div>
 
 
