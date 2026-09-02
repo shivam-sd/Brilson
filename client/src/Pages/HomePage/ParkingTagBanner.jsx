@@ -53,11 +53,11 @@ export default function ParkingTagBanner() {
                         </span>
                     </div>
 
-                    <h1 className="font-display text-5xl font-bold leading-[1.05] tracking-tight text-[#F5F6F7] sm:text-6xl">
-                        Never get
+                    <h2 className="font-display text-3xl font-bold leading-[1.05] tracking-tight text-[#F5F6F7] sm:text-5xl">
+                        Never Get
                         <br />
-                        blocked in again
-                    </h1>
+                        Blocked In Again
+                    </h2>
 
                     <p className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-[#8B92A0] lg:mx-0">
                         Stick it on your dashboard. Anyone can scan it to call or message

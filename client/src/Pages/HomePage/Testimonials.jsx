@@ -30,9 +30,9 @@ const Testimonials = () => {
       try {
         setLoading(true);
         const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/testimonials`);
-        
+
         // console.log("API Response:", res.data);
-        
+
         // Check if testimonials exist in response
         if (res.data && res.data.testimonials) {
           // Map API data to component format
@@ -42,11 +42,11 @@ const Testimonials = () => {
             review: item.review || "No review available",
             img: item.image || `https://i.pravatar.cc/150?img=${index + 1}`,
             stars: item.rating || 5,
-            role: "Happy Customer", 
-            company: "Brilson User", 
-            color: colorGradients[index % colorGradients.length], 
+            role: "Happy Customer",
+            company: "Brilson User",
+            color: colorGradients[index % colorGradients.length],
           }));
-          
+
           // console.log("Formatted testimonials:", formattedTestimonials);
           setTestimonials(formattedTestimonials);
         } else {
@@ -60,7 +60,7 @@ const Testimonials = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -86,19 +86,19 @@ const Testimonials = () => {
 
   return (
     <section className="relative w-full py-10 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
-      
+
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 -left-20 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl animate-pulse delay-500"></div>
-        
+
         {/* Grid Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px]"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header Section */}
         <div
           transition={{ duration: 0.6 }}
@@ -109,8 +109,8 @@ const Testimonials = () => {
             <Sparkles className="w-4 h-4 text-cyan-300" />
             <span className="text-cyan-300 text-sm font-normal tracking-widest font-Roboto">TESTIMONIALS</span>
           </div>
-          
-          <h2 className="text-5xl md:text-5xl font-normal mb-6">
+
+          <h2 className="text-3xl md:text-5xl font-normal mb-6">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-white tracking-widest font-Roboto">
               Loved by
             </span>
@@ -119,7 +119,7 @@ const Testimonials = () => {
               Industry Leaders
             </span>
           </h2>
-          
+
           <p className="md:text-base lg:text-base text-sm text-gray-300 max-w-3xl mx-auto leading-relaxed tracking-widest font-Poppins">
             Join thousands of professionals who have transformed their networking experience with our smart digital solutions.
           </p>
@@ -162,19 +162,19 @@ const Testimonials = () => {
                     >
                       {/* Card Glow */}
                       <div className={`absolute -inset-1 bg-gradient-to-r ${testimonial.color} rounded-3xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-300`}></div>
-                      
+
                       {/* Testimonial Card */}
                       <div className="relative bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 h-full">
                         {/* Quote Icon */}
                         <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center shadow-xl">
                           <Quote className="w-6 h-6 text-white" />
                         </div>
-                        
+
                         {/* Review Content */}
                         <div className="mb-6">
                           <p className="text-gray-300 text-lg leading-relaxed italic font-Roboto">"{testimonial.review}"</p>
                         </div>
-                        
+
                         {/* Stars */}
                         <div className="flex gap-1 mb-6">
                           {[...Array(testimonial.stars)].map((_, idx) => (
@@ -184,7 +184,7 @@ const Testimonials = () => {
                             />
                           ))}
                         </div>
-                        
+
                         {/* User Info */}
                         <div className="flex items-center gap-4 pt-6 border-t border-white/10">
                           <div className="relative">
@@ -208,7 +208,7 @@ const Testimonials = () => {
                             </div>
                           </div>
                         </div>
-                        
+
                         {/* Hover Effect Line */}
                         <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 group-hover:w-full group-hover:left-0 transition-all duration-500 -translate-x-1/2 group-hover:translate-x-0"></div>
                       </div>
