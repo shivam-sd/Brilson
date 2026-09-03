@@ -6,131 +6,100 @@ const router = express.Router();
 
 router.post("/update", async (req, res) => {
   try {
-    const { razorpay, cashfree, payU, cloudinary } = req.body;
+    const { razorpay, cashfree, payU, cloudinary,ekQr } = req.body;
 
     const updateData = {};
-    
-    // Razorpay - only update if at least one field is provided
-if (razorpay) {
 
-  if (razorpay.keyId !== undefined) {
-    updateData["razorpay.keyId"] = razorpay.keyId
-      ? encrypt(String(razorpay.keyId))
-      : "";
-  }
+    const encryptedFields = {
+      razorpay: ["keyId", "keySecret"],
+      cashfree: ["appId", "secretKey"],
+      payU: ["key", "salt"],
+      cloudinary: ["cloudName", "apiKey", "apiSecret"],
+      ekQr: ["apiKey"]
+    };
 
-  if (razorpay.keySecret !== undefined) {
-    updateData["razorpay.keySecret"] = razorpay.keySecret
-      ? encrypt(String(razorpay.keySecret))
-      : "";
-  }
+    const plainFields = {
+      cashfree: ["environment"],
+      payU: ["payUBaseUrl"]
+    };
 
-}
+    const configs = {
+      razorpay,
+      cashfree,
+      payU,
+      cloudinary,
+      ekQr
+    };
 
+    Object.entries(encryptedFields).forEach(([section, fields]) => {
+      const config = configs[section];
 
-    // Cashfree - only update if at least one field is provided
-    if (cashfree) {
+      if (!config || typeof config !== "object") return;
 
-  if (cashfree.appId !== undefined) {
-    updateData["cashfree.appId"] = cashfree.appId
-      ? encrypt(String(cashfree.appId))
-      : "";
-  }
+      fields.forEach((field) => {
+        if (Object.prototype.hasOwnProperty.call(config, field)) {
+          const value = config[field];
 
-  if (cashfree.secretKey !== undefined) {
-    updateData["cashfree.secretKey"] = cashfree.secretKey
-      ? encrypt(String(cashfree.secretKey))
-      : "";
-  }
+          updateData[`${section}.${field}`] =
+            value === null || value === ""
+              ? ""
+              : encrypt(String(value));
+        }
+      });
+    });
 
-  if (cashfree.environment !== undefined) {
-    updateData["cashfree.environment"] = cashfree.environment || "";
-  }
+    Object.entries(plainFields).forEach(([section, fields]) => {
+      const config = configs[section];
 
-}
+      if (!config || typeof config !== "object") return;
 
-    // PayU - only update if at least one field is provided
- if (payU) {
+      fields.forEach((field) => {
+        if (Object.prototype.hasOwnProperty.call(config, field)) {
+          const value = config[field];
 
-  if (payU.key !== undefined) {
-    updateData["payU.key"] = payU.key
-      ? encrypt(String(payU.key))
-      : "";
-  }
+          updateData[`${section}.${field}`] =
+            value === null || value === ""
+              ? ""
+              : String(value);
+        }
+      });
+    });
 
-  if (payU.salt !== undefined) {
-    updateData["payU.salt"] = payU.salt
-      ? encrypt(String(payU.salt))
-      : "";
-  }
-
-  if (payU.payUBaseUrl !== undefined) {
-    updateData["payU.payUBaseUrl"] = payU.payUBaseUrl || "";
-  }
-
-}
-
-
-    // Cloudinary - only update if at least one field is provided
- if (cloudinary) {
-
-  if (cloudinary.cloudName !== undefined) {
-    updateData["cloudinary.cloudName"] = cloudinary.cloudName
-      ? encrypt(String(cloudinary.cloudName))
-      : "";
-  }
-
-  if (cloudinary.apiKey !== undefined) {
-    updateData["cloudinary.apiKey"] = cloudinary.apiKey
-      ? encrypt(String(cloudinary.apiKey))
-      : "";
-  }
-
-  if (cloudinary.apiSecret !== undefined) {
-    updateData["cloudinary.apiSecret"] = cloudinary.apiSecret
-      ? encrypt(String(cloudinary.apiSecret))
-      : "";
-  }
-
-}
-    // Check if there's any data to update
     if (Object.keys(updateData).length === 0) {
       return res.status(400).json({
-        message: "No valid configuration provided",
+        success: false,
+        message: "No valid configuration provided"
       });
     }
 
     updateData.updatedAt = new Date();
 
-    // Use findOneAndUpdate with proper options
-const updatedConfig = await ConfigModel.findOneAndUpdate(
-  {},
-  { $set: updateData },
-  {
-    upsert: true,
-    returnDocument: "after",
-    runValidators:true
-  }
-);
-    console.log("Config updated successfully:", {
-      razorpay: !!updatedConfig.razorpay,
-      cashfree: !!updatedConfig.cashfree,
-      payU: !!updatedConfig.payU,
-      cloudinary: !!updatedConfig.cloudinary
-    });
+    const updatedConfig = await ConfigModel.findOneAndUpdate(
+      {},
+      {
+        $set: updateData
+      },
+      {
+        upsert: true,
+        new: true,
+        runValidators: true,
+        setDefaultsOnInsert: true
+      }
+    );
 
-    // Reload runtime config
     await loadConfig();
 
-    res.json({ 
-      message: "Config updated successfully",
-      success: true 
+    return res.status(200).json({
+      success: true,
+      message: "Config updated successfully"
     });
+
   } catch (err) {
     console.error("Error updating config:", err);
-    res.status(500).json({ 
-      message: "Internal server error",
-      error: err.message 
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
     });
   }
 });
@@ -138,11 +107,11 @@ const updatedConfig = await ConfigModel.findOneAndUpdate(
 router.get("/", async (req, res) => {
   try {
     const config = await ConfigModel.findOne({});
-    
+
     if (!config) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "No configuration found" 
+      return res.status(404).json({
+        success: false,
+        message: "No configuration found"
       });
     }
 
@@ -151,8 +120,8 @@ router.get("/", async (req, res) => {
       success: true,
       config: {
         razorpay: {
-          keyId: config.razorpay?.keyId ? "********" : "",
-          keySecret: config.razorpay?.keySecret ? "********" : ""
+          keyId: config.razorpay?.keyId,
+          keySecret: config.razorpay?.keySecret
         },
         cashfree: {
           appId: config.cashfree?.appId ? "********" : "",
@@ -168,14 +137,17 @@ router.get("/", async (req, res) => {
           cloudName: config.cloudinary?.cloudName ? "********" : "",
           apiKey: config.cloudinary?.apiKey ? "********" : "",
           apiSecret: config.cloudinary?.apiSecret ? "********" : ""
+        },
+         ekQr: {
+          apiKey: config.ekQr?.apiKey ? "********" : ""
         }
       }
     });
   } catch (err) {
     console.error("Error fetching config:", err);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: "Internal server error" 
+      message: "Internal server error"
     });
   }
 });
