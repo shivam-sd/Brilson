@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 
 const AdminInvoices = () => {
   // const token = localStorage.getItem("adminToken");
-  const adminToken = useSelector(selectAdminToken);
+  const token = useSelector(selectAdminToken);
 
   const [invoices, setInvoices] = useState([]);
   const [page, setPage] = useState(1);
