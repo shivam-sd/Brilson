@@ -15,9 +15,9 @@ router.post("/logout", authAdminToken, adminLogout);
 
  
 // products routes
-router.post("/add/products", createProduct);
-router.put("/update/products/:id", editProduct);
-router.delete("/delete/products/:id", deleteProduct);
+router.post("/add/products",authAdminToken ,createProduct);
+router.put("/update/products/:id",authAdminToken, editProduct);
+router.delete("/delete/products/:id", authAdminToken, deleteProduct);
 router.get("/find/products/:id" , findProductById);
 router.get("/all/products", getAllProduct);
 // router.post("/update/pricing/:id", updateGSTDiscountPricing);

@@ -16,7 +16,7 @@ const AdminBadges = () => {
   const fetchBadges = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/badges/active`);
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/badges/active`,{withCredentials: true});
       setBadges(res.data.badges || []);
     } catch (error) {
       toast.error("Failed to load badges");

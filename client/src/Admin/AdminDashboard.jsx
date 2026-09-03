@@ -17,7 +17,7 @@ const AdminDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         axios
-          .get(`${import.meta.env.VITE_BASE_URL}/api/admin/dashboard`, {})
+          .get(`${import.meta.env.VITE_BASE_URL}/api/admin/dashboard`, {withCredentials: true})
           .then((res) => {
             setData(res.data);
             // console.log(res.data);
@@ -30,7 +30,7 @@ const AdminDashboard = () => {
     const fetchChartData = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/dashboard/chart`,
+          `${import.meta.env.VITE_BASE_URL}/api/admin/dashboard/chart`,{withCredentials: true}
         );
         setChartData(res.data.chartData);
         // console.log("Chart Data:", res.data);

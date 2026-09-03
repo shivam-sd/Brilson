@@ -35,9 +35,9 @@ router.get("/admin/referrals", authAdminToken, getAllReferralsForAdmin);
 // GET /api/card/:slug
 router.get("/card/:slug", getCardProfiles);
 // router.get("/card/:id", getCardProfilesByID);
-router.get("/all/cards", getAllcardsProfile);
+router.get("/all/cards",authAdminToken, getAllcardsProfile);
 
-router.get("/all/recent", getRecentCards);
+router.get("/all/recent",authAdminToken, getRecentCards);
 // is api se url copy and update kara rha hu
 router.patch("/cards/:id/copy", copyUpdate);
 

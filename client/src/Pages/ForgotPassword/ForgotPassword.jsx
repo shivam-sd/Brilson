@@ -55,7 +55,7 @@ const ForgotPassword = () => {
       if(res.data.success){
         toast.success(res.data.message || "OTP sent successfully!");
         setTimeout(() => {
-          navigate("/users/verify-otp/brilson");
+          navigate("/users/verify-otp/brilson",{ replace: true});
         }, 2000);
         
       }else{

@@ -9,7 +9,7 @@ const authAdminToken = require("../middleware/authAdminToken");
 router.post("/orders/create", authUser, orderCreate);
 router.get("/orders/", authUser, getOrderProduct);
 // router.post("/orders/update/paymentStatus", updatePaymentStatus);
- router.get("/allorders", allOrders);
+ router.get("/allorders",authAdminToken, allOrders);
 
 // order status admin change karega.
 router.put("/orders/update/orderStatus", authAdminToken, updateOrderStatus);
