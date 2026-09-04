@@ -5,20 +5,23 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { selectAdminToken } from "../store/slices/authSlice";
 
 const AdminOrderDetails = () => {
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const token = useSelector(selectAdminToken);
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/order/details/${orderId}`,
           {
+            withCredentials: true,
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+              Authorization: token ? `Bearer ${token}` : "",
             },
           }
         );

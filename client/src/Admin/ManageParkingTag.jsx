@@ -135,9 +135,9 @@ const ManageParkingTag = () => {
 
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/parking-tags/${card._id}/download`,
-        {
+        {withCredentials: true,
           responseType: 'blob',
-          headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
           timeout: 60000
         }
       );
@@ -165,7 +165,7 @@ const ManageParkingTag = () => {
         await axios.patch(
           `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
           {},
-          { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+          { withCredentials: true, headers: { Authorization: token ? `Bearer ${token}` : "" } }
         );
         setCards(prev =>
           prev.map(c =>
@@ -263,7 +263,8 @@ const ManageParkingTag = () => {
             `${import.meta.env.VITE_BASE_URL}/api/parking-tags/${card._id}/download`,
             {
               responseType: 'blob',
-              headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
+              withCredentials: true,
+              headers: { Authorization: token ? `Bearer ${token}` : "" },
               timeout: 60000
             }
           );
@@ -276,7 +277,7 @@ const ManageParkingTag = () => {
             axios.patch(
               `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
               {},
-              { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+              { withCredentials: true, headers: { Authorization: token ? `Bearer ${token}` : "" } }
             ).catch(err => console.error('Failed to mark as downloaded:', err));
           } else {
             failedCards.push(card);

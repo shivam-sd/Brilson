@@ -539,8 +539,9 @@ const RecentCards = () => {
                         `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
                         {},
                         {
+                            withCredentials: true,
                             headers: {
-                                Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+                                Authorization: token ? `Bearer ${token}` : "",
                             },
                         }
                     );

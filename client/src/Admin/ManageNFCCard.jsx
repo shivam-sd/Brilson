@@ -182,9 +182,9 @@ const ManageNFCCard = () => {
 
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/download?${params.toString()}`,
-        {
+        {withCredentials: true,
           responseType: 'blob',
-          headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
           timeout: 60000
         }
       );
@@ -211,7 +211,7 @@ const ManageNFCCard = () => {
         await axios.patch(
           `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/downloaded`,
           {},
-          { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+          { withCredentials: true, headers: { Authorization: token ? `Bearer ${token}` : "" } }
         );
         setCards(prev =>
           prev.map(c =>

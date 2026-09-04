@@ -35,9 +35,9 @@ const AdminBadges = () => {
      const res =  await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/badges`,
         { name },
-        { 
+        { withCredentials: true,
           headers: { 
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            Authorization: token ? `Bearer ${token}` : "",
             'Content-Type': 'application/json'
           } 
         }
@@ -54,8 +54,9 @@ const AdminBadges = () => {
   const deleteBadge = async (id) => {
     try {
       await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/badges/delete/${id}`, {
+        withCredentials: true,
         headers: { 
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          Authorization: token ? `Bearer ${token}` : "",
           'Content-Type': 'application/json'
         },
       });

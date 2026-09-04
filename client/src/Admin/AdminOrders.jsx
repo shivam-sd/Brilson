@@ -6,12 +6,12 @@ import { FaDownload } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { Eye } from "lucide-react";
-import { selectToken } from "../store/slices/authSlice";
+import { selectAdminToken, selectToken } from "../store/slices/authSlice";
 import { useSelector } from "react-redux";
 
 const AdminOrders = () => {
   const token = useSelector(selectToken);
-
+const adminToken = useSelector(selectAdminToken);
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [searchName, setSearchName] = useState("");
@@ -87,7 +87,7 @@ const AdminOrders = () => {
         { orderId, orderStatus },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            Authorization: adminToken ? `Bearer ${adminToken}` : "",
           },
         }
       );

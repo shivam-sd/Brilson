@@ -143,9 +143,9 @@ const ManageGoogleReviews = () => {
 
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/google-review-cards/${review._id}/download`,
-        {
+        {withCredentials: true,
           responseType: 'blob',
-          headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
           timeout: 60000
         }
       );
@@ -172,7 +172,8 @@ const ManageGoogleReviews = () => {
         await axios.patch(
           `${import.meta.env.VITE_BASE_URL}/api/google-review/${review._id}/downloaded`,
           {},
-          { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+          {withCredentials: true,
+            headers: { Authorization: token ? `Bearer ${token}` : "" } }
         );
         setReviews(prev =>
           prev.map(r =>
@@ -270,9 +271,9 @@ const ManageGoogleReviews = () => {
 
           const response = await axios.get(
             `${import.meta.env.VITE_BASE_URL}/api/google-review-cards/${review._id}/download`,
-            {
+            {withCredentials: true,
               responseType: 'blob',
-              headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` },
+              headers: { Authorization: token ? `Bearer ${token}` : "" },
               timeout: 60000
             }
           );
@@ -285,7 +286,7 @@ const ManageGoogleReviews = () => {
             axios.patch(
               `${import.meta.env.VITE_BASE_URL}/api/google-review/${review._id}/downloaded`,
               {},
-              { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+              { withCredentials: true, headers: { Authorization: token ? `Bearer ${token}` : "" } }
             ).catch(err => console.error('Failed to mark as downloaded:', err));
           } else {
             failedReviews.push(review);
