@@ -8,11 +8,13 @@ const crypto = require("crypto");
 
 const createEkqrOrder = async (req, res) => {
   const config = getConfig();
+
+  const base_url = process.env.REDIRECT_URL;
   
   try {
     const { orderId } = req.body;
     
-    // Order find करें
+    // Order find 
     const order = await OrderModel.findById(orderId);
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
@@ -23,14 +25,15 @@ const createEkqrOrder = async (req, res) => {
 
   
     const postData = {
-      key: config?.ekqr?.apiKey || process.env.EKQR_API_KEY,
+      // key: config?.ekqr?.apiKey || process.env.EKQR_API_KEY,
+      key:  process.env.EKQR_API_KEY,
       client_txn_id: clientTxnId,
       amount: order.totalAmount.toString(),
       p_info: `Order #${order._id.toString().slice(-8)}`,
       customer_name: order.address?.name || "Customer",
       customer_email: order.address?.email || "customer@example.com",
       customer_mobile: order.address?.phone || "9876543210",
-      redirect_url: `${process.env.BASE_URL}/payment-status?order_id=${orderId}`,
+      redirect_url: `${base_url}/api/payment/payment-status?order_id=${orderId}`,
       udf1: orderId.toString(),
       udf2: "",
       udf3: ""
@@ -59,7 +62,7 @@ const createEkqrOrder = async (req, res) => {
       });
     }
 
-    // EKQR Payment record create करें
+    
     const ekqrPayment = await EkqrModel.create({
       userId: order.userId,
       orderId: order._id,
@@ -71,7 +74,7 @@ const createEkqrOrder = async (req, res) => {
       upiIntentLinks: response.data.data.upi_intent || null
     });
 
-    // Response में payment_url and UPI intent links 
+    
     res.json({
       success: true,
       payment_url: response.data.data.payment_url,
@@ -95,13 +98,13 @@ const verifyEkqrPayment = async (req, res) => {
   try {
     const { orderId } = req.body;
 
-    // Order find करें
+    // Order find
     const order = await OrderModel.findById(orderId);
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    // EKQR Payment record find करें
+    // EKQR Payment record find
     const ekqrPayment = await EkqrModel.findOne({ orderId: order._id });
     if (!ekqrPayment) {
       return res.status(404).json({ error: "Payment record not found" });
@@ -112,7 +115,7 @@ const verifyEkqrPayment = async (req, res) => {
       return res.json({ success: true, message: "Payment already verified" });
     }
 
-    // EKQR API से Status Check करें
+
     const config = getConfig();
     const txnDate = new Date(ekqrPayment.createdAt).toLocaleDateString('en-IN', {
       day: '2-digit',
@@ -121,7 +124,8 @@ const verifyEkqrPayment = async (req, res) => {
     }).replace(/\//g, '-');
 
     const postData = {
-      key: config?.ekqr?.apiKey || process.env.EKQR_API_KEY,
+      // key: config?.ekqr?.apiKey || process.env.EKQR_API_KEY,
+      key: process.env.EKQR_API_KEY,
       client_txn_id: ekqrPayment.clientTxnId,
       txn_date: txnDate
     };
@@ -148,14 +152,14 @@ const verifyEkqrPayment = async (req, res) => {
       ekqrPayment.paymentData = response.data.data;
       await ekqrPayment.save();
 
-      // Main Order Update करें
+      // Main Order Update 
       const updatedOrder = await OrderModel.findByIdAndUpdate(
         order._id,
         { status: "paid" },
         { new: true }
       );
 
-      // User Orders Count Update करें
+      // User Orders Count Update 
       const user = await UserModel.findById(order.userId);
       if (user) {
         user.totalOrders += 1;
@@ -204,12 +208,12 @@ const ekqrWebhook = async (req, res) => {
     const webhookData = req.body;
     console.log("EKQR Webhook Received:", webhookData);
 
-    // Webhook data validate करें
+    // Webhook data validate
     if (!webhookData.client_txn_id || !webhookData.status) {
       return res.status(400).json({ error: "Invalid webhook data" });
     }
 
-    // Payment record find करें
+    // Payment record find
     const ekqrPayment = await EkqrModel.findOne({ 
       clientTxnId: webhookData.client_txn_id 
     });
@@ -239,7 +243,7 @@ const ekqrWebhook = async (req, res) => {
         await user.save();
       }
 
-      // Invoice Generate करें 
+      // Invoice Generate
       generateInvoiceInBackground(order);
 
     } else if (webhookData.status === "failed") {
@@ -283,6 +287,38 @@ const checkEkqrStatus = async (req, res) => {
 
 
 
+const paymentStatus = async (req, res) => {
+   try {
+    const { order_id, udf1 } = req.query;
+    
+    console.log("📥 Payment Status Redirect Hit:", { order_id, udf1 });
+    
+    // EKQR order_id 
+    const orderId = order_id || udf1;
+    
+    if (!orderId) {
+      console.log("❌ No Order ID found in query params");
+      
+      const frontendUrl = process.env.BASE_URL1
+      return res.redirect(`${frontendUrl}/orders`);
+    }
+
+    const frontendUrl = process.env.BASE_URL1;
+    const redirectUrl = `${frontendUrl}/payment-result?order_id=${orderId}`;
+    
+    console.log(`🔄 Redirecting to: ${redirectUrl}`);
+    
+    
+    return res.redirect(redirectUrl);
+
+  } catch (err) {
+    console.error("❌ Payment status redirect error:", err);
+    const frontendUrl = process.env.BASE_URL1;
+    return res.redirect(`${frontendUrl}/orders`);
+  }
+}
+
+
 const generateInvoiceInBackground = async (order) => {
   try {
     const createInvoicePdf = require("../utils/createInvoicePdf");
@@ -310,5 +346,6 @@ module.exports = {
   createEkqrOrder,
   verifyEkqrPayment,
   ekqrWebhook,
-  checkEkqrStatus
+  checkEkqrStatus,
+  paymentStatus
 };

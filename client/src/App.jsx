@@ -110,6 +110,7 @@ import AdminInvoiceAddress from "./Admin/AdminInvoiceAddress";
 import UsersList from "./Admin/UsersList";
 import ReferralManagement from "./Admin/ReferralManagement";
 import RecentCards from "./Admin/RecentCards";
+import EkqrPayment from "./Component/EkqrPayment";
 
 
 
@@ -159,6 +160,7 @@ function App() {
               <Route path="/your-items" element={<CartPage />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/paymentsucess" element={<PaymentSuccessPage />} />
+              <Route path="/payment-result" element={<EkqrPayment />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/get-card" element={<GetYourCard />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

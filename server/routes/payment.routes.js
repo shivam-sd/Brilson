@@ -9,7 +9,8 @@ const {
   createEkqrOrder,
   verifyEkqrPayment,
   ekqrWebhook,
-  checkEkqrStatus
+  checkEkqrStatus,
+  paymentStatus
 } = require("../controller/Ekqr.controller");
 
 
@@ -32,7 +33,7 @@ router.post("/ekqr/create", authUserToken, createEkqrOrder);
 router.post("/ekqr/verify", verifyEkqrPayment);
 router.post("/ekqr/webhook", ekqrWebhook);
 router.get("/ekqr/status/:orderId", authUserToken, checkEkqrStatus);
-
+router.get("/payment-status", authUserToken, paymentStatus);
 
 // PAYU
 router.post("/payu/create", authUserToken, createPayUOrder);

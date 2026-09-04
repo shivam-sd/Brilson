@@ -31,13 +31,13 @@ const EkqrPayment = ({ createdOrder, total, token }) => {
       if (res.data.success) {
         setPaymentData(res.data);
         
-        // Option 1: Redirect to EKQR Payment Page
+        // Redirect to EKQR Payment Page
         if (res.data.payment_url) {
           window.location.href = res.data.payment_url;
         }
         
-        // Option 2: Show UPI Intent Options (Mobile)
-        // toast.info("Choose your UPI app to pay");
+        //  Show UPI Intent Options 
+        toast.info("Choose your UPI app to pay");
       } else {
         toast.error("Payment initialization failed");
       }
@@ -49,7 +49,7 @@ const EkqrPayment = ({ createdOrder, total, token }) => {
     }
   };
 
-  // Payment Status Check (Polling)
+  // Payment Status Check 
   const checkPaymentStatus = async () => {
     try {
       const res = await axios.get(
