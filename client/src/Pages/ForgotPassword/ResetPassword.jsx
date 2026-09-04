@@ -36,7 +36,7 @@ const ResetPassword = () => {
   });
 
   const navigate = useNavigate();
-  const token = localStorage.getItem("resetToken");
+  const token = localStorage.getItem("resetToken"); 
 
   
   // Password strength validation

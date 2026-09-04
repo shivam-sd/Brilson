@@ -3,10 +3,12 @@ import axios from "axios";
 import { load } from "@cashfreepayments/cashfree-js";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const CashfreePayment = ({ createdOrder, total }) => {
 
-  const token = localStorage.getItem("token");
+  const token = useSelector((state) => state.auth.token)
+  
   const [loading, setLoading] = useState(false);
   console.log(createdOrder);
 

@@ -4,7 +4,7 @@ const AdminPaymentGatwayschema = new mongoose.Schema({
 
 gateway:{
  type:String,
- enum:["razorpay","cashfree","payu"]
+ enum:["razorpay","cashfree","payu","ekqr"]
 },
 
 isActive:{

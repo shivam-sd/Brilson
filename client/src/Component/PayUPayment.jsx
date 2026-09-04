@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import {useSelector} from "react-redux";
+
 
 const PayUPayment = ({ createdOrder, total }) => {
 
-  const token = localStorage.getItem("token");
+  const token = useSelector((state) => state.auth.token)
   const [loading, setLoading] = useState(false);
 
   const handlePayUPayment = async () => {

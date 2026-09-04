@@ -12,7 +12,7 @@ const updateGatewayStatus = async (req,res)=>{
     return res.status(400).json({error:"Gateway name required"});
   }
 
-  const gateways = ["razorpay","cashfree","payu"];
+  const gateways = ["razorpay","cashfree","payu","ekqr"];
 
   if(!gateways.includes(gateway)){
     return res.status(400).json({error:"Invalid gateway"});

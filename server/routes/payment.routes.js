@@ -5,6 +5,12 @@ const {createPaymentOrder, verifyPayment, razorpayWebhook} = require("../control
 const {createCashfreeOrder, verifyCashfreePayment} = require("../controller/Cashfree.controller");
 const {createPayUOrder, VerifyPayU} = require("../controller/PayU.controller");
 const {updateGatewayStatus, getActiveGateway} = require("../controller/AdminPaymentGatewayController");
+const {
+  createEkqrOrder,
+  verifyEkqrPayment,
+  ekqrWebhook,
+  checkEkqrStatus
+} = require("../controller/Ekqr.controller");
 
 
 
@@ -19,6 +25,13 @@ router.post("/webhook", razorpayWebhook);
 // CASHFREE
 router.post("/cashfree/create", authUserToken, createCashfreeOrder);
 router.post("/cashfree/verify", verifyCashfreePayment);
+
+
+// EKQR
+router.post("/ekqr/create", authUserToken, createEkqrOrder);
+router.post("/ekqr/verify", verifyEkqrPayment);
+router.post("/ekqr/webhook", ekqrWebhook);
+router.get("/ekqr/status/:orderId", authUserToken, checkEkqrStatus);
 
 
 // PAYU

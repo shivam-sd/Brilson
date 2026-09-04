@@ -1,10 +1,11 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
+import {useSelector} from "react-redux";
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const token = localStorage.getItem("token");
+  const token = useSelector((state) => state.auth.token);
 
   const [cartItems, setCartItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
@@ -37,6 +38,7 @@ export const CartProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchCart();

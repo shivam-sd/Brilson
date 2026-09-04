@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import CashfreePayment from "./CashfreePayment";
 import PayUPayment from "./PayUPayment";
+import EkqrPayment from "./EkqrPayment";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRazorpay } from "react-razorpay";
@@ -55,7 +56,7 @@ const Checkout = () => {
         `${import.meta.env.VITE_BASE_URL}/api/shipping-address`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       if (res.data.success && res.data.shippingAddress) {
@@ -98,7 +99,7 @@ const Checkout = () => {
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       if (res.data.success) {
@@ -137,7 +138,7 @@ const Checkout = () => {
     const fetchGateway = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/payment/isactive/gateway`
+          `${import.meta.env.VITE_BASE_URL}/api/payment/isactive/gateway`,
         );
         setGateway(res.data.gateway);
       } catch (err) {
@@ -153,7 +154,7 @@ const Checkout = () => {
         `${import.meta.env.VITE_BASE_URL}/api/cart/user`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       const items = res.data.cartItems || [];
@@ -297,7 +298,7 @@ const Checkout = () => {
         orderPayload,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       setCreatedOrder(res.data.order);
@@ -340,7 +341,7 @@ const Checkout = () => {
           orderId: createdOrder._id,
           amount: Math.round(total * 100),
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       const options = {
@@ -360,7 +361,7 @@ const Checkout = () => {
                 razorpay_signature: response.razorpay_signature,
                 orderId: createdOrder._id,
               },
-              { headers: { Authorization: `Bearer ${token}` } }
+              { headers: { Authorization: `Bearer ${token}` } },
             );
 
             if (verifyRes.data.success) {
@@ -449,9 +450,7 @@ const Checkout = () => {
                   <FiLoader className="animate-spin text-cyan-400 w-4 h-4 ml-2" />
                 ) : (
                   address.name && (
-                    <span className="text-xs text-green-400 ml-2">
-                      ✓ Saved
-                    </span>
+                    <span className="text-xs text-green-400 ml-2">✓ Saved</span>
                   )
                 )}
               </h2>
@@ -691,6 +690,14 @@ const Checkout = () => {
 
                     {gateway === "payu" && createdOrder && (
                       <PayUPayment createdOrder={createdOrder} total={total} />
+                    )}
+
+                    {gateway === "ekqr" && createdOrder && (
+                      <EkqrPayment
+                        createdOrder={createdOrder}
+                        total={total}
+                        token={token}
+                      />
                     )}
                   </>
                 )}

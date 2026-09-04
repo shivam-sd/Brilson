@@ -135,6 +135,8 @@ const updatedConfig = await ConfigModel.findOneAndUpdate(
   }
 });
 
+
+
 router.get("/", async (req, res) => {
   try {
     const config = await ConfigModel.findOne({});

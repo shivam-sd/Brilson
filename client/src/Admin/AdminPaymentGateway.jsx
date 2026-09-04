@@ -19,6 +19,11 @@ const gateways = [
     name: "payu",
     label: "PayU",
     color: "from-purple-500 to-pink-600"
+  },
+  {
+    name: "ekqr",
+    label: "EKQR",
+    color: "from-yellow-500 to-orange-600"
   }
 ];
 
@@ -91,7 +96,7 @@ const AdminPaymentGateway = () => {
         Payment Gateway Settings
       </h4>
 
-      <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
 
         {gateways.map((item)=>{
 
