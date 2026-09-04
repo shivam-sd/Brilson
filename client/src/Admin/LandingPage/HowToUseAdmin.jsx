@@ -33,7 +33,7 @@ const HowToUseAdmin = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${BASE_URL}/api/admin/howtouse`);
+        const res = await axios.get(`${BASE_URL}/api/admin/howtouse`,{withCredentials:true});
 
         if (res.data?.data) {
           setHeading(res.data.data.heading || "How to Use Smart Card");
@@ -123,7 +123,7 @@ const HowToUseAdmin = () => {
       await axios.put(
         `${BASE_URL}/api/admin/howtouse/update`,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { "Content-Type": "multipart/form-data" }, withCredentials: true }
       );
 
       toast.success("How To Use updated successfully!");

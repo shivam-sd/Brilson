@@ -190,7 +190,7 @@ const AboutPageAdmin = () => {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/about/create-or-update`,
         formDataToSend,
-        { headers: { "Content-Type": "multipart/form-data" } },
+        {withCredentials: true, headers: { "Content-Type": "multipart/form-data" } },
       );
 
       if (res.data.success) {

@@ -121,7 +121,7 @@ const TestimonialsAdmin = () => {
       await axios.put(
         `${BASE_URL}/api/admin/testimonials/update`,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        {withCredentials: true, headers: { "Content-Type": "multipart/form-data" } }
       );
 
       toast.success("Testimonials updated successfully!");

@@ -60,6 +60,7 @@ const ManageParkingTag = () => {
       }
 
       const res = await axios.get(url, {
+        withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
         timeout: 30000,
       });

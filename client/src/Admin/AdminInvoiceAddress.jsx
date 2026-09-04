@@ -28,7 +28,7 @@ const handleSubmitData = async (e) => {
             return toast.error("Phone Length must be 10 digit");
         }
 
-        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/invoice/address`, FormData);
+        const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/invoice/address`, FormData,{withCredentials: true});
 
         const data = res.data;
         const status = res.status;

@@ -28,7 +28,7 @@ const AdminInvoices = () => {
   const fetchInvoices = async () => {
     const res = await axios.get(
       `${import.meta.env.VITE_BASE_URL}/api/admin/invoices/all?page=${page}&limit=${limit}`,
-      {
+      { withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       }
     );

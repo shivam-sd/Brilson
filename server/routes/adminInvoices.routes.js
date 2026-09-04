@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const { getAllInvoices, downloadAllInvoicesZip } = require("../controller/adminInvoice.controller");
-const adminAuth = require("../middleware/authAdminToken");
+const authAdminToken = require("../middleware/authAdminToken");
 
-router.get("/all", adminAuth, getAllInvoices);
-router.get("/download-zip", adminAuth, downloadAllInvoicesZip);
+router.get("/all", authAdminToken, getAllInvoices);
+router.get("/download-zip", authAdminToken, downloadAllInvoicesZip);
 
 module.exports = router;

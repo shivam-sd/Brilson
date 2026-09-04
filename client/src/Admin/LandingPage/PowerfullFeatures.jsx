@@ -18,7 +18,7 @@ const PowerfulFeatures = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${BASE_URL}/api/admin/powerfull/features`);
+        const res = await axios.get(`${BASE_URL}/api/admin/powerfull/features`,{withCredentials:true});
 
         if (res.data?.data) {
           setSubHeading(res.data.data.subHeading || "");
@@ -100,7 +100,7 @@ const PowerfulFeatures = () => {
         }
       });
 
-      await axios.put(`${BASE_URL}/api/admin/powerfull/features/update`, formData);
+      await axios.put(`${BASE_URL}/api/admin/powerfull/features/update`, formData, { withCredentials: true });
 
       toast.success("Features updated successfully!");
 setTimeout(() => {

@@ -23,14 +23,15 @@ import { FaLuggageCart } from "react-icons/fa";
 import { MdReviews } from "react-icons/md";
 import { FaFileInvoice } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa6";
-import { selectAdminToken } from "../store/slices/authSlice";
-import { useSelector } from "react-redux";
+import { logoutAction, selectAdminToken } from "../store/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const AdminLayout = () => {
   const [open, setOpen] = useState(false);
   const [SideBar, setSideBar] = useState(true);
   const navigate = useNavigate();
   const adminToken = useSelector(selectAdminToken);
+  const dispatch = useDispatch();
 
   const handleSideBarToggle = (val) => {
     setSideBar(val);
@@ -52,7 +53,7 @@ const AdminLayout = () => {
       );
 
       localStorage.removeItem("adminToken");
-
+      dispatch(logoutAction());
       navigate("/admin/login");
     } catch (err) {
       console.error(

@@ -59,9 +59,6 @@ const SellingOverview = () => {
         `${import.meta.env.VITE_BASE_URL}/api/admin/sales/overview?${query}`,
         {
           withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          },
         }
       );
 console.log(res)

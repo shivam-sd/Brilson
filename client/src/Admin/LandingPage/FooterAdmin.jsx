@@ -53,7 +53,7 @@ const FooterAdmin = () => {
   const handleUpdate = async () => {
     try {
       setSaving(true);
-      await axios.put(`${BASE_URL}/api/admin/footer/update`, footer);
+      await axios.put(`${BASE_URL}/api/admin/footer/update`, footer,{withCredentials: true,});
       toast.success("Footer updated successfully");
       setTimeout(() => {
         navigate("/admindashboard/landing/page/content", {replace:true});
