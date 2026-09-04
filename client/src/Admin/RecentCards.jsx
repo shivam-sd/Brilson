@@ -209,13 +209,26 @@ const RecentCards = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCards, setTotalCards] = useState(0);
-    const [limit] = useState(100);
+    const [limit] = useState(10);
 
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearching, setIsSearching] = useState(false);
 
     const isGeneratingRef = useRef(false);
     const currentPageRef = useRef(currentPage);
+
+    const [selectedDays, setSelectedDays] = useState(1);
+
+    const handleDayFilter = (e) => {
+        const days = Number(e.target.value);
+
+        setSelectedDays(days);
+
+        setCurrentPage(1);
+        currentPageRef.current = 1;
+
+        fetchCards(1, days);
+    };
 
     // Sirf current page ke cards ke liye QR generate karein
     const generateQRCodesForCurrentPage = useCallback(async (cardsList) => {
@@ -231,7 +244,7 @@ const RecentCards = () => {
         const chunkSize = 5;
 
         for (let i = 0; i < cardsList.length; i += chunkSize) {
-        
+
             if (currentPageRef.current !== currentPage) {
                 console.log("Page changed, stopping QR generation");
                 break;
@@ -272,10 +285,9 @@ const RecentCards = () => {
         setGeneratingQR(false);
     }, [qrDotsColor, qrBgColor, textColor, currentPage]);
 
-    const fetchCards = useCallback(async (page = 1, search = "", status = "all") => {
+    const fetchCards = useCallback(async (page = 1,days) => {
         try {
             setLoading(true);
-            setIsSearching(!!search);
             currentPageRef.current = page;
 
             const baseUrl = import.meta.env.VITE_BASE_URL || '';
@@ -284,12 +296,10 @@ const RecentCards = () => {
             const params = new URLSearchParams({
                 page,
                 limit,
-                search: search || ""
+                days: days
             });
 
-            if (status && status !== "all") {
-                params.append("status", status);
-            }
+        
 
             const url = `${baseUrl}/api/all/recent?${params.toString()}`;
 
@@ -321,14 +331,7 @@ const RecentCards = () => {
             setCurrentPage(responseData.pagination?.page || responseData.page || 1);
 
             let statsData;
-            if (responseData.stats?.overall) {
-                statsData = responseData.stats.overall;
-            } else {
-                const total = responseData.totalCards || allCards.length;
-                const activated = allCards.filter(card => card.isActivated).length;
-                const inactive = allCards.filter(card => !card.isActivated).length;
-                statsData = { total, activated, inactive };
-            }
+            statsData = responseData.stats;
 
             setStats({
                 total: statsData.total || 0,
@@ -353,33 +356,17 @@ const RecentCards = () => {
 
     //  useEffect with all dependencies
     useEffect(() => {
-        fetchCards(currentPage, searchQuery,);
-    }, [fetchCards, currentPage, searchQuery,]);
+        fetchCards(currentPage, selectedDays);
+    }, [fetchCards, currentPage, selectedDays]);
 
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
             currentPageRef.current = page;
             setQrImages({}); // Clear old QR images
-            fetchCards(page, searchQuery);
+            fetchCards(page, selectedDays);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-    };
-
-    const handleSearch = (e) => {
-        e.preventDefault();
-        setCurrentPage(1);
-        currentPageRef.current = 1;
-        setQrImages({});
-        fetchCards(1, searchQuery);
-    };
-
-    const handleClearSearch = () => {
-        setSearchQuery("");
-        setCurrentPage(1);
-        currentPageRef.current = 1;
-        setQrImages({});
-        fetchCards(1, "");
     };
 
     const getPageNumbers = () => {
@@ -754,177 +741,52 @@ const RecentCards = () => {
         );
     };
 
+
     return (
         <div className="px-2 sm:px-3 md:px-4 lg:px-2 py-3 sm:py-4 text-gray-200 max-w-full overflow-x-hidden">
             {/* HEADER */}
-            <div className="flex flex-col lg:flex-row lg:justify-between gap-3 sm:gap-4 mb-4 sm:mb-5 md:mb-6 lg:mt-0 mt-10">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4 mb-4 sm:mb-5 md:mb-6 lg:mt-0 mt-10">
                 <div className="w-full lg:w-auto text-center lg:text-left">
-                    <h4 className="text-base sm:text-lg md:text-xl lg:text-xl font-bold">Recent NFC Cards</h4>
+                    <h4 className="text-base sm:text-lg md:text-xl lg:text-xl font-bold">
+                        Recent NFC Cards
+                    </h4>
+
                     <p className="text-gray-400 mt-0.5 sm:mt-1 text-[10px] sm:text-xs">
                         View, track and manage all Recent NFC card profiles
+
                         <span className="ml-1 sm:ml-2 text-indigo-400 font-medium block sm:inline mt-0.5 sm:mt-0">
                             (Page {currentPage} of {totalPages})
                         </span>
                     </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full lg:w-auto items-stretch sm:items-center">
-                    <button
-                        onClick={() => setShowColorPicker(!showColorPicker)}
-                        className="px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 text-white hover:shadow-lg transition-all cursor-pointer text-xs sm:text-sm md:text-base"
+                {/* Day Filter */}
+                <div className="w-full lg:w-auto flex justify-center lg:justify-end">
+                    <select
+                        value={selectedDays}
+                        onChange={handleDayFilter}
+                        className="
+                w-full sm:w-auto
+                bg-[#1f2937]
+                text-white
+                border border-gray-700
+                rounded-lg
+                px-3 py-2
+                text-xs sm:text-sm
+                outline-none
+                cursor-pointer
+                focus:border-indigo-500
+                focus:ring-1
+                focus:ring-indigo-500
+            "
                     >
-                        <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 rounded-full border border-white" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}></div>
-                        <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 rounded-full border border-white" style={{ backgroundColor: qrDotsColor }}></div>
-                        <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 rounded-full border border-white" style={{ backgroundColor: textColor }}></div>
-                        <span className="hidden xs:inline">Customize</span>
-                        <span className="xs:hidden">Colors</span>
-                    </button>
-
-                    <form onSubmit={handleSearch} className="relative w-full sm:w-48 md:w-56">
-                        <div className="relative">
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search..."
-                                className="bg-gray-900/60 backdrop-blur border-0 pl-8 sm:pl-9 pr-7 sm:pr-8 py-2 sm:py-2.5 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white text-xs sm:text-sm"
-                            />
-                            <div className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2">
-                                <FiSearch size={12} className="sm:w-[14px] sm:h-[14px] text-gray-400" />
-                            </div>
-                            {searchQuery && (
-                                <button
-                                    type="button"
-                                    onClick={handleClearSearch}
-                                    className="absolute right-1.5 sm:right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1"
-                                >
-                                    <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </button>
-                            )}
-                        </div>
-                    </form>
-
-                    <div className="relative w-full sm:w-auto">
-                        <input
-                            type="date"
-                            value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
-                            className="bg-gray-900/60 backdrop-blur border-0 pl-2.5 sm:pl-3 pr-7 sm:pr-8 py-2 sm:py-2.5 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white text-xs sm:text-sm"
-                        />
-                        <div className="absolute right-1.5 sm:right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                    </div>
-
-                    <Link
-                        to="/api/cards/bulk"
-                        className="bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 hover:shadow-lg text-xs w-full sm:w-auto"
-                    >
-                        <FiPlus className="text-sm sm:text-base transition-transform duration-300 group-hover:rotate-180" />
-                        <span>Create Cards</span>
-                    </Link>
+                        <option value={1}>1 Day</option>
+                        <option value={3}>3 Days</option>
+                        <option value={7}>7 Days</option>
+                    </select>
                 </div>
             </div>
 
-            {/* COLOR PICKER MODAL */}
-            {showColorPicker && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-center p-3 sm:p-4">
-                    <div className="bg-gray-900 rounded-2xl max-w-sm sm:max-w-md w-full border border-gray-700 shadow-2xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-3 sm:mb-4">
-                            <h3 className="text-lg sm:text-xl font-bold text-white">Customize QR Colors</h3>
-                            <button onClick={() => setShowColorPicker(false)} className="text-gray-400 hover:text-white p-1">
-                                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div className="space-y-4 sm:space-y-6">
-                            <div>
-                                <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-1.5 sm:mb-2">QR Background Color</label>
-                                <div className="flex flex-col sm:flex-row items-center gap-3">
-                                    <HexColorPicker color={qrBgColor === 'transparent' ? '#ffffff' : qrBgColor} onChange={(color) => setQrBgColor(color)} />
-                                    <div className="flex flex-row sm:flex-col gap-1.5 sm:gap-2 mt-2 sm:mt-0">
-                                        <button onClick={() => setQrBgColor("transparent")} className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-800 rounded-lg text-white text-xs sm:text-sm hover:bg-gray-700">Transparent</button>
-                                        <button onClick={() => setQrBgColor("#ffffff")} className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-800 rounded-lg text-white text-xs sm:text-sm hover:bg-gray-700 flex items-center gap-1.5 sm:gap-2">
-                                            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-white border border-gray-600 rounded"></div>White
-                                        </button>
-                                        <button onClick={() => setQrBgColor("#000000")} className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-800 rounded-lg text-white text-xs sm:text-sm hover:bg-gray-700 flex items-center gap-1.5 sm:gap-2">
-                                            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-black border border-gray-600 rounded"></div>Black
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-1.5 sm:mb-2">QR Dots Color</label>
-                                <div className="flex flex-col sm:flex-row items-center gap-3">
-                                    <HexColorPicker color={qrDotsColor} onChange={setQrDotsColor} />
-                                    <div className="flex flex-row sm:flex-col gap-1.5 sm:gap-2 mt-2 sm:mt-0">
-                                        <button onClick={() => setQrDotsColor("#000000")} className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-800 rounded-lg text-white text-xs sm:text-sm hover:bg-gray-700 flex items-center gap-1.5 sm:gap-2">
-                                            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-black rounded"></div>Black
-                                        </button>
-                                        <button onClick={() => setQrDotsColor("#E1C48A")} className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-800 rounded-lg text-white text-xs sm:text-sm hover:bg-gray-700 flex items-center gap-1.5 sm:gap-2">
-                                            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-[#E1C48A] rounded"></div>Gold
-                                        </button>
-                                        <button onClick={() => setQrDotsColor("#3B82F6")} className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-800 rounded-lg text-white text-xs sm:text-sm hover:bg-gray-700 flex items-center gap-1.5 sm:gap-2">
-                                            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 rounded"></div>Blue
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-1.5 sm:mb-2">Text Color</label>
-                                <div className="flex flex-col sm:flex-row items-center gap-3">
-                                    <HexColorPicker color={textColor} onChange={setTextColor} />
-                                    <div className="flex flex-row sm:flex-col gap-1.5 sm:gap-2 mt-2 sm:mt-0">
-                                        <button onClick={() => setTextColor("#000000")} className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-800 rounded-lg text-white text-xs sm:text-sm hover:bg-gray-700 flex items-center gap-1.5 sm:gap-2">
-                                            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-black rounded"></div>Black
-                                        </button>
-                                        <button onClick={() => setTextColor("#E1C48A")} className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-800 rounded-lg text-white text-xs sm:text-sm hover:bg-gray-700 flex items-center gap-1.5 sm:gap-2">
-                                            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-[#E1C48A] rounded"></div>Gold
-                                        </button>
-                                        <button onClick={() => setTextColor("#ffffff")} className="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-800 rounded-lg text-white text-xs sm:text-sm hover:bg-gray-700 flex items-center gap-1.5 sm:gap-2">
-                                            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-white rounded"></div>White
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="pt-3 sm:pt-4 border-t border-gray-700">
-                                <p className="text-xs sm:text-sm text-gray-400 text-center mb-2 sm:mb-3">Live Preview (4000px Ultra HD PNG)</p>
-                                <div className="bg-gray-800 rounded-lg p-3 sm:p-4 flex justify-center">
-                                    <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-lg flex items-center justify-center" style={{ backgroundColor: qrBgColor === 'transparent' ? '#fff' : qrBgColor }}>
-                                        <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex items-center justify-center">
-                                            <svg viewBox="0 0 100 100" className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
-                                                <rect x="20" y="20" width="10" height="10" fill={qrDotsColor} />
-                                                <rect x="35" y="20" width="10" height="10" fill={qrDotsColor} />
-                                                <rect x="50" y="20" width="10" height="10" fill={qrDotsColor} />
-                                                <rect x="20" y="35" width="10" height="10" fill={qrDotsColor} />
-                                                <rect x="50" y="35" width="10" height="10" fill={qrDotsColor} />
-                                                <rect x="20" y="50" width="10" height="10" fill={qrDotsColor} />
-                                                <rect x="35" y="50" width="10" height="10" fill={qrDotsColor} />
-                                                <rect x="50" y="50" width="10" height="10" fill={qrDotsColor} />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p className="text-center text-[10px] sm:text-xs mt-1.5 sm:mt-2" style={{ color: textColor }}>Code: ABC123XYZ</p>
-                            </div>
-                        </div>
-
-                        <div className="mt-4 sm:mt-6 flex gap-2 sm:gap-3">
-                            <button onClick={() => setShowColorPicker(false)} className="flex-1 py-1.5 sm:py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-xs sm:text-sm transition-colors">Close</button>
-                            <button onClick={() => setShowColorPicker(false)} className="flex-1 py-1.5 sm:py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-lg text-white text-xs sm:text-sm transition-colors cursor-pointer">Apply Colors</button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* STATS CARDS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-5 md:mb-6">

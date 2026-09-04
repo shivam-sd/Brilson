@@ -27,6 +27,7 @@ const AdminOrders = () => {
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/allorders`,
         {
+          withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         }
       );

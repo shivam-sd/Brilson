@@ -16,7 +16,7 @@ const AdminCategories = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/category/active`);
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/category/active`,{withCredentials: true});
       setCategories(res.data.categories || []);
     } catch (error) {
       toast.error("Failed to load categories");

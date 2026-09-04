@@ -4,13 +4,14 @@ const authUser = require("../middleware/authUserToken");
 const router = express.Router();
 const {sendOTP, verifyOTP} = require("../controller/OTP.controller");
 const { getWalletBalance } = require("../controller/WalletBalance.controller");
-const adminAuth = require("../middleware/authAdminToken");
+
+const authAdminToken = require("../middleware/authAdminToken");
  
 
 router.post("/register", UserRegister);
 router.post("/login", UserLogin);
 router.post("/logout", authUser, userlogout);
-router.get("/all-users",adminAuth, AllUsers);
+router.get("/all-users",authAdminToken, AllUsers);
 router.get("/loggedIn/user", authUser, findLoggedInUser);
 router.get("/my-active-card", authUser, getMyActiveCard);
 router.post("/send-otp",  sendOTP);

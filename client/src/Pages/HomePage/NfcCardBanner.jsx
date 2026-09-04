@@ -93,9 +93,9 @@ export default function NfcCardBanner() {
                     </div>
 
                     <h2 className="font-display text-3xl font-bold leading-[1.05] tracking-tight text-[#F5F6F7] sm:text-5xl">
-                        Your Details,
+                        Your Details,  Delivered
                         <br />
-                        Delivered In One Tap
+                        In One Tap
                     </h2>
 
                     <p className="mx-auto mt-6 max-w-md text-md leading-relaxed text-[#8B92A0] lg:mx-0">

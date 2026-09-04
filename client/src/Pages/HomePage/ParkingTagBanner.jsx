@@ -54,9 +54,9 @@ export default function ParkingTagBanner() {
                     </div>
 
                     <h2 className="font-display text-3xl font-bold leading-[1.05] tracking-tight text-[#F5F6F7] sm:text-5xl">
-                        Never Get
+                        Never Get Blocked
                         <br />
-                        Blocked In Again
+                        In Again
                     </h2>
 
                     <p className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-[#8B92A0] lg:mx-0">

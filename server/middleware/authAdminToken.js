@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const verifyAdmin = (req, res, next) => {
+const authAdminToken = (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1] || req.cookies?.adminToken;
     // console.log(req);
@@ -26,4 +26,4 @@ const verifyAdmin = (req, res, next) => {
 };
 
 
-module.exports = verifyAdmin;
+module.exports = authAdminToken;

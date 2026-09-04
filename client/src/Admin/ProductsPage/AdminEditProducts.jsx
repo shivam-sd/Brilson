@@ -186,7 +186,7 @@ const handleCropCompleteExisting = async (croppedFile, index) => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/category/active`
+          `${import.meta.env.VITE_BASE_URL}/api/category`,{withCredentials: true}
         );
         setCategories(res?.data?.categories || []);
       } catch (error) {

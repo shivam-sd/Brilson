@@ -2,29 +2,35 @@ const mongoose = require("mongoose");
 
 
 const ConfigSchema = new mongoose.Schema({
-    razorpay:{
+    razorpay: {
         keyId: String,
         keySecret: String
     },
-    cashfree:{
+    cashfree: {
         appId: String,
         secretKey: String,
-         environment: String
+        environment: String
     },
-    payU:{
+    payU: {
         key: String,
         salt: String,
-         payUBaseUrl: String
+        payUBaseUrl: String
     },
-    cloudinary:{
+    cloudinary: {
         cloudName: String,
         apiKey: String,
         apiSecret: String
     },
-      updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
+    ekQr: {
+        apiKey: {
+            type: String,
+            default: ""
+        }
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 module.exports = mongoose.model("Config", ConfigSchema);

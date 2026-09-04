@@ -189,7 +189,7 @@ const ResetPassword = () => {
       localStorage.removeItem("resetPhone");
 
       setTimeout(() => {
-        navigate("/login");
+        navigate("/login",{ replace: true,});
       }, 2000);
 
     } catch (err) {

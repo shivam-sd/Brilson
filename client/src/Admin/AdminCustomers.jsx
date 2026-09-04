@@ -9,30 +9,31 @@ const AdminCustomers = () => {
 
 
   useEffect(() => {
-  
-  const fetchCustomersFromOrders = async () => {
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/allorders`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
 
-      console.log(res)
-      const orders = res.data.lastSevenDaysOrder || [];
+    const fetchCustomersFromOrders = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/allorders`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-      setCustomers(orders);
-      setLoading(false);
-    } catch (err) {
-      console.error("Customer Fetch Error:", err);
-      setLoading(false);
-    }
-  };
+        console.log(res)
+        const orders = res.data.lastSevenDaysOrder || [];
 
-console.log(customers)
+        setCustomers(orders);
+        setLoading(false);
+      } catch (err) {
+        console.error("Customer Fetch Error:", err);
+        setLoading(false);
+      }
+    };
+
+    console.log(customers)
     fetchCustomersFromOrders();
   }, []);
 

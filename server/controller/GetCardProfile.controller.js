@@ -152,25 +152,55 @@ const getAllcardsProfile = async (req, res) => {
 
 const getRecentCards = async (req, res) => {
   try {
-    //  Parse query parameters
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
     const search = req.query.search?.trim() || "";
-    const status = req.query.status;
+    const days = parseInt(req.query.days);
+
     const skip = (page - 1) * limit;
 
     let searchQuery = {};
 
+    // Search filter
     if (search) {
       searchQuery.$or = [
         { "profile.name": { $regex: search, $options: "i" } },
-        { activationCode: { $regex: search, $options: "i" } }
+        { activationCode: { $regex: search, $options: "i" } },
+        { "profile.email": { $regex: search, $options: "i" } },
+        { "profile.phone": { $regex: search, $options: "i" } }
       ];
     }
-    searchQuery.isActivated = true;
+
+    if ([1, 3, 7].includes(days)) {
+      const now = new Date();
+
+      const fromDate = new Date(now);
+      fromDate.setDate(fromDate.getDate() - days);
+
+      searchQuery.createdAt = {
+        $gte: fromDate,
+        $lte: now
+      };
+    }
+
+
     const totalCards = await CardProfileModel.countDocuments(searchQuery);
 
-    const allCards = await CardProfileModel.find(searchQuery)
+    const activatedCount = await CardProfileModel.countDocuments({
+      ...searchQuery,
+      isActivated: true
+    });
+
+    const inactiveCount = await CardProfileModel.countDocuments({
+      ...searchQuery,
+      isActivated: false
+    });
+
+
+
+    const totalPages = Math.ceil(totalCards / limit);
+
+    const cards = await CardProfileModel.find(searchQuery)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
@@ -180,32 +210,44 @@ const getRecentCards = async (req, res) => {
       })
       .lean();
 
-
     return res.status(200).json({
       success: true,
+
       data: {
-        cards: allCards,
+        cards,
+
         pagination: {
           page,
           limit,
           totalCards,
-          totalPages: Math.ceil(totalCards / limit),
-          hasNext: page < Math.ceil(totalCards / limit),
+          totalPages,
+          hasNext: page < totalPages,
           hasPrev: page > 1
         },
+
+        stats: {
+          total: totalCards,
+          activated: activatedCount,
+          inactive: inactiveCount
+        },
+
         filters: {
           search: search || "none",
-          status: status || "all"
-        },
+          days: [1, 3, 7].includes(days) ? days : "all"
+        }
       }
     });
 
   } catch (error) {
-    console.error("Search Cards Error:", error);
-    res.status(500).json({
+    console.error("Get Recent Cards Error:", error);
+
+    return res.status(500).json({
       success: false,
-      message: "Failed to fetch cards",
-      error: process.env.NODE_ENV === "development" ? error.message : undefined
+      message: "Failed to fetch recent cards",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : undefined
     });
   }
 };
