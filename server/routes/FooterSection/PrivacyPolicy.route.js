@@ -6,10 +6,11 @@ const {
   createOrUpdatePrivacyPolicy,
   getPrivacyPolicy,
 } = require("../../controller/FooterSection/PrivacyPolicy.controller");
+const authAdminToken = require("../../middleware/authAdminToken");
 
 
 // CREATE OR UPDATE
-router.post("/create-or-update", createOrUpdatePrivacyPolicy);
+router.post("/create-or-update",authAdminToken, createOrUpdatePrivacyPolicy);
 
 
 // GET

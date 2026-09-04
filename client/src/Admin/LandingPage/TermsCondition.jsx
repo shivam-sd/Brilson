@@ -245,7 +245,7 @@ const TermsCondition = () => {
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/terms-conditions/create-or-update`, cleanedData);
+      const response = await axios.post(`${API_BASE_URL}/api/terms-conditions/create-or-update`, cleanedData,{ withCredentials: true });
       if (response.data.success) {
         setMessage({ text: 'Terms & Conditions saved successfully!', type: 'success' });
         fetchTerms();

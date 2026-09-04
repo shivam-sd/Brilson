@@ -159,7 +159,7 @@ const PrivacyPolicyUpdatePage = () => {
     setSaving(true);
     setMessage({ type: '', text: '' });
     try {
-      const response = await axios.post(UPDATE_URL, formData);
+      const response = await axios.post(UPDATE_URL, formData,{withCredentials: true});
       if (response.data.success) {
         setMessage({ type: 'success', text: 'Privacy Policy updated successfully!' });
         setTimeout(() => fetchPrivacyPolicy(), 1000);

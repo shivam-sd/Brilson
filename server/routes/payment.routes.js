@@ -12,6 +12,7 @@ const {
   checkEkqrStatus,
   paymentStatus
 } = require("../controller/Ekqr.controller");
+const authAdminToken = require("../middleware/authAdminToken");
 
 
 
@@ -45,7 +46,7 @@ router.get("/payu-failure", (req,res) => {
 
 
 // ADMIN PAYMENT GATEWAY ISACTIVE OR NOT
-router.put("/isactive/gateway/update", updateGatewayStatus);
+router.put("/isactive/gateway/update",authAdminToken, updateGatewayStatus);
 router.get("/isactive/gateway", getActiveGateway);
 
 module.exports = router;

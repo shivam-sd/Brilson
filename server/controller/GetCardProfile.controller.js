@@ -67,6 +67,7 @@ const copyUpdate = async (req, res) => {
 
 const getAllcardsProfile = async (req, res) => {
   try {
+    console.log("getAllcardsProfile called--------------------");
     //  Parse query parameters
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 40));

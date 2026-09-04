@@ -77,7 +77,7 @@ const TransformNetworkAdmin = () => {
     try {
       setSaving(true);
 
-      await axios.put(`${BASE_URL}/api/admin/transform/update`, form);
+      await axios.put(`${BASE_URL}/api/admin/transform/update`, form,{withCredentials: true, });
 
       toast.success("Transform section updated successfully!");
 setTimeout(() => {

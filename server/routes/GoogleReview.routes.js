@@ -9,6 +9,7 @@ const GetAllGoogleReviewProfiles = require("../controller/GoogleReviews/getAllGo
 const getAllUsersWithTheirReviews = require("../controller/GoogleReviews/getAllUsersWithTheirReviews");
 const { checkGoogleReview } = require("../controller/GoogleReviews/CheckGoogleReviewStatus.controller");
 const EditGoogleReviewsProfile = require("../controller/GoogleReviews/EditGoogleReviewCardProfile.controller");
+const authAdminToken = require("../middleware/authAdminToken");
 
 
 // admin cretae bulk profile cards
@@ -30,7 +31,7 @@ router.patch("/google-review/:id/downloaded", markDownloadQRGoogleReviews);
 router.get("/google-review/profile/:slug", getSingleGoogleReviewProfile);
 
 // router.get("/card/:id", getCardProfilesByID); 
-router.get("/all/google-reviews", GetAllGoogleReviewProfiles);
+router.get("/all/google-reviews", authAdminToken, GetAllGoogleReviewProfiles);
 
 router.get("/google-reviews/user/:userId", userAuth, getAllUsersWithTheirReviews);
 

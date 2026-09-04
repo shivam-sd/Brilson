@@ -412,7 +412,7 @@ const RefundPolicy = () => {
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/admin/create-or-update/refund-policy`, cleanedData);
+      const response = await axios.post(`${API_BASE_URL}/api/admin/create-or-update/refund-policy`, cleanedData,{withCredentials: true});
       if (response.data.success) {
         setMessage({ text: 'Refund Policy saved successfully!', type: 'success' });
         fetchRefundPolicy();

@@ -43,7 +43,8 @@ const HomePageContent = () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/home/content`
+          `${import.meta.env.VITE_BASE_URL}/api/admin/home/content`,
+          { withCredentials: true }
         );
 
         const data = res.data.data;
@@ -153,7 +154,7 @@ const HomePageContent = () => {
       await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/admin/home/content/update`,
         formData,
-        {
+        { withCredentials: true,
           headers: {
             'Content-Type': 'multipart/form-data'
           }

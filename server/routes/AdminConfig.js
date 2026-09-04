@@ -2,9 +2,10 @@ const express = require("express");
 const ConfigModel = require("../models/Config");
 const { encrypt } = require("../utils/crypto");
 const { loadConfig } = require("../config/runTimeConfigLoader");
+const authAdminToken = require("../middleware/authAdminToken");
 const router = express.Router();
 
-router.post("/update", async (req, res) => {
+router.post("/update",authAdminToken, async (req, res) => {
   try {
     const { razorpay, cashfree, payU, cloudinary,ekQr } = req.body;
 
@@ -122,8 +123,8 @@ router.get("/", async (req, res) => {
       success: true,
       config: {
         razorpay: {
-          keyId: config.razorpay?.keyId,
-          keySecret: config.razorpay?.keySecret
+          keyId: config.razorpay?.keyId ? "********" : "",
+          keySecret: config.razorpay?.keySecret ? "********" : ""
         },
         cashfree: {
           appId: config.cashfree?.appId ? "********" : "",

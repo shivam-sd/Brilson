@@ -65,7 +65,7 @@ const AdminPaymentGateway = () => {
         {
           gateway,
           isActive:true
-        }
+        },{withCredentials: true}
       );
 
       if(res.data.success){
