@@ -17,12 +17,14 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { selectToken } from "../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 
 const ServicesProfile = ({ activationCode }) => {
 
   const id = activationCode;
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
   
   const [services, setServices] = useState([]);
   const [layoutType, setLayoutType] = useState('flex');

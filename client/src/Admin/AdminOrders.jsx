@@ -6,9 +6,11 @@ import { FaDownload } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { Eye } from "lucide-react";
+import { selectToken } from "../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AdminOrders = () => {
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
 
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);

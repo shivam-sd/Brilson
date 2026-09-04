@@ -5,6 +5,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
 import { MdQrCodeScanner } from "react-icons/md";
+import { selectToken } from "../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const ActivateCard = () => {
   const navigate = useNavigate();
@@ -12,13 +14,12 @@ const ActivateCard = () => {
   const [showScanner, setShowScanner] = useState(false);
   const [loading, setLoading] = useState(false);
   const scannerRef = useRef(null);
-
+  const token = useSelector(selectToken);
   const [form, setForm] = useState({
     activationCode: "",
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
 
@@ -32,8 +33,8 @@ const ActivateCard = () => {
 
         scannerRef.current = new Html5QrcodeScanner(
           "reader",
-          { 
-            fps: 10, 
+          {
+            fps: 10,
             qrbox: 250,
             rememberLastUsedCamera: true,
             showTorchButtonIfSupported: true,
@@ -88,7 +89,7 @@ const ActivateCard = () => {
   /* ACTIVATE */
   const handleActivate = async () => {
     const trimmedCode = form.activationCode.trim();
-    
+
     if (!trimmedCode) {
       toast.error("Activation Code is required");
       return;
@@ -104,8 +105,6 @@ const ActivateCard = () => {
 
     try {
       setLoading(true);
-
-      const token = localStorage.getItem("token");
 
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/card/activate`,
@@ -155,7 +154,7 @@ const ActivateCard = () => {
   };
 
   /* Check if activation button should be enabled */
-  const isActivateButtonEnabled =  form.activationCode.trim().length > 0 && !loading;
+  const isActivateButtonEnabled = form.activationCode.trim().length > 0 && !loading;
 
   return (
     <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center px-4">
@@ -194,11 +193,10 @@ const ActivateCard = () => {
         <button
           onClick={handleActivate}
           disabled={!isActivateButtonEnabled}
-          className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${
-            isActivateButtonEnabled
+          className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${isActivateButtonEnabled
               ? "bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600 transform hover:-translate-y-0.5 active:translate-y-0"
               : "bg-gray-700 cursor-not-allowed opacity-60"
-          }`}
+            }`}
         >
           {loading ? (
             <>
@@ -236,7 +234,7 @@ const ActivateCard = () => {
           </button>
 
           {showScanner && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
@@ -245,12 +243,12 @@ const ActivateCard = () => {
               <div className="text-center text-sm text-gray-400 mb-2">
                 Point your camera at the QR code
               </div>
-              <div 
-                id="reader" 
+              <div
+                id="reader"
                 className="bg-white rounded-xl overflow-hidden p-2 border-2 border-indigo-500/30"
                 style={{ minHeight: "250px" }}
               ></div>
-              
+
               <button
                 onClick={() => {
                   setShowScanner(false);
@@ -273,8 +271,8 @@ const ActivateCard = () => {
             <p className="text-sm text-gray-400 mb-2">
               You need to login first to activate a card
             </p>
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="inline-flex items-center text-cyan-400 hover:text-cyan-300 underline text-sm transition-colors"
             >
               Click here to login

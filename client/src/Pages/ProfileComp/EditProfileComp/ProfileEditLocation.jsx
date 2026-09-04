@@ -3,11 +3,14 @@ import axios from "axios";
 import { MapPin, Star, Edit, Plus, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectToken } from "../../../store/slices/authSlice";
 
 const ProfileEditLocation = () => {
     const {id} = useParams();
     const activationCode = id;
-  const token = localStorage.getItem("token");
+    const token = useSelector(selectToken);
+
 
   const [loading, setLoading] = useState(true);
   const [locationData, setLocationData] = useState(null);

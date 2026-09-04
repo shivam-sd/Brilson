@@ -5,10 +5,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import imageCompression from "browser-image-compression";
 import ImageCropper from "../../Pages/ProfileComp/EditProfileComp/ImageCropper/CoverImageCropper";
+import { selectToken } from "../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AdminEditProduct = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const token = useSelector(selectToken);
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -553,7 +556,7 @@ const handleSubmit = async (e) => {
       {
         withCredentials: true,
         headers: {
-          'Authorization': `${localStorage.getItem("token")}`,
+          'Authorization': token,
         }
       }
     );

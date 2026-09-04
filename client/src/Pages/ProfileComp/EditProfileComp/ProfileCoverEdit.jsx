@@ -5,10 +5,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import imageCompression from "browser-image-compression";
 import ImageCropper from "./ImageCropper/ImageCropper"; 
+import { selectToken } from "../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const ProfileCoverEdit = () => {
   const { id } = useParams();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
   const navigate = useNavigate();
 
   const [logo, setLogo] = useState(null);

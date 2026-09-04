@@ -6,6 +6,8 @@ import { Package } from "lucide-react";
 import { toast } from "react-hot-toast";
 import ServicesDisplay from "../EditProfileComp/ProfileServices/ServicesDisplay";
 import ServiceLayoutManager from "../EditProfileComp/ProfileServices/ServiceLayoutManager";
+import { selectToken } from "../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const ServicesEditPortfolio = () => {
   const { id } = useParams();
@@ -15,7 +17,8 @@ const ServicesEditPortfolio = () => {
   const [layoutType, setLayoutType] = useState('flex');
   const [isMobile, setIsMobile] = useState(false);
 
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
+
   const activationCode = id; // Using profile ID as activationCode
 
   // Check if device is mobile
@@ -114,16 +117,16 @@ const ServicesEditPortfolio = () => {
           {/* Desktop always shows flex, mobile shows based on selection */}
           {!isMobile ? (
             // Desktop: Always Flex/Grid Layout
-            <ServicesDisplay 
-              services={services} 
+            <ServicesDisplay
+              services={services}
               layoutType="flex"
               onDelete={handleDelete}
               isEditMode={true}
             />
           ) : (
             // Mobile: Dynamic Layout based on user preference
-            <ServicesDisplay 
-              services={services} 
+            <ServicesDisplay
+              services={services}
               layoutType={layoutType}
               onDelete={handleDelete}
               isEditMode={true}
@@ -131,12 +134,12 @@ const ServicesEditPortfolio = () => {
           )}
         </>
       ) : (
-          <div className="text-center text-gray-400">No services available</div>
+        <div className="text-center text-gray-400">No services available</div>
       )}
 
       {/* Layout Manager - Only shows on mobile */}
       {isMobile && services.length > 0 && (
-        <ServiceLayoutManager 
+        <ServiceLayoutManager
           activationCode={activationCode}
           onLayoutChange={handleLayoutChange}
         />

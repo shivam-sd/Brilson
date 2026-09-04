@@ -3,13 +3,16 @@ import axios from "axios";
 import { MapPin, Star, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectToken } from "../../../../store/slices/authSlice";
 
 const AddProfileLocation = () => {
-    const {id} = useParams();
-  const token = localStorage.getItem("token");
+  const { id } = useParams();
+  const token = useSelector(selectToken);
+
 
   const [form, setForm] = useState({
-    activationCode:"",
+    activationCode: "",
     googleMapLink: "",
     googleReviewLink: "",
   });
@@ -30,7 +33,7 @@ const AddProfileLocation = () => {
       await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/profile/location/add`,
         {
-          activationCode:id,
+          activationCode: id,
           googleMapLink: form.googleMapLink,
           googleReviewLink: form.googleReviewLink,
         },
@@ -47,7 +50,7 @@ const AddProfileLocation = () => {
         googleReviewLink: "",
       });
 
-      navigate(`/profile/${id}`, {replace:true});
+      navigate(`/profile/${id}`, { replace: true });
 
     } catch (err) {
       toast.error(err?.response?.data?.message || "Something went wrong");
@@ -59,12 +62,12 @@ const AddProfileLocation = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 via-black to-gray-900 p-6">
 
-     <div className="w-full max-w-2xl relative z-10 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl p-8 sm:p-10 overflow-hidden">
+      <div className="w-full max-w-2xl relative z-10 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl p-8 sm:p-10 overflow-hidden">
 
         {/* Glow Effects */}
         {/* Glow Effects */}
-<div className="pointer-events-none absolute -top-20 -left-20 w-72 h-72 bg-emerald-500/20 blur-3xl rounded-full"></div>
-<div className="pointer-events-none absolute -bottom-20 -right-20 w-72 h-72 bg-blue-500/20 blur-3xl rounded-full"></div>
+        <div className="pointer-events-none absolute -top-20 -left-20 w-72 h-72 bg-emerald-500/20 blur-3xl rounded-full"></div>
+        <div className="pointer-events-none absolute -bottom-20 -right-20 w-72 h-72 bg-blue-500/20 blur-3xl rounded-full"></div>
 
         <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-8 tracking-widest font-Playfair">
           Add Location & Reviews

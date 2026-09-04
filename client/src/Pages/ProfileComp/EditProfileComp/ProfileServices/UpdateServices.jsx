@@ -5,11 +5,14 @@ import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import ImageCropper from "../ImageCropper/OtherCropper";
 import imageCompression from "browser-image-compression";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const UpdateServices = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
+
 
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
@@ -76,12 +79,12 @@ const UpdateServices = () => {
 
 
   const handleCropComplete = async (croppedFile) => {
-    try{
+    try {
       setShowCropper(false);
 
       // foe the image compression 
       const options = {
-           maxSizeMB: 0.3,
+        maxSizeMB: 0.3,
         maxWidthOrHeight: 500,
         useWebWorker: true,
         fileType: 'image/jpeg'
@@ -94,30 +97,30 @@ const UpdateServices = () => {
       setPreview(previewUrl);
 
 
-      if(originalImage){
+      if (originalImage) {
         URL.revokeObjectURL(originalImage);
       }
 
 
-        // Log file details for debugging
+      // Log file details for debugging
       console.log('Final file size:', finalFile.size / 1024, 'KB');
       console.log('Final file type:', finalFile.type);
 
 
-    }catch(err){
-          console.error('Crop complete error:', err);
-                toast.error("Error cropping image");
+    } catch (err) {
+      console.error('Crop complete error:', err);
+      toast.error("Error cropping image");
     }
   }
 
 
-const handleCropCancel = () => {
-  setShowCropper(false);
+  const handleCropCancel = () => {
+    setShowCropper(false);
 
-  if(originalImage){
-    URL.revokeObjectURL(originalImage);
+    if (originalImage) {
+      URL.revokeObjectURL(originalImage);
+    }
   }
-}
 
 
 
@@ -301,17 +304,17 @@ const handleCropCancel = () => {
         </button>
       </form>
 
-{
-  showCropper && (<>
-  
-<ImageCropper 
-image={originalImage}
-onCancel={handleCropCancel}
-onCropComplete={handleCropComplete}
-/>
+      {
+        showCropper && (<>
 
-  </>)
-}
+          <ImageCropper
+            image={originalImage}
+            onCancel={handleCropCancel}
+            onCropComplete={handleCropComplete}
+          />
+
+        </>)
+      }
 
 
       <style>{`

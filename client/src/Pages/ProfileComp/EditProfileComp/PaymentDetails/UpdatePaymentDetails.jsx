@@ -3,12 +3,15 @@ import axios from "axios";
 import { Loader2, Image as ImgIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const UpdatePaymentDetails = () => {
   const { id } = useParams();
   const paymentId = id;
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
+
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -110,7 +113,7 @@ const UpdatePaymentDetails = () => {
       );
 
       toast.success("Payment details updated successfully");
-      navigate(`/profile/${id}`, {replace:true});
+      navigate(`/profile/${id}`, { replace: true });
 
     } catch (err) {
       toast.error(err?.response?.data?.message || "Update failed");

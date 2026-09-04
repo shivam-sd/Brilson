@@ -5,18 +5,21 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import imageCompression from "browser-image-compression";
 import ImageCropper from "../ImageCropper/OtherCropper";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AddProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
+
 
   const [form, setForm] = useState({
     title: "",
     description: "",
     activationCode: id,
     price: "",
-    link:"",
+    link: "",
     image: null,
   });
 
@@ -31,8 +34,8 @@ const AddProduct = () => {
 
     if (name === "image" && files?.[0]) {
       setForm({ ...form, image: files[0] });
-const imageUrl = URL.createObjectURL(files[0]);
-setOriginalImage(imageUrl);
+      const imageUrl = URL.createObjectURL(files[0]);
+      setOriginalImage(imageUrl);
       setPreview(imageUrl);
       setShowCropper(true);
     } else {
@@ -41,41 +44,41 @@ setOriginalImage(imageUrl);
   };
 
 
- const handleCropComplete = async (croppedFile) => {
-     try {
-       setShowCropper(false);
-       
-       // Additional compression before preview
-       const options = {
-         maxSizeMB: 0.3,
-         maxWidthOrHeight: 500,
-         useWebWorker: true,
-         fileType: 'image/jpeg'
-       };
-       
-       const finalFile = await imageCompression(croppedFile, options);
-       setFinalImage(finalFile);
+  const handleCropComplete = async (croppedFile) => {
+    try {
+      setShowCropper(false);
 
-       // Create preview
-       const previewUrl = URL.createObjectURL(finalFile);
-       setPreview(previewUrl);
-       
-       // Clean up original image URL
-       if (originalImage) {
-         URL.revokeObjectURL(originalImage);
-       }
-       
-       // Log file details for debugging
-       console.log('Final file size:', finalFile.size / 1024, 'KB');
-       console.log('Final file type:', finalFile.type);
-       
-     } catch (err) {
-       console.error('Crop complete error:', err);
-       toast.error("Error cropping image");
-     }
-   };
+      // Additional compression before preview
+      const options = {
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+        fileType: 'image/jpeg'
+      };
 
-    // CANCEL CROPPING
+      const finalFile = await imageCompression(croppedFile, options);
+      setFinalImage(finalFile);
+
+      // Create preview
+      const previewUrl = URL.createObjectURL(finalFile);
+      setPreview(previewUrl);
+
+      // Clean up original image URL
+      if (originalImage) {
+        URL.revokeObjectURL(originalImage);
+      }
+
+      // Log file details for debugging
+      console.log('Final file size:', finalFile.size / 1024, 'KB');
+      console.log('Final file type:', finalFile.type);
+
+    } catch (err) {
+      console.error('Crop complete error:', err);
+      toast.error("Error cropping image");
+    }
+  };
+
+  // CANCEL CROPPING
   const handleCancelCrop = () => {
     setShowCropper(false);
     if (originalImage) {
@@ -103,16 +106,16 @@ setOriginalImage(imageUrl);
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/profile-products/add`,
         fd,
-        {withCredentials:true, headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
       );
 
       console.log(res.data);
 
       toast.success("Product Added");
 
-      setForm({ title: "", description: "", duration: "", price:"", image: null,  });
+      setForm({ title: "", description: "", duration: "", price: "", image: null, });
       setPreview(null);
-      navigate(`/profile/${id}`, {replace:true});
+      navigate(`/profile/${id}`, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
       console.log(err);
@@ -222,7 +225,7 @@ setOriginalImage(imageUrl);
         </button>
       </form>
 
-{/* CROPPER MODAL */}
+      {/* CROPPER MODAL */}
       {showCropper && (
         <ImageCropper
           image={originalImage}

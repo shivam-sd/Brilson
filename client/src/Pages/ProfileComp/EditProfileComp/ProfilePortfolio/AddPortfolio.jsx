@@ -3,11 +3,14 @@ import axios from "axios";
 import { Upload, Loader2, Plus, ImageIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AddPortfolio = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
+
 
   const [form, setForm] = useState({
     title: "",
@@ -48,16 +51,16 @@ const AddPortfolio = () => {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/profile-portfolio/add`,
         fd,
-        {withCredentials:true, headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
       );
 
       console.log(res.data);
 
       toast.success("Portfolio Item Added");
 
-      setForm({ title: "", description: "", duration: "", image: null,  });
+      setForm({ title: "", description: "", duration: "", image: null, });
       setPreview(null);
-      navigate(`/profile/${id}`, {replace:true});
+      navigate(`/profile/${id}`, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
       console.log(err);

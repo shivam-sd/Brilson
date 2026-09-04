@@ -5,11 +5,14 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import ImageCropper from "../ImageCropper/OtherCropper";
 import imageCompression from "browser-image-compression";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const UpdateGallery = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
+
 
   const [form, setForm] = useState({
     activationCode: id,
@@ -28,20 +31,20 @@ const UpdateGallery = () => {
 
   useEffect(() => {
     const fetchGalleryData = async () => {
-        try{
-            const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/profile-gallery/get/single/${id}`);
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/profile-gallery/get/single/${id}`);
 
-            setForm({
-                  activationCode: res.data.data.activationCode,
-    image: null
-            });
+        setForm({
+          activationCode: res.data.data.activationCode,
+          image: null
+        });
 
-            setPreview(res.data.data.image)
-            console.log(res)
+        setPreview(res.data.data.image)
+        console.log(res)
 
-        }catch(err){
-            console.log(err);
-        }
+      } catch (err) {
+        console.log(err);
+      }
     }
     fetchGalleryData();
   }, [id]);
@@ -63,35 +66,35 @@ const UpdateGallery = () => {
 
 
   const handleCropComplete = async (croppedFile) => {
-    try{
+    try {
       setShowCrop(false);
 
       const options = {
-           maxSizeMB: 0.3,
+        maxSizeMB: 0.3,
         maxWidthOrHeight: 500,
         useWebWorker: true,
         fileType: 'image/jpeg'
       }
 
-const finalFile = await imageCompression(croppedFile, options);
-setFinalFile(finalFile);
+      const finalFile = await imageCompression(croppedFile, options);
+      setFinalFile(finalFile);
 
-const previewUrl = URL.createObjectURL(finalFile);
-setPreview(previewUrl);
-
-
-if(originalImage){
-  URL.revokeObjectURL(originalImage);
-}
+      const previewUrl = URL.createObjectURL(finalFile);
+      setPreview(previewUrl);
 
 
-    // Log file details for debugging
+      if (originalImage) {
+        URL.revokeObjectURL(originalImage);
+      }
+
+
+      // Log file details for debugging
       console.log('Final file size:', finalFile.size / 1024, 'KB');
       console.log('Final file type:', finalFile.type);
 
-    }catch(err){
-console.error('Crop complete error:', err);
-                toast.error("Error cropping image");
+    } catch (err) {
+      console.error('Crop complete error:', err);
+      toast.error("Error cropping image");
     }
   }
 
@@ -99,7 +102,7 @@ console.error('Crop complete error:', err);
   const handleCropCancel = () => {
     setShowCrop(false);
 
-    if(originalImage){
+    if (originalImage) {
       URL.revokeObjectURL(originalImage);
     }
 
@@ -120,16 +123,16 @@ console.error('Crop complete error:', err);
       const res = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/profile-gallery/update/${id}`,
         fd,
-        {withCredentials:true, headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
       );
 
-    //   console.log(res.data);
+      //   console.log(res.data);
 
       toast.success("Gallery Item Added");
 
       setForm({ activationCode: id, image: null });
       setPreview(null);
-      navigate(`/profile/${res.data.data.activationCode}`, {replace:true});
+      navigate(`/profile/${res.data.data.activationCode}`, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
       console.log(err);
@@ -203,17 +206,17 @@ console.error('Crop complete error:', err);
         </button>
       </form>
 
-{
-  showCrop && (<>
-  
-  <ImageCropper 
-  image={originalImage}
-  onCancel={handleCropCancel}
-  onCropComplete={handleCropComplete}
-  />
-  
-  </>)
-}
+      {
+        showCrop && (<>
+
+          <ImageCropper
+            image={originalImage}
+            onCancel={handleCropCancel}
+            onCropComplete={handleCropComplete}
+          />
+
+        </>)
+      }
 
     </div>
   );

@@ -3,6 +3,8 @@ import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiPackage, FiTag, FiGrid, FiImage,
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { selectToken } from "../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AdminProducts = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -11,6 +13,7 @@ const AdminProducts = () => {
   const [deletingId, setDeletingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
+  const token = useSelector(selectToken);
 
   /* FETCH PRODUCTS */
   useEffect(() => {
@@ -20,7 +23,7 @@ const AdminProducts = () => {
           `${import.meta.env.VITE_BASE_URL}/api/admin/all/products`,
           {
             headers: {
-              Authorization: `${localStorage.getItem("token")}`
+              Authorization: token
             }
           }
         );
@@ -69,7 +72,7 @@ const AdminProducts = () => {
         { 
           withCredentials: true,
           headers: {
-            Authorization: `${localStorage.getItem("token")}`
+            Authorization: token
           }
         }
       );

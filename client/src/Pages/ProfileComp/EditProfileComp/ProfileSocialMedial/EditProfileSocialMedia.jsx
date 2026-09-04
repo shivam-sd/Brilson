@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import { useParams, useNavigate, replace } from "react-router-dom";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const EditProfileSocialMedia = () => {
   const { id } = useParams();
@@ -10,6 +12,7 @@ const EditProfileSocialMedia = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [Id, setId] = useState(null);
+  const token = useSelector(selectToken);
 
   const [form, setForm] = useState({
     company: "",
@@ -84,7 +87,7 @@ const EditProfileSocialMedia = () => {
         form,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: token ? `Bearer ${token}` : "",
           },
         },
         { withCredentials: true },

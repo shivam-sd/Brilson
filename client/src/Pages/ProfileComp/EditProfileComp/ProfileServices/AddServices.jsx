@@ -5,11 +5,14 @@ import { toast, Toaster } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import ImageCropper from "../ImageCropper/OtherCropper";
 import imageCompression from "browser-image-compression";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AddServices = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+    const token = useSelector(selectToken);
+
 
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);

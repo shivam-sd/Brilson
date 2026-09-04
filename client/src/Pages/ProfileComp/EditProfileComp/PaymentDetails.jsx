@@ -3,11 +3,13 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { Edit, Plus, CreditCard, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { selectToken } from "../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const PaymentDetails = () => {
   const { id } = useParams();
   const activationCode = id;
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
 
   const [paymentData, setPaymentData] = useState(null);
   const [loading, setLoading] = useState(true);

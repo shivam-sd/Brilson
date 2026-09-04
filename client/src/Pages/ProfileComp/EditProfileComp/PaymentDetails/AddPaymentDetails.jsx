@@ -5,10 +5,13 @@ import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import ImageCropper from "../ImageCropper/OtherCropper";
 import imageCompression from "browser-image-compression";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AddPaymentDetails = () => {
   const { id } = useParams();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
+
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
@@ -74,7 +77,7 @@ const AddPaymentDetails = () => {
 
   const handleCropCancel = () => {
     setShowCropper(false);
-    if(originalImage){
+    if (originalImage) {
       URL.revokeObjectURL(originalImage);
     }
   }
@@ -177,7 +180,7 @@ const AddPaymentDetails = () => {
             value={form.bankHolderName}
             onChange={handleChange}
             placeholder="Account Holder Name"
-            className="input tracking-widest font-Roboto" 
+            className="input tracking-widest font-Roboto"
           />
 
           <input
@@ -228,16 +231,16 @@ const AddPaymentDetails = () => {
       `}</style>
 
       {
-  showCropper && (<>
-  
-  <ImageCropper 
-  image={originalImage}
-  onCancel={handleCropCancel}
-  onCropComplete={handleCropComplete}
-  />
-  
-  </>)
-}
+        showCropper && (<>
+
+          <ImageCropper
+            image={originalImage}
+            onCancel={handleCropCancel}
+            onCropComplete={handleCropComplete}
+          />
+
+        </>)
+      }
     </div>
   );
 };

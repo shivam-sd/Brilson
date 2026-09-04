@@ -4,11 +4,14 @@ import axios from 'axios';
 import { LayoutGrid } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { MdOutlineSwipeDown } from "react-icons/md";
+import { selectToken } from '../../../../store/slices/authSlice';
+import { useSelector } from 'react-redux';
 
 const ServiceLayoutManager = ({ activationCode, onLayoutChange }) => {
   const [layoutType, setLayoutType] = useState('flex');
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const token = useSelector(selectToken);
 
   // Check if device is mobile
   useEffect(() => {
@@ -29,7 +32,7 @@ const ServiceLayoutManager = ({ activationCode, onLayoutChange }) => {
 
   const fetchCurrentLayout = async () => {
     try {
-      const token = localStorage.getItem("token");
+      
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/service-layout`,
         {
@@ -50,7 +53,6 @@ const ServiceLayoutManager = ({ activationCode, onLayoutChange }) => {
     
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/service-layout`,
         {

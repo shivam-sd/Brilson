@@ -5,13 +5,14 @@ import { MdDelete } from "react-icons/md";
 import { motion } from "framer-motion";
 import { Package, Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { selectToken } from "../../../store/slices/authSlice";
 
 const GalleryEditProfile = () => {
   const { id } = useParams();
   const [gallery, setGallery] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
+ const token = useSelector(selectToken);
 
   useEffect(() => {
     const fetchGallery = async () => {

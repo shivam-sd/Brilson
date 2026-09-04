@@ -9,10 +9,13 @@ import {
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const UpdateResume = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const token = useSelector(selectToken);
 
   const [file, setFile] = useState(null);
   const [existingResume, setExistingResume] = useState(null);
@@ -26,18 +29,19 @@ const UpdateResume = () => {
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/profile/resume/get/${id}`,
         {
+          withCredentials: true,
           headers: {
-            Authorization: localStorage.getItem("token"),
+            Authorization: token ? `Bearer ${token}` : "",
           },
           withCredentials: true,
         }
       );
 
-    
-    //   console.log(res)
-        setExistingResume(res?.data?.resume);
-        setResumeId(res?.data?.resume._id);
-    
+
+      //   console.log(res)
+      setExistingResume(res?.data?.resume);
+      setResumeId(res?.data?.resume._id);
+
     } catch (error) {
       toast.error("Failed to load resume");
     } finally {
@@ -81,7 +85,7 @@ const UpdateResume = () => {
         formData,
         {
           headers: {
-            Authorization: localStorage.getItem("token"),
+            Authorization: token ? `Bearer ${token}` : "",
           },
           withCredentials: true,
         }
@@ -123,31 +127,31 @@ const UpdateResume = () => {
 
         {/* Existing Resume */}
         {existingResume && (
-  <div className="mb-6 bg-white/10 border border-white/20 rounded-xl p-4 flex items-center justify-between">
-    <div className="flex items-center gap-3">
-      <FileText className="text-indigo-300" />
-      <div>
-        <p className="font-medium">
-          {existingResume.name}
-        </p>
-        {/* <p className="text-xs text-gray-300 break-all">
+          <div className="mb-6 bg-white/10 border border-white/20 rounded-xl p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <FileText className="text-indigo-300" />
+              <div>
+                <p className="font-medium">
+                  {existingResume.name}
+                </p>
+                {/* <p className="text-xs text-gray-300 break-all">
           {existingResume.resume}
         </p> */}
-      </div>
-    </div>
+              </div>
+            </div>
 
-    <a
-      href={existingResume.resume}
-      target="_blank"
-      download={existingResume.name}
-      rel="noopener noreferrer"
-      className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm transition"
-    >
-      <Download size={16} />
-      View
-    </a>
-  </div>
-)}
+            <a
+              href={existingResume.resume}
+              target="_blank"
+              download={existingResume.name}
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm transition"
+            >
+              <Download size={16} />
+              View
+            </a>
+          </div>
+        )}
 
         {/* Replace Form */}
         <form onSubmit={handleUpdate} className="space-y-6">

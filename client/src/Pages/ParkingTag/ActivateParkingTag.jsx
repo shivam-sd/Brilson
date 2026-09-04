@@ -5,6 +5,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
 import { MdQrCodeScanner } from "react-icons/md";
+import { selectToken } from "../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const ActivateParkingTag = () => {
   const navigate = useNavigate();
@@ -12,13 +14,12 @@ const ActivateParkingTag = () => {
   const [showScanner, setShowScanner] = useState(false);
   const [loading, setLoading] = useState(false);
   const scannerRef = useRef(null);
-
+const token = useSelector(selectToken);
   const [form, setForm] = useState({
     activationCode: "",
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
 
@@ -104,9 +105,6 @@ const ActivateParkingTag = () => {
 
     try {
       setLoading(true);
-
-      const token = localStorage.getItem("token");
-
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/tags/activate`,
         { activationCode: trimmedCode },

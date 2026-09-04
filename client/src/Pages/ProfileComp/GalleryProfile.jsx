@@ -5,6 +5,8 @@ import {
   Maximize2, Download, Share2, Heart
 } from "lucide-react";
 import axios from "axios";
+import { selectToken } from "../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const GalleryProfile = ({activationCode}) => {
   
@@ -12,7 +14,8 @@ const GalleryProfile = ({activationCode}) => {
 
 
   const id = activationCode;
-const token = localStorage.getItem('token');
+  const token = useSelector(selectToken);
+
 
 
   useEffect(() => {

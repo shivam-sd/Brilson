@@ -4,11 +4,14 @@ import { Upload, Loader2, Plus, ImageIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const UpdatePortfolio = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
+
 
   const [portfolioId, setPortfolioId] = useState();
   const [activationCode, setActivationCode] = useState();
@@ -23,33 +26,33 @@ const UpdatePortfolio = () => {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  
+
   //fetch Product details and prefill form
-useEffect(() => {
+  useEffect(() => {
     const fetchPortfolio = async () => {
-        try{
-            const res = await axios.get(
-              `${import.meta.env.VITE_BASE_URL}/api/profile-portfolio/get/single/${id}`,
-              {withCredentials:true, headers: { Authorization: `Bearer ${token}` } }
-            );
-            // console.log(res.data.data)
-            setForm({
-              title: res.data.data.title,
-              description: res.data.data.description,
-              duration: res.data.data.duration,
-              activationCode: id,
-              image: res.data.data.image,
-            });
-            setPortfolioId(res.data.data._id);
-            setPreview(res.data.data.image);
-            setActivationCode(res.data.data.activationCode);
-          }catch(err){
-            toast.error("Failed to load portfolio details");
-            console.log(err);
-          }
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/profile-portfolio/get/single/${id}`,
+          { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
+        );
+        // console.log(res.data.data)
+        setForm({
+          title: res.data.data.title,
+          description: res.data.data.description,
+          duration: res.data.data.duration,
+          activationCode: id,
+          image: res.data.data.image,
+        });
+        setPortfolioId(res.data.data._id);
+        setPreview(res.data.data.image);
+        setActivationCode(res.data.data.activationCode);
+      } catch (err) {
+        toast.error("Failed to load portfolio details");
+        console.log(err);
+      }
     }
     fetchPortfolio();
-}, [id])
+  }, [id])
 
 
   const handleChange = (e) => {
@@ -80,16 +83,16 @@ useEffect(() => {
       const res = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/profile-portfolio/update/${portfolioId}`,
         fd,
-        {withCredentials:true, headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
       );
 
       console.log(res.data);
 
       toast.success("Portfolio Updated");
 
-      setForm({ title: "", description: "", duration: "", image: null,  });
+      setForm({ title: "", description: "", duration: "", image: null, });
       setPreview(null);
-      navigate(`/profile/${activationCode}`, {replace:true});
+      navigate(`/profile/${activationCode}`, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
       console.log(err);

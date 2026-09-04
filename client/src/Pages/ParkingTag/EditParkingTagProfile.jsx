@@ -6,12 +6,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Loader2, Car, Phone, User, AlertCircle } from "lucide-react";
 import Header from "../../Component/Header"
 import Footer from "../../Component/Footer";
+import { useSelector } from "react-redux";
+import { selectToken } from "../../store/slices/authSlice";
 
 const EditParkingTagProfile = () => {
   const { slug } = useParams();
   console.log(slug);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
   
   // Loading states
   const [loading, setLoading] = useState(false);

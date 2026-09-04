@@ -6,11 +6,13 @@ import axios from "axios";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
+import { selectToken } from "../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 
 const ProductsProfile = ({activationCode}) => {
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("token");
+ const token = useSelector(selectToken);
 
 const [products, setProducts] = useState([]);
 

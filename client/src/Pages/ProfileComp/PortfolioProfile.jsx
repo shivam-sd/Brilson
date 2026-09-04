@@ -8,13 +8,15 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { selectToken } from "../../store/slices/authSlice";
 
 const PortfolioProfile = ({activationCode}) => {
 
 const [portfolio, setPortfolio] = useState([]);
 const [loading, setLoading] = useState(true);
 
-const token = localStorage.getItem("token");
+const token = useSelector(selectToken);
 
 const id = activationCode;
 

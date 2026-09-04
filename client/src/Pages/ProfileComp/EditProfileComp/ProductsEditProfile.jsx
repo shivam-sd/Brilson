@@ -22,6 +22,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { selectToken } from "../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const ProductsEditProfile = () => {
   const { id } = useParams();
@@ -29,7 +31,7 @@ const ProductsEditProfile = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
 
   // Fetch products
   useEffect(() => {

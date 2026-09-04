@@ -3,10 +3,13 @@ import axios from "axios";
 import { UploadCloud, FileText, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AddResume = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const token = useSelector(selectToken);
 
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -42,10 +45,10 @@ const AddResume = () => {
       await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/profile/resume/add`,
         formData,
-        {
+        { withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: localStorage.getItem("token"),
+            Authorization: token ? `Bearer ${token}` : "",
           },
           withCredentials: true,
         }

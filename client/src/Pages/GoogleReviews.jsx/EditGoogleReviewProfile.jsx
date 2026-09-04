@@ -15,6 +15,8 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { useSelector } from "react-redux";
+import { selectToken } from "../../store/slices/authSlice";
 
 const EditGoogleReviewsProfile = () => {
   const { activationCode } = useParams();
@@ -22,7 +24,7 @@ const EditGoogleReviewsProfile = () => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [saved, setSaved] = useState(false);
-  
+  const token = useSelector(selectToken);
   const [formData, setFormData] = useState({
     brandName: "",
     googleReviewLink: ""
@@ -34,7 +36,6 @@ const EditGoogleReviewsProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/google-review/profile/${activationCode}`,
           {
@@ -115,7 +116,6 @@ const EditGoogleReviewsProfile = () => {
     setLoading(true);
     
     try {
-      const token = localStorage.getItem("token");
       const response = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/google-reviews/${activationCode}/edit`,
         formData,

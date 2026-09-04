@@ -7,11 +7,13 @@ import { Camera, Loader2, X, Check, Upload } from "lucide-react";
 import imageCompression from "browser-image-compression";
 import ImageCropper from "./ProfileComp/EditProfileComp/ImageCropper/ImageCropper"; 
 import CoverImageCropper from "./ProfileComp/EditProfileComp/ImageCropper/CoverImageCropper";
+import { selectToken } from "../store/slices/authSlice";
+import { useSelector } from "react-redux";
  
 const EditProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
   
   // Loading states
   const [loading, setLoading] = useState(false);

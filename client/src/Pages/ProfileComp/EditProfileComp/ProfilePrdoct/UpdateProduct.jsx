@@ -6,11 +6,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import ImageCropper from "../ImageCropper/OtherCropper";
 import imageCompression from "browser-image-compression";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const UpdateProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
+
 
   const [productId, setProductId] = useState();
   const [activationCode, setActivationCode] = useState();
@@ -18,8 +21,8 @@ const UpdateProduct = () => {
     title: "",
     description: "",
     activationCode: id,
-    price:"",
-    link:"",
+    price: "",
+    link: "",
     image: null,
   });
 
@@ -29,34 +32,34 @@ const UpdateProduct = () => {
   const [ShowCropper, setShowCropper] = useState(null);
   const [FinalFile, setFinalFile] = useState(null);
 
-  
+
   //fetch Product details and prefill form
-useEffect(() => {
+  useEffect(() => {
     const fetchProduct = async () => {
-        try{
-            const res = await axios.get(
-              `${import.meta.env.VITE_BASE_URL}/api/profile-products/get/single/${id}`,
-              {withCredentials:true, headers: { Authorization: `Bearer ${token}` } }
-            );
-            // console.log(res.data.data)
-            setForm({
-              title: res.data.data.title,
-              description: res.data.data.description,
-              activationCode: id,
-              price:res.data.data.price,
-              image: res.data.data.image,
-              link:res.data.data.link,
-            });
-            setProductId(res.data.data._id);
-            setPreview(res.data.data.image);
-            setActivationCode(res.data.data.activationCode);
-          }catch(err){
-            toast.error("Failed to load product details");
-            console.log(err);
-          }
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/profile-products/get/single/${id}`,
+          { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
+        );
+        // console.log(res.data.data)
+        setForm({
+          title: res.data.data.title,
+          description: res.data.data.description,
+          activationCode: id,
+          price: res.data.data.price,
+          image: res.data.data.image,
+          link: res.data.data.link,
+        });
+        setProductId(res.data.data._id);
+        setPreview(res.data.data.image);
+        setActivationCode(res.data.data.activationCode);
+      } catch (err) {
+        toast.error("Failed to load product details");
+        console.log(err);
+      }
     }
     fetchProduct();
-}, [id])
+  }, [id])
 
 
   const handleChange = (e) => {
@@ -64,8 +67,8 @@ useEffect(() => {
 
     if (name === "image" && files?.[0]) {
       setForm({ ...form, image: files[0] });
-const imageUrl = URL.createObjectURL(files[0]);
-setOriginalImage(imageUrl);
+      const imageUrl = URL.createObjectURL(files[0]);
+      setOriginalImage(imageUrl);
       setPreview(imageUrl);
       setShowCropper(true);
     } else {
@@ -76,7 +79,7 @@ setOriginalImage(imageUrl);
   const handleCropComplete = async (croppedFile) => {
     try {
       setShowCropper(false);
-      
+
       // Additional compression before preview
       const options = {
         maxSizeMB: 0.3,
@@ -84,24 +87,24 @@ setOriginalImage(imageUrl);
         useWebWorker: true,
         fileType: 'image/jpeg'
       };
-      
+
       const finalFile = await imageCompression(croppedFile, options);
       setFinalFile(finalFile);
-      
+
       // Create preview
       const previewUrl = URL.createObjectURL(finalFile);
       setPreview(previewUrl);
-      
-      
+
+
       // Clean up original image URL
       if (OriginalImage) {
         URL.revokeObjectURL(OriginalImage);
       }
-      
+
       // Log file details for debugging
       console.log('Final file size:', finalFile.size / 1024, 'KB');
       console.log('Final file type:', finalFile.type);
-      
+
     } catch (err) {
       console.error('Crop complete error:', err);
       toast.error("Error cropping image");
@@ -111,7 +114,7 @@ setOriginalImage(imageUrl);
   const handleCancelCrop = () => {
     setShowCropper(false);
 
-    if(OriginalImage){
+    if (OriginalImage) {
       URL.revokeObjectURL(OriginalImage);
     }
   }
@@ -135,16 +138,16 @@ setOriginalImage(imageUrl);
       const res = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/profile-products/update/${productId}`,
         fd,
-        {withCredentials:true, headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
       );
 
       console.log(res.data);
 
       toast.success("Product Added");
 
-      setForm({ title: "", description: "", duration: "", price:"", image: null,  });
+      setForm({ title: "", description: "", duration: "", price: "", image: null, });
       setPreview(null);
-      navigate(`/profile/${activationCode}`, {replace:true});
+      navigate(`/profile/${activationCode}`, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
       console.log(err);
@@ -255,8 +258,8 @@ setOriginalImage(imageUrl);
         </button>
       </form>
 
-      
-{/* CROPPER MODAL */}
+
+      {/* CROPPER MODAL */}
       {ShowCropper && (
         <ImageCropper
           image={OriginalImage}
@@ -264,8 +267,8 @@ setOriginalImage(imageUrl);
           onCropComplete={handleCropComplete}
         />
       )}
-      
-<Toaster position="top-right" reverseOrder={false} />
+
+      <Toaster position="top-right" reverseOrder={false} />
 
     </div>
   );

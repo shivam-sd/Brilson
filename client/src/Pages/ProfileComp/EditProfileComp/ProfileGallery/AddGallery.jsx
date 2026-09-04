@@ -5,11 +5,14 @@ import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import imageCompression from "browser-image-compression";
 import ImageCropper from "../ImageCropper/OtherCropper";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AddGallery = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
+
 
   const [form, setForm] = useState({
     activationCode: id,
@@ -39,11 +42,11 @@ const AddGallery = () => {
 
 
   const handleCropComplete = async (croppedFile) => {
-    try{
+    try {
       setShowCropper(false);
 
       const options = {
-           maxSizeMB: 0.3,
+        maxSizeMB: 0.3,
         maxWidthOrHeight: 500,
         useWebWorker: true,
         fileType: 'image/jpeg'
@@ -57,17 +60,17 @@ const AddGallery = () => {
       setPreview(previewUrl);
 
 
-      if(originalImage){
+      if (originalImage) {
         URL.revokeObjectURL(finalFile);
       }
 
-            // Log file details for debugging
+      // Log file details for debugging
       console.log('Final file size:', finalFile.size / 1024, 'KB');
       console.log('Final file type:', finalFile.type);
 
-    }catch(err){
-console.error('Crop complete error:', err);
-                toast.error("Error cropping image");
+    } catch (err) {
+      console.error('Crop complete error:', err);
+      toast.error("Error cropping image");
     }
   }
 
@@ -75,7 +78,7 @@ console.error('Crop complete error:', err);
   const handleCropCancel = () => {
     setShowCropper(false);
 
-    if(originalImage){
+    if (originalImage) {
       URL.revokeObjectURL(originalImage);
     }
   }
@@ -96,7 +99,7 @@ console.error('Crop complete error:', err);
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/profile-gallery/add`,
         fd,
-        {withCredentials:true, headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
       );
 
       console.log(res.data);
@@ -105,7 +108,7 @@ console.error('Crop complete error:', err);
 
       setForm({ activationCode: id, image: null });
       setPreview(null);
-      navigate(`/profile/${id}`, {replace:true});
+      navigate(`/profile/${id}`, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed");
       console.log(err);
@@ -181,11 +184,11 @@ console.error('Crop complete error:', err);
 
       {
         showCropper && (<>
-        <ImageCropper 
-        image={originalImage}
-        onCancel={handleCropCancel}
-        onCropComplete={handleCropComplete}
-        />
+          <ImageCropper
+            image={originalImage}
+            onCancel={handleCropCancel}
+            onCropComplete={handleCropComplete}
+          />
         </>)
       }
 

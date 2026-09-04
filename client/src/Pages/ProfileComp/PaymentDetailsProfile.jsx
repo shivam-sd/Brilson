@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { CreditCard, Copy, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { selectToken } from "../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const PaymentDetailsProfile = ({ activationCode }) => {
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
 
   const [paymentData, setPaymentData] = useState(null);
   const [loading, setLoading] = useState(true);

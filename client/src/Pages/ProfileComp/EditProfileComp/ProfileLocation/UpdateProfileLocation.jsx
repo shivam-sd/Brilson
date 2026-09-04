@@ -3,11 +3,14 @@ import axios from "axios";
 import { MapPin, Star, Loader2, ArrowLeft } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
+import { selectToken } from "../../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const UpdateProfileLocation = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useSelector(selectToken);
+
 
   const [form, setForm] = useState({
     googleMapLink: "",
@@ -58,7 +61,7 @@ const UpdateProfileLocation = () => {
 
     try {
       setLoading(true);
-      
+
       await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/profile/location/update/${locationId}`,
         form,
@@ -93,8 +96,8 @@ const UpdateProfileLocation = () => {
       <div className="w-full max-w-2xl relative z-10 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl p-8 sm:p-10 overflow-hidden">
 
         {/* Glow Effects */}
-<div className="pointer-events-none absolute -top-20 -left-20 w-72 h-72 bg-emerald-500/20 blur-3xl rounded-full"></div>
-<div className="pointer-events-none absolute -bottom-20 -right-20 w-72 h-72 bg-blue-500/20 blur-3xl rounded-full"></div>
+        <div className="pointer-events-none absolute -top-20 -left-20 w-72 h-72 bg-emerald-500/20 blur-3xl rounded-full"></div>
+        <div className="pointer-events-none absolute -bottom-20 -right-20 w-72 h-72 bg-blue-500/20 blur-3xl rounded-full"></div>
 
         {/* Back Button */}
         <button

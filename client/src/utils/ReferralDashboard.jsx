@@ -7,16 +7,11 @@ import {
   XCircle, Gift, TrendingUp, Sparkles
 } from 'lucide-react';
 import {useSelector} from "react-redux";
+import { selectToken } from '../store/slices/authSlice';
 
 
 const ReferralDashboard = () => {
 
-  const token = useSelector((state) => state.auth.token);
-  // const user = useSelector((state) => state.auth.user);
-  // console.log("Token from Redux Store:", token); 
-  // console.log("User from Redux Store:", user); 
-
-  // ===== STATES =====
   const [referralData, setReferralData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
@@ -26,7 +21,8 @@ const ReferralDashboard = () => {
   const fetchReferrals = async () => {
     try {
       setLoading(true);
-      // const token = localStorage.getItem('token');
+        const token = useSelector(selectToken);
+
 
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/user/referral`,

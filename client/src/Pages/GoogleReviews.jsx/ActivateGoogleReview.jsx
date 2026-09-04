@@ -5,6 +5,8 @@ import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
 import { MdQrCodeScanner } from "react-icons/md";
+import { selectToken } from "../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const ActivateGoogleReview = () => {
   const navigate = useNavigate();
@@ -12,13 +14,12 @@ const ActivateGoogleReview = () => {
   const [showScanner, setShowScanner] = useState(false);
   const [loading, setLoading] = useState(false);
   const scannerRef = useRef(null);
-
+  const token = useSelector(selectToken);
   const [form, setForm] = useState({
     activationCode: "",
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
 
@@ -32,8 +33,8 @@ const ActivateGoogleReview = () => {
 
         scannerRef.current = new Html5QrcodeScanner(
           "reader",
-          { 
-            fps: 10, 
+          {
+            fps: 10,
             qrbox: 250,
             rememberLastUsedCamera: true,
             showTorchButtonIfSupported: true,
@@ -88,7 +89,7 @@ const ActivateGoogleReview = () => {
   /* ACTIVATE */
   const handleActivate = async () => {
     const trimmedCode = form.activationCode.trim();
-    
+
     if (!trimmedCode) {
       toast.error("Activation Code is required");
       return;
@@ -104,8 +105,6 @@ const ActivateGoogleReview = () => {
 
     try {
       setLoading(true);
-
-      const token = localStorage.getItem("token");
 
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/google-review/activate`,
@@ -127,19 +126,19 @@ const ActivateGoogleReview = () => {
         toast.error("Profile not found");
         return;
       }
-      
+
       toast.success("Google Reviews activated successfully");
 
-setTimeout(() => {
-  navigate(`/profile/google-reviews/${slug}`, { replace: true });
-}, 1000);
+      setTimeout(() => {
+        navigate(`/profile/google-reviews/${slug}`, { replace: true });
+      }, 1000);
     } catch (err) {
-        
-        toast.error(
-            err?.response?.data?.error ||
-            "Invalid activation code"
-        );
-        console.error("Activation error:", err.response.data.error);
+
+      toast.error(
+        err?.response?.data?.error ||
+        "Invalid activation code"
+      );
+      console.error("Activation error:", err.response.data.error);
 
       if (err.response?.status === 401) {
         localStorage.removeItem("token");
@@ -161,11 +160,11 @@ setTimeout(() => {
   };
 
   /* Check if activation button should be enabled */
-  const isActivateButtonEnabled =  form.activationCode.trim().length > 0 && !loading;
+  const isActivateButtonEnabled = form.activationCode.trim().length > 0 && !loading;
 
   return (
     <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center px-4">
-        <Toaster position="top-center" />
+      <Toaster position="top-center" />
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -201,11 +200,10 @@ setTimeout(() => {
         <button
           onClick={handleActivate}
           disabled={!isActivateButtonEnabled}
-          className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${
-            isActivateButtonEnabled
+          className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${isActivateButtonEnabled
               ? "bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600 transform hover:-translate-y-0.5 active:translate-y-0"
               : "bg-gray-700 cursor-not-allowed opacity-60"
-          }`}
+            }`}
         >
           {loading ? (
             <>
@@ -243,7 +241,7 @@ setTimeout(() => {
           </button>
 
           {showScanner && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
@@ -252,12 +250,12 @@ setTimeout(() => {
               <div className="text-center text-sm text-gray-400 mb-2">
                 Point your camera at the QR code
               </div>
-              <div 
-                id="reader" 
+              <div
+                id="reader"
                 className="bg-white rounded-xl overflow-hidden p-2 border-2 border-indigo-500/30"
                 style={{ minHeight: "250px" }}
               ></div>
-              
+
               <button
                 onClick={() => {
                   setShowScanner(false);
@@ -280,8 +278,8 @@ setTimeout(() => {
             <p className="text-sm text-gray-400 mb-2">
               You need to login first to activate a Google Reviews
             </p>
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="inline-flex items-center text-cyan-400 hover:text-cyan-300 underline text-sm transition-colors"
             >
               Click here to login

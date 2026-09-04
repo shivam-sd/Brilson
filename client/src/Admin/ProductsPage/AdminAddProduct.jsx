@@ -5,6 +5,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import imageCompression from "browser-image-compression";
 import ImageCropper from "../../Pages/ProfileComp/EditProfileComp/ImageCropper/CoverImageCropper";
+import { selectToken } from "../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const AdminAddProduct = () => {
   const navigate = useNavigate();
@@ -15,7 +17,7 @@ const AdminAddProduct = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(null);
   const [originalImage, setOriginalImage] = useState(null);
   const [tempImageUrl, setTempImageUrl] = useState(null);
-  
+  const token = useSelector(selectToken);
   // Multiple images state
   const [imageFiles, setImageFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
@@ -380,7 +382,6 @@ const AdminAddProduct = () => {
     );
     
     try {
-      const token = localStorage.getItem("token");
       
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/admin/add/products`,
