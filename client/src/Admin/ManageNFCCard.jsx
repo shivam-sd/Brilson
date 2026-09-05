@@ -66,9 +66,11 @@ const ManageNFCCard = () => {
   const cardRef = useRef();
 
   // Fetch cards
-  const fetchCards = useCallback(async (page = 1, search = "", status = "all") => {
+  const fetchCards = useCallback(async (page = 1, search = "", status = "all", showLoader = true) => {
     try {
-      setLoading(true);
+      if (showLoader) {
+        setLoading(true);
+      }
       setIsSearching(!!search);
 
       const baseUrl = import.meta.env.VITE_BASE_URL || '';
@@ -124,13 +126,31 @@ const ManageNFCCard = () => {
       console.error("❌ Fetch error:", err);
       setError(err.message || "Unable to fetch cards");
     } finally {
-      setLoading(false);
+      if (showLoader) {
+        setLoading(false);
+      }
     }
   }, [limit]);
 
+  const searchTimerRef = useRef(null);
+  const searchTriggerRef = useRef(0);
+  const [searchTrigger, setSearchTrigger] = useState(0);
+
   useEffect(() => {
-    fetchCards(currentPage, searchQuery, cardsStatus);
-  }, [fetchCards, currentPage, searchQuery, cardsStatus]);
+    const isSearchFetch = searchTriggerRef.current === searchTrigger && searchTrigger > 0;
+    if (isSearchFetch) {
+      searchTriggerRef.current = 0;
+    }
+    fetchCards(currentPage, searchQuery, cardsStatus, !isSearchFetch);
+  }, [fetchCards, currentPage, cardsStatus, searchTrigger]);
+
+  useEffect(() => {
+    return () => {
+      if (searchTimerRef.current) {
+        clearTimeout(searchTimerRef.current);
+      }
+    };
+  }, []);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
@@ -142,12 +162,40 @@ const ManageNFCCard = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setCurrentPage(1);
-    fetchCards(1, searchQuery, cardsStatus);
+
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+    }
+
+    searchTimerRef.current = setTimeout(() => {
+      setCurrentPage(1);
+      searchTriggerRef.current += 1;
+      setSearchTrigger(searchTriggerRef.current);
+    }, 500);
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+    }
+
+    searchTimerRef.current = setTimeout(() => {
+      setCurrentPage(1);
+      searchTriggerRef.current += 1;
+      setSearchTrigger(searchTriggerRef.current);
+    }, 500);
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
+
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+    }
+
     setCurrentPage(1);
     fetchCards(1, "", cardsStatus);
   };
@@ -182,7 +230,8 @@ const ManageNFCCard = () => {
 
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/cards/${card._id}/download?${params.toString()}`,
-        {withCredentials: true,
+        {
+          withCredentials: true,
           responseType: 'blob',
           headers: { Authorization: token ? `Bearer ${token}` : "" },
           timeout: 60000
@@ -854,7 +903,7 @@ const ManageNFCCard = () => {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 placeholder="Search by name or code..."
                 className="bg-gray-900/60 backdrop-blur border-0 pl-9 pr-8 py-2.5 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white text-sm"
               />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { FiPlus, FiAlertCircle, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight, FiSearch, FiDownloadCloud } from "react-icons/fi";
 import { FaDownload, FaEye } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -9,8 +9,8 @@ import { toast } from "react-toastify";
 import { HexColorPicker } from "react-colorful";
 import { selectAdminToken } from "../store/slices/authSlice";
 import { useSelector } from "react-redux";
+import { debounce } from "../utils/debounce";
 
-/* Ultra High Resolution PNG Generator - 4000px for no pixelation */
 const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent", size = 4000) => {
   const qrData = `${url}`;
 
@@ -42,7 +42,6 @@ const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent"
   });
 };
 
-/* Ultra High Resolution PNG with Text - Increased Height and Gaps */
 const addTextToUltraHighResPNG = async (qrCode, activationCode, profileName, textColor = "#000000", bgColor = "transparent") => {
   try {
     const svgString = await qrCode.getRawData("svg");
@@ -126,7 +125,6 @@ const addTextToUltraHighResPNG = async (qrCode, activationCode, profileName, tex
   }
 };
 
-/* Thumbnail ke liye chota PNG - Updated with better spacing */
 const generateThumbnailPNG = async (qrCode, activationCode, profileName, textColor, bgColor) => {
   try {
     const svgString = await qrCode.getRawData("svg");
@@ -216,8 +214,6 @@ const ManageCards = () => {
 
   const isGeneratingRef = useRef(false);
   const currentPageRef = useRef(currentPage);
-
-  // Sirf current page ke cards ke liye QR generate karein
   const generateQRCodesForCurrentPage = useCallback(async (cardsList) => {
     if (!cardsList || cardsList.length === 0) return;
     if (isGeneratingRef.current) return;
@@ -226,12 +222,9 @@ const ManageCards = () => {
     setGeneratingQR(true);
 
     const qrMap = {};
-
-    // Chunk size 5 - ek saath 5 QR generate honge
     const chunkSize = 5;
 
     for (let i = 0; i < cardsList.length; i += chunkSize) {
-      // Check if we're still on the same page
       if (currentPageRef.current !== currentPage) {
         console.log("Page changed, stopping QR generation");
         break;
@@ -260,11 +253,7 @@ const ManageCards = () => {
           qrMap[card._id] = null;
         }
       }));
-
-      // Update UI with current batch
       setQrImages(prev => ({ ...prev, ...qrMap }));
-
-      // Small delay to prevent UI freezing
       await new Promise(resolve => setTimeout(resolve, 50));
     }
 
@@ -272,14 +261,15 @@ const ManageCards = () => {
     setGeneratingQR(false);
   }, [qrDotsColor, qrBgColor, textColor, currentPage]);
 
-  const fetchCards = useCallback(async (page = 1, search = "", status = "all") => {
+  const fetchCards = useCallback(async (page = 1, search = "", status = "all", showLoader = true) => {
     try {
-      setLoading(true);
+      if (showLoader) {
+        setLoading(true);
+      }
       setIsSearching(!!search);
       currentPageRef.current = page;
 
       const baseUrl = import.meta.env.VITE_BASE_URL || '';
-
 
       const params = new URLSearchParams({
         page,
@@ -292,8 +282,6 @@ const ManageCards = () => {
       }
 
       const url = `${baseUrl}/api/all/cards?${params.toString()}`;
-
-      // const token = localStorage.getItem("adminToken");
       if (!token) {
         setError("Please login again");
         setLoading(false);
@@ -308,7 +296,6 @@ const ManageCards = () => {
       });
 
       console.log("API Response:", res.data); // Debug log
-
 
       const responseData = res.data.data || res.data;
       const allCards = responseData.cards || responseData.allCards || [];
@@ -335,11 +322,7 @@ const ManageCards = () => {
         activated: statsData.activated || 0,
         inactive: statsData.inactive || 0
       });
-
-      // Clear previous page QR images
       setQrImages({});
-
-      // Generate QR codes for current page only
       await generateQRCodesForCurrentPage(allCards);
 
     } catch (err) {
@@ -347,14 +330,26 @@ const ManageCards = () => {
       setError(err.message || "Unable to fetch cards");
       toast.error("Failed to fetch cards");
     } finally {
-      setLoading(false);
+      if (showLoader) {
+        setLoading(false);
+      }
     }
   }, [limit, generateQRCodesForCurrentPage]);
 
-  //  useEffect with all dependencies
   useEffect(() => {
-    fetchCards(currentPage, searchQuery,);
-  }, [fetchCards, currentPage, searchQuery,]);
+    fetchCards(currentPage, searchQuery);
+  }, [fetchCards, currentPage]);
+
+  const debouncedFetchCards = useMemo(
+    () =>
+      debounce((search) => {
+        setCurrentPage(1);
+        currentPageRef.current = 1;
+        setQrImages({});
+        fetchCards(1, search, "all", false);
+      }, 500),
+    [fetchCards]
+  );
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
@@ -368,14 +363,18 @@ const ManageCards = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setCurrentPage(1);
-    currentPageRef.current = 1;
-    setQrImages({});
-    fetchCards(1, searchQuery);
+    debouncedFetchCards(searchQuery);
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    debouncedFetchCards(value);
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
+    debouncedFetchCards.cancel?.();
     setCurrentPage(1);
     currentPageRef.current = 1;
     setQrImages({});
@@ -757,7 +756,7 @@ const ManageCards = () => {
 
   return (
     <div className="px-2 sm:px-3 md:px-4 lg:px-2 py-3 sm:py-4 text-gray-200 max-w-full overflow-x-hidden">
-      {/* HEADER */}
+      {}
       <div className="flex flex-col lg:flex-row lg:justify-between gap-3 sm:gap-4 mb-4 sm:mb-5 md:mb-6 lg:mt-0 mt-10">
         <div className="w-full lg:w-auto text-center lg:text-left">
           <h4 className="text-base sm:text-lg md:text-xl lg:text-xl font-bold">Manage NFC Cards</h4>
@@ -786,7 +785,7 @@ const ManageCards = () => {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 placeholder="Search..."
                 className="bg-gray-900/60 backdrop-blur border-0 pl-8 sm:pl-9 pr-7 sm:pr-8 py-2 sm:py-2.5 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white text-xs sm:text-sm"
               />
@@ -831,7 +830,7 @@ const ManageCards = () => {
         </div>
       </div>
 
-      {/* COLOR PICKER MODAL */}
+      {}
       {showColorPicker && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-center p-3 sm:p-4">
           <div className="bg-gray-900 rounded-2xl max-w-sm sm:max-w-md w-full border border-gray-700 shadow-2xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
@@ -927,7 +926,7 @@ const ManageCards = () => {
         </div>
       )}
 
-      {/* STATS CARDS */}
+      {}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-5 md:mb-6">
         <div className="bg-gray-800/50 rounded-xl p-3 sm:p-4 border border-gray-700/50">
           <div className="flex items-center justify-between">
@@ -949,7 +948,7 @@ const ManageCards = () => {
         </div>
       </div>
 
-      {/* MOBILE VIEW */}
+      {}
       <div className="block lg:hidden">
         {filteredGroupedCards.length > 0 ? (
           filteredGroupedCards.map(([date, list]) => (
@@ -999,7 +998,7 @@ const ManageCards = () => {
         {totalPages > 1 && <Pagination />}
       </div>
 
-      {/* DESKTOP/TABLET TABLE VIEW */}
+      {}
       <div className="hidden lg:block">
         <div className="overflow-x-auto rounded-xl border border-gray-700/50 bg-gray-900/20">
           <table className="w-full min-w-[700px]">

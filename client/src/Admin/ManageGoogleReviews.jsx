@@ -32,9 +32,11 @@ const ManageGoogleReviews = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   // Fetch Reviews
-  const fetchReviews = useCallback(async (page = 1, search = "", status = "all") => {
+  const fetchReviews = useCallback(async (page = 1, search = "", status = "all", showLoader = true) => {
     try {
-      setLoading(true);
+      if (showLoader) {
+        setLoading(true);
+      }
       setIsSearching(!!search);
 
       const baseUrl = import.meta.env.VITE_BASE_URL || '';
@@ -91,13 +93,33 @@ const ManageGoogleReviews = () => {
       console.error("❌ Fetch error:", err);
       setError(err.message || "Unable to fetch google reviews");
     } finally {
-      setLoading(false);
+      if (showLoader) {
+        setLoading(false);
+      }
     }
   }, [limit]);
 
+  const searchTimerRef = useRef(null);
+  const searchTriggerRef = useRef(0);
+  const [searchTrigger, setSearchTrigger] = useState(0);
+
   useEffect(() => {
-    fetchReviews(currentPage, searchQuery);
-  }, [fetchReviews, currentPage, searchQuery]);
+    const isSearchFetch = searchTriggerRef.current === searchTrigger && searchTrigger > 0;
+
+    if (isSearchFetch) {
+      searchTriggerRef.current = 0;
+    }
+
+    fetchReviews(currentPage, searchQuery, "all", !isSearchFetch);
+  }, [fetchReviews, currentPage, searchTrigger]);
+
+  useEffect(() => {
+    return () => {
+      if (searchTimerRef.current) {
+        clearTimeout(searchTimerRef.current);
+      }
+    };
+  }, []);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
@@ -109,12 +131,40 @@ const ManageGoogleReviews = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setCurrentPage(1);
-    fetchReviews(1, searchQuery);
+
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+    }
+
+    searchTimerRef.current = setTimeout(() => {
+      setCurrentPage(1);
+      searchTriggerRef.current += 1;
+      setSearchTrigger(searchTriggerRef.current);
+    }, 500);
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+    }
+
+    searchTimerRef.current = setTimeout(() => {
+      setCurrentPage(1);
+      searchTriggerRef.current += 1;
+      setSearchTrigger(searchTriggerRef.current);
+    }, 500);
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
+
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+    }
+
     setCurrentPage(1);
     fetchReviews(1, "");
   };
@@ -143,7 +193,8 @@ const ManageGoogleReviews = () => {
 
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/google-review-cards/${review._id}/download`,
-        {withCredentials: true,
+        {
+          withCredentials: true,
           responseType: 'blob',
           headers: { Authorization: token ? `Bearer ${token}` : "" },
           timeout: 60000
@@ -172,8 +223,10 @@ const ManageGoogleReviews = () => {
         await axios.patch(
           `${import.meta.env.VITE_BASE_URL}/api/google-review/${review._id}/downloaded`,
           {},
-          {withCredentials: true,
-            headers: { Authorization: token ? `Bearer ${token}` : "" } }
+          {
+            withCredentials: true,
+            headers: { Authorization: token ? `Bearer ${token}` : "" }
+          }
         );
         setReviews(prev =>
           prev.map(r =>
@@ -271,7 +324,8 @@ const ManageGoogleReviews = () => {
 
           const response = await axios.get(
             `${import.meta.env.VITE_BASE_URL}/api/google-review-cards/${review._id}/download`,
-            {withCredentials: true,
+            {
+              withCredentials: true,
               responseType: 'blob',
               headers: { Authorization: token ? `Bearer ${token}` : "" },
               timeout: 60000
@@ -417,8 +471,8 @@ const ManageGoogleReviews = () => {
   const StatusBadge = ({ active }) => (
     <span
       className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${active
-          ? "bg-green-500/20 text-green-400"
-          : "bg-yellow-500/20 text-yellow-400"
+        ? "bg-green-500/20 text-green-400"
+        : "bg-yellow-500/20 text-yellow-400"
         }`}
     >
       {active ? "Active" : "Inactive"}
@@ -460,7 +514,7 @@ const ManageGoogleReviews = () => {
         {getPageNumbers().map((pageNum, index) => (
           <button key={index} onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
             className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-sm font-medium ${currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
-                pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
               }`} disabled={pageNum === '...'}>
             {pageNum}
           </button>
@@ -516,8 +570,8 @@ const ManageGoogleReviews = () => {
             onClick={downloadBulkReviews}
             disabled={downloading || reviews.length === 0}
             className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${downloading || reviews.length === 0
-                ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg'
+              ? 'bg-gray-600 cursor-not-allowed opacity-50'
+              : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg'
               }`}
           >
             {downloading ? (
@@ -539,7 +593,7 @@ const ManageGoogleReviews = () => {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 placeholder="Search by owner name or code..."
                 className="bg-gray-900/60 backdrop-blur border-0 pl-9 pr-8 py-2.5 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-all duration-200 text-white text-sm"
               />
@@ -643,8 +697,8 @@ const ManageGoogleReviews = () => {
                     onClick={() => downloadBulkReviews()}
                     disabled={downloading}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium w-full sm:w-auto justify-center ${downloading
-                        ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                        : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
+                      ? 'bg-gray-600 cursor-not-allowed opacity-50'
+                      : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
                       }`}
                   >
                     {downloading ? (
@@ -735,8 +789,8 @@ const ManageGoogleReviews = () => {
                             onClick={downloadBulkReviews}
                             disabled={downloading}
                             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${downloading
-                                ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                                : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg'
+                              ? 'bg-gray-600 cursor-not-allowed opacity-50'
+                              : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-lg'
                               }`}
                           >
                             {downloading ? (
