@@ -217,18 +217,7 @@ const RecentCards = () => {
     const isGeneratingRef = useRef(false);
     const currentPageRef = useRef(currentPage);
 
-    const [selectedDays, setSelectedDays] = useState(1);
-
-    const handleDayFilter = (e) => {
-        const days = Number(e.target.value);
-
-        setSelectedDays(days);
-
-        setCurrentPage(1);
-        currentPageRef.current = 1;
-
-        fetchCards(1, days);
-    };
+    
 
     // Sirf current page ke cards ke liye QR generate karein
     const generateQRCodesForCurrentPage = useCallback(async (cardsList) => {
@@ -285,7 +274,7 @@ const RecentCards = () => {
         setGeneratingQR(false);
     }, [qrDotsColor, qrBgColor, textColor, currentPage]);
 
-    const fetchCards = useCallback(async (page = 1,days) => {
+    const fetchCards = useCallback(async (page = 1) => {
         try {
             setLoading(true);
             currentPageRef.current = page;
@@ -296,14 +285,12 @@ const RecentCards = () => {
             const params = new URLSearchParams({
                 page,
                 limit,
-                days: days
             });
 
         
 
             const url = `${baseUrl}/api/all/recent?${params.toString()}`;
 
-            // const token = localStorage.getItem("adminToken");
             if (!token) {
                 setError("Please login again");
                 setLoading(false);
@@ -356,15 +343,15 @@ const RecentCards = () => {
 
     //  useEffect with all dependencies
     useEffect(() => {
-        fetchCards(currentPage, selectedDays);
-    }, [fetchCards, currentPage, selectedDays]);
+        fetchCards(currentPage);
+    }, [fetchCards, currentPage]);
 
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
             currentPageRef.current = page;
             setQrImages({}); // Clear old QR images
-            fetchCards(page, selectedDays);
+            fetchCards(page);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
@@ -761,31 +748,7 @@ const RecentCards = () => {
                     </p>
                 </div>
 
-                {/* Day Filter */}
-                <div className="w-full lg:w-auto flex justify-center lg:justify-end">
-                    <select
-                        value={selectedDays}
-                        onChange={handleDayFilter}
-                        className="
-                w-full sm:w-auto
-                bg-[#1f2937]
-                text-white
-                border border-gray-700
-                rounded-lg
-                px-3 py-2
-                text-xs sm:text-sm
-                outline-none
-                cursor-pointer
-                focus:border-indigo-500
-                focus:ring-1
-                focus:ring-indigo-500
-            "
-                    >
-                        <option value={1}>1 Day</option>
-                        <option value={3}>3 Days</option>
-                        <option value={7}>7 Days</option>
-                    </select>
-                </div>
+                
             </div>
 
 

@@ -67,7 +67,6 @@ const copyUpdate = async (req, res) => {
 
 const getAllcardsProfile = async (req, res) => {
   try {
-    console.log("getAllcardsProfile called--------------------");
     //  Parse query parameters
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 40));
@@ -153,88 +152,28 @@ const getAllcardsProfile = async (req, res) => {
 
 const getRecentCards = async (req, res) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 10));
-    const search = req.query.search?.trim() || "";
-    const days = parseInt(req.query.days);
-
-    const skip = (page - 1) * limit;
-
-    let searchQuery = {};
-
-    // Search filter
-    if (search) {
-      searchQuery.$or = [
-        { "profile.name": { $regex: search, $options: "i" } },
-        { activationCode: { $regex: search, $options: "i" } },
-        { "profile.email": { $regex: search, $options: "i" } },
-        { "profile.phone": { $regex: search, $options: "i" } }
-      ];
-    }
-
-    if ([1, 3, 7].includes(days)) {
-      const now = new Date();
-
-      const fromDate = new Date(now);
-      fromDate.setDate(fromDate.getDate() - days);
-
-      searchQuery.createdAt = {
-        $gte: fromDate,
-        $lte: now
-      };
-    }
-
-
-    const totalCards = await CardProfileModel.countDocuments(searchQuery);
-
-    const activatedCount = await CardProfileModel.countDocuments({
-      ...searchQuery,
-      isActivated: true
-    });
-
-    const inactiveCount = await CardProfileModel.countDocuments({
-      ...searchQuery,
-      isActivated: false
-    });
-
-
-
-    const totalPages = Math.ceil(totalCards / limit);
-
-    const cards = await CardProfileModel.find(searchQuery)
+    const cards = await CardProfileModel.find({})
       .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
+      .limit(20)
       .populate({
         path: "owner",
         select: "name email avatar"
       })
       .lean();
 
+    const total = cards.length;
+    const activated = cards.filter(card => card.isActivated === true).length;
+    const inactive = cards.filter(card => card.isActivated === false).length;
+
     return res.status(200).json({
       success: true,
-
       data: {
         cards,
 
-        pagination: {
-          page,
-          limit,
-          totalCards,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1
-        },
-
         stats: {
-          total: totalCards,
-          activated: activatedCount,
-          inactive: inactiveCount
-        },
-
-        filters: {
-          search: search || "none",
-          days: [1, 3, 7].includes(days) ? days : "all"
+          total,
+          activated,
+          inactive
         }
       }
     });
@@ -252,6 +191,7 @@ const getRecentCards = async (req, res) => {
     });
   }
 };
+
 
 
 module.exports = { getCardProfiles, getAllcardsProfile, copyUpdate, getRecentCards };
