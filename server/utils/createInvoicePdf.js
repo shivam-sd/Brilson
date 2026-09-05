@@ -22,7 +22,7 @@ module.exports = async (order) => {
       let InvoiceAddress; 
       InvoiceAddress = await InvoiceAddressModel.findOne(); 
 
-      console.log(InvoiceAddress)
+      // console.log(InvoiceAddress)
 
     const invoicesDir = path.join(__dirname, "../invoices");
     if (!fs.existsSync(invoicesDir)) {
@@ -42,7 +42,7 @@ module.exports = async (order) => {
 });
 
     const page = await browser.newPage();
-// console.log("order from createinvoice:", order);
+console.log("order from createinvoice:", order);
     await page.setContent(invoiceTemplate(order, InvoiceAddress), {
       waitUntil: "domcontentloaded",
       timeout: 60000

@@ -12,6 +12,7 @@ import { setCredentials } from "../store/slices/authSlice";
 import GoogleLoginAuth from "./GoogleAuth/GoogleLoginAuth";
 import GooglePhoneInput from "./GoogleAuth/GooglePhoneInput";
 import GoogleOTPInput from "./GoogleAuth/GoogleOTPInput";
+import GoogleReferralInput from "./GoogleAuth/GoogleReferralInput"; 
 
 const SignupPage = () => {
   const dispatch = useDispatch();
@@ -38,7 +39,6 @@ const SignupPage = () => {
   const navigate = useNavigate();
 
 
-  
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
@@ -142,7 +142,6 @@ const SignupPage = () => {
         dispatch(setCredentials({ token: res.data.token, user: res.data.user }));
       }
 
-
       toast.success("Account registered successfully!");
       setTimeout(() => navigate("/"), 500);
     } catch (err) {
@@ -155,6 +154,7 @@ const SignupPage = () => {
       setLoading(false);
     }
   };
+
 
 
   const handleGoogleSuccess = (data) => {
@@ -179,8 +179,23 @@ const SignupPage = () => {
     toast.success("OTP sent to your phone");
   };
 
+  //  Handle OTP success
   const handleGoogleOTPSuccess = (data) => {
-    console.log("Google OTP success:", data);
+    console.log("Google OTP success (direct login):", data);
+    toast.success("Login successful!");
+    navigate("/");
+  };
+
+  //  Handle referral required
+  const handleGoogleReferralRequired = (data) => {
+    console.log("Google referral required:", data);
+    setGoogleUserData(prev => ({ ...prev, ...data }));
+    setGoogleStep('referral');
+  };
+
+  //  Handle referral success
+  const handleGoogleReferralSuccess = (data) => {
+    console.log("Google referral success:", data);
     toast.success("Login successful!");
     navigate("/");
   };
@@ -191,6 +206,8 @@ const SignupPage = () => {
     } else if (googleStep === 'phone') {
       setGoogleStep(null);
       setGoogleUserData(null);
+    } else if (googleStep === 'referral') {
+      setGoogleStep('otp');
     }
   };
 
@@ -229,10 +246,7 @@ const SignupPage = () => {
             </p>
           </div>
 
-     
-          {/* 🆕 GOOGLE SIGN-IN SECTION */}
-       
-
+          {/*  GOOGLE SIGN-IN SECTION */}
           {!googleStep && (
             <div className="mb-6">
               <GoogleLoginAuth
@@ -243,7 +257,7 @@ const SignupPage = () => {
             </div>
           )}
 
-          {/* 🆕 Google Phone Input */}
+          {/* Google Phone Input */}
           {googleStep === 'phone' && googleUserData && (
             <GooglePhoneInput
               userData={googleUserData}
@@ -252,19 +266,32 @@ const SignupPage = () => {
             />
           )}
 
-          {/* 🆕 Google OTP Input */}
+          {/*  Google OTP Input */}
           {googleStep === 'otp' && googleUserData && (
             <GoogleOTPInput
               userId={googleUserData.userId}
               phone={googleUserData.phone}
               onSuccess={handleGoogleOTPSuccess}
               onBack={handleGoogleBack}
+              onReferralRequired={handleGoogleReferralRequired} // ✅ NEW
             />
           )}
 
-          {/* ========================================== */}
-          {/* Only show when not in Google flow */}
-          {/* ========================================== */}
+          {/*  Google Referral Input  */}
+          {googleStep === 'referral' && googleUserData && (
+            <GoogleReferralInput
+              userId={googleUserData.userId}
+              onSuccess={handleGoogleReferralSuccess}
+              onSkip={() => {
+               
+                setGoogleStep(null);
+                setGoogleUserData(null);
+                navigate('/');
+              }}
+            />
+          )}
+
+
 
           {!googleStep && (
             <div className="relative my-6">
@@ -277,9 +304,6 @@ const SignupPage = () => {
             </div>
           )}
 
-          {/* ========================================== */}
-          {/*  Only show when not in Google flow */}
-          {/* ========================================== */}
 
           {!googleStep && (
             <form className="space-y-6" onSubmit={handleSubmit}>
@@ -445,7 +469,7 @@ const SignupPage = () => {
             </Link>
           </p>
 
-          {/* Verification Status - Only show when not in Google flow */}
+          {/* Verification Status  */}
           {!googleStep && (
             <div className="mt-4 text-center">
               {isVerified ? (
@@ -470,7 +494,12 @@ const SignupPage = () => {
           {/* Google flow indicator */}
           {googleStep && (
             <div className="mt-4 text-center text-gray-400 text-sm">
-              {googleStep === 'phone' ? '📱 Enter your phone number to continue' : '🔑 Enter OTP to verify your phone'}
+              {googleStep === 'phone' 
+                ? '📱 Enter your phone number to continue'
+                : googleStep === 'otp'
+                ? '🔑 Enter OTP to verify your phone'
+                : '🎁 Enter referral code or skip'
+              }
             </div>
           )}
 

@@ -419,11 +419,14 @@ const completeGoogleLoginWithReferral = async (req, res) => {
 
  
 
-    if (referralCode && referralCode.trim() !== "") {
+    if (referralCode && referralCode !== "") {
       // Check if referral code exists in database
       const refUser = await UserModel.findOne({ 
-        referralCode: referralCode.trim().toUpperCase() 
+        referralCode: referralCode
       });
+      
+// console.log("referal code", referralCode)
+      // console.log("ref user", refUser);
       
       if (!refUser) {
         return res.status(400).json({

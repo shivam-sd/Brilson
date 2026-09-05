@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { useDispatch } from 'react-redux';
-import { setCredentials } from '../../store/slices/authSlice';
 
-const GoogleOTPInput = ({ userId, phone, onSuccess, onBack }) => {
+const GoogleOTPInput = ({ userId, phone, onSuccess, onBack, onReferralRequired }) => {
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [timer, setTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (timer > 0) {
@@ -40,14 +37,32 @@ const GoogleOTPInput = ({ userId, phone, onSuccess, onBack }) => {
         { userId, otp }
       );
 
-      if (response.data.success && response.data.status === "SUCCESS") {
-        dispatch(setCredentials({ token: response.data.data.token, user: response.data.data.user }));
-        
-        if (onSuccess) {
-          onSuccess(response.data.data);
+      console.log("Verify OTP response:", response.data);
+
+      if (response.data.success) {
+        // Check if referral is required
+        if (response.data.status === "REFERRAL_REQUIRED") {
+          //  OTP verified, now show referral input
+          if (onReferralRequired) {
+            onReferralRequired({
+              userId: response.data.data.userId,
+              phone: response.data.data.phone,
+              name: response.data.data.name,
+              email: response.data.data.email,
+              isGoogleUser: response.data.data.isGoogleUser,
+              isVerified: response.data.data.isVerified,
+              hasReferralCode: response.data.data.hasReferralCode,
+              referralCode: response.data.data.referralCode,
+              requiresReferral: true
+            });
+          }
+        } else if (response.data.status === "SUCCESS") {
+          //  Direct login (if no referral needed)
+          if (onSuccess) {
+            onSuccess(response.data.data);
+          }
         }
       }
-
     } catch (error) {
       console.error("OTP verification error:", error);
       setError(error.response?.data?.message || "Invalid OTP. Please try again.");
@@ -108,7 +123,7 @@ const GoogleOTPInput = ({ userId, phone, onSuccess, onBack }) => {
             disabled={loading || otp.length !== 6}
             className="px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition disabled:opacity-50 whitespace-nowrap"
           >
-            {loading ? 'Verifying...' : 'Verify'}
+            {loading ? 'Verifying...' : 'Verify OTP'}
           </button>
         </div>
         {error && (
