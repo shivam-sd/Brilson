@@ -10,8 +10,6 @@ const generateToken = (id) => {
 };
 
 
-// Google Sign-In
-
 
 const GoogleAuthController = async (req, res) => {
   const { code } = req.query;
@@ -70,7 +68,6 @@ const GoogleAuthController = async (req, res) => {
     let user = await UserModel.findOne({ googleId });
 
     if (user) {
-      //  SET isGoogleUser to true
       if (!user.isGoogleUser) {
         user.isGoogleUser = true;
         await user.save();
@@ -103,7 +100,8 @@ const GoogleAuthController = async (req, res) => {
               phone: user.phone,
               email: user.email,
               isGoogleUser: user.isGoogleUser,
-              isVerified: user.isVerified
+              isVerified: user.isVerified,
+              referralCode: user.referralCode
             }
           }
         });
@@ -121,7 +119,8 @@ const GoogleAuthController = async (req, res) => {
           picture: user.profilePicture || picture,
           isExistingUser: true,
           hasPhone: !!user.phone,
-          isVerified: user.isVerified
+          isVerified: user.isVerified,
+          referralCode: user.referralCode || null
         }
       });
     }
@@ -162,7 +161,8 @@ const GoogleAuthController = async (req, res) => {
                 phone: user.phone,
                 email: user.email,
                 isGoogleUser: user.isGoogleUser,
-                isVerified: user.isVerified
+                isVerified: user.isVerified,
+                referralCode: user.referralCode
               }
             }
           });
@@ -180,13 +180,15 @@ const GoogleAuthController = async (req, res) => {
             picture: user.profilePicture || picture,
             isExistingUser: true,
             hasPhone: !!user.phone,
-            isVerified: user.isVerified
+            isVerified: user.isVerified,
+            referralCode: user.referralCode || null
           }
         });
       }
     }
 
-    // Create with Google data
+
+
     const newUser = new UserModel({
       name: name || "User",
       email: email || null,
@@ -196,6 +198,7 @@ const GoogleAuthController = async (req, res) => {
       phone: null,
       password: null,
       profilePicture: picture || null,
+
     });
 
     await newUser.save();
@@ -212,13 +215,13 @@ const GoogleAuthController = async (req, res) => {
         picture: newUser.profilePicture,
         isExistingUser: false,
         hasPhone: false,
-        isVerified: false
+        isVerified: false,
+        referralCode: null
       }
     });
 
   } catch (err) {
     console.error("Google Auth Error:", err.response?.data || err.message);
-
     return res.status(500).json({
       success: false,
       message: "Google authentication failed",
@@ -227,8 +230,6 @@ const GoogleAuthController = async (req, res) => {
   }
 };
 
-
-// Complete Google Profile with Phone
 
 
 const completeGoogleLogin = async (req, res) => {
@@ -271,7 +272,6 @@ const completeGoogleLogin = async (req, res) => {
       });
     }
 
-    // Check googleId instead of isGoogleUser
     if (!user.googleId) {
       return res.status(400).json({
         success: false,
@@ -279,7 +279,6 @@ const completeGoogleLogin = async (req, res) => {
       });
     }
 
-    //  Always set isGoogleUser to true
     user.isGoogleUser = true;
 
     if (user.phone && user.isVerified) {
@@ -328,8 +327,6 @@ const completeGoogleLogin = async (req, res) => {
 };
 
 
-// Verify OTP for Google User
-
 
 const verifyGoogleOTP = async (req, res) => {
   try {
@@ -370,6 +367,91 @@ const verifyGoogleOTP = async (req, res) => {
     user.otpExpiry = null;
     await user.save();
 
+    //  REFERRAL_REQUIRED
+    return res.status(200).json({
+      success: true,
+      status: "REFERRAL_REQUIRED",
+      message: "Phone verified successfully. Please enter referral code if you have one.",
+      data: {
+        userId: user._id,
+        phone: user.phone,
+        name: user.name,
+        email: user.email,
+        isGoogleUser: user.isGoogleUser,
+        isVerified: user.isVerified,
+        hasReferralCode: !!user.referralCode,
+        referralCode: user.referralCode || null,
+        requiresReferral: true
+      }
+    });
+
+  } catch (err) {
+    console.error("Verify Google OTP Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "OTP verification failed",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined
+    });
+  }
+};
+
+
+
+const completeGoogleLoginWithReferral = async (req, res) => {
+  try {
+    const { userId, referralCode } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required",
+      });
+    }
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+ 
+
+    if (referralCode && referralCode.trim() !== "") {
+      // Check if referral code exists in database
+      const refUser = await UserModel.findOne({ 
+        referralCode: referralCode.trim().toUpperCase() 
+      });
+      
+      if (!refUser) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid referral code. Please try again or skip.",
+        });
+      }
+
+      // Check if user already has a referrer
+      if (user.referredBy) {
+        return res.status(400).json({
+          success: false,
+          message: "You have already used a referral code.",
+        });
+      }
+
+      //  Link referral
+      user.referredBy = refUser._id;
+      refUser.referralStatus = "in_progress";
+      await refUser.save();
+      
+      console.log(`✅ Referral linked: ${user._id} -> ${refUser._id}`);
+    }
+
+
+    await user.save();
+
+
     const token = generateToken(user._id);
     const isProduction = process.env.NODE_ENV === "production";
 
@@ -386,7 +468,7 @@ const verifyGoogleOTP = async (req, res) => {
     return res.status(200).json({
       success: true,
       status: "SUCCESS",
-      message: "Phone verified and login successful",
+      message: referralCode ? "Account created with referral!" : "Account created successfully!",
       data: {
         token,
         user: {
@@ -395,23 +477,24 @@ const verifyGoogleOTP = async (req, res) => {
           phone: user.phone,
           email: user.email || null,
           isGoogleUser: user.isGoogleUser,
-          isVerified: user.isVerified
+          isVerified: user.isVerified,
+          referredBy: user.referredBy,
+          referralCode: user.referralCode,
+          referralStatus: user.referralStatus
         }
       }
     });
 
   } catch (err) {
-    console.error("Verify Google OTP Error:", err);
+    console.error("Complete Google Login With Referral Error:", err);
     return res.status(500).json({
       success: false,
-      message: "OTP verification failed",
+      message: "Failed to complete login",
       error: process.env.NODE_ENV === "development" ? err.message : undefined
     });
   }
 };
 
-
-// Resend OTP for Google User
 
 
 const resendGoogleOTP = async (req, res) => {
@@ -470,8 +553,6 @@ const resendGoogleOTP = async (req, res) => {
 };
 
 
-// Google Logout
-
 
 const googleLogout = async (req, res) => {
   try {
@@ -519,10 +600,14 @@ const googleLogout = async (req, res) => {
   }
 };
 
+
+
+
 module.exports = {
   GoogleAuthController,
   completeGoogleLogin,
   verifyGoogleOTP,
+  completeGoogleLoginWithReferral,
   resendGoogleOTP,
   googleLogout
 };
