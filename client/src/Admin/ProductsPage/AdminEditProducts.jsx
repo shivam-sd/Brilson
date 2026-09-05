@@ -189,7 +189,7 @@ const handleCropCompleteExisting = async (croppedFile, index) => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/category`,{withCredentials: true}
+          `${import.meta.env.VITE_BASE_URL}/api/category/active`,{withCredentials: true}
         );
         setCategories(res?.data?.categories || []);
       } catch (error) {
@@ -205,7 +205,7 @@ const handleCropCompleteExisting = async (croppedFile, index) => {
     const fetchBadges = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/badges/active`
+          `${import.meta.env.VITE_BASE_URL}/api/badges/active`,{withCredentials: true}
         );
         setBadges(res?.data?.badges || []);
       } catch (error) {

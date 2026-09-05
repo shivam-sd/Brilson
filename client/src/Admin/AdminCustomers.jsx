@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { selectToken } from "../store/slices/authSlice";
+import { selectAdminToken } from "../store/slices/authSlice";
 
 const AdminCustomers = () => {
-  const token = useSelector(selectToken);
+  const token = useSelector(selectAdminToken);
 
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);

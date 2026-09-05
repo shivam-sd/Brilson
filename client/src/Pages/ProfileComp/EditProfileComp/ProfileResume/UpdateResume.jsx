@@ -33,7 +33,6 @@ const UpdateResume = () => {
           headers: {
             Authorization: token ? `Bearer ${token}` : "",
           },
-          withCredentials: true,
         }
       );
 

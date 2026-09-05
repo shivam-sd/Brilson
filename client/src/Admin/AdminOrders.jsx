@@ -30,7 +30,7 @@ const adminToken = useSelector(selectAdminToken);
         `${import.meta.env.VITE_BASE_URL}/api/allorders`,
         {
           withCredentials: true,
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${adminToken}` },
         }
       );
 

@@ -11,8 +11,8 @@ const authAdminToken = (req, res, next) => {
 
     // verify and decode token
     const decoded = jwt.verify(token, process.env.ADMIN_SECRET_KEY);
-// console.log(decoded)
-    console.log("token :----------", token);
+    // console.log(decoded)
+
     if (decoded.role !== "admin") {
       return res.status(403).json({ error: "Access denied: Not admin" });
     }
@@ -21,6 +21,7 @@ const authAdminToken = (req, res, next) => {
     next();
 
   } catch (err) {
+    console.error("Admin token verification failed:", err);
     return res.status(401).json({ error: "Invalid or expired token" });
   }
 };
