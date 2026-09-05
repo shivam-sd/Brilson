@@ -100,46 +100,38 @@ const QuickActions = () => {
     <div className="w-full   bg-[#0f172a] border-[#1e293b] rounded-2xl mt-3 px-2 py-4">
       <div className="relative px-4 sm:px-6 lg:px-1 py-4 lg:py-5">
 
-        {/* Header Section */}
         <div className="mb-6 lg:mb-8">
           <h3 className="text-xl md:text-2xl lg:text-2xl font-bold text-white text-start">
             Quick Actions
           </h3>
         </div>
 
-        {/* Actions Grid - Sleek cards with proper proportions */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-stretch">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-stretch">
           {actions.map((action) => {
             const Icon = action.icon;
 
             return (
               <div
                 key={action.id}
-                className="group relative h-full"
+                className={`group relative h-full ${action.id === 'reports' ? 'col-span-2 sm:col-span-1 md:col-span-1 lg:col-span-1' : ''}`}
               >
-                {/* Glow effect on hover */}
                 <div
                   className={`absolute -inset-0.5 bg-gradient-to-r ${action.color} rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500 ${action.bgGlow}`}
                 />
 
-                {/* Card */}
                 <div
                   onClick={() => handleActionClick(action.id)}
                   className={`relative h-full min-h-full bg-[#0f172a] border-white/20 rounded-xl p-4 cursor-pointer transition-all duration-300 transform group-hover:-translate-y-1 border ${action.borderHover} shadow-sm hover:shadow-lg overflow-hidden flex`}
                 >
-                  {/* Hover gradient background */}
                   <div
                     className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
                   />
 
-                  {/* Content */}
                   <div className="relative z-10 w-full flex items-center">
-                    {/* Icon and Title Row */}
                     <div className="flex items-center justify-center gap-3 w-full">
 
-                      {/* Icon */}
                       <div
-                        className={`w-8 h-8 shrink-0 rounded-lg ${action.iconBg} shadow-md flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110`}
+                        className={`w-7 h-7 lg:w-8 lg:h-8 shrink-0 rounded-lg ${action.iconBg} shadow-md flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110`}
                       >
                         <Icon
                           className="w-5 h-5 text-white"
@@ -147,8 +139,7 @@ const QuickActions = () => {
                         />
                       </div>
 
-                      {/* Title */}
-                      <h3 className="text-base font-Playfair font-bold tracking-wider text-white transition-colors">
+                      <h3 className="text-[12px] lg:text-base font-Playfair font-bold tracking-wider text-white transition-colors">
                         {action.title}
                       </h3>
                     </div>
