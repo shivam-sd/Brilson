@@ -50,7 +50,6 @@ const AddResume = () => {
             "Content-Type": "multipart/form-data",
             Authorization: token ? `Bearer ${token}` : "",
           },
-          withCredentials: true,
         }
       );
 

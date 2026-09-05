@@ -388,9 +388,6 @@ const AdminAddProduct = () => {
         formData,
         { 
           withCredentials: true,
-          headers: {
-            'Authorization': token || ''
-          }
         }
       );
       

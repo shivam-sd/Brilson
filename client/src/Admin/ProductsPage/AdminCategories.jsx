@@ -37,7 +37,7 @@ const AdminCategories = () => {
         { name },
         { withCredentials: true,
           headers: { 
-            Authorization: token ? `Bearer ${token}` : "",
+            // Authorization: token ? `Bearer ${token}` : "",
             'Content-Type': 'application/json'
           } 
         }
@@ -56,7 +56,7 @@ const AdminCategories = () => {
       await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/category/delete/${id}`, {
         withCredentials: true,
         headers: { 
-          Authorization: token ? `Bearer ${token}` : "",
+          // Authorization: token ? `Bearer ${token}` : "",
           'Content-Type': 'application/json'
         },
       });
