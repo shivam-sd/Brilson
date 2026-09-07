@@ -19,3 +19,12 @@ export const useGetTestimonials = () => {
         },
     });
 };
+export const useGetFeatures = () => {
+    return useQuery({
+        queryKey: ["features"],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/admin/powerfull/features`);
+            return data;
+        },
+    });
+};

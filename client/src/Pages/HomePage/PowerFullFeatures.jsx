@@ -1,38 +1,11 @@
-import React from "react";
 import { motion } from "framer-motion";
-import {
-  FiZap,
-  FiKey,
-  FiSmartphone,
-  FiGlobe,
-  FiLock,
-  FiRefreshCw,
-  FiBarChart2,
-  FiLayout,
-} from "react-icons/fi";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
+import { useGetFeatures } from "../../api/client-query";
 
 const PowerFullFeatures = () => {
-  const [feature, setFeature] = useState([]);
-  const [subHeading, SetsubHeading] = useState("");
 
-  useEffect(() => {
-    const fetchPowerFullFeatureData = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/powerfull/features`
-        );
-        const data = res.data.data;
-        SetsubHeading(data.subHeading);
-        setFeature(data.features);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchPowerFullFeatureData();
-  }, []);
+  const { data } = useGetFeatures();
+  const feature = data?.data?.features || [];
+  const subHeading = data?.data?.subHeading || "";
 
   const colorStyles = [
     { border: "from-yellow-400 via-orange-400 to-yellow-500", glow: "rgba(255, 190, 0, 0.35)" },
