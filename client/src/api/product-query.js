@@ -8,7 +8,7 @@ export const useGetAllProducts = () => {
             const { data } = await axiosInstance.get("/api/admin/all/products");
             return data;
         }
-    }); F
+    });
 };
 
 export const useGetProductById = (id) => {

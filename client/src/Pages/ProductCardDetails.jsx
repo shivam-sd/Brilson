@@ -32,28 +32,6 @@ const ProductCardPreference = () => {
   const [activeImage, setActiveImage] = useState("");
   const [showLightbox, setShowLightbox] = useState(false);
 
-  // useEffect(() => {
-  //   const getProduct = async () => {
-  //     try {
-  //       const res = await axios.get(
-  //         `${import.meta.env.VITE_BASE_URL}/api/admin/find/products/${id}`
-  //       );
-
-  //       const data = res.data.product;
-  //       setProduct(data);
-
-  //       if (data.images?.length) {
-  //         setActiveImage(data.images[0]);
-  //       }
-
-  //     } catch {
-  //       toast.error("Product not found");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   getProduct();
-  // }, [id]);
   const { data, isLoading, isError, error } = useGetProductById(id)
   const product = data?.product;
 

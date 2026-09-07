@@ -4,37 +4,11 @@ import React, { useEffect, useState } from "react";
 import { FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { MdEmail, MdLocationOn, MdPhone } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { useGetFooter } from "../api/footer-query";
 
 const Footer = () => {
-  const [bottomLinks, setbottomLinks] = useState([]);
-  const [Company, setCompany] = useState([]);
-  const [Contact, setContact] = useState("");
-  // const [Support, SetSupport] = useState([]);
-  const [Social, setSocial] = useState("");
-  const [Products, setProducts] = useState([]);
-  const [description, setDescription] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/footer`,
-        );
-
-        //  console.log(res.data.data);
-        setProducts(res.data.data.products);
-        setbottomLinks(res.data.data.bottomLinks);
-        setCompany(res.data.data.company);
-        setContact(res.data.data.contact);
-        setSocial(res.data.data.socialLinks);
-        //  SetSupport(res.data.data.support);
-        setDescription(res.data.data.description);
-      } catch (err) {
-        console.log("Footer Load Error", err);
-      }
-    };
-    fetchData();
-  }, []);
+  const { data: footerData } = useGetFooter();
 
   return (
     <footer className="w-full bg-black shadow-2xl border-t border-white/8 text-gray-300 px-6 md:px-12 py-14">
@@ -49,7 +23,7 @@ const Footer = () => {
             </div>
           </div>
 
-          <p className="text-gray-300 text-sm leading-relaxed tracking-widest font-Roboto">{description}</p>
+          <p className="text-gray-300 text-sm leading-relaxed tracking-widest font-Roboto">{footerData?.data?.description}</p>
 
 
         </div>
@@ -60,7 +34,7 @@ const Footer = () => {
             Products
           </h3>
           <ul className="space-y-2 text-sm tracking-widest font-Roboto">
-            {Products.map((item, i) => (
+            {footerData?.data?.products.map((item, i) => (
               <Link
                 to={item.link}
                 key={i}
@@ -76,7 +50,7 @@ const Footer = () => {
         <div>
           <h3 className="text-white font-semibold text-lg mb-4 tracking-widest font-Roboto">Company</h3>
           <ul className="space-y-2 text-sm">
-            {Company.map((item, i) => (
+            {footerData?.data?.company.map((item, i) => (
               <Link
                 to={item.link}
                 key={i}
@@ -111,16 +85,16 @@ const Footer = () => {
           <h3 className="text-white font-semibold text-lg mb-4 tracking-widest font-Roboto">Contact</h3>
           <ul className="space-y-3 text-sm tracking-widest font-Roboto">
             <li className="flex items-center gap-3 hover:text-blue-400 cursor-pointer duration-200">
-              <MdEmail className="text-lg" /> {Contact.email}
+              <MdEmail className="text-lg" /> {footerData?.data?.contact.email}
             </li>
             <li className="flex items-center gap-3 hover:text-blue-400 cursor-pointer duration-200">
-              <MdPhone className="text-lg" /> {Contact.phone}
+              <MdPhone className="text-lg" /> {footerData?.data?.contact.phone}
             </li>
             <li className="flex items-center gap-3 hover:text-blue-400 cursor-pointer duration-200">
-              <MdLocationOn className="text-lg" /> {Contact.address}
+              <MdLocationOn className="text-lg" /> {footerData?.data?.contact.address}
             </li>
             <li className="flex items-center gap-3 hover:text-blue-400 cursor-pointer duration-200">
-              {/* <LucideBadgeHelp className="text-lg" /> {Contact.Link} */}
+              {/* <LucideBadgeHelp className="text-lg" /> {footerData?.data?.contact.Link} */}
             </li>
           </ul>
         </div>
@@ -132,9 +106,9 @@ const Footer = () => {
 
         <div className="flex gap-8 mt-6">
           {[
-            { Icon: FaTwitter, link: Social.twitter },
-            { Icon: FaInstagram, link: Social.instagram },
-            { Icon: FaLinkedin, link: Social.linkedin },
+            { Icon: FaTwitter, link: footerData?.data?.social?.twitter },
+            { Icon: FaInstagram, link: footerData?.data?.social?.instagram },
+            { Icon: FaLinkedin, link: footerData?.data?.social?.linkedin },
           ].map(({ Icon, link }, i) => (
             <Link
               key={i}
@@ -158,7 +132,7 @@ const Footer = () => {
         <p>© {new Date().getFullYear()} Brilson. All rights reserved.</p>
 
         <div className="flex gap-6">
-          {bottomLinks.map((item, i) => (
+          {footerData?.data?.bottomLinks.map((item, i) => (
             <Link
               to={item.link}
               key={i}
