@@ -50,6 +50,7 @@ const adminLogin = async (req, res) => {
     const token = jwt.sign(
       { id: admin._id, role: "admin" },
       process.env.ADMIN_SECRET_KEY,
+      { expiresIn: "2h" }
     );
 
 
@@ -87,7 +88,7 @@ const adminLogout = (req, res) => {
 
 
 module.exports = {
-    adminRegister,
-    adminLogin,
-    adminLogout
+  adminRegister,
+  adminLogin,
+  adminLogout
 }
