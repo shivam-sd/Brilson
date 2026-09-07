@@ -145,9 +145,12 @@ const Header = () => {
             }}
             className="lg:flex hidden flex items-center text-white text-2xl font-semibold"
           >
-            <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
+            {/* <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
               BRILSON
-            </div>
+            </div> */}
+
+<img src="./mainlogo.png" alt="BRILSON Logo" className="h-10 w-auto" />
+
           </motion.div>
         </Link>
 
@@ -264,7 +267,9 @@ const Header = () => {
 
           {!isLoggedIn ? (
             <Link to="/login">
+              <div className="p-2 rounded-full border-2 border-white/20 flex items-center justify-center shadow-2xl shadow-blue-700">
               <FaUser className="text-2xl text-white cursor-pointer" />
+              </div>
             </Link>
           ) : (
             <div className="relative">
@@ -330,11 +335,14 @@ const Header = () => {
           )}
 
           <Link to="/">
-            <div className="flex items-center text-white text-2xl font-semibold ml-8">
+            <div className="flex font-semibold ml-8">
 
-              <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
+              {/* <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
                 Brilson
-              </div>
+              </div> */}
+
+<img src="./mainlogo.png" alt="BRILSON Logo" className="h-8 w-35 " />
+
 
             </div>
           </Link>
@@ -343,7 +351,9 @@ const Header = () => {
             to="/your-items"
             className="relative text-2xl text-white"
           >
-            <LuShoppingCart size={28} />
+            <div className="p-2 rounded-full border-2 border-white/20 flex items-center justify-center shadow-2xl shadow-blue-700">
+            <LuShoppingCart size={23} />
+            </div>
 
             {cartCount > 0 && (
               <span className="absolute -top-3 -right-3 w-6 h-6 bg-red-500 text-white rounded-full text-sm flex items-center justify-center font-bold">
@@ -359,7 +369,9 @@ const Header = () => {
             }
             className="hover:bg-gray-800 rounded text-gray-300 hover:text-white"
           >
-            <BookCheck size={28} />
+            <div className="p-2 rounded-full border-2 border-white/20 flex items-center justify-center shadow-2xl shadow-blue-700">
+            <BookCheck size={23} />
+            </div>
           </Link>
 
         </div>

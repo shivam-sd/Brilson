@@ -4,11 +4,15 @@ import { Link } from "react-router-dom";
 
 const CARD_IMAGES = [
     "/nfc_cards/brilson-nfc-card-1.png",
+    "/nfc_cards/brilson-nfc-card-2.png",
     "/nfc_cards/brilson-nfc-card-3.png",
     "/nfc_cards/brilson-nfc-card-4.png",
     "/nfc_cards/brilson-nfc-card-5.png",
-    "/nfc_cards/brilson-nfc-card-7.png",
-    "/nfc_cards/brilson-nfc-card-8.png",
+    "/nfc_cards/brilson-nfc-card-6.jpeg",
+    "/nfc_cards/brilson-nfc-card-7.jpeg",
+    "/nfc_cards/brilson-nfc-card-8.jpeg",
+    "/nfc_cards/brilson-nfc-card-9.jpeg",
+    "/nfc_cards/brilson-nfc-card-10.jpeg"
 ];
 
 const IMAGE_COUNT = CARD_IMAGES.length;
@@ -145,7 +149,7 @@ export default function NfcCardBanner() {
                                 src={src}
                                 alt="Brilson NFC digital business card"
                                 onError={() => handleImageError(index)}
-                                className="card-fade absolute inset-0 h-full w-full object-contain drop-shadow-2xl"
+                                className="card-fade absolute inset-0 h-full w-full object-contain drop-shadow-2xl lg:scale-130"
                                 style={{
                                     opacity: index === activeIndex ? 1 : 0,
                                 }}
