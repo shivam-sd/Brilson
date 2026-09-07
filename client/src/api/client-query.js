@@ -28,3 +28,12 @@ export const useGetFeatures = () => {
         },
     });
 };
+export const useGetTransform = () => {
+    return useQuery({
+        queryKey: ["transform"],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`api/admin/transform`);
+            return data;
+        },
+    });
+};
