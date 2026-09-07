@@ -10,3 +10,12 @@ export const useGetFooter = () => {
         },
     });
 };
+export const useGetTestimonials = () => {
+    return useQuery({
+        queryKey: ["testimonials"],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/admin/testimonials`);
+            return data;
+        },
+    });
+};

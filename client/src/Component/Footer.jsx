@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { MdEmail, MdLocationOn, MdPhone } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { useGetFooter } from "../api/footer-query";
+import { useGetFooter } from "../api/client-query";
 
 const Footer = () => {
 
