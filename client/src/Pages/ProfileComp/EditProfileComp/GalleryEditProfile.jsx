@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Package, Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { selectToken } from "../../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const GalleryEditProfile = () => {
   const { id } = useParams();

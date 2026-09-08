@@ -100,3 +100,86 @@ export const useGetReferrals = () => {
         }
     });
 };
+
+export const useGetProfileLogo = (slug) => {
+    return useQuery({
+        queryKey: ["profileLogo", slug],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(
+                `/api/profile-logo/get/${slug}`
+            );
+
+            return data?.profileLogo?.image || null;
+        },
+        enabled: !!slug,
+    });
+};
+
+export const useGetProfile = (slug) => {
+    return useQuery({
+        queryKey: ["profile", slug],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/card/${slug}`);
+
+            return data;
+        },
+        enabled: !!slug,
+    });
+};
+
+export const useGetProfileCover = (activationCode) => {
+    return useQuery({
+        queryKey: ["profileCover", activationCode],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(
+                `/api/profile-cover/get/${activationCode}`
+            );
+
+            return data?.profileLogo?.image || null;
+        },
+        enabled: !!activationCode,
+    });
+};
+
+export const useGetProfileProducts = (activationCode) => {
+    return useQuery({
+        queryKey: ["profileProducts", activationCode],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/profile-products/all/get/${activationCode}`);
+
+            return data?.data || [];
+        },
+        enabled: !!activationCode
+    });
+};
+export const useGetResume = (activationCode) => {
+    return useQuery({
+        queryKey: ["resume", activationCode],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/profile/resume/get/${activationCode}`);
+
+            return data?.resume || null;
+        },
+        enabled: !!activationCode,
+    });
+};
+export const useGetGallery = (id) => {
+    return useQuery({
+        queryKey: ["gallery", id],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/profile-gallery/all/get/${id}`);
+            return data?.data || [];
+        },
+        enabled: !!id
+    });
+};
+export const useGetPaymentDetails = (activationCode) => {
+    return useQuery({
+        queryKey: ["paymentDetails", activationCode],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/profile/payment-details/get/${activationCode}`);
+            return data?.data || null;
+        },
+        enabled: !!activationCode
+    });
+};
