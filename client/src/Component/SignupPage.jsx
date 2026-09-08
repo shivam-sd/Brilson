@@ -12,7 +12,8 @@ import { setCredentials } from "../store/slices/authSlice";
 import GoogleLoginAuth from "./GoogleAuth/GoogleLoginAuth";
 import GooglePhoneInput from "./GoogleAuth/GooglePhoneInput";
 import GoogleOTPInput from "./GoogleAuth/GoogleOTPInput";
-import GoogleReferralInput from "./GoogleAuth/GoogleReferralInput"; 
+import GoogleReferralInput from "./GoogleAuth/GoogleReferralInput";
+import { useRegister, useSendOTP, useVerifyOTP } from "../api/auth-query";
 
 const SignupPage = () => {
   const dispatch = useDispatch();
@@ -37,56 +38,54 @@ const SignupPage = () => {
   const [googleUserData, setGoogleUserData] = useState(null);
 
   const navigate = useNavigate();
-
-
+  const registerMutation = useRegister();
+  const sendOTPMutation = useSendOTP();
+  const verifyOTPMutation = useVerifyOTP();
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
-    
+
     if (!form.phone) {
       return toast.error("Please enter phone number");
     }
-    
+
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(form.phone)) {
       return toast.error("Please enter a valid 10-digit phone number");
     }
-    
+
     try {
-      setOtpLoading(true);
-      const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/users/send-otp`,
-        { phone: form.phone }
-      );
-      
+      await sendOTPMutation.mutateAsync({
+        phone: form.phone,
+      });
+
+      setOtpSent(true);
+
       setOtpSent(true);
       toast.success("OTP sent successfully to your phone");
     } catch (err) {
       console.log(err.response?.data?.message);
       toast.error(err.response?.data?.message || "Failed to send OTP");
-    } finally {
-      setOtpLoading(false);
     }
   };
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
-    
+
     if (!otp) {
       return toast.error("Please enter OTP");
     }
-    
+
     if (otp.length < 6) {
       return toast.error("OTP must be 6 digits");
     }
-    
+
     try {
-      setVerifyLoading(true);
-      const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/users/verify-otp`,
-        { phone: form.phone, otp }
-      );
-      
+      await verifyOTPMutation.mutateAsync({
+        phone: form.phone,
+        otp,
+      });
+
       setIsVerified(true);
       toast.success("Phone number verified successfully");
     } catch (err) {
@@ -125,33 +124,26 @@ const SignupPage = () => {
     }
 
     try {
-      setLoading(true);
 
-      const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/users/register`,
-        {
-          name: form.name,
-          phone: form.phone,
-          password: form.password,
-          referralCode: form.referralCode
-        },
-        { withCredentials: true }
-      );
+      const res = await registerMutation.mutateAsync({
+        name: form.name,
+        phone: form.phone,
+        password: form.password,
+        referralCode: form.referralCode,
+      });
 
-      if (res.data?.token) {
-        dispatch(setCredentials({ token: res.data.token, user: res.data.user }));
+      if (res?.token) {
+        dispatch(setCredentials({ token: res.token, user: res.user }));
       }
 
       toast.success("Account registered successfully!");
       setTimeout(() => navigate("/"), 500);
     } catch (err) {
       toast.error(
-        err.response?.data?.error || 
-        err.response?.data?.message || 
+        err.response?.data?.error ||
+        err.response?.data?.message ||
         "Registration failed. Please try again."
       );
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -221,14 +213,14 @@ const SignupPage = () => {
 
   return (
     <>
-      <Toaster 
-        position="top-right" 
+      <Toaster
+        position="top-right"
         toastOptions={{
           style: {
             zIndex: 999999,
             marginTop: 100
           }
-        }} 
+        }}
       />
       <div className="w-full flex items-center justify-center bg-gradient-to-br from-[#050505] via-[#0b0c10] to-[#050505] px-4 py-10 z-50">
         <motion.div
@@ -283,7 +275,7 @@ const SignupPage = () => {
               userId={googleUserData.userId}
               onSuccess={handleGoogleReferralSuccess}
               onSkip={() => {
-               
+
                 setGoogleStep(null);
                 setGoogleUserData(null);
                 navigate('/');
@@ -371,12 +363,11 @@ const SignupPage = () => {
                       <button
                         type="button"
                         onClick={handleVerifyOTP}
-                        disabled={verifyLoading || isVerified}
-                        className={`ml-2 text-sm px-4 py-3 rounded-lg transition-all ${
-                          isVerified ? 'bg-green-700 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 active:scale-95'
-                        }`}
+                        disabled={verifyOTPMutation.isPending}
+                        className={`ml-2 text-sm px-4 py-3 rounded-lg transition-all ${isVerified ? 'bg-green-700 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 active:scale-95'
+                          }`}
                       >
-                        {verifyLoading ? "Verifying..." : isVerified ? "Verified ✓" : "Verify"}
+                        {verifyOTPMutation.isPending ? "Verifying..." : isVerified ? "Verified ✓" : "Verify"}
                       </button>
                     </div>
                     {isVerified && (
@@ -450,14 +441,13 @@ const SignupPage = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                disabled={loading || !isVerified}
-                className={`w-full py-3 rounded-xl font-semibold shadow-lg mt-6 transition-all ${
-                  !isVerified 
-                    ? 'bg-gray-700 cursor-not-allowed text-gray-400' 
-                    : 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-cyan-500/30 hover:shadow-cyan-500/50'
-                }`}
+                disabled={registerMutation.isPending}
+                className={`w-full py-3 rounded-xl font-semibold shadow-lg mt-6 transition-all ${!isVerified
+                  ? 'bg-gray-700 cursor-not-allowed text-gray-400'
+                  : 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-cyan-500/30 hover:shadow-cyan-500/50'
+                  }`}
               >
-                {loading ? "Creating Account..." : isVerified ? "Create Account" : "Verify Phone to Continue"}
+                {registerMutation.isPending ? "Creating Account..." : isVerified ? "Create Account" : "Verify Phone to Continue"}
               </motion.button>
             </form>
           )}
@@ -494,11 +484,11 @@ const SignupPage = () => {
           {/* Google flow indicator */}
           {googleStep && (
             <div className="mt-4 text-center text-gray-400 text-sm">
-              {googleStep === 'phone' 
+              {googleStep === 'phone'
                 ? '📱 Enter your phone number to continue'
                 : googleStep === 'otp'
-                ? '🔑 Enter OTP to verify your phone'
-                : '🎁 Enter referral code or skip'
+                  ? '🔑 Enter OTP to verify your phone'
+                  : '🎁 Enter referral code or skip'
               }
             </div>
           )}

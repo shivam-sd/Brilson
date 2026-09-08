@@ -8,12 +8,16 @@ import axios from "axios";
 import "swiper/css";
 import "swiper/css/effect-cards";
 import "swiper/css/pagination";
+import { useGetTestimonials } from "../../api/client-query";
 
 const Testimonials = () => {
-  const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+  } = useGetTestimonials();
 
-  // Predefined color gradients for cards
   const colorGradients = [
     "from-cyan-500 to-blue-500",
     "from-purple-500 to-pink-500",
@@ -25,46 +29,24 @@ const Testimonials = () => {
     "from-indigo-500 to-blue-500",
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/testimonials`);
+  const testimonials = (data?.testimonials || []).map(
+    (item, index) => ({
+      id: item._id || index,
+      name: item.name || "Anonymous",
+      review: item.review || "No review available",
+      img:
+        item.image ||
+        `https://i.pravatar.cc/150?img=${index + 1}`,
+      stars: item.rating || 5,
+      role: "Happy Customer",
+      company: "Brilson User",
+      color:
+        colorGradients[index % colorGradients.length],
+    })
+  );
 
-        // console.log("API Response:", res.data);
 
-        // Check if testimonials exist in response
-        if (res.data && res.data.testimonials) {
-          // Map API data to component format
-          const formattedTestimonials = res.data.testimonials.map((item, index) => ({
-            id: item._id || index,
-            name: item.name || "Anonymous",
-            review: item.review || "No review available",
-            img: item.image || `https://i.pravatar.cc/150?img=${index + 1}`,
-            stars: item.rating || 5,
-            role: "Happy Customer",
-            company: "Brilson User",
-            color: colorGradients[index % colorGradients.length],
-          }));
-
-          // console.log("Formatted testimonials:", formattedTestimonials);
-          setTestimonials(formattedTestimonials);
-        } else {
-          // console.warn("No testimonials found in response");
-          setTestimonials([]);
-        }
-      } catch (err) {
-        console.error("Error fetching testimonials:", err);
-        // toast.error("Failed to load testimonials");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="relative w-full py-28 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

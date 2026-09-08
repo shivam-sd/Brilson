@@ -1,24 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { useGetProfileCover } from "../../api/client-query";
 
 const ProfileCoverPhoto = ({ activationCode }) => {
-  const [cover, setCover] = useState(null);
+  const { data: cover,isError: isCoverError, error: coverError } = useGetProfileCover(activationCode);
 
   useEffect(() => {
-    const fetchCover = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/profile-cover/get/${activationCode}`
-        );
-        setCover(res.data.profileLogo.image);
-      } catch (err) {
-        // toast.error("Failed to load Cover Photo");
-      }
-    };
-
-    if (activationCode) fetchCover();
-  }, [activationCode]);
+    if (isCoverError) {
+      toast.error(
+        coverError?.response?.data?.message || "Failed to load cover photo"
+      );
+    }
+  }, [isCoverError, coverError]);
 
   return (
     <div className="w-full z-0 pb-24">
@@ -38,7 +32,7 @@ const ProfileCoverPhoto = ({ activationCode }) => {
           </div>
         )}
 
-     
+
         <div className="absolute inset-0 bg-black/30"></div>
 
       </div>

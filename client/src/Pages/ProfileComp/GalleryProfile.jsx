@@ -1,38 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  CameraIcon, X, ChevronLeft, ChevronRight, 
+import {
+  CameraIcon, X, ChevronLeft, ChevronRight,
   Maximize2, Download, Share2, Heart
 } from "lucide-react";
 import axios from "axios";
 import { selectToken } from "../../store/slices/authSlice";
 import { useSelector } from "react-redux";
+import { useGetGallery } from "../../api/client-query";
 
-const GalleryProfile = ({activationCode}) => {
-  
-  const [gallery, setGallery] = useState([]);
-
+const GalleryProfile = ({ activationCode }) => {
 
   const id = activationCode;
-  const token = useSelector(selectToken);
+  const { data: gallery = [], isLoading: loadingGallery, isError: isGalleryError, error: galleryError, } = useGetGallery(id);
 
-
-
-  useEffect(() => {
-    const fetchGalleryData = async () => {
-       const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/profile-gallery/all/get/${id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          }
-        );
-
-        const galleryData = res.data.data;
-        setGallery(galleryData);
-    }
-    fetchGalleryData();
-  },[id]);
 
 
   // Handle image click
@@ -52,9 +33,9 @@ const GalleryProfile = ({activationCode}) => {
 
   return (
     <div className="mb-16 font-Roboto">
-     
-     
-     {/* Gallery Grid */}
+
+
+      {/* Gallery Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {gallery.map((item, index) => (
           <motion.div
@@ -72,11 +53,11 @@ const GalleryProfile = ({activationCode}) => {
               alt={`Gallery Image ${index + 1}`}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
-            
+
             {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        
-              
+
+
               {/* Bottom Info */}
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <div className="flex items-center justify-between">

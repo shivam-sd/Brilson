@@ -57,94 +57,30 @@ import ProfileLocation from "./ProfileComp/ProfileLocation";
 import downloadVCF from "./ProfileComp/SaveVCFfile";
 import ProfileResume from "./ProfileComp/ProfileResume";
 import ProfileCoverPhoto from "./ProfileComp/ProfileCoverPhoto";
+import { useGetProfile, useGetProfileLogo } from "../api/client-query";
 
 const ProfilePage = () => {
   const { slug } = useParams();
-  const [copied, setCopied] = useState(false);
-  const [profile, setProfile] = useState(null);
-  const [id, setId] = useState(null);
-  const [showEditButton, setShowEditButton] = useState(false);
-  const [loading, setLoading] = useState(true);
-  // const [balance, setBalance] = useState(0);
-  const [referralCode, setReferralCode] = useState("");
-  const [showReferralTooltip, setShowReferralTooltip] = useState(false);
-  const [userId, setUserId] = useState(null);
-  const [logo, setLogo] = useState();
-  const [preview, setPreview] = useState(null);
-
-  // Refs for section observation
   const aboutRef = useRef(null);
   const connectRef = useRef(null);
 
   const [activeSection, setActiveSection] = useState("about");
+  const { data: logo, isLoading: isLoadingLogo, isError: isLogoError, error: logoError } = useGetProfileLogo(slug);
+  const { data,isLoading: isLoadingProfile,isError: isProfileError, error: profileError,} = useGetProfile(slug);
 
-  // GET PROFILE LOGO
+  const profile = data?.profile;
+  const showEditButton = data?.card?._id;
+  const id = data?.card?.slug;
   useEffect(() => {
-    const fetchLogo = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/profile-logo/get/${slug}`,
-        );
-
-        setLogo(res.data.profileLogo.image);
-      } catch (err) {
-        // toast.error("Failed to load logo");
-      }
-    };
-
-    fetchLogo();
-  }, [slug]);
-
-  // Fetch profile data
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/card/${slug}`,
-        );
-        setProfile(res.data.profile);
-        // console.log(res.data.profile);
-        setShowEditButton(res.data.card._id);
-        setId(res.data.card.slug);
-      } catch (err) {
-        toast.error(err?.response?.data?.error || "Profile not found");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchProfile();
+    if (isLogoError) {
+      toast.error(logoError?.response?.data?.message || "Failed to load logo");
     }
-  }, [slug]);
+    if(isProfileError) {
+      toast.error(profileError?.response?.data?.message || "Failed to load profile");
+    }
 
-  // const scrollToSection = (sectionId) => {
-  //   const sections = {
-  //     about: aboutRef,
-  //     connect: connectRef,
-  //     products: productsRef,
-  //     portfolio: portfolioRef,
-  //     services: servicesRef,
-  //     gallery: galleryRef,
-  //   };
+  }, [isLogoError, logoError,isProfileError, profileError]);
 
-  //   const section = sections[sectionId];
-  //   if (section && section.current) {
-  //     section.current.scrollIntoView({
-  //       behavior: "smooth",
-  //       block: "start",
-  //     });
-  //   }
-  // };
-
-  // const copyText = (text) => {
-  //   if (!text) return;
-  //   navigator.clipboard.writeText(text);
-  //   setCopied(true);
-  //   toast.success("Copied to clipboard!");
-  //   setTimeout(() => setCopied(false), 2000);
-  // };
 
   const handleWhatsApp = () => {
     if (profileData.whatsapp) {
@@ -181,19 +117,7 @@ const ProfilePage = () => {
     }
   };
 
-
-  // const handleDownloadQr = (url) => {
-  //   if (!url) return;
-
-  //   const link = document.createElement("a");
-  //   link.href = url;
-  //   link.download = "payment-qr.png";
-  //   link.target = "_blank";
-  //   link.click();
-  // };
-
-
-  if (loading) {
+  if (isLoadingProfile) {
     return (
       <>
         <Helmet>
@@ -448,7 +372,7 @@ const ProfilePage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="relative"
           >
-          <ProfileCoverPhoto activationCode={slug} />
+            <ProfileCoverPhoto activationCode={slug} />
             {/* Main Profile Card */}
             <div className="relative bg-transparent border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
               {/* Profile Header */}
@@ -907,7 +831,7 @@ const ProfilePage = () => {
                   <PortfolioProfile activationCode={slug} />
                 </div> */}
 
-                
+
 
                 {/* Services */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">

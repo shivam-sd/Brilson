@@ -1,79 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Users, UserCheck, UserPlus, Calendar, 
-  ChevronDown, ChevronUp, Award, Clock, CheckCircle,
+import {
+  Users, UserPlus, Calendar,
+  ChevronDown, ChevronUp, Clock, CheckCircle,
   XCircle, Gift, TrendingUp, Sparkles
 } from 'lucide-react';
-import {useSelector} from "react-redux";
-import { selectToken } from '../store/slices/authSlice';
+import { useGetReferrals } from '../api/client-query';
+import { toast } from 'react-toastify';
 
 
 const ReferralDashboard = () => {
 
-  const [referralData, setReferralData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [selectedDate, setSelectedDate] = useState('all');
-  
-  // ===== API CALL =====
-  const fetchReferrals = async () => {
-    try {
-      setLoading(true);
-        const token = useSelector(selectToken);
 
+  const { data: referralData, isLoading, isError, error } = useGetReferrals();
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/user/referral`,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      
-      setReferralData(response.data);
-    } catch (error) {
-      console.error('Error fetching referrals:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ===== LIFE CYCLE =====
   useEffect(() => {
-    fetchReferrals();
-  }, []);
+    if (isError) {
+      console.log('Error fetching referrals:', error);
+      toast.error(
+        error?.response?.data?.message || "Failed to load referrals"
+      );
+    }
+  }, [isError, error]);
 
 
-  
+
   // Group referrals by date
   const groupByDate = (referrals) => {
     const groups = {};
-    
+
     referrals?.forEach(ref => {
       const date = new Date(ref.createdAt).toLocaleDateString('en-GB', {
         day: '2-digit',
         month: 'short'
       });
-      
+
       if (!groups[date]) groups[date] = [];
       groups[date].push(ref);
     });
-    
+
     return groups;
   };
 
   // Filter referrals by selected date
   const getFilteredReferrals = () => {
     if (!referralData?.referrals) return [];
-    
+
     if (selectedDate === 'all') {
       return referralData.referrals;
     }
-    
+
     return referralData.referrals.filter(ref => {
       const refDate = new Date(ref.createdAt).toLocaleDateString('en-GB', {
         day: '2-digit',
@@ -123,7 +101,7 @@ const ReferralDashboard = () => {
   };
 
   // ===== LOADING STATE =====
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="bg-[#0f172a] rounded-2xl p-6 border border-gray-700/50 shadow-xl">
         <div className="flex items-center justify-center py-8">
@@ -136,7 +114,7 @@ const ReferralDashboard = () => {
   // ===== MAIN RENDER =====
   return (
     <div className="profile mx-auto max-w-10/12">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         // ✅ Fixed: Single className
@@ -159,7 +137,7 @@ const ReferralDashboard = () => {
                 </p>
               </div>
             </div>
-            
+
             <motion.button
               onClick={() => setExpanded(!expanded)}
               whileHover={{ scale: 1.05 }}
@@ -175,7 +153,7 @@ const ReferralDashboard = () => {
         <div className="p-4">
           <div className="grid grid-cols-3 gap-2">
             {/* Total */}
-            <motion.div 
+            <motion.div
               whileHover={{ y: -2 }}
               className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-xl p-3 border border-gray-700/50"
             >
@@ -190,7 +168,7 @@ const ReferralDashboard = () => {
             </motion.div>
 
             {/* Completed */}
-            <motion.div 
+            <motion.div
               whileHover={{ y: -2 }}
               className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-xl p-3 border border-gray-700/50"
             >
@@ -205,7 +183,7 @@ const ReferralDashboard = () => {
             </motion.div>
 
             {/* In Progress */}
-            <motion.div 
+            <motion.div
               whileHover={{ y: -2 }}
               className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-xl p-3 border border-gray-700/50"
             >
@@ -245,7 +223,7 @@ const ReferralDashboard = () => {
                           {refs.length} {refs.length === 1 ? 'referral' : 'referrals'}
                         </span>
                       </div>
-                      
+
                       {/* Referral Items */}
                       <div className="divide-y divide-gray-700/30">
                         {refs.map((ref, idx) => (

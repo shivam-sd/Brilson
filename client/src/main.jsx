@@ -9,6 +9,15 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from './store/index.js';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1 * 60 * 1000,
+    },
+  },
+});
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -17,7 +26,9 @@ createRoot(document.getElementById('root')).render(
         <PersistGate loading={null} persistor={persistor}>
           <BrowserRouter>
             <ToastContainer position="top-right" />
-            <App />
+            <QueryClientProvider client={queryClient}>
+              <App />
+            </QueryClientProvider>
           </BrowserRouter>
         </PersistGate>
       </Provider>
