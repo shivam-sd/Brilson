@@ -6,7 +6,7 @@ const authAdminToken = (req, res, next) => {
     // console.log(req);
 
     if (!token) {
-      return res.status(401).json({ error: "No token provided" });
+      return res.status(401).json({ message: "Authentication failed: No token provided" });
     }
 
     // verify and decode token
@@ -14,15 +14,15 @@ const authAdminToken = (req, res, next) => {
     // console.log(decoded)
 
     if (decoded.role !== "admin") {
-      return res.status(403).json({ error: "Access denied: Not admin" });
+      return res.status(403).json({ message: "Access denied: Not admin" });
     }
 
-    req.admin = decoded;
-    next();
+      req.admin = decoded;
+      next();
 
   } catch (err) {
     console.error("Admin token verification failed:", err);
-    return res.status(401).json({ error: "Invalid or expired token" });
+    return res.status(401).json({ message: "Authentication error", success: false });
   }
 };
 
