@@ -99,19 +99,19 @@ const ProductCardPreference = () => {
             
             {/* IMAGE SECTION - FIXED */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 sm:space-y-6">
-              <div className="relative bg-gray-900/40 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-white/10">
+              <div className="relative bg-gray-900/40 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl">
                 {discount && (
                   <span className="absolute top-3 sm:top-4 md:top-6 left-3 sm:left-4 md:left-6 bg-red-500 px-2 sm:px-3 md:px-4 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-bold z-10 font-Roboto">
                     {discount}% OFF
                   </span>
                 )}
                 
-                {/* ✨ FIXED: Proper image container with fixed aspect ratio */}
-                <div className="relative aspect-square w-full bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl overflow-hidden">
+                {/* ✨  Proper image container with fixed aspect ratio */}
+                <div className="relative aspect-square w-full bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl">
                   <img
                     src={activeImage || product.images?.[0]}
                     alt={product.title}
-                    className="w-full h-full object-contain cursor-pointer transition-transform duration-300 scale-150"
+                    className="w-full h-full object-contain cursor-pointer transition-transform duration-300"
                     onClick={() => setShowLightbox(true)}
                     onError={(e) => {
                       e.target.src = "https://via.placeholder.com/500x500?text=No+Image";
@@ -121,7 +121,7 @@ const ProductCardPreference = () => {
                   {/* Zoom button */}
                   <button
                     onClick={() => setShowLightbox(true)}
-                    className="absolute bottom-3 right-3 bg-black/50 p-2 rounded-full hover:bg-black/70 transition-colors"
+                    className="absolute bottom-3 right-3 bg-black/50 p-2 rounded-full hover:bg-black/70 transition-colors cursor-pointer"
                   >
                     <FiZoomIn className="text-white" size={18} />
                   </button>

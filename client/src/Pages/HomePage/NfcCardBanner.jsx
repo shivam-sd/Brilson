@@ -8,10 +8,10 @@ const CARD_IMAGES = [
     "/nfc_cards/brilson-nfc-card-3.png",
     "/nfc_cards/brilson-nfc-card-4.png",
     "/nfc_cards/brilson-nfc-card-5.png",
-    "/nfc_cards/brilson-nfc-card-6.jpeg",
-    "/nfc_cards/brilson-nfc-card-7.jpeg",
-    "/nfc_cards/brilson-nfc-card-8.jpeg",
-    "/nfc_cards/brilson-nfc-card-9.jpeg",
+    "/nfc_cards/brilson-nfc-card-6.png",
+    "/nfc_cards/brilson-nfc-card-7.png",
+    "/nfc_cards/brilson-nfc-card-8.png",
+    "/nfc_cards/brilson-nfc-card-9.png",
     "/nfc_cards/brilson-nfc-card-10.jpeg"
 ];
 
@@ -37,7 +37,7 @@ export default function NfcCardBanner() {
     };
 
     return (
-        <div className="relative w-full overflow-hidden   bg-gradient-to-r from-[#07133d] via-[#0c1e4a] to-[#142d5a] font-[Inter]">
+        <div className="relative w-full overflow-hidden bg-gradient-to-b from-black via-[#0a0a0c] to-black font-[Inter]">
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 
@@ -61,12 +61,12 @@ export default function NfcCardBanner() {
 
                 @keyframes glowPulse {
                     0%, 100% {
-                        opacity: 0.15;
+                        opacity: 0.12;
                         transform: translate(-50%, -50%) scale(1);
                     }
 
                     50% {
-                        opacity: 0.3;
+                        opacity: 0.24;
                         transform: translate(-50%, -50%) scale(1.15);
                     }
                 }
@@ -80,18 +80,21 @@ export default function NfcCardBanner() {
                 }
             `}</style>
 
-            <div className="pointer-events-none absolute -top-32 left-1/3 h-[30rem] w-[30rem] rounded-full bg-[#4F8CFF] opacity-[0.08] blur-[130px]" />
+            {/* Thin top hairline — on black there's no natural blend from the section above, so this gives a clean seam */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.04),transparent_60%)]" />
+            <div className="pointer-events-none absolute -top-32 left-1/3 h-[30rem] w-[30rem] rounded-full bg-[#4F8CFF] opacity-[0.06] blur-[130px]" />
+
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.03),transparent_60%)]" />
 
             <div className="relative mx-auto flex max-w-7xl flex-col-reverse items-center gap-8 px-6 pb-10 pt-2 lg:flex-row lg:justify-between lg:gap-8 lg:px-12 lg:pt-5">
 
                 {/* LEFT CONTENT */}
                 <div className="w-full max-w-xl px-5 text-center lg:text-left">
                     <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5">
-                        <Wifi className="h-3.5 w-3.5 text-[#4F8CFF]" />
+                        <Wifi className="h-3.5 w-3.5 text-[#5B9BFF]" />
 
-                        <span className="font-display text-xs font-semibold tracking-[0.2em] text-[#8B92A0]">
+                        <span className="font-display text-xs font-semibold tracking-[0.2em] text-[#9198A6]">
                             BRILSON NFC CARD
                         </span>
                     </div>
@@ -102,7 +105,7 @@ export default function NfcCardBanner() {
                         In One Tap
                     </h2>
 
-                    <p className="mx-auto mt-6 max-w-md text-md leading-relaxed text-[#8B92A0] lg:mx-0">
+                    <p className="mx-auto mt-6 max-w-md text-md leading-relaxed text-[#9198A6] lg:mx-0">
                         Hold your Brilson card near any phone and your contact, socials and portfolio
                         open instantly. No app, no typing, no reprints when your details change.
                     </p>
@@ -110,7 +113,7 @@ export default function NfcCardBanner() {
                     <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start">
                         <Link
                             to="/products"
-                            className="group border border-white/15 flex items-center justify-center gap-2 rounded-xl  px-7 py-3.5 font-display text-sm font-semibold text-white transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98] hover:bg-white/5"
+                            className="group flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2E6BE6] to-[#0447c2] px-7 py-3.5 font-display text-sm font-semibold text-white shadow-[0_8px_32px_-8px_rgba(47,107,230,0.55)] transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_12px_40px_-8px_rgba(47,107,230,0.75)] active:scale-[0.98]"
                         >
                             Get Your NFC Card
 
@@ -119,20 +122,20 @@ export default function NfcCardBanner() {
 
                         <Link
                             to="/how-it-works"
-                            className="rounded-xl border border-white/15 px-7 py-3.5 font-display text-sm font-semibold text-[#F5F6F7]  transition-transform hover:scale-[1.03] active:scale-[0.98] duration-200 hover:bg-white/5"
+                            className="rounded-xl border border-white/15 px-7 py-3.5 font-display text-sm font-semibold text-[#F5F6F7] transition-all duration-200 hover:scale-[1.03] hover:bg-white/5 hover:border-white/25 active:scale-[0.98]"
                         >
                             See How It Works
                         </Link>
                     </div>
 
-                    <div className="mt-10 flex items-center justify-center gap-6 text-xs text-[#8B92A0] lg:justify-start">
+                    <div className="mt-10 flex items-center justify-center gap-6 text-xs text-[#9198A6] lg:justify-start">
                         <div className="flex items-center gap-1.5">
-                            <Share2 className="h-3.5 w-3.5 text-[#4F8CFF]" />
+                            <Share2 className="h-3.5 w-3.5 text-[#5B9BFF]" />
                             Unlimited profile updates
                         </div>
 
                         <div className="flex items-center gap-1.5">
-                            <ShieldCheck className="h-3.5 w-3.5 text-[#4F8CFF]" />
+                            <ShieldCheck className="h-3.5 w-3.5 text-[#5B9BFF]" />
                             Works with any smartphone
                         </div>
                     </div>
@@ -164,7 +167,7 @@ export default function NfcCardBanner() {
                                 onClick={() => setActiveIndex(index)}
                                 aria-label={`Show card image ${index + 1}`}
                                 className={`h-1.5 rounded-full transition-all duration-300 ${index === activeIndex
-                                    ? "w-6 bg-[#4F8CFF]"
+                                    ? "w-6 bg-[#5B9BFF]"
                                     : "w-1.5 bg-white/20"
                                     }`}
                             />
