@@ -1,4 +1,5 @@
 const CardProfileModel = require("../models/CardProfile");
+const mongoose = require("mongoose");
 
 
 const getLoggedInUserCards = async (req, res) => {
@@ -26,55 +27,74 @@ const getLoggedInUserCards = async (req, res) => {
 
 const getAllUsersWithTheirCards = async (req, res) => {
   try {
+    const userId = req.user;
+
+    console.log("user id:", userId);
+
+
+    const ownerId = new mongoose.Types.ObjectId(userId);
+
     const data = await CardProfileModel.aggregate([
       {
-        $match: { isActivated: true } 
+        $match: {
+          isActivated: true,
+          owner: ownerId,
+        },
       },
+
       {
         $group: {
           _id: "$owner",
-          cards: { $push: "$$ROOT" }
-        }
+          cards: {
+            $push: "$$ROOT",
+          },
+        },
       },
+
       {
         $lookup: {
-          from: "users", 
+          from: "users",
           localField: "_id",
           foreignField: "_id",
-          as: "user"
-        }
+          as: "user",
+        },
       },
+
       {
-        $unwind: "$user"
+        $unwind: "$user",
       },
+
       {
         $project: {
           _id: 0,
+
           userId: "$user._id",
+
           profile: {
             name: "$user.name",
             email: "$user.email",
-            phone: "$user.phone"
+            phone: "$user.phone",
           },
-          cards: 1
-        }
-      }
+
+          cards: 1,
+        },
+      },
     ]);
 
     return res.status(200).json({
       success: true,
       usersCount: data.length,
-      data
+      data,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Get Users With Cards Error:", err);
+
     return res.status(500).json({
       success: false,
-      error: "Server Error"
+      error: "Server Error",
     });
   }
 };
-
 
 
 
