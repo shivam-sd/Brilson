@@ -30,11 +30,6 @@ const AdminPassToProfile = () => {
   const balance = balanceData?.Balance || 0;
 
   useEffect(() => {
-    if (isBalanceError) {
-      toast.error(
-        balanceError?.response?.data?.message || "Failed to load Balance"
-      );
-    }
     if (isUserCardsError) {
       toast.error(
         userCardsError?.response?.data?.message || "Failed to load user cards"

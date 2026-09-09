@@ -19,9 +19,9 @@ const ReferralDashboard = () => {
   useEffect(() => {
     if (isError) {
       console.log('Error fetching referrals:', error);
-      toast.error(
-        error?.response?.data?.message || "Failed to load referrals"
-      );
+      // toast.error(
+      //   error?.response?.data?.message || "Failed to load referrals"
+      // );
     }
   }, [isError, error]);
 
