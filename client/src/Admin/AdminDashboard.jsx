@@ -8,40 +8,14 @@ import RecentOrders from "./Components/RecentOrders";
 import RecentCards from "./Components/RecentCards";
 import QuickActions from "./Components/QuickActiions";
 import ModernLoader from "../lottie/ModernLoader";
+import { useGetAdminDashboardData, useGetAdminDashboardDataChart } from "../api/dashboard-query";
 
 const AdminDashboard = () => {
-  const [data, setData] = useState(null);
-  const [chartData, setChartData] = useState([]);
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        axios
-          .get(`${import.meta.env.VITE_BASE_URL}/api/admin/dashboard`, {withCredentials: true})
-          .then((res) => {
-            setData(res.data);
-            // console.log(res.data);
-          });
-      } catch (err) {
-        console.error("Dashboard Data Fetch Error:", err);
-      }
-    };
-
-    const fetchChartData = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/dashboard/chart`,{withCredentials: true}
-        );
-        setChartData(res.data.chartData);
-        // console.log("Chart Data:", res.data);
-      } catch (err) {
-        console.error("Chart Data Fetch Error:", err);
-      }
-    };
-
-    fetchDashboardData();
-    fetchChartData();
-  }, []);
+  const { data: dashboardData } = useGetAdminDashboardData();
+  const { data: dashboardChartData } = useGetAdminDashboardDataChart();
+  const data = dashboardData?.data
+  const chartData = dashboardChartData?.chartData
 
   if (!data) {
     return (<>
@@ -61,7 +35,7 @@ const AdminDashboard = () => {
    rounded-xl
    "
     >
-      <StatsCards data={data.data} />
+      <StatsCards data={data} />
 
       <div
         className="
@@ -75,8 +49,8 @@ const AdminDashboard = () => {
         </div>
 
         <CardsStatus
-          activeCards={data.data.activeCards}
-          inactiveCards={data.data.inactiveCards}
+          activeCards={data.activeCards}
+          inactiveCards={data.inactiveCards}
         />
       </div>
 
@@ -85,13 +59,13 @@ const AdminDashboard = () => {
 
         <div className="lg:col-span-7">
           <RecentOrders
-            orders={data.data.recentOrders}
+            orders={data.recentOrders}
           />
         </div>
 
         <div className="lg:col-span-5">
           <RecentCards
-            cards={data.data.recentCards}
+            cards={data.recentCards}
           />
         </div>
 
