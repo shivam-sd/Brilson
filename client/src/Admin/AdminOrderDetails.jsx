@@ -2,44 +2,16 @@ import React, { useEffect, useState } from "react";
 import Header from "../Component/Header";
 import Footer from "../Component/Footer";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { motion } from "framer-motion";
-import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
-import { selectAdminToken } from "../store/slices/authSlice";
+import { useGetOrderDetails } from "../api/dashboard-query";
 
 const AdminOrderDetails = () => {
   const { orderId } = useParams();
-  const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const token = useSelector(selectAdminToken);
-  useEffect(() => {
-    const fetchOrderDetails = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/order/details/${orderId}`,
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: token ? `Bearer ${token}` : "",
-            },
-          }
-        );
 
-        console.log(res);
-        setOrder(res.data.data);
-      } catch (err) {
-        console.error(err);
-        toast.error(err.response.data.error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: order, isLoading, isError, error } = useGetOrderDetails(orderId);
 
-    fetchOrderDetails();
-  }, [orderId]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
         <div className="w-14 h-14 border-4 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin"></div>
