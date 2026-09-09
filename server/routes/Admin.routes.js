@@ -11,7 +11,7 @@ const updateGSTDiscountPricing = require("../controller/UpdateGSTDiscountPricing
 // admin routes
 router.post("/register", adminRegister);
 router.post("/login", adminLogin);
-router.post("/logout", authAdminToken, adminLogout);
+router.post("/logout", adminLogout);
 
 
 // products routes

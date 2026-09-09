@@ -183,3 +183,12 @@ export const useGetPaymentDetails = (activationCode) => {
         enabled: !!activationCode
     });
 };
+export const useGetMyOrders = () => {
+    return useQuery({
+        queryKey: ["myOrders"],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/orders`);
+            return data.orders || [];
+        },
+    });
+};
