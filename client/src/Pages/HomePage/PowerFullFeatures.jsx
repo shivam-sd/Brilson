@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import {
   FiBarChart2,
@@ -11,29 +10,13 @@ import {
   FiLayout,
   FiArrowRight,
 } from "react-icons/fi";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
+import { useGetFeatures } from "../../api/client-query";
 
 const PowerFullFeatures = () => {
-  const [feature, setFeature] = useState([]);
-  const [subHeading, SetsubHeading] = useState("");
 
-  useEffect(() => {
-    const fetchPowerFullFeatureData = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/powerfull/features`
-        );
-        const data = res.data.data;
-        SetsubHeading(data.subHeading);
-        setFeature(data.features);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchPowerFullFeatureData();
-  }, []);
+  const { data } = useGetFeatures();
+  const feature = data?.data?.features || [];
+  const subHeading = data?.data?.subHeading || "";
 
   // Each style pairs a border/glow color with a small badge icon,
   // mirroring the accent-per-feature treatment from the reference cards.

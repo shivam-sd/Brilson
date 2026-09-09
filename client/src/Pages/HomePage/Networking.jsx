@@ -1,26 +1,14 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiArrowRight, FiShield, FiGlobe, FiClock, FiZap } from "react-icons/fi";
+import { useGetTransform } from "../../api/client-query";
 
 const Networking = () => {
-  const [data, setData] = useState({});
-  const [feature, setFeatures] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/admin/transform`);
-        const data = res.data.data;
-        setData(data);
-        setFeatures(data.features || []);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchData();
-  }, []);
+  const { data } = useGetTransform();
+  const response = data?.data
+  const feature = response?.features || [];
 
   const defaultFeatures = [
     "✓ Free Worldwide Shipping",
@@ -90,7 +78,7 @@ const Networking = () => {
               <span className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 animate-pulse" />
               <span className="relative flex items-center gap-2 tracking-widest font-Roboto">
                 <FiZap size={14} className="text-cyan-400 " />
-                {data.badgeText || "Limited Time Offer – 40% OFF"}
+                {response?.badgeText || "Limited Time Offer – 40% OFF"}
               </span>
             </span>
           </motion.div>
@@ -103,9 +91,9 @@ const Networking = () => {
             viewport={{ once: true }}
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-tight tracking-wide font-Roboto"
           >
-            {data.heading ? (
+            {response?.heading ? (
               <span dangerouslySetInnerHTML={{
-                __html: data.heading.replace(
+                __html: response?.heading.replace(
                   /Transform/g,
                   '<span class="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Transform</span>'
                 )
@@ -127,7 +115,7 @@ const Networking = () => {
             viewport={{ once: true }}
             className="text-gray-300 text-sm md:text-base lg:text-lg leading-relaxed max-w-2xl px-4 tracking-widest font-Roboto"
           >
-            {data.subHeading || (
+            {response?.subHeading || (
               <>
                 Join <span className="font-normal text-white">50,000+ professionals</span> who've already upgraded.
                 <br className="hidden sm:block" />

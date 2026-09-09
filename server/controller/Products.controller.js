@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const ProductModel = require("../models/Product.model");
 const cloudinary = require("cloudinary").v2;
 
@@ -184,31 +185,31 @@ const editProduct = async (req, res) => {
 
     // IMAGE UPDATE LOGIC
     let finalImages = [];
-    
+
     // Parse existing images (original URLs that are kept)
     let existingImagesArray = [];
     if (existingImages) {
       try {
-        existingImagesArray = typeof existingImages === 'string' 
-          ? JSON.parse(existingImages) 
+        existingImagesArray = typeof existingImages === 'string'
+          ? JSON.parse(existingImages)
           : existingImages;
       } catch (e) {
         existingImagesArray = [];
       }
     }
-    
+
     // Parse removed images
     let removedImagesArray = [];
     if (removedImages) {
       try {
-        removedImagesArray = typeof removedImages === 'string' 
-          ? JSON.parse(removedImages) 
+        removedImagesArray = typeof removedImages === 'string'
+          ? JSON.parse(removedImages)
           : removedImages;
       } catch (e) {
         removedImagesArray = [];
       }
     }
-    
+
     // Parse cropped images mapping
     let croppedMapping = [];
     if (croppedImagesMapping) {
@@ -220,30 +221,30 @@ const editProduct = async (req, res) => {
         croppedMapping = [];
       }
     }
-    
+
     // First, add all existing images that are not removed
     // These are the original URLs that we're keeping
     finalImages.push(...existingImagesArray);
-    
+
     // Handle cropped images that are being updated
     // These will replace their original versions in the finalImages array
     if (req.files && req.files.croppedImages) {
       let croppedFiles = req.files.croppedImages;
-      
+
       // Convert single file to array
       if (!Array.isArray(croppedFiles)) {
         croppedFiles = [croppedFiles];
       }
-      
+
       // Process each cropped image
       for (let i = 0; i < croppedMapping.length; i++) {
         const mapping = croppedMapping[i];
         const croppedFile = croppedFiles[i];
-        
+
         if (croppedFile && mapping.originalUrl) {
           // Upload the cropped image
           const newUrl = await uploadImage(croppedFile);
-          
+
           // Find and replace the original URL with the new cropped URL in finalImages
           const index = finalImages.findIndex(img => img === mapping.originalUrl);
           if (index !== -1) {
@@ -258,28 +259,28 @@ const editProduct = async (req, res) => {
         }
       }
     }
-    
+
     // Handle new image uploads
     if (req.files && req.files.images) {
       let files = req.files.images;
-      
+
       // Convert single file to array
       if (!Array.isArray(files)) {
         files = [files];
       }
-      
+
       // Upload new images
       for (const file of files) {
         const url = await uploadImage(file);
         finalImages.push(url);
       }
     }
-    
+
     // Final cleanup: remove any images that were marked for removal
     if (removedImagesArray.length > 0) {
       finalImages = finalImages.filter(img => !removedImagesArray.includes(img));
     }
-    
+
     // Set the final images array
     updatedData.images = finalImages;
 
@@ -354,32 +355,51 @@ const deleteProduct = async (req, res) => {
 
 
 
-const findProductById = async (req,res) => {
-  try{
-    const {id} = req.params;
+const findProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Product ID",
+      });
+    }
 
     const product = await ProductModel.findById(id);
 
-    if(!product){
-      return res.status(404).json({error:"Product Not Found"});
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product Not Found",
+      });
     }
 
-    res.status(200).json({message:"Product Find", product});
+    return res.status(200).json({
+      success: true,
+      message: "Product Found",
+      product,
+    });
 
-  }catch(err){
-    res.status(500).json({message:"Internal Server Error"});
-    console.log("Error in Find Product By Id", err);
+  } catch (err) {
+    console.log("Error in Find Product By Id:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
-}
+};
 
 
-const getAllProduct = async (req,res) => {
-  try{
-    const allProducts = await ProductModel.find().sort({createdAt:-1});
+const getAllProduct = async (req, res) => {
+  try {
+    const { isDelete } = req.query;
+    const allProducts = await ProductModel.find({ isDelete: { $ne: 1 } }).sort({ createdAt: -1 });
 
-    res.status(200).json({message:"All Products", allProducts});
-  }catch(err){
-    res.status(500).json({error:"Internal Server Error"});
+    res.status(200).json({ message: "All Products", allProducts });
+  } catch (err) {
+    res.status(500).json({ error: "Internal Server Error" });
     console.log("Error In Get All Product", err);
   }
 }

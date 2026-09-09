@@ -11,8 +11,9 @@ import { setCredentials } from "../store/slices/authSlice";
 import GoogleLoginAuth from "./GoogleAuth/GoogleLoginAuth";
 import GooglePhoneInput from "./GoogleAuth/GooglePhoneInput";
 import GoogleOTPInput from "./GoogleAuth/GoogleOTPInput";
-import GoogleReferralInput from "./GoogleAuth/GoogleReferralInput"; 
+import GoogleReferralInput from "./GoogleAuth/GoogleReferralInput";
 import { fetchCart } from "../store/slices/cartSlice";
+import { useLogin } from "../api/auth-query";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -26,8 +27,10 @@ const LoginPage = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const [googleStep, setGoogleStep] = useState(null); 
+  const [googleStep, setGoogleStep] = useState(null);
   const [googleUserData, setGoogleUserData] = useState(null);
+
+  const loginMutation = useLogin();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -52,17 +55,13 @@ const LoginPage = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/users/login`,
-        {
-          phone: form.phone,
-          password: form.password,
-        },
-        { withCredentials: true }
-      );
+      const res = await loginMutation.mutateAsync({
+        phone: form.phone,
+        password: form.password,
+      });
 
-      if (res.data?.token) {
-        dispatch(setCredentials({ token: res.data.token, user: res.data.user }));
+      if (res?.token) {
+        dispatch(setCredentials({ token: res.token, user: res.user }));
       }
 
       toast.success("Login successful");
@@ -216,7 +215,7 @@ const LoginPage = () => {
             />
           )}
 
-   
+
 
           {!googleStep && (
             <div className="relative my-6">
@@ -286,7 +285,7 @@ const LoginPage = () => {
             </form>
           )}
 
-  
+
 
           {!googleStep && (
             <>
@@ -326,11 +325,11 @@ const LoginPage = () => {
           {/* Google flow indicator */}
           {googleStep && (
             <div className="mt-4 text-center text-gray-400 text-sm">
-              {googleStep === 'phone' 
+              {googleStep === 'phone'
                 ? '📱 Enter your phone number to continue'
                 : googleStep === 'otp'
-                ? '🔑 Enter OTP to verify your phone'
-                : '🎁 Enter referral code or skip'
+                  ? '🔑 Enter OTP to verify your phone'
+                  : '🎁 Enter referral code or skip'
               }
             </div>
           )}

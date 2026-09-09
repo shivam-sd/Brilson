@@ -2,25 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Download } from "lucide-react";
 import { useParams } from "react-router-dom";
+import { useGetResume } from "../../api/client-query";
 
-const ProfileResume = ({activationCode}) => {
-  const [resume, setResume] = useState(null);
+const ProfileResume = ({ activationCode }) => {
 
-  const fetchResume = async () => {
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/profile/resume/get/${activationCode}`
-      );
-
-      setResume(res?.data?.resume);
-    } catch (error) {
-      console.log("Resume not found");
-    }
-  };
-
-  useEffect(() => {
-    fetchResume();
-  }, [activationCode]);
+  const { data: resume, isLoading: loadingResume, isError, error, } = useGetResume(activationCode);
 
   if (!resume) return null;
 

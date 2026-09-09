@@ -7,7 +7,7 @@ const authAdminToken = require("../middleware/authAdminToken");
 
 
 router.post("/orders/create", authUser, orderCreate);
-router.get("/orders/", authUser, getOrderProduct);
+router.get("/orders", authUser, getOrderProduct);
 // router.post("/orders/update/paymentStatus", updatePaymentStatus);
  router.get("/allorders",authAdminToken, allOrders);
 

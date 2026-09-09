@@ -19,40 +19,34 @@ import {
   FiX
 } from "react-icons/fi";
 import HowItWorks from "./HowitWorks";
+import { useGetProductById } from "../api/product-query";
 
 const ProductCardPreference = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [product, setProduct] = useState(null);
+  // const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
   const [activeImage, setActiveImage] = useState("");
   const [showLightbox, setShowLightbox] = useState(false);
 
+  const { data, isLoading, isError, error } = useGetProductById(id)
+  const product = data?.product;
+
   useEffect(() => {
-    const getProduct = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/find/products/${id}`
-        );
+    if (isError) {
+      toast.error(error?.response?.data?.message || "Product not found");
 
-        const data = res.data.product;
-        setProduct(data);
+      return;
+    }
 
-        if (data.images?.length) {
-          setActiveImage(data.images[0]);
-        }
+    if (product?.images?.length) {
+      setActiveImage(product.images[0]);
+    }
+  }, [isError, product]);
 
-      } catch {
-        toast.error("Product not found");
-      } finally {
-        setLoading(false);
-      }
-    };
-    getProduct();
-  }, [id]);
 
   const handleAddtoCart = async () => {
     if (!product || addingToCart) return;
@@ -69,10 +63,69 @@ const ProductCardPreference = () => {
   };
 
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
         <div className="animate-spin w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full"></div>
+      </div>
+    );
+  }
+  if (isError || !product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#05070a] via-gray-900 to-[#05070a] text-white px-4">
+        <div className="text-center max-w-md">
+
+          {/* Error Icon */}
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+            <svg
+              className="w-10 h-10 text-red-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.8"
+                d="M12 9v4m0 4h.01M10.29 3.86l-7.5 13A2 2 0 004.53 20h14.94a2 2 0 001.74-3.14l-7.5-13a2 2 0 00-3.42 0z"
+              />
+            </svg>
+          </div>
+
+          {/* Heading */}
+          <h1 className="text-2xl sm:text-3xl font-semibold mb-3">
+            Product Not Found
+          </h1>
+
+          {/* Message */}
+          <p className="text-gray-400 text-sm sm:text-base mb-8 leading-relaxed">
+            {error?.response?.data?.message ||
+              "The product you're looking for doesn't exist or may have been removed."}
+          </p>
+
+          {/* Button */}
+          <Link
+            to="/products"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold transition-all duration-300 shadow-lg shadow-cyan-500/20 hover:scale-105"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+
+            Back to Products
+          </Link>
+
+        </div>
       </div>
     );
   }
@@ -87,7 +140,7 @@ const ProductCardPreference = () => {
     <>
       <div className="min-h-screen bg-gradient-to-br from-[#05070a] via-gray-900 to-[#05070a] text-white overflow-x-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 mt-4 sm:mt-6 md:mt-10">
-          
+
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base overflow-x-auto whitespace-nowrap pb-2 lg:mt-0 md:mt-0 mt-6 font-Roboto">
             <Link to="/" className="hover:text-cyan-400 transition">Home</Link>
@@ -96,7 +149,7 @@ const ProductCardPreference = () => {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
-            
+
             {/* IMAGE SECTION - FIXED */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 sm:space-y-6">
               <div className="relative bg-gray-900/40 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl">
@@ -117,7 +170,7 @@ const ProductCardPreference = () => {
                       e.target.src = "https://via.placeholder.com/500x500?text=No+Image";
                     }}
                   />
-                  
+
                   {/* Zoom button */}
                   <button
                     onClick={() => setShowLightbox(true)}
@@ -135,11 +188,10 @@ const ProductCardPreference = () => {
                     <div
                       key={index}
                       onClick={() => setActiveImage(img)}
-                      className={`cursor-pointer p-1.5 sm:p-2 rounded-xl border transition-all duration-200 flex-shrink-0 ${
-                        activeImage === img
-                          ? "border-cyan-400 bg-cyan-400/10"
-                          : "border-white/10 hover:border-cyan-400"
-                      }`}
+                      className={`cursor-pointer p-1.5 sm:p-2 rounded-xl border transition-all duration-200 flex-shrink-0 ${activeImage === img
+                        ? "border-cyan-400 bg-cyan-400/10"
+                        : "border-white/10 hover:border-cyan-400"
+                        }`}
                     >
                       <img
                         src={img}
@@ -174,7 +226,7 @@ const ProductCardPreference = () => {
 
             {/* DETAILS SECTION */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 sm:space-y-6 md:space-y-8">
-              
+
               <div>
                 <span className="px-2 sm:px-3 py-1 bg-cyan-500/10 text-cyan-400 rounded-full text-xs sm:text-sm inline-block font-Roboto">
                   {product.category || "Product"}
@@ -215,47 +267,47 @@ const ProductCardPreference = () => {
               )}
 
               {/* ACTION BUTTONS */}
-<div className="fixed bottom-[-20px] left-0 right-0 z-50 lg:relative lg:bottom-auto lg:left-auto lg:right-auto bg-gradient-to-b from-transparent to-black/80 lg:bg-transparent p-4 lg:p-0 pt-8 lg:pt-2">
-  <div className="flex flex-row sm:flex-row gap-3 sm:gap-4 max-w-7xl mx-auto lg:max-w-none">
-    {/* Add to Cart Button */}
-    <motion.button
-      onClick={handleAddtoCart}
-      disabled={addingToCart}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer font-Roboto"
-    >
-      {addingToCart ? (
-        <>
-          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          <span>Adding...</span>
-        </>
-      ) : (
-        <>
-          <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-          </svg>
-          <span>ADD TO CART</span>
-        </>
-      )}
-    </motion.button>
+              <div className="fixed bottom-[-20px] left-0 right-0 z-50 lg:relative lg:bottom-auto lg:left-auto lg:right-auto bg-gradient-to-b from-transparent to-black/80 lg:bg-transparent p-4 lg:p-0 pt-8 lg:pt-2">
+                <div className="flex flex-row sm:flex-row gap-3 sm:gap-4 max-w-7xl mx-auto lg:max-w-none">
+                  {/* Add to Cart Button */}
+                  <motion.button
+                    onClick={handleAddtoCart}
+                    disabled={addingToCart}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer font-Roboto"
+                  >
+                    {addingToCart ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Adding...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span>ADD TO CART</span>
+                      </>
+                    )}
+                  </motion.button>
 
-    {/* Buy Now Button */}
-    <Link
-      // to={'/your-items'}
-      onClick={handleAddtoCart}
-      className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg transition-all duration-300 shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 text-center font-Roboto"
-    >
-      <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 15v6" />
-      </svg>
-      <span>BUY NOW</span>
-    </Link>
-  </div>
-</div>
+                  {/* Buy Now Button */}
+                  <Link
+                    // to={'/your-items'}
+                    onClick={handleAddtoCart}
+                    className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg transition-all duration-300 shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 text-center font-Roboto"
+                  >
+                    <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 15v6" />
+                    </svg>
+                    <span>BUY NOW</span>
+                  </Link>
+                </div>
+              </div>
 
-{/* Add spacing at bottom on mobile to prevent content hiding behind fixed buttons */}
-<div className="lg:hidden h-24" />
+              {/* Add spacing at bottom on mobile to prevent content hiding behind fixed buttons */}
+              <div className="lg:hidden h-24" />
 
 
 
@@ -272,7 +324,7 @@ const ProductCardPreference = () => {
 
       {/* ✨ LIGHTBOX MODAL for fullscreen image view */}
       {showLightbox && (
-        <div 
+        <div
           className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
           onClick={() => setShowLightbox(false)}
         >

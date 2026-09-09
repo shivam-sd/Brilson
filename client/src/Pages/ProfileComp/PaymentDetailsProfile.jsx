@@ -4,34 +4,42 @@ import { CreditCard, Copy, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { selectToken } from "../../store/slices/authSlice";
 import { useSelector } from "react-redux";
+import { useGetPaymentDetails } from "../../api/client-query";
 
 const PaymentDetailsProfile = ({ activationCode }) => {
   const token = useSelector(selectToken);
 
-  const [paymentData, setPaymentData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [paymentData, setPaymentData] = useState(null);
+  // const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchPayment = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/profile/payment-details/get/${activationCode}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          }
-        );
+  const {
+  data: paymentData,
+  isLoading: isLoadingPayment,
+  isError: isPaymentError,
+  error: paymentError,
+} = useGetPaymentDetails(activationCode);
 
-        setPaymentData(res.data.data);
-      } catch (err) {
-        setPaymentData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchPayment = async () => {
+  //     try {
+  //       const res = await axios.get(
+  //         `${import.meta.env.VITE_BASE_URL}/api/profile/payment-details/get/${activationCode}`,
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //           withCredentials: true,
+  //         }
+  //       );
 
-    fetchPayment();
-  }, [activationCode]);
+  //       setPaymentData(res.data.data);
+  //     } catch (err) {
+  //       setPaymentData(null);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchPayment();
+  // }, [activationCode]);
 
   const hasPayment = !!paymentData;
 
@@ -45,7 +53,7 @@ const PaymentDetailsProfile = ({ activationCode }) => {
   //   return "XXXXXX" + acc.slice(-4);
   // };
 
-  if (loading) {
+  if (isLoadingPayment) {
     return (
       <div className="min-h-[60vh] flex justify-center items-center">
         <Loader2 size={40} className="animate-spin text-emerald-500" />

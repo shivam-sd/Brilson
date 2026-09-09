@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiZap, FiLayers, FiDatabase, FiHash, FiImage } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { useGetAllProducts } from "../../api/product-query";
+import { toast } from "react-toastify";
+
 
 // Icon mapping based on product category
 const getIconByCategory = (category) => {
@@ -198,31 +200,41 @@ const ProductImage = ({ product }) => {
 
 const OurSmartCard = () => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const res = await axios.get(
+  //         `${import.meta.env.VITE_BASE_URL}/api/admin/all/products`,
+  //       );
+  //       if (res.data?.allProducts && Array.isArray(res.data.allProducts)) {
+  //         setProducts(res.data.allProducts);
+  //       } else {
+  //         setProducts([]);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching products:", error);
+  //       setProducts([]);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchProducts();
+  // }, []);
+
+  const { data: fetchProducts, isLoading, error, isError } = useGetAllProducts()
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/all/products`,
-        );
-        if (res.data?.allProducts && Array.isArray(res.data.allProducts)) {
-          setProducts(res.data.allProducts);
-        } else {
-          setProducts([]);
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
+    console.log("error---", error)
+    if (isError) {
+      toast.error(error?.response?.data?.message || "Product not found");
+      return;
+    }
 
-  if (loading) {
+  })
+
+  if (isLoading) {
     return (
       <section className="relative w-full min-h-screen py-28 bg-[#0b0f12] text-white overflow-hidden">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,#00eaff22,transparent_70%)]"></div>
@@ -236,7 +248,7 @@ const OurSmartCard = () => {
     );
   }
 
-  if (!products || products.length === 0) {
+  if (!fetchProducts?.allProducts || fetchProducts?.allProducts.length === 0) {
     return (
       <section className="relative w-full min-h-screen py-28 bg-[#0b0f12] text-white overflow-hidden">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,#00eaff22,transparent_70%)]"></div>
@@ -288,7 +300,7 @@ const OurSmartCard = () => {
 
         {/* Products Grid */}
         <div className="mt-8 grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
-          {products.map((product, index) => (
+          {fetchProducts?.allProducts.map((product, index) => (
             <Link
               to={`/products/${product._id}`}
               key={product._id || index}

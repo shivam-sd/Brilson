@@ -4,61 +4,27 @@ import { FiShoppingBag, FiPackage, FiDownload } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useGetMyOrders } from "../api/client-query";
 
 const Orders = () => {
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
-  window.history.replaceState(null, "", "/orders");
-}, []);
+    window.history.replaceState(null, "", "/orders");
+  }, []);
 
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [downloadingId, setDownloadingId] = useState(null);
-
-  /* AUTH CHECK + FETCH */
-  useEffect(() => {
-    if (!token) {
-      navigate("/login", { replace: true });
-      return;
-    }
-    fetchOrders();
-  }, [token]);
-
-  const fetchOrders = async () => {
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/api/orders`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      // console.log(res)
-
-      const sorted = [...(res.data.orders || [])].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-
-      setOrders(sorted);
-    } catch (err) {
-      toast.error("Unable to load orders");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /* DOWNLOAD INVOICE */
+const { data:orders, isLoading, isError } = useGetMyOrders()
+  console.log("orders", orders)
+  
   const downloadInvoice = async (orderId) => {
     try {
       setDownloadingId(orderId);
 
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/invoice/download/${orderId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { withCredentials: true }
       );
 
       const link = document.createElement("a");
@@ -87,7 +53,7 @@ const Orders = () => {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-400">
         Loading orders...
