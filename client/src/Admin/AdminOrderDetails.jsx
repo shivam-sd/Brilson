@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Header from "../Component/Header";
-import Footer from "../Component/Footer";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useGetOrderDetails } from "../api/dashboard-query";
@@ -29,7 +27,6 @@ const AdminOrderDetails = () => {
 
   return (
     <div className="bg-slate-950 min-h-screen text-white">
-      <Header />
 
       <div className="max-w-6xl mx-auto px-4 py-8 lg:mt-18 md:mt-18 mt-16">
         <motion.div
@@ -118,7 +115,6 @@ const AdminOrderDetails = () => {
         </motion.div>
       </div>
 
-      <Footer />
     </div>
   );
 };

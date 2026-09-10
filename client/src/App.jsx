@@ -266,6 +266,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              
 
               <Route
                 path="customers/list"
@@ -439,6 +440,14 @@ function App() {
               }
             />
             <Route
+              path="/admin/orders/detils/:orderId"
+              element={
+                <ProtectedRoute>
+                  <AdminOrderDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/admin/edit/products/:id"
               element={
                 <ProtectedRoute>
@@ -557,15 +566,6 @@ function App() {
               }
             />
 
-
-            <Route
-              path="/admin/orders/detils/:orderId"
-              element={
-                <ProtectedRoute>
-                  <AdminOrderDetails />
-                </ProtectedRoute>
-              }
-            />
 
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
