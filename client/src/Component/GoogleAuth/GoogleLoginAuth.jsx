@@ -10,11 +10,13 @@ const GoogleLoginAuth = ({ onSuccess, onError, onPhoneRequired, onOTPRequired })
 
   const responseGoogle = async (authResult) => {
     setLoading(true);
-    
+
     try {
       if (authResult.code) {
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/auth/google-auth?code=${authResult.code}`
+          `${import.meta.env.VITE_BASE_URL}/api/auth/google-auth?code=${authResult.code}`,{
+            withCredentials:true
+          }
         );
 
         const { data } = response;
@@ -22,12 +24,12 @@ const GoogleLoginAuth = ({ onSuccess, onError, onPhoneRequired, onOTPRequired })
         if (data.success) {
           if (data.status === "SUCCESS") {
             dispatch(setCredentials({ token: data.data.token, user: data.data.user }));
-            
+
             if (onSuccess) {
               onSuccess(data.data);
             }
           }
- else if (data.status === "PHONE_REQUIRED") {
+          else if (data.status === "PHONE_REQUIRED") {
             if (onPhoneRequired) {
               onPhoneRequired(data.data);
             }
