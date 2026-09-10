@@ -394,7 +394,8 @@ const findProductById = async (req, res) => {
 
 const getAllProduct = async (req, res) => {
   try {
-    const allProducts = await ProductModel.find().sort({ createdAt: -1 });
+    const { isDelete } = req.query;
+    const allProducts = await ProductModel.find({ isDelete: { $ne: 1 } }).sort({ createdAt: -1 });
 
     res.status(200).json({ message: "All Products", allProducts });
   } catch (err) {

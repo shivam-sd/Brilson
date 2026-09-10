@@ -5,40 +5,22 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { selectToken } from "../store/slices/authSlice";
 import { useSelector } from "react-redux";
+import { useGetAllProducts } from "../api/product-query";
+import { useDeleteProduct } from "../api/dashboard-query";
 
 const AdminProducts = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [products, setProducts] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
   const token = useSelector(selectToken);
 
-  /* FETCH PRODUCTS */
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/all/products`,
-          {
-            headers: {
-              Authorization: token
-            }
-          }
-        );
+  const { data, isLoading } = useGetAllProducts();
+  const { mutate: deleteProduct , isLoading: isDeleting } = useDeleteProduct();
+  const products = data?.allProducts || [];
 
-        setProducts(res.data?.allProducts || []);
-      } catch (error) {
-        console.error("Fetch products error:", error);
-        toast.error("Failed to load products");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
 
   /* FILTER PRODUCTS */
   const filteredProducts = products.filter((p) =>
@@ -61,30 +43,12 @@ const AdminProducts = () => {
     }).format(price);
   };
 
-  /* DELETE PRODUCT */
-  const handleDeleteProduct = async (id) => {
+  const handleDeleteProduct = (id) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 
     setDeletingId(id);
-    try {
-      await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/api/admin/delete/products/${id}`,
-        { 
-          withCredentials: true,
-          headers: {
-            Authorization: token
-          }
-        }
-      );
 
-      setProducts((prev) => prev.filter((p) => p._id !== id));
-      toast.success("Product deleted successfully");
-    } catch (error) {
-      console.error("Delete error:", error);
-      toast.error("Failed to delete product");
-    } finally {
-      setDeletingId(null);
-    }
+    deleteProduct(id);
   };
 
   /* PAGINATION CONTROLS */
@@ -111,7 +75,7 @@ const AdminProducts = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl">
       <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-6 mt-13 lg:mt-0">
-        
+
         {/* HEADER SECTION */}
         <div className="mb-8 lg:mb-10">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-6">
@@ -126,24 +90,24 @@ const AdminProducts = () => {
 
             {/* ACTION BUTTONS - Responsive Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto">
-              <Link 
-                to="/admin/add/category" 
+              <Link
+                to="/admin/add/category"
                 className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl hover:border-cyan-500/50 hover:bg-gray-800/70 transition-all duration-300 group"
               >
                 <FiGrid className="text-cyan-400 group-hover:scale-110 transition-transform" size={18} />
                 <span className="text-sm font-medium">Categories</span>
               </Link>
-              
-              <Link 
-                to="/admin/add/badges" 
+
+              <Link
+                to="/admin/add/badges"
                 className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl hover:border-cyan-500/50 hover:bg-gray-800/70 transition-all duration-300 group"
               >
                 <FiTag className="text-cyan-400 group-hover:scale-110 transition-transform" size={18} />
                 <span className="text-sm font-medium">Badges</span>
               </Link>
-              
-              <Link 
-                to="/admin/add/products" 
+
+              <Link
+                to="/admin/add/products"
                 className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 rounded-xl transition-all duration-300 shadow-lg shadow-cyan-500/20 group"
               >
                 <FiPlus className="group-hover:rotate-90 transition-transform duration-300" size={18} />
@@ -204,7 +168,7 @@ const AdminProducts = () => {
                         <FiPackage className="w-16 h-16 text-gray-600" />
                       </div>
                     )}
-                    
+
                     {/* Badge Overlay */}
                     {product.badge && (
                       <div className="absolute top-3 left-3">
@@ -213,18 +177,18 @@ const AdminProducts = () => {
                         </span>
                       </div>
                     )}
-                    
+
                     {/* Discount Badge */}
                     {product.discount?.enabled && product.discount?.value > 0 && (
                       <div className="absolute top-3 right-3">
                         <span className="px-2.5 py-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-semibold rounded-lg shadow-lg">
-                          {product.discount.type === 'percentage' 
-                            ? `${product.discount.value}% OFF` 
+                          {product.discount.type === 'percentage'
+                            ? `${product.discount.value}% OFF`
                             : `₹${product.discount.value} OFF`}
                         </span>
                       </div>
                     )}
-                    
+
                     {/* Multiple Images Indicator */}
                     {product.images && product.images.length > 1 && (
                       <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg text-xs text-white">
@@ -233,7 +197,7 @@ const AdminProducts = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Product Info */}
                   <div className="p-4">
                     <div className="mb-3">
@@ -244,7 +208,7 @@ const AdminProducts = () => {
                         {product.description || "No description available"}
                       </p>
                     </div>
-                    
+
                     {/* Category */}
                     <div className="mb-3">
                       <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-700/50 rounded-lg text-xs text-gray-300">
@@ -252,7 +216,7 @@ const AdminProducts = () => {
                         {product.category || "Uncategorized"}
                       </span>
                     </div>
-                    
+
                     {/* Price */}
                     <div className="mb-4">
                       <div className="text-2xl font-bold text-cyan-400">
@@ -264,7 +228,7 @@ const AdminProducts = () => {
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Stock Status */}
                     <div className="mb-4">
                       {product.stock > 0 ? (
@@ -273,7 +237,7 @@ const AdminProducts = () => {
                         <span className="text-xs text-red-400">✗ Out of Stock</span>
                       )}
                     </div>
-                    
+
                     {/* Action Buttons */}
                     <div className="flex gap-3">
                       <Link
@@ -285,10 +249,10 @@ const AdminProducts = () => {
                       </Link>
                       <button
                         onClick={() => handleDeleteProduct(product._id)}
-                        disabled={deletingId === product._id}
+                        disabled={isDeleting && deletingId === product._id}
                         className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {deletingId === product._id ? (
+                        {isDeleting && deletingId === product._id ? (
                           <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></div>
                         ) : (
                           <>
@@ -309,7 +273,7 @@ const AdminProducts = () => {
                 <div className="text-sm text-gray-400 order-2 sm:order-1">
                   Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredProducts.length)} of {filteredProducts.length} products
                 </div>
-                
+
                 <div className="flex items-center gap-2 order-1 sm:order-2">
                   <button
                     onClick={goToPreviousPage}
@@ -318,7 +282,7 @@ const AdminProducts = () => {
                   >
                     <FiChevronLeft size={18} />
                   </button>
-                  
+
                   <div className="flex gap-2">
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       let pageNum;
@@ -331,23 +295,22 @@ const AdminProducts = () => {
                       } else {
                         pageNum = currentPage - 2 + i;
                       }
-                      
+
                       return (
                         <button
                           key={pageNum}
                           onClick={() => paginate(pageNum)}
-                          className={`w-9 h-9 rounded-lg transition-all ${
-                            currentPage === pageNum
-                              ? "bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/20"
-                              : "bg-gray-800/50 border border-gray-700 text-gray-400 hover:border-cyan-500/50 hover:text-white"
-                          }`}
+                          className={`w-9 h-9 rounded-lg transition-all ${currentPage === pageNum
+                            ? "bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/20"
+                            : "bg-gray-800/50 border border-gray-700 text-gray-400 hover:border-cyan-500/50 hover:text-white"
+                            }`}
                         >
                           {pageNum}
                         </button>
                       );
                     })}
                   </div>
-                  
+
                   <button
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
@@ -369,7 +332,7 @@ const AdminProducts = () => {
               No products found
             </h3>
             <p className="text-gray-500 max-w-md mx-auto px-4">
-              {searchQuery 
+              {searchQuery
                 ? `No products matching "${searchQuery}"`
                 : "Get started by adding your first product"
               }
