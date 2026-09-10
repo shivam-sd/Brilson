@@ -1,6 +1,7 @@
 import axios from "axios";
 import { logoutAction } from "../store/slices/authSlice";
 import { store } from "../store";
+import { toast } from "react-toastify";
 
 
 const axiosInstance = axios.create({
@@ -13,7 +14,11 @@ axiosInstance.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401 && store.getState().auth.isAdminAuthenticated) {
             store.dispatch(logoutAction());
-            window.location.href = "/admin/login";
+            toast.error("Session expired. Please log in again.");
+
+            setTimeout(() => {
+                window.location.href = "/admin/login";
+            }, 1000);
         }
 
         return Promise.reject(error);

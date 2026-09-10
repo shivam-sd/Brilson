@@ -7,35 +7,35 @@ import imageCompression from "browser-image-compression";
 import ImageCropper from "../../Pages/ProfileComp/EditProfileComp/ImageCropper/CoverImageCropper";
 import { selectToken } from "../../store/slices/authSlice";
 import { useSelector } from "react-redux";
+import { useGetProductById } from "../../api/product-query";
+import { useActiveBadges, useActiveCategories, useUpdateProduct } from "../../api/dashboard-query";
 
 const AdminEditProduct = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const token = useSelector(selectToken);
-  
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [badges, setBadges] = useState([]);
-  
+
   // Cropper states
   const [showCropper, setShowCropper] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(null);
   const [currentImageType, setCurrentImageType] = useState(null); // 'existing' or 'new'
   const [originalImage, setOriginalImage] = useState(null);
   const [tempImageUrl, setTempImageUrl] = useState(null);
-  
+
   // Multiple images state
   const [imageFiles, setImageFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
   const [removedImages, setRemovedImages] = useState([]);
-  
+
   // Track cropped existing images (original URL -> new File mapping)
   // const [croppedExistingImagesMap, setCroppedExistingImagesMap] = useState({});
   // Track cropped existing images (original URL -> { file, previewUrl } mapping)
-const [croppedExistingImagesMap, setCroppedExistingImagesMap] = useState({});
+  const [croppedExistingImagesMap, setCroppedExistingImagesMap] = useState({});
 
+  const { data, isLoading } = useGetProductById(id)
+  const { mutate: updateProduct, isPending: isUpdating, } = useUpdateProduct();
+  const { data: categories = [] } = useActiveCategories();
+  const { data: badges = [] } = useActiveBadges()
   // Product state WITHOUT variants
   const [productData, setProductData] = useState({
     category: "",
@@ -46,16 +46,16 @@ const [croppedExistingImagesMap, setCroppedExistingImagesMap] = useState({});
     oldPrice: "",
     color: "",
     stock: "",
-    
+
     // GST Fields
     gstEnabled: "false",
     gstRate: "18",
-    
+
     // Discount Fields
     discountEnabled: "false",
     discountType: "percentage",
     discountValue: "",
-    
+
     features: [""],
     metaTags: [""]
   });
@@ -70,47 +70,47 @@ const [croppedExistingImagesMap, setCroppedExistingImagesMap] = useState({});
   };
 
   // Handle crop complete for existing images
-const handleCropCompleteExisting = async (croppedFile, index) => {
-  try {
-    const options = {
-      maxSizeMB: 0.3,
-      maxWidthOrHeight: 500,
-      useWebWorker: true,
-      fileType: 'image/jpeg'
-    };
-    
-    const finalFile = await imageCompression(croppedFile, options);
-    
-    // Store the original image URL before replacing
-    const originalImageUrl = existingImages[index];
-    
-    // Create new preview URL for the cropped image
-    const newPreviewUrl = URL.createObjectURL(finalFile);
-    
-    // Store the mapping from original URL to cropped file
-    // Also store the preview URL for easy lookup
-    setCroppedExistingImagesMap(prev => ({
-      ...prev,
-      [originalImageUrl]: {
-        file: finalFile,
-        previewUrl: newPreviewUrl
-      }
-    }));
-    
-    // Update the existing image with new cropped version (store as blob URL for preview)
-    const newExistingImages = [...existingImages];
-    newExistingImages[index] = newPreviewUrl;
-    setExistingImages(newExistingImages);
-    
-    toast.success("Image cropped successfully!");
-  } catch (err) {
-    console.error('Crop complete error:', err);
-    toast.error("Error cropping image");
-  }
-};
+  const handleCropCompleteExisting = async (croppedFile, index) => {
+    try {
+      const options = {
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+        fileType: 'image/jpeg'
+      };
+
+      const finalFile = await imageCompression(croppedFile, options);
+
+      // Store the original image URL before replacing
+      const originalImageUrl = existingImages[index];
+
+      // Create new preview URL for the cropped image
+      const newPreviewUrl = URL.createObjectURL(finalFile);
+
+      // Store the mapping from original URL to cropped file
+      // Also store the preview URL for easy lookup
+      setCroppedExistingImagesMap(prev => ({
+        ...prev,
+        [originalImageUrl]: {
+          file: finalFile,
+          previewUrl: newPreviewUrl
+        }
+      }));
+
+      // Update the existing image with new cropped version (store as blob URL for preview)
+      const newExistingImages = [...existingImages];
+      newExistingImages[index] = newPreviewUrl;
+      setExistingImages(newExistingImages);
+
+      toast.success("Image cropped successfully!");
+    } catch (err) {
+      console.error('Crop complete error:', err);
+      toast.error("Error cropping image");
+    }
+  };
 
 
-  
+
   // Handle crop complete for new images
   const handleCropCompleteNew = async (croppedFile, index) => {
     try {
@@ -120,26 +120,26 @@ const handleCropCompleteExisting = async (croppedFile, index) => {
         useWebWorker: true,
         fileType: 'image/jpeg'
       };
-      
+
       const finalFile = await imageCompression(croppedFile, options);
-      
+
       // Update the image at the current index
       const newImageFiles = [...imageFiles];
       const newPreviewImages = [...previewImages];
-      
+
       // Revoke old preview URL to avoid memory leaks
       if (previewImages[index] && previewImages[index].startsWith('blob:')) {
         URL.revokeObjectURL(previewImages[index]);
       }
-      
+
       // Update with new cropped file
       newImageFiles[index] = finalFile;
       const newPreviewUrl = URL.createObjectURL(finalFile);
       newPreviewImages[index] = newPreviewUrl;
-      
+
       setImageFiles(newImageFiles);
       setPreviewImages(newPreviewImages);
-      
+
       toast.success("Image cropped successfully!");
     } catch (err) {
       console.error('Crop complete error:', err);
@@ -151,13 +151,13 @@ const handleCropCompleteExisting = async (croppedFile, index) => {
   const handleCropComplete = async (croppedFile) => {
     try {
       setShowCropper(false);
-      
+
       if (currentImageType === 'existing') {
         await handleCropCompleteExisting(croppedFile, currentImageIndex);
       } else if (currentImageType === 'new') {
         await handleCropCompleteNew(croppedFile, currentImageIndex);
       }
-      
+
     } catch (err) {
       console.error('Crop complete error:', err);
       toast.error("Error cropping image");
@@ -172,7 +172,7 @@ const handleCropCompleteExisting = async (croppedFile, index) => {
       setTempImageUrl(null);
     }
   };
-  
+
   const handleCropCancel = () => {
     setShowCropper(false);
     setCurrentImageIndex(null);
@@ -184,38 +184,6 @@ const handleCropCompleteExisting = async (croppedFile, index) => {
     setTempImageUrl(null);
   };
 
-  // fetch all category
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/category/active`,{withCredentials: true}
-        );
-        setCategories(res?.data?.categories || []);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-        setCategories([]);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  // fetch all badges
-  useEffect(() => {
-    const fetchBadges = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/badges/active`,{withCredentials: true}
-        );
-        setBadges(res?.data?.badges || []);
-      } catch (error) {
-        console.error("Error fetching badges:", error);
-        setBadges([]);
-      }
-    };
-    fetchBadges();
-  }, []);
-
   // Multiple image upload handler
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -224,10 +192,10 @@ const handleCropCompleteExisting = async (croppedFile, index) => {
     // Validate file types and sizes
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif', 'image/avif'];
     const maxSize = 5 * 1024 * 1024; // 5MB
-    
+
     const validFiles = [];
     const invalidFiles = [];
-    
+
     files.forEach(file => {
       if (!allowedTypes.includes(file.type)) {
         invalidFiles.push(`${file.name} (Invalid format)`);
@@ -237,64 +205,64 @@ const handleCropCompleteExisting = async (croppedFile, index) => {
         validFiles.push(file);
       }
     });
-    
+
     if (invalidFiles.length > 0) {
       toast.error(`Invalid files: ${invalidFiles.join(', ')}`);
     }
-    
+
     if (validFiles.length > 0) {
       // Calculate current total images (existing images + new images)
       const currentTotalImages = existingImages.length + imageFiles.length;
       const availableSlots = 10 - currentTotalImages;
       const filesToAdd = validFiles.slice(0, availableSlots);
-      
+
       if (filesToAdd.length < validFiles.length) {
         toast.warning(`Only ${availableSlots} more image(s) allowed. Maximum 10 images total.`);
       }
-      
+
       const newFiles = [...imageFiles, ...filesToAdd];
       setImageFiles(newFiles);
-      
+
       // Create preview URLs
       const newPreviews = filesToAdd.map(file => URL.createObjectURL(file));
       setPreviewImages([...previewImages, ...newPreviews]);
     }
   };
-  
+
   // Remove new image (not yet uploaded)
   const removeNewImage = (index) => {
     if (previewImages[index] && previewImages[index].startsWith('blob:')) {
       URL.revokeObjectURL(previewImages[index]);
     }
-    
+
     const newImageFiles = imageFiles.filter((_, i) => i !== index);
     const newPreviewImages = previewImages.filter((_, i) => i !== index);
-    
+
     setImageFiles(newImageFiles);
     setPreviewImages(newPreviewImages);
   };
-  
+
   // Remove existing image (mark for deletion)
   // Remove existing image (mark for deletion)
-const removeExistingImage = (index) => {
-  const removedImage = existingImages[index];
-  setRemovedImages([...removedImages, removedImage]);
-  const newExistingImages = existingImages.filter((_, i) => i !== index);
-  setExistingImages(newExistingImages);
-  
-  // Also remove from cropped images map if exists and cleanup preview URL
-  if (croppedExistingImagesMap[removedImage]) {
-    // Revoke the preview URL if it exists
-    if (croppedExistingImagesMap[removedImage].previewUrl) {
-      URL.revokeObjectURL(croppedExistingImagesMap[removedImage].previewUrl);
+  const removeExistingImage = (index) => {
+    const removedImage = existingImages[index];
+    setRemovedImages([...removedImages, removedImage]);
+    const newExistingImages = existingImages.filter((_, i) => i !== index);
+    setExistingImages(newExistingImages);
+
+    // Also remove from cropped images map if exists and cleanup preview URL
+    if (croppedExistingImagesMap[removedImage]) {
+      // Revoke the preview URL if it exists
+      if (croppedExistingImagesMap[removedImage].previewUrl) {
+        URL.revokeObjectURL(croppedExistingImagesMap[removedImage].previewUrl);
+      }
+      const newMap = { ...croppedExistingImagesMap };
+      delete newMap[removedImage];
+      setCroppedExistingImagesMap(newMap);
     }
-    const newMap = { ...croppedExistingImagesMap };
-    delete newMap[removedImage];
-    setCroppedExistingImagesMap(newMap);
-  }
-  
-  toast.info("Image will be removed on update");
-};
+
+    toast.info("Image will be removed on update");
+  };
 
 
   // Restore removed image
@@ -309,25 +277,25 @@ const removeExistingImage = (index) => {
     e.dataTransfer.setData('text/plain', JSON.stringify({ index, type }));
     e.dataTransfer.effectAllowed = 'move';
   };
-  
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   };
-  
+
   const handleDrop = (e, dropIndex, dropType) => {
     e.preventDefault();
     const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
     const { index: dragIndex, type: dragType } = dragData;
-    
+
     if (dragType !== dropType) return;
-    
+
     if (dragType === 'existing') {
       const newExistingImages = [...existingImages];
       const [movedImage] = newExistingImages.splice(dragIndex, 1);
       newExistingImages.splice(dropIndex, 0, movedImage);
       setExistingImages(newExistingImages);
-      
+
       // Reorder cropped images map is not needed as it's keyed by URL
     } else if (dragType === 'new') {
       const newImageFiles = [...imageFiles];
@@ -343,59 +311,46 @@ const removeExistingImage = (index) => {
 
   // Fetch product data
   useEffect(() => {
-    const fetchProductData = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/admin/find/products/${id}`
-        );
-        
-        if (response.data?.product) {
-          const product = response.data.product;
-          
-          // Handle product data
-          setProductData({
-            category: product.category || "",
-            title: product.title || "",
-            badge: product.badge || "",
-            description: product.description || "",
-            price: product.price || "",
-            oldPrice: product.oldPrice || "",
-            color: product.color || "",
-            stock: product.stock || "0",
-            
-            // GST Fields
-            gstEnabled: product.gst?.enabled?.toString() || "false",
-            gstRate: product.gst?.rate?.toString() || "18",
-            
-            // Discount Fields
-            discountEnabled: product.discount?.enabled?.toString() || "false",
-            discountType: product.discount?.type || "percentage",
-            discountValue: product.discount?.value?.toString() || "",
-            
-            features: product.features?.length > 0 ? product.features : [""],
-            metaTags: product.metaTags?.length > 0 ? product.metaTags : [""]
-          });
+    if (data?.product) {
+      const product = data.product;
 
-          // Set existing images - store original URLs
-          if (product.images && product.images.length > 0) {
-            setExistingImages([...product.images]);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching product:", error);
-        toast.error(error?.response?.data?.error || "Failed to load product");
-      } finally {
-        setIsLoading(false);
+      // Handle product data
+      setProductData({
+        category: product.category || "",
+        title: product.title || "",
+        badge: product.badge || "",
+        description: product.description || "",
+        price: product.price || "",
+        oldPrice: product.oldPrice || "",
+        color: product.color || "",
+        stock: product.stock || "0",
+
+        // GST Fields
+        gstEnabled: product.gst?.enabled?.toString() || "false",
+        gstRate: product.gst?.rate?.toString() || "18",
+
+        // Discount Fields
+        discountEnabled: product.discount?.enabled?.toString() || "false",
+        discountType: product.discount?.type || "percentage",
+        discountValue: product.discount?.value?.toString() || "",
+
+        features: product.features?.length > 0 ? product.features : [""],
+        metaTags: product.metaTags?.length > 0 ? product.metaTags : [""]
+      });
+
+      // Set existing images - store original URLs
+      if (product.images && product.images.length > 0) {
+        setExistingImages([...product.images]);
       }
-    };
+    }
 
-    fetchProductData();
-  }, [id]);
+
+  }, [data?.product]);
 
   // Handle basic input changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     if (type === 'checkbox') {
       setProductData(prev => ({
         ...prev,
@@ -463,118 +418,103 @@ const removeExistingImage = (index) => {
     }));
   };
 
-// Handle form submission with multiple images
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  // Handle form submission with multiple images
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    // Create FormData for multipart/form-data
-    const formData = new FormData();
-    
-    // Add all product data
-    formData.append('category', productData.category);
-    formData.append('title', productData.title);
-    formData.append('badge', productData.badge || "");
-    formData.append('description', productData.description);
-    formData.append('price', productData.price);
-    formData.append('oldPrice', productData.oldPrice || "");
-    formData.append('color', productData.color || "");
-    formData.append('stock', productData.stock || "0");
-    
-    // GST Fields
-    formData.append('gstEnabled', productData.gstEnabled);
-    formData.append('gstRate', productData.gstRate);
-    
-    // Discount Fields
-    formData.append('discountEnabled', productData.discountEnabled);
-    formData.append('discountType', productData.discountType);
-    formData.append('discountValue', productData.discountValue || "0");
-    
-    // Add features as JSON string
-    const filteredFeatures = productData.features.filter(f => f.trim() !== "");
-    formData.append('features', JSON.stringify(filteredFeatures));
-    
-    // Add metaTags as JSON string
-    const filteredMetaTags = productData.metaTags.filter(m => m.trim() !== "");
-    formData.append('metaTags', JSON.stringify(filteredMetaTags));
-    
-    // Track which original images are being kept
-    const keptOriginalImages = [];
-    const croppedImagesToUpload = [];
-    const croppedMapping = [];
-    
-    // Process existing images
-    existingImages.forEach((image, index) => {
-      // Check if this image is a blob URL (cropped version)
-      if (image.startsWith('blob:')) {
-        // Find which original image this cropped version belongs to
-        for (const [originalUrl, croppedData] of Object.entries(croppedExistingImagesMap)) {
-          if (croppedData.previewUrl === image) {
-            croppedImagesToUpload.push(croppedData.file);
-            croppedMapping.push({
-              originalUrl: originalUrl,
-              fileIndex: croppedImagesToUpload.length - 1
-            });
-            break;
+    try {
+      // Create FormData for multipart/form-data
+      const formData = new FormData();
+
+      // Add all product data
+      formData.append('category', productData.category);
+      formData.append('title', productData.title);
+      formData.append('badge', productData.badge || "");
+      formData.append('description', productData.description);
+      formData.append('price', productData.price);
+      formData.append('oldPrice', productData.oldPrice || "");
+      formData.append('color', productData.color || "");
+      formData.append('stock', productData.stock || "0");
+
+      // GST Fields
+      formData.append('gstEnabled', productData.gstEnabled);
+      formData.append('gstRate', productData.gstRate);
+
+      // Discount Fields
+      formData.append('discountEnabled', productData.discountEnabled);
+      formData.append('discountType', productData.discountType);
+      formData.append('discountValue', productData.discountValue || "0");
+
+      // Add features as JSON string
+      const filteredFeatures = productData.features.filter(f => f.trim() !== "");
+      formData.append('features', JSON.stringify(filteredFeatures));
+
+      // Add metaTags as JSON string
+      const filteredMetaTags = productData.metaTags.filter(m => m.trim() !== "");
+      formData.append('metaTags', JSON.stringify(filteredMetaTags));
+
+      // Track which original images are being kept
+      const keptOriginalImages = [];
+      const croppedImagesToUpload = [];
+      const croppedMapping = [];
+
+      // Process existing images
+      existingImages.forEach((image, index) => {
+        // Check if this image is a blob URL (cropped version)
+        if (image.startsWith('blob:')) {
+          // Find which original image this cropped version belongs to
+          for (const [originalUrl, croppedData] of Object.entries(croppedExistingImagesMap)) {
+            if (croppedData.previewUrl === image) {
+              croppedImagesToUpload.push(croppedData.file);
+              croppedMapping.push({
+                originalUrl: originalUrl,
+                fileIndex: croppedImagesToUpload.length - 1
+              });
+              break;
+            }
+          }
+        } else {
+          // This is an original image URL - check if it was cropped
+          if (croppedExistingImagesMap[image]) {
+            // This image was cropped, so we don't include the original
+            // The cropped version will replace it
+            // Don't add to keptOriginalImages
+          } else {
+            // This is an original image that hasn't been cropped
+            keptOriginalImages.push(image);
           }
         }
-      } else {
-        // This is an original image URL - check if it was cropped
-        if (croppedExistingImagesMap[image]) {
-          // This image was cropped, so we don't include the original
-          // The cropped version will replace it
-          // Don't add to keptOriginalImages
-        } else {
-          // This is an original image that hasn't been cropped
-          keptOriginalImages.push(image);
-        }
-      }
-    });
-    
-    // Send original images that are kept (not removed and not cropped)
-    formData.append('existingImages', JSON.stringify(keptOriginalImages));
-    
-    // Handle removed images
-    formData.append('removedImages', JSON.stringify(removedImages));
-    
-    // Upload cropped images as separate files with mapping
-    croppedImagesToUpload.forEach(file => {
-      formData.append('croppedImages', file);
-    });
-    formData.append('croppedImagesMapping', JSON.stringify(croppedMapping));
-    
-    // Add new images
-    imageFiles.forEach(file => {
-      formData.append('images', file);
-    });
+      });
 
-    // Make API call
-    const response = await axios.put(
-      `${import.meta.env.VITE_BASE_URL}/api/admin/update/products/${id}`,
-      formData,
-      {
-        withCredentials: true,
-        headers: {
-          'Authorization': token,
+      // Send original images that are kept (not removed and not cropped)
+      formData.append('existingImages', JSON.stringify(keptOriginalImages));
+
+      // Handle removed images
+      formData.append('removedImages', JSON.stringify(removedImages));
+
+      // Upload cropped images as separate files with mapping
+      croppedImagesToUpload.forEach(file => {
+        formData.append('croppedImages', file);
+      });
+      formData.append('croppedImagesMapping', JSON.stringify(croppedMapping));
+
+      // Add new images
+      imageFiles.forEach(file => {
+        formData.append('images', file);
+      });
+
+      // Make API call
+      updateProduct({ id, formData }, {
+        onSuccess: () => {
+          navigate("/admindashboard/products/list");
         }
-      }
-    );
-    
-    if (response.data.success) {
-      toast.success("Product updated successfully!");
-      navigate('/admindashboard/products/list');
-    } else {
-      throw new Error(response.data.message || "Update failed");
+      })
+
+    } catch (error) {
+      console.error("Error updating product:", error);
+      toast.error(error?.response?.data?.error || error?.response?.data?.message || "Failed to update product");
     }
-    
-  } catch (error) {
-    console.error("Error updating product:", error);
-    toast.error(error?.response?.data?.error || error?.response?.data?.message || "Failed to update product");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
 
   // Cleanup preview URLs on component unmount
@@ -625,7 +565,7 @@ const handleSubmit = async (e) => {
         {/* Form */}
         <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-2xl p-6 md:p-8">
           <form onSubmit={handleSubmit} className="space-y-8">
-            
+
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Product Title */}
@@ -892,7 +832,7 @@ const handleSubmit = async (e) => {
                   <FiPlus size={16} /> Add Feature
                 </button>
               </div>
-              
+
               <div className="space-y-3">
                 {productData.features.map((feature, index) => (
                   <div key={index} className="flex gap-3">
@@ -932,7 +872,7 @@ const handleSubmit = async (e) => {
                   <FiPlus size={16} /> Add Meta tags
                 </button>
               </div>
-              
+
               <div className="space-y-3">
                 {productData.metaTags.map((meta, index) => (
                   <div key={index} className="flex gap-3">
@@ -968,7 +908,7 @@ const handleSubmit = async (e) => {
                   {totalImages}/10 images • Max 5MB each
                 </span>
               </div>
-              
+
               <div>
                 <label className="block text-sm text-gray-400 mb-2">
                   Upload New Images
@@ -1124,13 +1064,13 @@ const handleSubmit = async (e) => {
                 >
                   Cancel
                 </button>
-                
+
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isUpdating}
                   className="flex items-center justify-center gap-3 px-12 py-4 cursor-pointer bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-xl hover:from-cyan-600 hover:to-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                 >
-                  {isSubmitting ? (
+                  {isUpdating ? (
                     <>
                       <FiLoader className="animate-spin" size={20} />
                       Updating...
@@ -1147,10 +1087,10 @@ const handleSubmit = async (e) => {
           </form>
         </div>
       </div>
-      
+
       {/* Image Cropper Modal */}
       {showCropper && (
-        <ImageCropper 
+        <ImageCropper
           image={originalImage}
           onCancel={handleCropCancel}
           onCropComplete={handleCropComplete}

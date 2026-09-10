@@ -1,77 +1,52 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { 
-  FiPlus, 
-  FiTrash2, 
+import {
+  FiPlus,
+  FiTrash2,
   FiGrid,
-  FiTag
+  FiTag,
+  FiLoader
 } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { useActiveBadges, useAddBadge, useDeleteBadge } from "../../api/dashboard-query";
 
 const AdminBadges = () => {
-  const [badges, setBadges] = useState([]);
   const [name, setName] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
-  const fetchBadges = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/badges/active`,{withCredentials: true});
-      setBadges(res.data.badges || []);
-    } catch (error) {
-      toast.error("Failed to load badges");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: badges, isLoading } = useActiveBadges()
+  const { mutate: addBadge, isPending: isAddingBadge, } = useAddBadge();
+  const { mutate: deleteBadge, isPending: isDeletingBadge, } = useDeleteBadge();
 
-  const addBadges = async () => {
+  const handleAddBadge = () => {
     if (!name.trim()) {
       toast.error("Please enter a badge name");
       return;
     }
 
-    try {
-     const res =  await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/badges`,
-        { name },
-        { withCredentials: true,
-          headers: { 
-            // Authorization: token ? `Bearer ${token}` : "",
-            'Content-Type': 'application/json'
-          } 
-        }
-      );
-      console.log(res)
-      toast.success(`"${name}" added successfully`);
-      setName("");
-      fetchBadges();
-    } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to add badges");
-    }
-  };
-
-  const deleteBadge = async (id) => {
-    try {
-      await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/badges/delete/${id}`, {
-        withCredentials: true,
-        headers: { 
-          // Authorization: token ? `Bearer ${token}` : "",
-          'Content-Type': 'application/json'
+    addBadge(
+      {
+        name: name.trim(),
+      },
+      {
+        onSuccess: () => {
+          setName("");
         },
-      });
-      toast.success("Badge deleted successfully");
-      fetchBadges();
-    } catch (error) {
-      toast.error("Failed to delete badge");
-    }
+      }
+    );
   };
 
-  useEffect(() => {
-    fetchBadges();
-  }, []);
+  const handleDeleteBadge = (id) => {
+    setDeletingId(id);
+    deleteBadge(id, {
+      onSettled: () => {
+        setDeletingId(null);
+      },
+    });
+  };
 
-  if (loading) {
+
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center">
         <div className="text-center">
@@ -102,7 +77,7 @@ const AdminBadges = () => {
               </h1>
               <p className="text-gray-400">Manage your product Badges</p>
             </div>
-            
+
             <div className="flex items-center gap-2 bg-gray-800/50 border border-gray-700/50 px-4 py-2 rounded-full">
               <FiGrid className="text-cyan-400" />
               <span className="font-medium">{badges.length}</span>
@@ -117,7 +92,7 @@ const AdminBadges = () => {
             <FiPlus className="text-cyan-400" />
             Add New Badge
           </h2>
-          
+
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <input
@@ -128,11 +103,11 @@ const AdminBadges = () => {
               />
             </div>
             <button
-              onClick={addBadges}
+              onClick={handleAddBadge}
               className="flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold py-3.5 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-cyan-500/25 min-w-[140px] cursor-pointer"
-              disabled={!name.trim()}
+              disabled={isAddingBadge || !name.trim()}
             >
-              <FiPlus />
+              {isAddingBadge ? <FiLoader className="animate-spin" size={20} /> : <FiPlus />}
               Add Badge
             </button>
           </div>
@@ -173,14 +148,14 @@ const AdminBadges = () => {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => deleteBadge(badge._id)}
+                      onClick={() => handleDeleteBadge(badge._id)}
                       className="flex items-center gap-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-lg transition-colors cursor-pointer"
                       title="Delete Category"
                     >
-                      <FiTrash2 />
+                      {isDeletingBadge && deletingId === badge._id ? <FiLoader className="animate-spin" size={20} /> : < FiTrash2 />}
                       <span className="hidden sm:inline">Delete</span>
                     </button>
                   </div>
