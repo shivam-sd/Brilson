@@ -10,22 +10,23 @@ const axiosInstance = axios.create({
 });
 
 // commenting out the request interceptor for now
-// axiosInstance.interceptors.request.use(
-//     (config) => {
-//         const state = store.getState();
 
-//         const token = state.auth?.token;
+axiosInstance.interceptors.request.use(
+    (config) => {
+        const state = store.getState();
 
-//         if (token) {
-//             config.headers.Authorization = `Bearer ${token}`;
-//         }
+        const token = state.auth?.token;
 
-//         return config;
-//     },
-//     (error) => {
-//         return Promise.reject(error);
-//     }
-// );
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 
 axiosInstance.interceptors.response.use(
