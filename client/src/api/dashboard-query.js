@@ -116,7 +116,7 @@ export const useDeleteProduct = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (productId) => {
-            const { data } = await axiosInstance.delete(`/api/admin/delete/products/${productId}`);
+            const { data } = await axiosInstance.put(`/api/admin/delete/products/${productId}`);
             return data;
         },
         onSuccess: (data) => {

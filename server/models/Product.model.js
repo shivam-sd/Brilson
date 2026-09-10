@@ -36,10 +36,10 @@ const ProductSchema = new mongoose.Schema(
       required: true,
     },
 
-   images: {
-  type: [String],
-   required: true,
-},
+    images: {
+      type: [String],
+      required: true,
+    },
 
     //  SINGLE PRICE SYSTEM
     price: {
@@ -52,28 +52,28 @@ const ProductSchema = new mongoose.Schema(
     },
 
     discount: {
-      enabled:{
-        type:Boolean,
+      enabled: {
+        type: Boolean,
         default: false
       },
-      type:{
-        type:String,
+      type: {
+        type: String,
         default: "percentage"
       },
-      value:{
-        type:Number,
-        default:0
+      value: {
+        type: Number,
+        default: 0
       }
     },
 
-    gst:{
-      enabled:{
-        type:Boolean,
-        default:false
+    gst: {
+      enabled: {
+        type: Boolean,
+        default: false
       },
-      rate:{
-        type:Number,
-        default:18
+      rate: {
+        type: Number,
+        default: 18
       }
     },
 
@@ -116,7 +116,15 @@ const ProductSchema = new mongoose.Schema(
         type: [MLMCommissionSchema],
         default: [],
       },
+      isDelete: {
+        type: Number,
+        default: 0
+      }
     },
+    isDelete: {
+      type: Number,
+      default: 0
+    }
   },
   { timestamps: true }
 );
