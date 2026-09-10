@@ -7,29 +7,25 @@ import { store } from "../store";
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL,
     withCredentials: true
-        // headers:{
-        //     "Content-Type": "application/json",
-        //     "Authorization": `Bearer ${token}`
-        // }
 });
 
+// commenting out the request interceptor for now
+// axiosInstance.interceptors.request.use(
+//     (config) => {
+//         const state = store.getState();
 
-axiosInstance.interceptors.request.use(
-    (config) => {
-        const state = store.getState();
+//         const token = state.auth?.token;
 
-        const token = state.auth?.token;
+//         if (token) {
+//             config.headers.Authorization = `Bearer ${token}`;
+//         }
 
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+//         return config;
+//     },
+//     (error) => {
+//         return Promise.reject(error);
+//     }
+// );
 
 
 axiosInstance.interceptors.response.use(
