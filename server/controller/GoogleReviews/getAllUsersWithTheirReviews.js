@@ -1,12 +1,18 @@
 const GoogleReviewsModel = require("../../models/AddGoogleReviews.model");
+const mongoose = require("mongoose");
 
 
 
 const getAllUsersWithTheirReviews = async (req, res) => {
     try{
+
+      const userId = req.user;
+
+      const ownerId = new mongoose.Types.ObjectId(userId);
+
          const data = await GoogleReviewsModel.aggregate([
       {
-        $match: { isActivated: true } 
+        $match: { isActivated: true, owner: ownerId } 
       },
       {
         $group: {

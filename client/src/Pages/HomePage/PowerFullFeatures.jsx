@@ -314,7 +314,7 @@ const GlobeVisual = ({ style }) => (
 
     {/* Small label */}
     <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
-      <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/[0.05] border border-white/10 backdrop-blur-sm">
+      <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/[0.05] border border-white/10">
         <span
           className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"
           style={{
@@ -456,7 +456,7 @@ const UpdatedVisual = ({ style }) => (
     </div>
 
     <div
-      className="absolute bottom-[25%] right-[8%] px-2 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm"
+      className="absolute bottom-[25%] right-[8%] px-2 py-1 rounded-full border border-white/10 bg-white/5"
     >
       <span className="text-[6px] font-semibold text-white/70">
         OTA Update
@@ -561,7 +561,7 @@ const MobileVisual = ({ style }) => (
 
     {/* Connected */}
     <div
-      className="absolute right-[5%] top-[24%] flex items-center gap-1 px-2 py-1 rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-sm"
+      className="absolute right-[5%] top-[24%] flex items-center gap-1 px-2 py-1 rounded-full border border-white/10 bg-white/[0.05] "
       style={{
         boxShadow: `0 0 10px ${style.glow}`,
       }}
@@ -587,34 +587,11 @@ const NfcVisual = ({ style }) => (
   <div
     className={`relative w-full h-full flex items-center justify-center ${style.accent}`}
   >
-    {/* NFC Waves */}
-    <div className="absolute left-[20%] top-1/2 -translate-y-1/2 flex items-center gap-1">
-      <span
-        className="w-1 h-5 rounded-full bg-current opacity-20"
-        style={{ boxShadow: `0 0 8px ${style.glow}` }}
-      />
-      <span
-        className="w-1 h-8 rounded-full bg-current opacity-30"
-        style={{ boxShadow: `0 0 10px ${style.glow}` }}
-      />
-      <span
-        className="w-1 h-11 rounded-full bg-current opacity-40"
-        style={{ boxShadow: `0 0 12px ${style.glow}` }}
-      />
-    </div>
 
     {/* Main NFC Card */}
     <div
-      className="relative z-10 w-[125px] h-[78px] rounded-2xl border border-current/40 bg-white/[0.05] backdrop-blur-md p-3"
-      style={{
-        boxShadow: `
-          0 0 25px ${style.glow},
-          inset 0 0 20px rgba(255,255,255,0.04)
-        `,
-      }}
-    >
-      {/* Card shine */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.10] via-transparent to-transparent pointer-events-none" />
+      className="relative z-10 w-[125px] h-[78px] rounded-2xl border border-current/40 bg-white/[0.05] p-2">
+    
 
       {/* Top */}
       <div className="relative flex items-center justify-between">
@@ -638,31 +615,11 @@ const NfcVisual = ({ style }) => (
         <span className="text-[6px] text-white/40">
           DIGITAL CARD
         </span>
-
-        <span className="text-[6px] text-current">
+        <span className="text-[10px] text-yellow-300 font-extrabold ">
           NFC
         </span>
       </div>
     </div>
-
-
-
-    {/* Tap to Connect */}
-    <div className="absolute right-[8%] bottom-[24%] flex items-center gap-1 px-2 py-1 rounded-md border border-white/10 bg-white/[0.03]">
-      <FiWifi className="w-2.5 h-2.5 rotate-90 text-current" />
-
-      <span className="text-[5px] text-white/50">
-        Tap to connect
-      </span>
-    </div>
-
-    {/* Small NFC dot */}
-    <span
-      className="absolute left-[27%] top-[31%] w-1.5 h-1.5 rounded-full bg-current"
-      style={{
-        boxShadow: `0 0 8px ${style.glow}`,
-      }}
-    />
   </div>
 );
 
@@ -793,7 +750,7 @@ const QrVisual = ({ style }) => (
 
 const CustomDesignsVisual = ({ style }) => (
   <div
-    className={`relative w-full h-full flex items-center justify-center overflow-hidden ${style.accent}`}
+    className={`relative w-full h-full flex items-center justify-center overflow-hidden  ${style.accent}`}
   >
     {/* Background Glow */}
     <div
@@ -804,11 +761,11 @@ const CustomDesignsVisual = ({ style }) => (
     />
 
     {/* Design Stage */}
-    <div className="relative w-[120px] h-[105px]">
+    <div className="relative w-[120px] h-[105px] ">
 
       {/* Outer Design Ring */}
       <div
-        className="absolute inset-[8%] rounded-full border border-current opacity-10"
+        className="absolute inset-[8%] rounded-full border border-current opacity-10 "
         style={{
           boxShadow: `0 0 25px ${style.glow}`,
         }}
@@ -816,7 +773,7 @@ const CustomDesignsVisual = ({ style }) => (
 
       {/* Back Card - Purple */}
       <div
-        className="absolute left-[18px] top-[18px] w-[76px] h-[48px] rounded-xl border border-fuchsia-300/20 bg-gradient-to-br from-fuchsia-500/80 to-purple-700/80"
+        className="absolute lg:left-[18px] md:left-[18px] left-[12px] top-[18px] w-[76px] h-[48px] rounded-xl border border-fuchsia-300/20 bg-gradient-to-br from-fuchsia-500/80 to-purple-700/80"
         style={{
           transform: "rotate(-18deg)",
           boxShadow: `0 0 18px rgba(168,85,247,0.25)`,
@@ -828,7 +785,7 @@ const CustomDesignsVisual = ({ style }) => (
 
       {/* Back Card - Blue */}
       <div
-        className="absolute left-[22px] top-[16px] w-[76px] h-[48px] rounded-xl border border-sky-300/20 bg-gradient-to-br from-sky-400/80 to-blue-700/80"
+        className="absolute lg:left-[20px] md:left-[20px] left-[16px] top-[16px] w-[76px] h-[48px] rounded-xl border border-sky-300/20 bg-gradient-to-br from-sky-400/80 to-blue-700/80"
         style={{
           transform: "rotate(-8deg)",
           boxShadow: `0 0 18px rgba(59,130,246,0.25)`,
@@ -840,7 +797,7 @@ const CustomDesignsVisual = ({ style }) => (
 
       {/* Main Custom Card */}
       <div
-        className="absolute left-[24px] top-[14px] w-[76px] h-[48px] rounded-xl border border-white/20 bg-slate-900/95 backdrop-blur-md overflow-hidden"
+        className="absolute lf:left-[24px] md:left-[24px] left-[20px] top-[14px] w-[76px] h-[48px] rounded-xl border border-white/20 bg-slate-900/95 overflow-hidden"
         style={{
           transform: "rotate(8deg)",
           boxShadow: `
@@ -911,14 +868,14 @@ const CustomDesignsVisual = ({ style }) => (
 
 // Order matches FEATURES_DATA exactly — no cycling/modulo, index-to-index mapping.
 const visualVariants = [
-  AnalyticsVisual,   // 0 Analytics Dashboard
-  GlobeVisual,       // 1 Global Reach
-  ShieldVisual,      // 2 Secure & Private
-  UpdatedVisual,     // 3 Always Updated
-  MobileVisual,      // 4 Mobile Friendly
   NfcVisual,         // 5 NFC Technology
   QrVisual,          // 6 QR Code Backup
   CustomDesignsVisual, // 7 Custom Designs
+  AnalyticsVisual,   // 0 Analytics Dashboard
+  GlobeVisual,       // 1 Global Reach
+  ShieldVisual,      // 2 Secure & Private
+  MobileVisual,      // 4 Mobile Friendly
+  UpdatedVisual,     // 3 Always Updated
 ];
 
 // Hardcoded feature data — replaces the previous /api/admin/powerfull/features call.
@@ -927,6 +884,21 @@ const SUB_HEADING =
   "Everything you need to network smarter, all built into one smart card.";
 
 const FEATURES_DATA = [
+  {
+    title: "NFC Technology",
+    description:
+      "Instant sharing with a simple tap. Compatible with all modern smartphones.",
+    },
+    {
+      title: "QR Code Backup",
+      description:
+      "Universal compatibility. Works even without NFC-enabled devices.",
+    },
+    {
+      title: "Custom Designs",
+      description:
+        "Personalize your card with unique designs, styles, colors and layouts.",
+    },
   {
     title: "Analytics Dashboard",
     description:
@@ -943,29 +915,14 @@ const FEATURES_DATA = [
       "Your data stays encrypted. You're always in control of what you share.",
   },
   {
-    title: "Always Updated",
-    description:
-      "Update your digital profile anytime — no need for new printed cards.",
-  },
-  {
     title: "Mobile Friendly",
     description:
       "Manage everything directly from your phone. iOS & Android supported.",
   },
   {
-    title: "NFC Technology",
+    title: "Always Updated",
     description:
-      "Instant sharing with a simple tap. Compatible with all modern smartphones.",
-  },
-  {
-    title: "QR Code Backup",
-    description:
-      "Universal compatibility. Works even without NFC-enabled devices.",
-  },
-  {
-    title: "Custom Designs",
-    description:
-      "Personalize your card with unique designs, styles, colors and layouts.",
+    "Update your digital profile anytime — no need for new printed cards.",
   },
 ];
 
@@ -990,13 +947,6 @@ const PowerFullFeatures = () => {
       icon: FiZap,
     },
     {
-      border: "from-pink-500 via-rose-500 to-pink-400",
-      glow: "rgba(255, 0, 120, 0.45)",
-      accent: "text-pink-400",
-      badgeShadow: "rgba(255, 0, 120, 0.5)",
-      icon: FiKey,
-    },
-    {
       border: "from-purple-500 via-violet-500 to-purple-400",
       glow: "rgba(150, 60, 255, 0.45)",
       accent: "text-purple-400",
@@ -1016,6 +966,13 @@ const PowerFullFeatures = () => {
       accent: "text-sky-400",
       badgeShadow: "rgba(0, 150, 255, 0.5)",
       icon: FiSmartphone,
+    },
+     {
+      border: "from-pink-500 via-rose-500 to-pink-400",
+      glow: "rgba(255, 0, 120, 0.45)",
+      accent: "text-pink-400",
+      badgeShadow: "rgba(255, 0, 120, 0.5)",
+      icon: FiKey,
     },
     {
       border: "from-teal-400 via-emerald-400 to-green-500",
@@ -1074,8 +1031,6 @@ const PowerFullFeatures = () => {
       {/* Animated gradient backdrop */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-black via-[#0a0a0c] to-black bg-[length:200%_200%]"
-        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
       />
 
       {/* Soft radial glow accents, drifting slowly */}
@@ -1113,7 +1068,7 @@ const PowerFullFeatures = () => {
           {subHeading}
         </motion.p>
 
-        {/* Feature cards — 3 per row on desktop, premium visual showcase inside each */}
+        {/* Feature cards  */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -1132,7 +1087,7 @@ const PowerFullFeatures = () => {
                 key={index}
                 variants={cardVariants}
                 whileHover={{ y: -8, transition: { duration: 0.25, ease: "easeOut" } }}
-                className="relative rounded-[26px] p-[1.5px] h-full"
+                className="relative rounded-[26px] p-[1.5px] h-full cursor-pointer"
                 style={{
                   boxShadow: `0 30px 60px -18px ${style.glow}, 0 10px 28px -8px rgba(0,0,0,0.6)`,
                 }}
@@ -1185,13 +1140,13 @@ const PowerFullFeatures = () => {
 
 
 
-                  {/* Premium visual showcase — CSS-only, no image */}
+                  {/* Premium visual showcase  */}
                   <div className="relative z-10 lg:w-[45%] md:w-[45%] w-[35%] h-[100%] flex items-center justify-center rounded-2xl">
                     <div
                       className="absolute inset-0 rounded-2xl blur-2xl opacity-60"
                       style={{ background: style.glow }}
                     ></div>
-                    <div className="relative lg:w-[120px] lg:h-[125px] md:w-[120px] md:h-[125px] w-[100px] h-[125px] rounded-2xl overflow-hidden bg-white/[0.02] backdrop-blur-sm">
+                    <div className="relative lg:w-[120px] lg:h-[125px] md:w-[120px] md:h-[125px] w-[100px] h-[125px] rounded-2xl overflow-hidden bg-white/[0.02]">
                       <Visual style={style} />
                     </div>
 
