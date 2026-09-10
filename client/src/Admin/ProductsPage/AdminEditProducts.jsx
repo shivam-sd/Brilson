@@ -7,8 +7,8 @@ import imageCompression from "browser-image-compression";
 import ImageCropper from "../../Pages/ProfileComp/EditProfileComp/ImageCropper/CoverImageCropper";
 import { selectToken } from "../../store/slices/authSlice";
 import { useSelector } from "react-redux";
-import { useGetProductById } from "../../api/product-query";
-import { useActiveBadges, useActiveCategories, useUpdateProduct } from "../../api/dashboard-query";
+import { useGetProductById, useUpdateProduct } from "../../api/product-query";
+import { useActiveBadges, useActiveCategories } from "../../api/categoryAndBadge-query";
 
 const AdminEditProduct = () => {
   const navigate = useNavigate();

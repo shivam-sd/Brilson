@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiPackage, FiTag, FiGrid, FiImage, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-hot-toast";
 import { selectToken } from "../store/slices/authSlice";
 import { useSelector } from "react-redux";
-import { useGetAllProducts } from "../api/product-query";
-import { useDeleteProduct } from "../api/dashboard-query";
+import { useDeleteProduct, useGetAllProducts } from "../api/product-query";
 
 const AdminProducts = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  // const [products, setProducts] = useState([]);
-  // const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);

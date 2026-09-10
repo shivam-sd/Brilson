@@ -8,7 +8,7 @@ import {
   FiLoader
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { useActiveBadges, useAddBadge, useDeleteBadge } from "../../api/dashboard-query";
+import { useActiveBadges, useAddBadge, useDeleteBadge } from "../../api/categoryAndBadge-query";
 
 const AdminBadges = () => {
   const [name, setName] = useState("");

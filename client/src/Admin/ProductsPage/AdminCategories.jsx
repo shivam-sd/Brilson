@@ -8,7 +8,7 @@ import {
   FiLoader
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { useActiveCategories, useAddCategory, useDeleteCategory } from "../../api/dashboard-query";
+import { useActiveCategories, useAddCategory, useDeleteCategory } from "../../api/categoryAndBadge-query";
 
 const AdminCategories = () => {
   const [name, setName] = useState("");
