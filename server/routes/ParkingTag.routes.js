@@ -40,7 +40,7 @@ router.put("/tag/:id/edit", userAuth, EditParkingTagProfile);
 // router.get("/card/:id", getCardProfilesByID);  ✅
 router.get("/all/tags",authAdminToken, getAllParkingTagsProfile);
 
-// mark card downloaded or not ✅
+// mark card downloaded or not 
 router.patch("/tags/:id/downloaded", markDownloadedOnTag);
 
 router.get("/tags/user/:userId",userAuth, getAllUsersWithTheirCards);

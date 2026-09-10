@@ -201,6 +201,7 @@ const ActivateCardAPi = async (req, res) => {
 const getMyReferrals = async (req, res) => {
   try {
     const userId = req.user;
+    // console.log("User ID from token:", userId);
 
     const referrals = await UserModel.find({
       referredBy: userId,

@@ -29,7 +29,7 @@ const getAllUsersWithTheirCards = async (req, res) => {
   try {
     const userId = req.user;
 
-    console.log("user id:", userId);
+    // console.log("user id:", userId);
 
 
     const ownerId = new mongoose.Types.ObjectId(userId);

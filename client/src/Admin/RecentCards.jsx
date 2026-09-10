@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { HexColorPicker } from "react-colorful";
 import { selectAdminToken } from "../store/slices/authSlice";
 import { useSelector } from "react-redux";
+import { useGetRecentCards } from "../api/dashboard-query";
 
 /* Ultra High Resolution PNG Generator - 4000px for no pixelation */
 const createHighQualityQR = (url, dotsColor = "#000000", bgColor = "transparent", size = 4000) => {
@@ -188,15 +189,15 @@ const generateThumbnailPNG = async (qrCode, activationCode, profileName, textCol
 
 const RecentCards = () => {
     const token = useSelector(selectAdminToken);
-    const [cards, setCards] = useState([]);
+    // const [cards, setCards] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedDate, setSelectedDate] = useState("");
-    const [stats, setStats] = useState({
-        total: 0,
-        activated: 0,
-        inactive: 0
-    });
+    // const [stats, setStats] = useState({
+    //     total: 0,
+    //     activated: 0,
+    //     inactive: 0
+    // });
     const [qrImages, setQrImages] = useState({});
     const [downloadingDate, setDownloadingDate] = useState(null);
     const [generatingQR, setGeneratingQR] = useState(false);
@@ -207,8 +208,8 @@ const RecentCards = () => {
     const [textColor, setTextColor] = useState("#000000");
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalCards, setTotalCards] = useState(0);
+    // const [totalPages, setTotalPages] = useState(1);
+    // const [totalCards, setTotalCards] = useState(0);
     const [limit] = useState(10);
 
     const [searchQuery, setSearchQuery] = useState("");
@@ -217,7 +218,25 @@ const RecentCards = () => {
     const isGeneratingRef = useRef(false);
     const currentPageRef = useRef(currentPage);
 
-    
+
+    const {
+        data,
+        isLoading,
+        isError,
+        isFetching,
+    } = useGetRecentCards(currentPage, limit);
+    const cards = data?.cards || [];
+
+    const totalCards = data?.totalCards || 0;
+
+    const totalPages = data?.totalPages || 1;
+
+    const stats = data?.stats || {
+        total: 0,
+        activated: 0,
+        inactive: 0,
+    };
+
 
     // Sirf current page ke cards ke liye QR generate karein
     const generateQRCodesForCurrentPage = useCallback(async (cardsList) => {
@@ -274,84 +293,97 @@ const RecentCards = () => {
         setGeneratingQR(false);
     }, [qrDotsColor, qrBgColor, textColor, currentPage]);
 
-    const fetchCards = useCallback(async (page = 1) => {
-        try {
-            setLoading(true);
-            currentPageRef.current = page;
 
-            const baseUrl = import.meta.env.VITE_BASE_URL || '';
+    useEffect(() => {
+        const generateQR = async () => {
+            if (!cards.length) return;
 
-
-            const params = new URLSearchParams({
-                page,
-                limit,
-            });
-
-        
-
-            const url = `${baseUrl}/api/all/recent?${params.toString()}`;
-
-            if (!token) {
-                setError("Please login again");
-                setLoading(false);
-                return;
-            }
-
-            const res = await axios.get(url, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                timeout: 30000,
-            });
-
-            console.log("API Response:", res.data); // Debug log
-
-
-            const responseData = res.data.data || res.data;
-            const allCards = responseData.cards || responseData.allCards || [];
-
-            console.log("Cards fetched:", allCards.length);
-
-            setCards(allCards);
-            setTotalCards(responseData.pagination?.totalCards || responseData.totalCards || 0);
-            setTotalPages(responseData.pagination?.totalPages || responseData.totalPages || 1);
-            setCurrentPage(responseData.pagination?.page || responseData.page || 1);
-
-            let statsData;
-            statsData = responseData.stats;
-
-            setStats({
-                total: statsData.total || 0,
-                activated: statsData.activated || 0,
-                inactive: statsData.inactive || 0
-            });
-
-            // Clear previous page QR images
             setQrImages({});
 
-            // Generate QR codes for current page only
-            await generateQRCodesForCurrentPage(allCards);
+            await generateQRCodesForCurrentPage(cards);
+        };
 
-        } catch (err) {
-            console.error("Fetch error:", err);
-            setError(err.message || "Unable to fetch cards");
-            toast.error("Failed to fetch cards");
-        } finally {
-            setLoading(false);
-        }
-    }, [limit, generateQRCodesForCurrentPage]);
+        generateQR();
+    }, [cards, generateQRCodesForCurrentPage]);
+
+    // const fetchCards = useCallback(async (page = 1) => {
+    //     try {
+    //         setLoading(true);
+    //         currentPageRef.current = page;
+
+    //         const baseUrl = import.meta.env.VITE_BASE_URL || '';
+
+
+    //         const params = new URLSearchParams({
+    //             page,
+    //             limit,
+    //         });
+
+
+
+    //         const url = `${baseUrl}/api/all/recent?${params.toString()}`;
+
+    //         if (!token) {
+    //             setError("Please login again");
+    //             setLoading(false);
+    //             return;
+    //         }
+
+    //         const res = await axios.get(url, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //             timeout: 30000,
+    //         });
+
+    //         console.log("API Response:", res.data); // Debug log
+
+
+    //         const responseData = res.data.data || res.data;
+    //         const allCards = responseData.cards || responseData.allCards || [];
+
+    //         console.log("Cards fetched:", allCards.length);
+
+    //         setCards(allCards);
+    //         setTotalCards(responseData.pagination?.totalCards || responseData.totalCards || 0);
+    //         setTotalPages(responseData.pagination?.totalPages || responseData.totalPages || 1);
+    //         setCurrentPage(responseData.pagination?.page || responseData.page || 1);
+
+    //         let statsData;
+    //         statsData = responseData.stats;
+
+    //         setStats({
+    //             total: statsData.total || 0,
+    //             activated: statsData.activated || 0,
+    //             inactive: statsData.inactive || 0
+    //         });
+
+    //         // Clear previous page QR images
+    //         setQrImages({});
+
+    //         // Generate QR codes for current page only
+    //         await generateQRCodesForCurrentPage(allCards);
+
+    //     } catch (err) {
+    //         console.error("Fetch error:", err);
+    //         setError(err.message || "Unable to fetch cards");
+    //         toast.error("Failed to fetch cards");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // }, [limit, generateQRCodesForCurrentPage]);
 
     //  useEffect with all dependencies
-    useEffect(() => {
-        fetchCards(currentPage);
-    }, [fetchCards, currentPage]);
+    // useEffect(() => {
+    //     fetchCards(currentPage);
+    // }, [fetchCards, currentPage]);
 
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages && page !== currentPage) {
             setCurrentPage(page);
             currentPageRef.current = page;
             setQrImages({}); // Clear old QR images
-            fetchCards(page);
+            // fetchCards(page);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
@@ -628,7 +660,7 @@ const RecentCards = () => {
         }
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="min-h-[60vh] flex justify-center items-center">
                 <div className="h-12 w-12 animate-spin border-t-2 border-indigo-500 rounded-full" />
@@ -748,7 +780,7 @@ const RecentCards = () => {
                     </p>
                 </div>
 
-                
+
             </div>
 
 

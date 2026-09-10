@@ -1,14 +1,19 @@
 const ParkingTagModel = require("../../models/AddParkingTag.model");
+const mongoose = require("mongoose");
 
 
 const getAllUsersWithTheirCards = async (req, res) => {
   try {
+    const userId = req.user;
+
+    const ownerId = new mongoose.Types.ObjectId(userId);
+
     const data = await ParkingTagModel.aggregate([
       {
-        $match: { isActivated: true } 
+        $match: { isActivated: true, owner: ownerId }  
       },
       {
-        $group: {
+        $group: { 
           _id: "$owner",
           tags: { $push: "$$ROOT" }
         }
