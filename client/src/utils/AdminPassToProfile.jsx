@@ -29,23 +29,28 @@ const AdminPassToProfile = () => {
   const referralCode = balanceData?.referalCode || '';
   const balance = balanceData?.Balance || 0;
 
-  useEffect(() => {
-    if (isUserCardsError) {
-      toast.error(
-        userCardsError?.response?.data?.message || "Failed to load user cards"
-      );
-    }
-    if (isTagsError) {
-      toast.error(
-        tagsError?.response?.data?.message || "Failed to load parking tags"
-      );
-    }
-    if (isReviewsError) {
-      toast.error(
-        reviewsError?.response?.data?.message || "Failed to load google reviews"
-      );
-    }
-  }, [isBalanceError, balanceError, isUserCardsError, userCardsError, isTagsError, tagsError, isReviewsError, reviewsError]);
+  // useEffect(() => {
+  //   if (isBalanceError) {
+  //     toast.error(
+  //       balanceError?.response?.data?.message || "Failed to load Balance"
+  //     );
+  //   }
+  //   if (isUserCardsError) {
+  //     toast.error(
+  //       userCardsError?.response?.data?.message || "Failed to load user cards"
+  //     );
+  //   }
+  //   if (isTagsError) {
+  //     toast.error(
+  //       tagsError?.response?.data?.message || "Failed to load parking tags"
+  //     );
+  //   }
+  //   if (isReviewsError) {
+  //     toast.error(
+  //       reviewsError?.response?.data?.message || "Failed to load google reviews"
+  //     );
+  //   }
+  // }, [isBalanceError, balanceError, isUserCardsError, userCardsError, isTagsError, tagsError, isReviewsError, reviewsError]);
 
   const copyReferralCode = () => {
     navigator.clipboard.writeText(referralCode);

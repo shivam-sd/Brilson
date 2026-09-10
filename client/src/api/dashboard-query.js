@@ -71,43 +71,44 @@ export const useGetOrderDetails = (orderId) => {
 };
 
 export const useGetRecentCards = (page = 1, limit = 10) => {
-  return useQuery({
-    queryKey: ["recentCards", page, limit],
+    return useQuery({
+        queryKey: ["recentCards", page, limit],
 
-    queryFn: async () => {
-      const { data } = await axiosInstance.get(`/api/all/recent?page=${page}&limit=${limit}`);
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/all/recent?page=${page}&limit=${limit}`);
 
-      const responseData = data?.data || data;
+            const responseData = data?.data || data;
 
-      return {
-        cards:
-          responseData?.cards ||
-          responseData?.allCards ||
-          [],
+            return {
+                cards:
+                    responseData?.cards ||
+                    responseData?.allCards ||
+                    [],
 
-        totalCards:
-          responseData?.pagination?.totalCards ||
-          responseData?.totalCards ||
-          0,
+                totalCards:
+                    responseData?.pagination?.totalCards ||
+                    responseData?.totalCards ||
+                    0,
 
-        totalPages:
-          responseData?.pagination?.totalPages ||
-          responseData?.totalPages ||
-          1,
+                totalPages:
+                    responseData?.pagination?.totalPages ||
+                    responseData?.totalPages ||
+                    1,
 
-        currentPage:
-          responseData?.pagination?.page ||
-          responseData?.page ||
-          1,
+                currentPage:
+                    responseData?.pagination?.page ||
+                    responseData?.page ||
+                    1,
 
-        stats: {
-          total: responseData?.stats?.total || 0,
-          activated: responseData?.stats?.activated || 0,
-          inactive: responseData?.stats?.inactive || 0,
+                stats: {
+                    total: responseData?.stats?.total || 0,
+                    activated: responseData?.stats?.activated || 0,
+                    inactive: responseData?.stats?.inactive || 0,
+                },
+            };
         },
-      };
-    },
 
-    placeholderData: (previousData) => previousData,
-  });
+        placeholderData: (previousData) => previousData,
+    });
 };
+
