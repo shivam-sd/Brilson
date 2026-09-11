@@ -74,7 +74,7 @@ const Networking = () => {
             transition={{ delay: 0.2, type: "spring" }}
             viewport={{ once: true }}
           >
-            <span className="relative inline-block px-6 py-2 text-xs md:text-sm font-medium tracking-wider uppercase text-cyan-400 rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,170,255,0.15)] backdrop-blur-sm">
+            <span className="relative inline-block px-6 py-2 text-xs md:text-sm font-medium tracking-wider uppercase text-cyan-400 rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,170,255,0.15)]">
               <span className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 animate-pulse" />
               <span className="relative flex items-center gap-2 tracking-widest font-Roboto">
                 <FiZap size={14} className="text-cyan-400 " />

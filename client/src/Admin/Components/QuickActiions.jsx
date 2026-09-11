@@ -17,7 +17,7 @@ const QuickActions = () => {
   const actions = [
     {
       id: 'add-card',
-      title: 'Add New Card',
+      title: 'Add New',
       description: 'Create a new NFC Card',
       icon: CreditCard,
       color: 'from-violet-500 to-purple-600',
@@ -121,14 +121,14 @@ const QuickActions = () => {
 
                 <div
                   onClick={() => handleActionClick(action.id)}
-                  className={`relative h-full min-h-full bg-[#0f172a] border-white/20 rounded-xl p-4 cursor-pointer transition-all duration-300 transform group-hover:-translate-y-1 border ${action.borderHover} shadow-sm hover:shadow-lg overflow-hidden flex`}
+                  className={`relative h-full min-h-full bg-[#0f172a] border-white/20 rounded-xl p-3 cursor-pointer transition-all duration-300 transform group-hover:-translate-y-1 border ${action.borderHover} shadow-sm hover:shadow-lg overflow-hidden flex`}
                 >
                   <div
                     className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
                   />
 
                   <div className="relative z-10 w-full flex items-center">
-                    <div className="flex items-center justify-center gap-3 w-full">
+                    <div className="flex items-center justify-center flex-col gap-1 w-full">
 
                       <div
                         className={`w-7 h-7 lg:w-8 lg:h-8 shrink-0 rounded-lg ${action.iconBg} shadow-md flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110`}

@@ -43,9 +43,10 @@ const AdminLogin = () => {
         dispatch(setCredentials({ adminToken: res.data.token }));
       }
 
-      setTimeout(() => {
-        navigate("/admindashboard");
-      }, 1000);
+      // setTimeout(() => {
+      //   navigate("/admindashboard");
+      // }, 1000);
+      navigate("/admindashboard");
     } catch (err) {
       toast.error(
         err.response?.data?.message || "Invalid credentials!",

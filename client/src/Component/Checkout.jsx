@@ -103,7 +103,7 @@ const Checkout = () => {
       );
 
       if (res.data.success) {
-        toast.success(res.data.message || "Address saved successfully");
+        // toast.success(res.data.message || "Address saved successfully");
         return true;
       }
       return false;
@@ -305,14 +305,14 @@ const Checkout = () => {
       setShowPayPopup(true);
       toast.success("Order created successfully");
 
-      // Clear cart
-      try {
-        await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/cart/clear`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } catch (cartErr) {
-        console.warn("Failed to clear cart:", cartErr);
-      }
+      // // Clear cart
+      // try {
+      //   await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/cart/clear`, {
+      //     headers: { Authorization: `Bearer ${token}` },
+      //   });
+      // } catch (cartErr) {
+      //   console.warn("Failed to clear cart:", cartErr);
+      // }
     } catch (err) {
       console.error("Order creation error:", err);
       toast.error(err?.response?.data?.error || "Order creation failed");

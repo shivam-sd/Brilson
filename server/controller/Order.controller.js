@@ -87,7 +87,7 @@ const orderCreate = async (req, res) => {
     });
 
     /*  CLEAR CART  */
-    await CartModel.deleteMany({ userId });
+    // await CartModel.deleteMany({ userId });
 
     res.status(201).json({
       success: true,

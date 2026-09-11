@@ -21,7 +21,7 @@ const copyUpdate = async (req, res) => {
     const card = await CardProfileModel.findByIdAndUpdate(req.params.id, {
       $inc: { copyCount: 1 },
       $set: { lastCopiedAt: new Date() }
-    },
+    }, 
       {
         new: true
       }
@@ -63,6 +63,29 @@ const copyUpdate = async (req, res) => {
 }
 
 
+const nfcCardTestupdate = async (req, res) => {
+  try{
+    const card = await CardProfileModel.findByIdAndUpdate(req.params.id, {
+      $set: { cardTest: true }},
+      {new: true})
+      
+      if(!card){
+            return res.status(404).json({ error: "Card Not Found" });
+      }
+    
+      res.status(200).json({
+        message:"Card Test Done",
+        cardTest:card?.cardTest
+      })
+
+
+  }catch(err){
+    res.status(500).json({
+      message: "Failed to update card test status"
+    });
+    console.log("failed to update card test status", err);
+  }
+}
 
 
 const getAllcardsProfile = async (req, res) => {
@@ -194,4 +217,4 @@ const getRecentCards = async (req, res) => {
 
 
 
-module.exports = { getCardProfiles, getAllcardsProfile, copyUpdate, getRecentCards };
+module.exports = { getCardProfiles, getAllcardsProfile, copyUpdate, getRecentCards, nfcCardTestupdate};

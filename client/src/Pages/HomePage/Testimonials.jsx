@@ -51,7 +51,7 @@ const Testimonials = () => {
       <section className="relative w-full py-28 bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 backdrop-blur-sm mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30  mb-6">
               <Sparkles className="w-4 h-4 text-cyan-300" />
               <span className="text-cyan-300 text-sm font-medium tracking-widest font-Roboto">TESTIMONIALS</span>
             </div>
@@ -87,7 +87,7 @@ const Testimonials = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 backdrop-blur-sm mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30  mb-6">
             <Sparkles className="w-4 h-4 text-cyan-300" />
             <span className="text-cyan-300 text-sm font-normal tracking-widest font-Roboto">TESTIMONIALS</span>
           </div>
@@ -146,7 +146,7 @@ const Testimonials = () => {
                       <div className={`absolute -inset-1 bg-gradient-to-r ${testimonial.color} rounded-3xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-300`}></div>
 
                       {/* Testimonial Card */}
-                      <div className="relative bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 h-full">
+                      <div className="relative bg-gradient-to-br from-gray-900/80 to-black/80  border border-white/10 rounded-2xl p-8 h-full">
                         {/* Quote Icon */}
                         <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center shadow-xl">
                           <Quote className="w-6 h-6 text-white" />
@@ -216,7 +216,7 @@ const Testimonials = () => {
                 >
                   {[...testimonials, ...testimonials].map((t, i) => (
                     <SwiperSlide key={i} className="!w-auto">
-                      <div className="flex items-center gap-3 px-6 py-3 bg-white/5 backdrop-blur-sm rounded-full border border-white/10">
+                      <div className="flex items-center gap-3 px-6 py-3 bg-white/5 rounded-full border border-white/10">
                         <div className="flex">
                           {[...Array(t.stars)].map((_, idx) => (
                             <Star key={idx} className="w-4 h-4 text-amber-400 fill-amber-400" />
