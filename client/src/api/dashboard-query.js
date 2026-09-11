@@ -128,3 +128,23 @@ export const useUsers = (page = 1) => {
     },
   });
 };
+
+export const useReferrals = () => {
+  return useQuery({
+    queryKey: ["referrals"],
+
+    queryFn: async () => {
+      const { data } = await axiosInstance.get("/api/admin/referrals");
+
+      if (!data.success) {
+        throw new Error("Unable to load referrals.");
+      }
+
+      return data;
+    },
+
+    onError: (error) => {
+      console.error("Error fetching referrals:", error);
+    },
+  });
+}
