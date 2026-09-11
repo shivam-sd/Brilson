@@ -112,3 +112,19 @@ export const useGetRecentCards = (page = 1, limit = 10) => {
     });
 };
 
+export const useUsers = (page = 1) => {
+  return useQuery({
+    queryKey: ["users", page],
+
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(`/api/users/all-users?page=${page}`);
+
+      return {
+        users: data.Users || [],
+        totalPages: data.totalPage || 1,
+        totalUsers: data.totalUsers || (data.Users?.length || 0),
+        currentPage: data.page || 1,
+      };
+    },
+  });
+};
