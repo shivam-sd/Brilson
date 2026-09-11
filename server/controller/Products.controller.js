@@ -336,15 +336,16 @@ const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const deletedProduct = await ProductModel.findByIdAndDelete(id);
+    const product = await ProductModel.findByIdAndUpdate(id, { isDeleted: 1 }, { new: true });
 
-    if (!deletedProduct) {
+
+    if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
 
     res.status(200).json({
       message: "Product deleted successfully",
-      product: deletedProduct,
+      success: true
     });
 
   } catch (err) {
@@ -395,7 +396,7 @@ const findProductById = async (req, res) => {
 const getAllProduct = async (req, res) => {
   try {
     const { isDelete } = req.query;
-    const allProducts = await ProductModel.find({ isDelete: { $ne: 1 } }).sort({ createdAt: -1 });
+    const allProducts = await ProductModel.find({ isDeleted: { $ne: 1 } }).sort({ createdAt: -1 });
 
     res.status(200).json({ message: "All Products", allProducts });
   } catch (err) {
