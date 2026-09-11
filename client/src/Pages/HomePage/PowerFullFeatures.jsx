@@ -1035,14 +1035,12 @@ const PowerFullFeatures = () => {
 
       {/* Soft radial glow accents, drifting slowly */}
       <motion.div
-        className="absolute -top-32 -left-20 w-96 h-96 rounded-full bg-cyan-500/[0.06] blur-3xl"
-        animate={{ x: [0, 40, 0], y: [0, 20, 0] }}
-        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -top-32 -left-20 w-96 h-96 rounded-full bg-cyan-500/[0.06]"
+       
       />
       <motion.div
-        className="absolute -bottom-32 -right-20 w-96 h-96 rounded-full bg-indigo-500/[0.06] blur-3xl"
-        animate={{ x: [0, -30, 0], y: [0, -20, 0] }}
-        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -bottom-32 -right-20 w-96 h-96 rounded-full bg-indigo-500/[0.06]"
+        
       />
 
       <div className="relative max-w-7xl mx-auto px-6">

@@ -87,13 +87,13 @@ const SmartCardBanner = () => {
             </div>
 
             {/* Floating Feature Tags */}
-            <div className="absolute -right-4 top-4 hidden rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 backdrop-blur-sm shadow-lg lg:block animate-float">
+            <div className="absolute -right-4 top-4 hidden rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 shadow-lg lg:block animate-float">
               <div className="flex items-center gap-2">
                 <Zap className="h-4 w-4 text-yellow-400" />
                 <span className="text-xs font-medium text-white/90">Instant Share</span>
               </div>
             </div>
-            <div className="absolute -left-4 bottom-20 hidden rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 backdrop-blur-sm shadow-lg lg:block animate-float animation-delay-1000">
+            <div className="absolute -left-4 bottom-20 hidden rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5  shadow-lg lg:block animate-float animation-delay-1000">
               <div className="flex items-center gap-2">
                 <Shield className="h-4 w-4 text-emerald-400" />
                 <span className="text-xs font-medium text-white/90">Secure</span>
@@ -107,7 +107,7 @@ const SmartCardBanner = () => {
           {FEATURES.map(({ icon: Icon, title, subtitle }) => (
             <div
               key={title}
-              className="group relative flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-2.5 lg:p-3 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:border-[#3B82F6]/40 hover:bg-white/[0.06] hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(59,130,246,0.15)]"
+              className="group relative flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-2.5 lg:p-3 transition-all duration-300 cursor-pointer hover:border-[#3B82F6]/40 hover:bg-white/[0.06] hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(59,130,246,0.15)]"
             >
               <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 

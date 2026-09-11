@@ -17,7 +17,8 @@ const authUser = (req, res, next) => {
       token = req.cookies.token;
     }
 
-    console.log("Token:", token); 
+    // console.log("Token:", token); 
+    
     //  Proper empty check
     if (!token || token === "undefined") {
       return res.status(401).json({ message: "Login required" });
@@ -26,7 +27,7 @@ const authUser = (req, res, next) => {
     // Verify only if token exists
     const decoded = jwt.verify(token, process.env.BRILSON_SECRET_KEY);
 
-    console.log("Decoded user ID:", decoded.userId); // Debugging line
+    // console.log("Decoded user ID:", decoded.userId); 
 
     req.user = decoded.userId;
     next();

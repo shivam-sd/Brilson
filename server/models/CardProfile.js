@@ -84,6 +84,11 @@ reddit:String
     indicater:{
       type:String,
       default:"green"
+    },
+
+    cardTest:{
+      type:Boolean,
+      default:false
     }
 
   }, 

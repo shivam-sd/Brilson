@@ -63,6 +63,7 @@ const ManageNFCCard = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const [copyLinkId, setCopyLinkId] = useState(null);
+  const [cardTestId, setCardTestId] = useState(null);
   const cardRef = useRef();
 
   // Fetch cards
@@ -745,6 +746,31 @@ const ManageNFCCard = () => {
     }
   };
 
+
+
+  const handleCardTest = async (card) => {
+    try{
+          const baseUrl = import.meta.env.VITE_BASE_URL;
+      const res = await axios.patch(`${baseUrl}/api/cards/${card?._id}/test`);
+      const data  = res.data;
+      // setCardTestId(activationCode);
+      // console.log(data);
+
+      setCards(prev => 
+        prev.map(item => 
+          item?._id === card?._id ? {...item, cardTest:data?.cardTest} : item
+        )
+      )
+
+    }catch(err){
+      //  console.error("Card Test error:", err);
+      toast.error("Failed card test.");
+      // setCardTestId(null);
+    }
+  }
+
+
+
   if (loading) {
     return (
       <div className="min-h-[60vh] flex justify-center items-center">
@@ -1147,6 +1173,7 @@ const ManageNFCCard = () => {
               <th className="p-3 text-center text-xs font-medium text-gray-300">Download</th>
               <th className="p-3 text-center text-xs font-medium text-gray-300">Profile</th>
               <th className="p-3 text-center text-xs font-medium text-gray-300">Link</th>
+              <th className="p-3 text-center text-xs font-medium text-gray-300">Test</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700/30">
@@ -1249,6 +1276,17 @@ const ManageNFCCard = () => {
                         <span className="text-[10px]">{card?.lastCopiedAt ? new Date(card.lastCopiedAt).toLocaleString() : ''}</span>
                       </button>
                     </div>
+                  </td>
+                  <td className="p-3 text-center">
+                    <button
+                    onClick={() => handleCardTest(card)}
+                      className={`${card?.cardTest ? "bg-green-500/20" : "bg-blue-500/20"} py-2 px-3 rounded-lg border border-gray-300/30 text-white tracking-widest hover:text-indigo-300 text-xs hover:underline cursor-pointer transition-all duration-300`}
+                      target="_blank"
+                    >
+                      {
+                        card?.cardTest ? "Tested" : "Test"
+                      }
+                    </button>
                   </td>
                 </tr>
               ))
