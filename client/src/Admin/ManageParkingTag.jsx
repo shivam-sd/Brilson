@@ -18,23 +18,15 @@ import ParkingTagPreviewModal from "./ManageParkingTag/PreviewParkingTag";
 import JSZip from 'jszip';
 import { selectAdminToken } from "../store/slices/authSlice";
 import { useSelector } from "react-redux";
+import { useGetTags } from "../api/dashboard-query";
 
 const ManageParkingTag = () => {
   const token = useSelector(selectAdminToken);
-  const [cards, setCards] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [stats, setStats] = useState({
-    total: 0,
-    activated: 0,
-    inactive: 0,
-  });
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCards, setTotalCards] = useState(0);
   const [limit] = useState(100);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,51 +35,12 @@ const ManageParkingTag = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const tagRef = useRef();
+  const { data, isLoading } = useGetTags(currentPage, searchQuery, limit)
+  const cards = data?.cards ?? [];
+  const totalCards = data?.totalCards ?? 0;
+  const totalPages = data?.totalPages ?? 1;
+  const stats = data?.stats ?? { total: 0, activated: 0, inactive: 0 };
 
-  // Fetch cards 
-  const fetchCards = useCallback(async (page = 1, search = "") => {
-    try {
-      setLoading(true);
-      setIsSearching(!!search);
-
-      const url = `${import.meta.env.VITE_BASE_URL}/api/all/tags?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
-
-      // const token = localStorage.getItem("adminToken");
-      if (!token) {
-        setError("Please login again");
-        setLoading(false);
-        return;
-      }
-
-      const res = await axios.get(url, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-        timeout: 30000,
-      });
-
-      const allCards = res.data.allTags || [];
-      setCards(allCards);
-      setTotalCards(res.data.totalTags || 0);
-      setTotalPages(res.data.totalPages || 1);
-      setCurrentPage(res.data.page || 1);
-
-      const total = res.data.totalTags || 0;
-      const activated = allCards.filter(card => card.isActivated).length;
-      const inactive = allCards.length - activated;
-
-      setStats({ total, activated, inactive });
-
-    } catch (err) {
-      console.error("❌ Fetch error:", err);
-      setError(err.message || "Unable to fetch cards");
-    } finally {
-      setLoading(false);
-    }
-  }, [limit]);
-
-  useEffect(() => {
-    fetchCards(currentPage, searchQuery);
-  }, []);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
@@ -100,7 +53,6 @@ const ManageParkingTag = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
-    fetchCards(1, searchQuery);
   };
 
   const handleClearSearch = () => {
@@ -135,7 +87,8 @@ const ManageParkingTag = () => {
 
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/parking-tags/${card._id}/download`,
-        {withCredentials: true,
+        {
+          withCredentials: true,
           responseType: 'blob',
           headers: { Authorization: token ? `Bearer ${token}` : "" },
           timeout: 60000
@@ -379,7 +332,7 @@ const ManageParkingTag = () => {
     return pageNumbers;
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-[60vh] flex justify-center items-center">
         <div className="h-12 w-12 animate-spin border-t-2 border-indigo-500 rounded-full" />
@@ -427,7 +380,7 @@ const ManageParkingTag = () => {
         {getPageNumbers().map((pageNum, index) => (
           <button key={index} onClick={() => typeof pageNum === 'number' && handlePageChange(pageNum)}
             className={`min-w-[35px] h-9 flex items-center justify-center rounded-lg text-xs sm:text-sm font-medium ${currentPage === pageNum ? 'bg-indigo-500 text-white shadow-lg' :
-                pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              pageNum === '...' ? 'text-gray-400 cursor-default' : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
               }`} disabled={pageNum === '...'}>
             {pageNum}
           </button>
@@ -464,8 +417,8 @@ const ManageParkingTag = () => {
             onClick={downloadCurrentPageTags}
             disabled={downloading || cards.length === 0}
             className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 text-white transition-all cursor-pointer text-sm sm:text-base ${downloading || cards.length === 0
-                ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg'
+              ? 'bg-gray-600 cursor-not-allowed opacity-50'
+              : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 hover:shadow-lg'
               }`}
           >
             {downloading ? (
