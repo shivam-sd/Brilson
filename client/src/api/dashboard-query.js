@@ -149,7 +149,7 @@ export const useGetTags = (currentPage, searchQuery, limit) => {
         queryKey: ["cards", currentPage, searchQuery, limit],
 
         queryFn: async () => {
-            const {data} = await axiosInstance.get("/api/all/tags", {
+            const { data } = await axiosInstance.get("/api/all/tags", {
                 params: { page: currentPage, search: searchQuery, limit },
             });
 
@@ -170,3 +170,14 @@ export const useGetTags = (currentPage, searchQuery, limit) => {
         },
     });
 };
+
+export const useGetInvoices = (page, limit) => {
+    return useQuery({
+        queryKey: ["admin-invoices", page],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get("/api/admin/invoices/all", { params: { page, limit, } });
+
+            return data;
+        },
+    });
+}

@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   FiDownload,
@@ -9,37 +8,48 @@ import {
   FiUser,
   FiMail,
 } from "react-icons/fi";
-import { selectAdminToken } from "../store/slices/authSlice";
 import { useSelector } from "react-redux";
+import { selectAdminToken } from "../store/slices/authSlice";
+import { useGetInvoices } from "../api/dashboard-query";
 
 const AdminInvoices = () => {
-  // const token = localStorage.getItem("adminToken");
-  const token = useSelector(selectAdminToken);
-
-  const [invoices, setInvoices] = useState([]);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+
   const limit = 5;
 
-  useEffect(() => {
-    fetchInvoices();
-  }, [page]);
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+  } = useGetInvoices(page, limit)
 
-  const fetchInvoices = async () => {
-    const res = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/api/admin/invoices/all?page=${page}&limit=${limit}`,
-      { withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-
-    setInvoices(res.data.invoices);
-    setTotalPages(res.data.pagination.totalPages);
-  };
+  const invoices = data?.invoices || [];
+  const totalPages = data?.pagination?.totalPages || 1;
 
   const downloadZip = () => {
     window.location.href = `${import.meta.env.VITE_BASE_URL}/api/admin/invoices/download-zip`;
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#05070a] via-[#070b14] to-[#05070a] text-white">
+        <p className="text-gray-400">Loading invoices...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#05070a] via-[#070b14] to-[#05070a] text-white">
+        <p className="text-red-400">
+          {error?.response?.data?.message ||
+            error?.message ||
+            "Unable to load invoices."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen px-6 py-2 bg-gradient-to-br from-[#05070a] via-[#070b14] to-[#05070a] text-white">
@@ -64,92 +74,112 @@ const AdminInvoices = () => {
 
         {/* INVOICE LIST */}
         <div className="grid gap-8">
-          {invoices.map((inv, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.05 }}
-              className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl p-8"
-            >
-              {/* Glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 pointer-events-none" />
+          {invoices.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">
+              No invoices found.
+            </div>
+          ) : (
+            invoices.map((inv, idx) => (
+              <motion.div
+                key={inv.invoiceNumber || idx}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl p-8"
+              >
+                {/* Glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 pointer-events-none" />
 
-              {/* TOP */}
-              <div className="flex flex-col md:flex-row justify-between md:items-center gap-6">
-                <div className="space-y-1">
-                  <p className="flex items-center gap-2 font-semibold text-base">
-                    <FiUser className="text-cyan-400" />
-                    {inv.userName}
-                  </p>
-                  <p className="flex items-center gap-2 text-sm text-gray-400">
-                    <FiMail />
-                    {inv.email}
-                  </p>
-                  <p className="flex items-center gap-2 text-xs text-gray-400">
-                    <FiFileText />
-                    Invoice #{inv.invoiceNumber}
-                  </p>
+                {/* TOP */}
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-6">
+                  <div className="space-y-1">
+                    <p className="flex items-center gap-2 font-semibold text-base">
+                      <FiUser className="text-cyan-400" />
+                      {inv.userName}
+                    </p>
+
+                    <p className="flex items-center gap-2 text-sm text-gray-400">
+                      <FiMail />
+                      {inv.email}
+                    </p>
+
+                    <p className="flex items-center gap-2 text-xs text-gray-400">
+                      <FiFileText />
+                      Invoice #{inv.invoiceNumber}
+                    </p>
+                  </div>
+
+                  <a
+                    href={inv.pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-cyan-400 font-semibold hover:underline"
+                  >
+                    <FiDownload />
+                    Download PDF
+                  </a>
                 </div>
 
-                <a
-                  href={inv.pdfUrl}
-                  target="_blank"
-                  className="flex items-center gap-2 text-cyan-400 font-semibold hover:underline"
-                >
-                  <FiDownload />
-                  Download PDF
-                </a>
-              </div>
+                {/* PRODUCTS */}
+                <div className="mt-6 border-t border-white/10 pt-5 space-y-3 text-sm text-gray-300">
+                  {inv.products?.map((product, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center"
+                    >
+                      <span>
+                        {product.name}{" "}
+                        <span className="text-gray-500">
+                          (x{product.qty})
+                        </span>
+                      </span>
 
-              {/* PRODUCTS */}
-              <div className="mt-6 border-t border-white/10 pt-5 space-y-3 text-sm text-gray-300">
-                {inv.products.map((p, i) => (
-                  <div
-                    key={i}
-                    className="flex justify-between items-center"
-                  >
-                    <span>
-                      {p.name} <span className="text-gray-500">(x{p.qty})</span>
-                    </span>
-                    <span className="font-medium">₹{p.price}</span>
-                  </div>
-                ))}
-              </div>
+                      <span className="font-medium">
+                        ₹{product.price}
+                      </span>
+                    </div>
+                  ))}
+                </div>
 
-              {/* TOTAL */}
-              <div className="mt-6 flex justify-end">
-                <span className="text-base font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                  Total: ₹{inv.totalAmount}
-                </span>
-              </div>
-            </motion.div>
-          ))}
+                {/* TOTAL */}
+                <div className="mt-6 flex justify-end">
+                  <span className="text-base font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                    Total: ₹{inv.totalAmount}
+                  </span>
+                </div>
+              </motion.div>
+            ))
+          )}
         </div>
 
         {/* PAGINATION */}
-        <div className="flex justify-center items-center gap-8 mt-14">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition disabled:opacity-40"
-          >
-            <FiChevronLeft />
-          </button>
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-8 mt-14">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((prev) => prev - 1)}
+              className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition disabled:opacity-40"
+            >
+              <FiChevronLeft />
+            </button>
 
-          <span className="text-gray-400">
-            Page <strong className="text-white">{page}</strong> of{" "}
-            {totalPages}
-          </span>
+            <span className="text-gray-400">
+              Page{" "}
+              <strong className="text-white">
+                {page}
+              </strong>{" "}
+              of {totalPages}
+            </span>
 
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition disabled:opacity-40"
-          >
-            <FiChevronRight />
-          </button>
-        </div>
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((prev) => prev + 1)}
+              className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition disabled:opacity-40"
+            >
+              <FiChevronRight />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
