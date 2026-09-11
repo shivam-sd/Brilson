@@ -1,47 +1,12 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useSelector } from "react-redux";
-import { selectAdminToken } from "../store/slices/authSlice";
+import { useGetAllOrders } from "../api/dashboard-query";
 
 const AdminCustomers = () => {
-  const token = useSelector(selectAdminToken);
 
-  const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-
-  useEffect(() => {
-
-    const fetchCustomersFromOrders = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/allorders`,
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        console.log(res)
-        const orders = res.data.lastSevenDaysOrder || [];
-
-        setCustomers(orders);
-        setLoading(false);
-      } catch (err) {
-        console.error("Customer Fetch Error:", err);
-        setLoading(false);
-      }
-    };
-
-    console.log(customers)
-    fetchCustomersFromOrders();
-  }, []);
+  const { data, isLoading, isError, error, } = useGetAllOrders();
+  const customers = data?.lastSevenDaysOrder || [];
 
 
-  /*  UI  */
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="text-center text-gray-400 py-10">
         Loading customers...
@@ -57,7 +22,6 @@ const AdminCustomers = () => {
 
       <div className="bg-[#151822] border border-white/10 rounded-xl overflow-hidden shadow-lg">
 
-        {/* ================= DESKTOP TABLE ================= */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full min-w-[900px] text-left">
             <thead className="bg-[#1B1F2D] text-gray-300 uppercase text-sm">

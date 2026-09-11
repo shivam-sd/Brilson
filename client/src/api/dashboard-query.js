@@ -112,3 +112,72 @@ export const useGetRecentCards = (page = 1, limit = 10) => {
     });
 };
 
+export const useUsers = (page = 1) => {
+    return useQuery({
+        queryKey: ["users", page],
+
+        queryFn: async () => {
+            const { data } = await axiosInstance.get(`/api/users/all-users?page=${page}`);
+
+            return {
+                users: data.Users || [],
+                totalPages: data.totalPage || 1,
+                totalUsers: data.totalUsers || (data.Users?.length || 0),
+                currentPage: data.page || 1,
+            };
+        },
+    });
+};
+
+export const useReferrals = () => {
+    return useQuery({
+        queryKey: ["referrals"],
+
+        queryFn: async () => {
+            const { data } = await axiosInstance.get("/api/admin/referrals");
+
+            if (!data.success) {
+                throw new Error("Unable to load referrals.");
+            }
+
+            return data;
+        }
+    });
+}
+export const useGetTags = (currentPage, searchQuery, limit) => {
+    return useQuery({
+        queryKey: ["cards", currentPage, searchQuery, limit],
+
+        queryFn: async () => {
+            const { data } = await axiosInstance.get("/api/all/tags", {
+                params: { page: currentPage, search: searchQuery, limit },
+            });
+
+            const cards = data?.allTags || [];
+            console.log(data)
+
+            return {
+                cards,
+                totalCards: data.totalTags || 0,
+                totalPages: data.totalPages || 1,
+                currentPage: data.page || currentPage,
+                stats: {
+                    total: data.totalTags || 0,
+                    activated: cards.filter((card) => card.isActivated).length,
+                    inactive: cards.filter((card) => !card.isActivated).length,
+                },
+            };
+        },
+    });
+};
+
+export const useGetInvoices = (page, limit) => {
+    return useQuery({
+        queryKey: ["admin-invoices", page],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get("/api/admin/invoices/all", { params: { page, limit, } });
+
+            return data;
+        },
+    });
+}
