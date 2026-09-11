@@ -1,77 +1,48 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { 
-  FiPlus, 
-  FiTrash2, 
+import {
+  FiPlus,
+  FiTrash2,
   FiGrid,
-  FiTag
+  FiTag,
+  FiLoader
 } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { useActiveCategories, useAddCategory, useDeleteCategory } from "../../api/categoryAndBadge-query";
 
 const AdminCategories = () => {
-  const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
-  const fetchCategories = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/category/active`,{withCredentials: true});
-      setCategories(res.data.categories || []);
-    } catch (error) {
-      toast.error("Failed to load categories");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: categories, isLoading } = useActiveCategories()
+  const { mutate: addCategory, isPending: isAddingCategory, } = useAddCategory();
+  const { mutate: deleteCategory, isPending: isDeletingCategory } = useDeleteCategory();
 
-  const addCategory = async () => {
+  const handleAddCategory = () => {
     if (!name.trim()) {
       toast.error("Please enter a category name");
       return;
     }
 
-    try {
-     const res =  await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/category`,
-        { name },
-        { withCredentials: true,
-          headers: { 
-            // Authorization: token ? `Bearer ${token}` : "",
-            'Content-Type': 'application/json'
-          } 
-        }
-      );
-      console.log(res)
-      toast.success(`"${name}" added successfully`);
-      setName("");
-      fetchCategories();
-    } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to add category");
-    }
+    addCategory({
+      name: name.trim(),
+    }, {
+      onSuccess: () => {
+        setName("");
+      },
+    });
   };
 
-  const deleteCategory = async (id) => {
-    try {
-      await axios.delete(`${import.meta.env.VITE_BASE_URL}/api/category/delete/${id}`, {
-        withCredentials: true,
-        headers: { 
-          // Authorization: token ? `Bearer ${token}` : "",
-          'Content-Type': 'application/json'
-        },
-      });
-      toast.success("Category deleted successfully");
-      fetchCategories();
-    } catch (error) {
-      toast.error("Failed to delete category");
-    }
+  const handleDeleteCategory = (id) => {
+    setDeletingId(id);
+    deleteCategory(id, {
+      onSettled: () => {
+        setDeletingId(null);
+      },
+    });
   };
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center">
         <div className="text-center">
@@ -102,7 +73,7 @@ const AdminCategories = () => {
               </h1>
               <p className="text-gray-400">Manage your product categories</p>
             </div>
-            
+
             <div className="flex items-center gap-2 bg-gray-800/50 border border-gray-700/50 px-4 py-2 rounded-full">
               <FiGrid className="text-cyan-400" />
               <span className="font-medium">{categories.length}</span>
@@ -117,7 +88,7 @@ const AdminCategories = () => {
             <FiPlus className="text-cyan-400" />
             Add New Category
           </h2>
-          
+
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <input
@@ -128,11 +99,11 @@ const AdminCategories = () => {
               />
             </div>
             <button
-              onClick={addCategory}
+              onClick={handleAddCategory}
               className="flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold py-3.5 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-cyan-500/25 min-w-[140px] cursor-pointer"
-              disabled={!name.trim()}
+              disabled={isAddingCategory && !name.trim()}
             >
-              <FiPlus />
+              {isAddingCategory ? <FiLoader className="animate-spin" size={20} /> : <FiPlus />}
               Add Category
             </button>
           </div>
@@ -173,14 +144,15 @@ const AdminCategories = () => {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => deleteCategory(category._id)}
+                      disabled={isDeletingCategory || deletingId === category._id}
+                      onClick={() => handleDeleteCategory(category._id)}
                       className="flex items-center gap-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-lg transition-colors cursor-pointer"
                       title="Delete Category"
                     >
-                      <FiTrash2 />
+                      {isDeletingCategory && deletingId === category._id ? <FiLoader className="animate-spin" size={20} /> : <FiTrash2 />}
                       <span className="hidden sm:inline">Delete</span>
                     </button>
                   </div>

@@ -21,7 +21,7 @@ const authUser = (req, res, next) => {
     
     //  Proper empty check
     if (!token || token === "undefined") {
-      return res.status(401).json({ error: "Login required" });
+      return res.status(401).json({ message: "Login required" });
     }
 
     // Verify only if token exists
