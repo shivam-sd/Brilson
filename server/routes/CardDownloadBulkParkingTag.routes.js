@@ -11,8 +11,8 @@ const QR_CODE_STYLING_BROWSER_BUNDLE =
 
 const PAGE_POOL_SIZE = Number(process.env.CARD_RENDER_CONCURRENCY) || 4;
 
-// 1500 × 900 viewport
-const PARKING_TAG_VIEWPORT = { width: 1500, height: 900 };
+// 2.5" × 4" @ 300 DPI (Portrait Orientation)
+const PARKING_TAG_VIEWPORT = { width: 750, height: 1200 };
 
 let cachedLogoDataUrl = null;
 
@@ -42,7 +42,7 @@ async function getLogoDataUrl() {
   }
 }
 
-// SVG Icons as inline strings - SAME AS FRONTEND
+// SVG Icons as inline strings
 const getIcons = () => ({
   swirl: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`,
   sparkle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#d4a843" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1 6 6-1-4 4 4 6-6-4-4 6-4-6-6 4 4-6-4-4 6 1z"/></svg>`,
@@ -70,10 +70,9 @@ function generateParkingTagHTML(card, colors) {
   <title>Brilson Parking Tag</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-  
-      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap');
 
     * { 
       margin: 0;
@@ -83,224 +82,121 @@ function generateParkingTagHTML(card, colors) {
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
-      // background: transparent;
+      font-family: 'Libre Franklin', 'Noto Sans Devanagari', sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      border-radius: 60px;
-      }
-      .tag-wrapper {
-        width: ${PARKING_TAG_VIEWPORT.width}px;
-        height: ${PARKING_TAG_VIEWPORT.height}px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        // background: transparent;
-        padding: 20px;
-      border-radius: 60px;
+      background: transparent;
+    }
+    .tag-wrapper {
+      width: ${PARKING_TAG_VIEWPORT.width}px;
+      height: ${PARKING_TAG_VIEWPORT.height}px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+      background: transparent;
       }
       .tag-container {
-        background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);"
-        border-radius: 60px;
-          overflow: hidden;
-        // border: 2px solid rgba(255,255,255,0.3);
+        background: #FEE11B;
+        border-radius: 36px;
+        overflow: hidden;
         width: 100%;
         height: 100%;
-        // box-shadow: 0 40px 80px -25px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,215,0,0.1) inset;
         display: flex;
-        overflow: hidden;
-        position: relative;
-        }
-        .gold-accent {
-          border-radius: 60px;
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 8px;
-          // background: linear-gradient(90deg, #d4a843, #f5d77b, #d4a843);
-          z-index: 10;
-          }
-          .left-section {
-            border-top-left-radius: 60px;
-  border-bottom-left-radius: 60px;
-            width: 50%;
-            // background: linear-gradient(160deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
-            background: #FEE11B;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 28px;
-            padding: 35px 30px;
-            position: relative;
-            }
-            .pattern-overlay {
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              background-image: radial-gradient(circle at 20% 50%, rgba(212,168,67,0.05) 0%, transparent 50%);
-              pointer-events: none;
-              }
-              .brand-section {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                position: relative;
-                z-index: 2;
-                }
-                .brand-logo {
-                  display: flex;
-                  align-items: center;
-                  justify-content:center;
-                  flex-direction:column;
-                  gap: 10px;
-                  }
-                  .brand-icon {
-                    // width: 70px;
-                    // height: 70px;
-                    // background: linear-gradient(135deg, #d4a843, #f5d77b);
-                    border-radius: 28px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 90px;
-                    font:bold;
-                    font-weight: 900;
-                    color: black;
-                    // box-shadow: 0 15px 30px -10px rgba(212,168,67,0.3);
-                    }
-                    .brand-name {
-                      font-size: 75px;
-                      font-weight:900;
-                      letter-spacing: 8px;
-                      color: black;
-                      font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
-                      margin: 0;
-                      line-height: 1;
-                      text-shadow: 0 4px 20px rgba(212,168,67,0.2);
-                      }
-                     
-      
-      .tagline-box {
-        text-align: center;
-        position: relative;
-        z-index: 2;
-        background: rgba(212,168,67,0.08);
-        padding: 20px 35px;
-        border-radius: 28px;
-        border: 1px solid #59564d;
-        backdrop-filter: blur(10px);
-        }
-        
-    .tagline-title {
-      font-size: 50px;
-      font-weight: 800;
-      letter-spacing: 12px;
-      color: black;
-      margin: 0;
-      text-transform: uppercase;
-      }
-      .tagline-sub {
-        font-size: 35px;
-        font-weight: 600;
-        letter-spacing: 5px;
-        color: black;
-        margin: 10px 0 0 0;
-        opacity: 0.9;
-        }
-
-    .hindi-box {
-      background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05));
-      border-radius: 25px;
-      border: 1px solid #59564d;
-      padding: 22px 25px;
-      max-width: 90%;
+        padding-top:14px;
+        padding-bottom:14px;
+      flex-direction: column;
       position: relative;
-      z-index: 2;
-      backdrop-filter: blur(10px);
-      }
-      .hindi-content {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 30px;
-        }
-        .hindi-icon {
-          background: linear-gradient(135deg, #d4a843, #f5d77b);
-          padding: 14px;
-          border-radius: 22px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: black;
-          flex-shrink: 0;
-          }
-          .hindi-icon svg {
-            width: 45px;
-            height: 45px;
-            }
-            .hindi-text {
-              font-size: 32px;
-              font-weight: 700;
-              color: black;
-              letter-spacing: 2px;
-              margin: 0;
-              line-height: 1.4;
-               font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
-              }
-              
-    .website-box {
+      border: 2px solid rgba(26,26,26,0.1);
+      box-shadow: 0 20px 50px -15px rgba(0,0,0,0.25);
+    }
+
+    /* ===== TOP HEADER SECTION (Brand + Car Icon) ===== */
+    .header-section {
+      width: 100%;
+      padding: 18px 24px 12px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-bottom: 1px solid rgba(26,26,26,0.15);
+    }
+    .brand-logo {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 20px;
-      position: relative;
-      z-index: 2;
-      padding: 13px 40px;
-      border-radius: 50px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid #59564d;
-      }
-      .website-icon svg {
-        color: black;
-        width: 30px;
-        height: 30px;
-        }
-        .website-text {
-          font-size: 23px;
-          font-weight: 700;
-          color: black;
+      flex-direction:column;
+      gap: 14px;
+    }
+    .brand-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid black;
+      border-radius:50%;
+      padding:3px;
+    }
+    .brand-icon svg {
+      width: 75px;
+      height: 75px;
+      color: #1a1a1a;
+    }
+    .brand-name {
+      font-size: 80px;
+      font-weight: 800;
       letter-spacing: 6px;
+      color: #1a1a1a;
+      font-family: 'Libre Franklin', sans-serif;
       margin: 0;
-         font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
-      opacity: 0.9;
-      }
-      
-      .right-section {
-         border-top-right-radius: 60px;
-  border-bottom-right-radius: 60px;
-        width: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 30px;
-        // background: linear-gradient(160deg, #fafafa 0%, #f0f0f0 100%);
-        background: #FEE11B;
-        padding: 40px 35px;
-        position: relative;
-        border-left: 2px solid black;
+      line-height: 1;
+      text-transform: uppercase;
     }
 
+    /* ===== TAGLINE SECTION ===== */
+    .tagline-section {
+      width: 100%;
+      padding: 12px 20px;
+      display: flex;
+      flex-direction: column;
+      margin-top:4px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-bottom: 1px solid rgba(26,26,26,0.15);
+    }
+    .tagline-title {
+      font-size: 45px;
+      font-weight: 600;
+      letter-spacing: 8px;
+      color: #1a1a1a;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+    .tagline-sub {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: rgba(26,26,26,0.7);
+      margin: 6px 0 0 0;
+      text-transform: uppercase;
+    }
+
+    /* ===== QR CODE SECTION  ===== */
+    .qr-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 24px;
+      position: relative;
+      border-bottom: 1px solid rgba(26,26,26,0.15);
+    }
     .qr-container {
-      padding: 32px;
-      background: linear-gradient(135deg, #ffffff, #fafafa);
-      border-radius: 40px;
-      box-shadow: 0 25px 60px -15px rgba(0,0,0,0.12), 0 0 0 2px rgba(212,168,67,0.18) inset;
+      padding: 14px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.15);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -309,348 +205,237 @@ function generateParkingTagHTML(card, colors) {
     }
     .corner-accent {
       position: absolute;
-      width: 32px;
-      height: 32px;
-      border: 5px solid #d4a843;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #1a1a1a;
     }
     .corner-tl {
-      top: -5px;
-      left: -5px;
+      top: -3px;
+      left: -3px;
       border-right: none;
       border-bottom: none;
       border-radius: 8px 0 0 0;
     }
     .corner-tr {
-      top: -5px;
-      right: -5px;
+      top: -3px;
+      right: -3px;
       border-left: none;
       border-bottom: none;
       border-radius: 0 8px 0 0;
     }
     .corner-bl {
-      bottom: -5px;
-      left: -5px;
+      bottom: -3px;
+      left: -3px;
       border-right: none;
       border-top: none;
       border-radius: 0 0 0 8px;
     }
     .corner-br {
-      bottom: -5px;
-      right: -5px;
+      bottom: -3px;
+      right: -3px;
       border-left: none;
       border-top: none;
       border-radius: 0 0 8px 0;
     }
     .qr-image {
-      width: 440px;
-      height: 440px;
+      width: 520px;
+      height:520px;
       display: block;
       image-rendering: auto;
       position: relative;
       z-index: 2;
     }
 
-    .scan-badge {
+    /* ===== BOTTOM ACTIONS SECTION ===== */
+    .actions-section {
+      width: 100%;
+      padding: 16px 20px 14px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .quick-action {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-around;
+      width: 100%;
+      gap: 10px;
+    }
+    .action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+    .action-item:hover {
+      transform: translateY(-2px);
+    }
+    .action-icon-wrapper {
+      width: 52px;
+      height: 52px;
+      border: 1.5px solid #1a1a1a;
+      border-radius: 50%;
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin-top: 18px;
-      padding: 10px 28px;
-      background: linear-gradient(135deg, #d4a843, #f5d77b);
-      border-radius: 32px;
-      color: #0a0a0a;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 4px;
-      text-transform: uppercase;
+      justify-content: center;
+      background: rgba(255,255,255,0.3);
+      transition: all 0.3s ease;
+      position: relative;
     }
-    .scan-badge svg {
-      width: 20px;
-      height: 20px;
+    .action-icon {
+      width: 26px;
+      height: 26px;
+      color: #1a1a1a;
+      transition: all 0.3s ease;
+    }
+    .action-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: #1a1a1a;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-align: center;
+      font-family: 'Libre Franklin', sans-serif;
+      line-height: 1.2;
     }
 
+    /* ===== WEBSITE + ACTIVATION FOOTER ===== */
+    .footer-section {
+      width: 100%;
+      padding: 10px 20px 14px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .website-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border:1px solid black;
+      border-radius:30px;
+      margin-top:10px;
+      padding:2px 8px;
+    }
+    .website-icon svg {
+      color: black;
+      width: 16px;
+      height: 16px;
+    }
+    .website-text {
+      font-size: 18px;
+      font-weight: 500;
+      color: #1a1a1a;
+      letter-spacing: 3px;
+      margin: 0;
+      font-family: 'Libre Franklin', sans-serif;
+    }
     .activation-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
       width: 100%;
     }
     .activation-label {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 8px;
       opacity: 0.6;
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: 5px;
-      color: black;
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #1a1a1a;
       text-transform: uppercase;
     }
     .label-line {
-      width: 45px;
-      height: 2px;
-      background: #ccc;
+      width: 25px;
+      height: 1px;
+      background: #1a1a1a;
+      opacity: 0.4;
     }
     .activation-code {
-      font-size: 32px;
+      font-size: 18px;
       font-weight: 700;
-      color: black;
-      letter-spacing: 5px;
+      color: #1a1a1a;
+      letter-spacing: 3px;
       margin: 0;
-       font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
-      background: linear-gradient(135deg, #1a1a1a, #333);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-family: 'Libre Franklin', monospace;
     }
     .secure-badge {
+    width:100%;
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-top: 6px;
+         justify-content: center;
+      gap: 5px;
+      padding:3px;
+      margin-top: 3px;
     }
     .secure-badge svg {
-      color: black;
-      width: 18px;
-      height: 18px;
-      opacity: 1;
+      color: #1a1a1a;
+      width: 14px;
+      height: 14px;
     }
     .secure-text {
-      font-size: 13px;
-      color: black;
-      letter-spacing: 2px;
-      font-weight: 800;
+      font-size: 15px;
+      color: #1a1a1a;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      opacity: 0.7;
     }
-      /* Quick Action Section Styles */
-.quick-action {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 40px;
-  padding: 12px 20px;
-  margin-top: 8px;
-  width: 100%;
-  position: relative;
-  z-index: 2;
-  border-top: 1px solid black;
-}
-
-.action-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.action-item:hover {
-  transform: translateY(-2px);
-}
-
-.action-item:hover .action-icon-wrapper {
-  background: linear-gradient(135deg, rgba(212, 168, 67, 0.25), rgba(212, 168, 67, 0.1));
-  border-color: rgba(212, 168, 67, 0.4);
-  box-shadow: 0 8px 25px -8px rgba(212, 168, 67, 0.2);
-}
-
-.action-icon-wrapper {
-  width: 56px;
-  height: 56px;
-  border: 1px solid black;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(212, 168, 67, 0.06);
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.action-icon-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 50%;
-  padding: 2px;
-  background: linear-gradient(135deg, rgba(212, 168, 67, 0.3), transparent);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.action-item:hover .action-icon-wrapper::before {
-  opacity: 1;
-}
-
-.action-icon {
-  width: 28px;
-  height: 28px;
-  color: black;
-  transition: all 0.3s ease;
-}
-
-.action-label {
-margin-top:8px;
-  font-size: 15px;
-  font-weight: 800;
-  color: black;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-align: center;
-  transition: all 0.3s ease;
-  font-family: 'Noto Sans Devanagari', 'Libre Franklin', sans-serif !important;
-  line-height: 1.2;
-}
-
-
-/* Active/Selected State */
-.action-item.active .action-icon-wrapper {
-  background: linear-gradient(135deg, rgba(212, 168, 67, 0.2), rgba(212, 168, 67, 0.08));
-  border-color: #d4a843;
-  box-shadow: 0 0 30px rgba(212, 168, 67, 0.15);
-}
-
-  /* Car Icon - Bigger Size */
-.action-item.car .action-icon-wrapper {
-  width: 95px !important;
-  height: 95px !important;
-  border-color: rgba(212, 168, 67, 0.3) !important;
-  background: rgba(212, 168, 67, 0.1) !important;
-}
-
-.action-item.car .action-icon {
-  width: 75px !important;
-  height: 75px !important;
-}
-
-.action-item.car .action-label {
-  font-size: 13px !important;
-  color: black !important;
-}
   </style>
 </head>
 <body>
   <div class="tag-wrapper">
     <div class="tag-container">
-      <div class="gold-accent"></div>
 
-      <!-- LEFT SECTION -->
-      <div class="left-section">
-        <div class="pattern-overlay"></div>
-
-        <div class="brand-section">
-          <div class="brand-logo">
-            <div class="brand-icon">
-
- <div class="action-item car">
-    <div class="action-icon-wrapper car-wrapper">
-      <svg 
-        class="action-icon car-icon" 
-        viewBox="0 0 65 65" 
-        width="65" 
-        height="65" 
-        fill="none" 
-        stroke="currentColor" 
-        stroke-width="2" 
-        stroke-linecap="round" 
-        stroke-linejoin="round"
-      >
-        <path d="M12 44h36M12 44a5 5 0 0 1-5-5v-10l6-12A5 5 0 0 1 18 12h24a5 5 0 0 1 5 5l6 12v10a5 5 0 0 1-5 5M12 44a5 5 0 1 0 10 0M48 44a5 5 0 1 0-10 0"/>
-        <circle cx="17" cy="38" r="4" fill="currentColor" fill-opacity="0.2"/>
-        <circle cx="43" cy="38" r="4" fill="currentColor" fill-opacity="0.2"/>
-        <path d="M17 24h26" stroke-width="4"/>
-        <rect x="19" y="14" width="22" height="10" rx="3" fill="currentColor" fill-opacity="0.1"/>
-        <!-- Windshield -->
-        <path d="M24 14l-6 8h28l-6-8H24z" fill="currentColor" fill-opacity="0.05"/>
-        <!-- Headlights -->
-        <circle cx="9" cy="32" r="3" fill="currentColor" fill-opacity="0.15"/>
-        <circle cx="51" cy="32" r="3" fill="currentColor" fill-opacity="0.15"/>
-      </svg>
-    </div>
-  </div>
-
-</div>
-            <h1 class="brand-name">PARKING TAG</h1>
+      <!-- TOP HEADER: Brand + Car Icon -->
+      <div class="header-section">
+        <div class="brand-logo">
+          <div class="brand-icon">
+            <svg viewBox="0 0 65 65" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 44h36M12 44a5 5 0 0 1-5-5v-10l6-12A5 5 0 0 1 18 12h24a5 5 0 0 1 5 5l6 12v10a5 5 0 0 1-5 5M12 44a5 5 0 1 0 10 0M48 44a5 5 0 1 0-10 0"/>
+              <circle cx="17" cy="38" r="4" fill="currentColor" fill-opacity="0.2"/>
+              <circle cx="43" cy="38" r="4" fill="currentColor" fill-opacity="0.2"/>
+              <path d="M17 24h26" stroke-width="4"/>
+              <rect x="19" y="14" width="22" height="10" rx="3" fill="currentColor" fill-opacity="0.1"/>
+              <path d="M24 14l-6 8h28l-6-8H24z" fill="currentColor" fill-opacity="0.05"/>
+              <circle cx="9" cy="32" r="3" fill="currentColor" fill-opacity="0.15"/>
+              <circle cx="51" cy="32" r="3" fill="currentColor" fill-opacity="0.15"/>
+            </svg>
           </div>
+          <h1 class="brand-name">PARKING TAG</h1>
         </div>
-
-        <div class="tagline-box">
-          <h2 class="tagline-title">SCAN THIS TAG</h2>
-          <p class="tagline-sub">To Contact Vehicle Owner</p>
-        </div>
-
-        <div class="hindi-box">
-          <div class="hindi-content">
-            <div class="hindi-icon">${icons.phone}</div>
-            <p class="hindi-text">वाहन स्वामी से संपर्क करने के लिए इस टैग को स्कैन करें।</p>
-          </div>
-        </div>
-
-        <div class="website-box">
-          <div class="website-icon">${icons.world}</div>
-          <p class="website-text">www.brilson.in</p>
-        </div>
-
-
-
-
-        <!-- Quick Action Section -->
-<div class="quick-action flex items-center justify-center gap-8">
-  <!-- Owner Info -->
-  <div class="action-item owner">
-    <div class="action-icon-wrapper">
-      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
-    </div>
-    <span class="action-label">OWNER INFO</span>
-  </div>
-
-  <!-- Instant Call -->
-  <div class="action-item call">
-    <div class="action-icon-wrapper">
-      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-      </svg>
-    </div>
-    <span class="action-label">INSTANT CALL</span>
-  </div>
-
-  <!-- Location -->
-  <div class="action-item location">
-    <div class="action-icon-wrapper">
-      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-        <circle cx="12" cy="10" r="3"/>
-      </svg>
-    </div>
-    <span class="action-label">LOCATION</span>
-  </div>
-</div>
-
-
-
       </div>
 
-      <!-- RIGHT SECTION -->
-      <div class="right-section">
+      <!-- TAGLINE: Scan This Tag -->
+      <div class="tagline-section">
+        <h2 class="tagline-title">SCAN THIS TAG</h2>
+        <p class="tagline-sub">To Contact Vehicle Owner</p>
+      </div>
+
+      <!-- QR CODE: Main Focus -->
+      <div class="qr-section">
         <div class="qr-container">
           <div class="corner-accent corner-tl"></div>
           <div class="corner-accent corner-tr"></div>
           <div class="corner-accent corner-bl"></div>
           <div class="corner-accent corner-br"></div>
           <img class="qr-image" src="data:image/png;base64,{{QR_DATA}}" alt="QR Code" />
-          <div class="scan-badge">
-            ${icons.qr}
-            <span>Scan to Connect</span>
-          </div>
         </div>
+      </div>
+
+
+      <div class="footer-section">
+       
+
 
         <div class="activation-wrapper">
           <div class="activation-label">
@@ -659,12 +444,56 @@ margin-top:8px;
             <div class="label-line"></div>
           </div>
           <div class="activation-code">${displayCode}</div>
-          <div class="secure-badge">
-            ${icons.shield}
-            <span class="secure-text">SECURE • VERIFIED</span>
+
+           <div class="website-box">
+          <div class="website-icon">${icons.world}</div>
+          <p class="website-text">www.brilson.in</p>
+        </div>
+
+        </div>
+      </div>
+
+
+
+      <!-- QUICK ACTIONS: Owner, Call, Location -->
+      <div class="actions-section">
+        <div class="quick-action">
+          <div class="action-item owner">
+            <div class="action-icon-wrapper">
+              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <span class="action-label">OWNER</span>
+          </div>
+
+          <div class="action-item call">
+            <div class="action-icon-wrapper">
+              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <span class="action-label">CALL</span>
+          </div>
+
+          <div class="action-item location">
+            <div class="action-icon-wrapper">
+              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <span class="action-label">LOCATION</span>
           </div>
         </div>
       </div>
+
+      <!-- FOOTER: Website + Activation Code -->
+       <div class="secure-badge">
+            ${icons.shield}
+            <span class="secure-text">SECURE • VERIFIED</span>
+          </div>
     </div>
   </div>
 </body>
@@ -715,8 +544,8 @@ async function renderQrBase64(page, { url, qrDotsColor, qrBgColor }) {
   return page.evaluate(
     async ({ url, qrDotsColor, qrBgColor }) => {
       const qrCode = new window.QRCodeStyling({
-        width: 420,
-        height: 420,
+        width: 320,
+        height: 320,
         type: "svg",
         data: url,
         image: window.__QR_LOGO__ || undefined,
@@ -779,7 +608,6 @@ async function renderParkingTagPng(page, { card, colors }) {
     timeout: 30000,
   });
 
-  // Wait for fonts to load
   await page.evaluate(async () => {
     await document.fonts.ready;
   });

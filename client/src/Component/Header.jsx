@@ -149,7 +149,7 @@ const Header = () => {
               BRILSON
             </div> */}
 
-<img src="./mainlogo.png" alt="BRILSON Logo" className="h-10 w-auto" />
+<img src="/mainlogo.png" alt="BRILSON Logo" className="h-10 w-auto" />
 
           </motion.div>
         </Link>
@@ -341,7 +341,7 @@ const Header = () => {
                 Brilson
               </div> */}
 
-<img src="./mainlogo.png" alt="BRILSON Logo" className="h-8 w-35 " />
+<img src="/mainlogo.png" alt="BRILSON Logo" className="h-8 w-35 " />
 
 
             </div>

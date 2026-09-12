@@ -1,8 +1,8 @@
 const rateLimit = require("express-rate-limit")
 
 const globalRateLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    limit: 100,                // 100 requests
+    windowMs: 15 * 60 * 1000,
+    limit: 500,                
     standardHeaders: "draft-8",
     legacyHeaders: false,
 
