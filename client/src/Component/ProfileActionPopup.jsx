@@ -43,18 +43,16 @@ const ProfileActionPopup = ({
               damping: 22,
             }}
             className="
-              relative
-              w-full
-              max-w-md
-              overflow-hidden
-              rounded-3xl
-              border border-white/10
-              bg-gradient-to-br
-              from-slate-900
-              via-[#0b1224]
-              to-[#080d1b]
-              shadow-[0_25px_80px_rgba(0,0,0,0.7)]
-            "
+             relative
+             w-full
+             max-w-md
+             overflow-hidden
+             rounded-3xl
+             border border-white/10
+             bg-white/[0.02]
+             backdrop-blur-xl
+             shadow-[0_25px_80px_rgba(0,0,0,0.5)]
+           "
           >
             {/* Gold glow */}
             <div className="
@@ -233,6 +231,7 @@ const ActionButton = ({
         duration-300
         hover:border-[#E1C48A]/30
         hover:bg-white/[0.06]
+        cursor-pointer
       "
     >
       <div
