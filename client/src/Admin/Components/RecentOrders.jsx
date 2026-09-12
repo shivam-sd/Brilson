@@ -31,22 +31,19 @@ const RecentOrders = ({ orders }) => {
 
       </div>
 
-      <div className="w-full ">
+      <div className="w-full">
 
-        <table className="w-full overflow-x-auto">
+        <table className="w-full">
 
-          <thead className="overflow-x-auto">
+          <thead>
 
-            <tr className="border-b border-[#1e293b] flex
-                items-center
-                justify-between
-                gap-4">
+            <tr className="border-b border-[#1e293b]">
 
               <th className="text-left text-gray-400 text-sm pb-3">
                 Order ID
               </th>
 
-              <th className="lg:flex hidden text-left text-gray-400 text-sm pb-3">
+              <th className="lg:table-cell hidden text-left text-gray-400 text-sm pb-3">
                 Customer
               </th>
 
@@ -58,11 +55,11 @@ const RecentOrders = ({ orders }) => {
                 Order Status
               </th>
 
-              <th className="text-left text-gray-400 text-sm pb-3">
+              <th className="lg:table-cell hidden text-left text-gray-400 text-sm pb-3">
                 Payment Status
               </th>
 
-              <th className="text-left text-gray-400 text-sm pb-3">
+              <th className="lg:table-cell text-left text-gray-400 text-sm pb-3">
                 Date
               </th>
 
@@ -81,10 +78,6 @@ const RecentOrders = ({ orders }) => {
                 border-[#1e293b]
                 hover:bg-[#111827]
                 transition
-                flex
-                items-center
-                justify-between
-                gap-4
                 "
               >
 
@@ -92,7 +85,7 @@ const RecentOrders = ({ orders }) => {
                   #{order._id.slice(-6)}
                 </td>
 
-                <td className="lg:flex hidden py-4 text-white text-sm">
+                <td className="lg:table-cell hidden py-4 text-white text-sm">
                   {order.address?.name.slice(0, 6) || "N/A"}
                 </td>
 
@@ -117,10 +110,11 @@ const RecentOrders = ({ orders }) => {
 
                 </td>
 
-                <td className={`${order.status === "paid" ? "text-green-500" : "text-red-600"} font-bold tracking-widest flex items-center justify-center`}>{order?.status}</td>
+                <td className={`${order.status === "paid" ? "text-green-500" : "text-red-600"} lg:table-cell hidden font-bold tracking-widest`}>
+                  {order?.status}
+                </td>
 
-
-                <td className="py-4 text-gray-400 text-sm">
+                <td className="lg:table-cell py-4 text-gray-400 text-sm">
 
                   {new Date(
                     order.createdAt

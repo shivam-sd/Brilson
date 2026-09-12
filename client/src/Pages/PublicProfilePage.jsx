@@ -13,7 +13,7 @@ import { FaFacebook } from "react-icons/fa";
 import { IoLocationOutline } from "react-icons/io5";
 import { TbBrandTwitterFilled } from "react-icons/tb";
 import {
-  FiMail, 
+  FiMail,
   FiChevronRight,
   FiInstagram,
 } from "react-icons/fi";
@@ -44,82 +44,89 @@ import ProfileLocation from "./ProfileComp/ProfileLocation";
 import { CiShare2 } from "react-icons/ci";
 import ProfileResume from "./ProfileComp/ProfileResume";
 import ProfileCoverPhoto from "./ProfileComp/ProfileCoverPhoto";
+import { useGetProfile, useGetProfileLogo } from "../api/client-query";
+import ProfileActionPopup from "../Component/ProfileActionPopup";
 
 
 const PublicProfilePage = () => {
   const { slug } = useParams();
   console.log("slug:", slug);
   const [copied, setCopied] = useState(false);
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [isPublicView, setIsPublicView] = useState(true);
-  const [logo, setLogo] = useState();
   const [preview, setPreview] = useState(null);
+  const [isActionPopupOpen, setIsActionPopupOpen] = useState(false);
 
-
+  const { data: logo, isLoading: isLoadingLogo, isError: isLogoError, error: logoError } = useGetProfileLogo(slug);
+  const { data, isLoading: isLoadingProfile, isError: isProfileError, error: profileError, } = useGetProfile(slug);
+  const profile = data?.profile
   // fetch paymetn qr
   useEffect(() => {
     const fetchqr = async () => {
-        try{
-            const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/profile-paymentQr/get`);
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/profile-paymentQr/get`);
 
-            // console.log(res)
-            setPreview(res.data.paymentqr.image);
+        // console.log(res)
+        setPreview(res.data.paymentqr.image);
 
-        }catch(err){
-            console.log(err);
-        }
+      } catch (err) {
+        console.log(err);
+      }
     }
     fetchqr();
-  },[]);
+  }, []);
+  useEffect(() => {
+    if (profile) {
+      setIsActionPopupOpen(true);
+    }
+  }, [profile]);
 
 
 
 
 
   // fetch profile logo
-  useEffect(() => {
-    const fetchLogo = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/profile-logo/get/${slug}`
-        );
+  // useEffect(() => {
+  //   const fetchLogo = async () => {
+  //     try {
+  //       const res = await axios.get(
+  //         `${import.meta.env.VITE_BASE_URL}/api/profile-logo/get/${slug}`
+  //       );
 
-        setLogo(res.data.profileLogo.image);
-      } catch (err) {
-        // toast.error("Failed to load logo");
-      }
-    };
+  //       setLogo(res.data.profileLogo.image);
+  //     } catch (err) {
+  //       // toast.error("Failed to load logo");
+  //     }
+  //   };
 
-    fetchLogo();
-  }, [slug]);
+  //   fetchLogo();
+  // }, [slug]);
 
 
 
   // Fetch profile data for public view
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/card/${slug}`
-        );
-        console.log(res.data)
-        setProfile(res.data.profile);
-      } catch (err) {
-        toast.error(err?.response?.data?.error || "Profile not found");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchProfile = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const res = await axios.get(
+  //         `${import.meta.env.VITE_BASE_URL}/api/card/${slug}`
+  //       );
+  //       console.log(res.data)
+  //       setProfile(res.data.profile);
+  //     } catch (err) {
+  //       toast.error(err?.response?.data?.error || "Profile not found");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    if (slug) {
-      fetchProfile();
-    }
-  }, [slug]);
+  //   if (slug) {
+  //     fetchProfile();
+  //   }
+  // }, [slug]);
 
 
-  
+
 
 
 
@@ -133,28 +140,28 @@ const PublicProfilePage = () => {
 
 
   const handleShare = async () => {
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            // title: `${profileData.name}'s Profile`,
-            // text: profileData.bio || `Connect with ${profileData.name}`,
-            url: `https://api.brilson.in/public/profile/${slug}`,
-          });
-        } catch (error) {
-          console.log('Sharing cancelled');
-        }
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          // title: `${profileData.name}'s Profile`,
+          // text: profileData.bio || `Connect with ${profileData.name}`,
+          url: `https://api.brilson.in/public/profile/${slug}`,
+        });
+      } catch (error) {
+        console.log('Sharing cancelled');
       }
-    };
+    }
+  };
 
 
-    const handleWhatsApp = () => {
+  const handleWhatsApp = () => {
     if (profileData.whatsapp) {
       const phoneNumber = profileData.whatsapp.replace(/\D/g, '');
       window.open(`https://wa.me/${phoneNumber}`, '_blank');
     }
   };
 
-   const handlePhone = () => {
+  const handlePhone = () => {
     if (profileData.phone) {
       const phoneNumber = profileData.phone.replace(/\D/g, '');
       window.open(`tel:${phoneNumber}`);
@@ -162,45 +169,45 @@ const PublicProfilePage = () => {
   };
 
 
-    const handleEmail = () => {
+  const handleEmail = () => {
     // console.log(profileData.email);
-  if (profileData.email) {
-    window.location.href = `mailto:${profileData.email}`;
-  }
-};
+    if (profileData.email) {
+      window.location.href = `mailto:${profileData.email}`;
+    }
+  };
 
 
-//     const handleDownloadQr = (url) => {
-//   if (!url) return;
+  //     const handleDownloadQr = (url) => {
+  //   if (!url) return;
 
-//   const link = document.createElement("a");
-//   link.href = url;
-//   link.download = "payment-qr.png";
-//   link.target = "_blank"
-//   link.click();
-// };
-
-
-
+  //   const link = document.createElement("a");
+  //   link.href = url;
+  //   link.download = "payment-qr.png";
+  //   link.target = "_blank"
+  //   link.click();
+  // };
 
 
 
-  if (loading) {
+
+
+
+  if (isLoadingProfile) {
     return (
       <>
-      <Helmet>
-              <title>Loading Profile... | Brilson</title>
-              <meta name="description" content="Loading premium digital business card profile" />
-              <meta property="og:title" content="Brilson - Digital Business Cards" />
-              <meta property="og:image" content="https://brilson.in/default-og-image.jpg" />
-            </Helmet>
+        <Helmet>
+          <title>Loading Profile... | Brilson</title>
+          <meta name="description" content="Loading premium digital business card profile" />
+          <meta property="og:title" content="Brilson - Digital Business Cards" />
+          <meta property="og:image" content="https://brilson.in/default-og-image.jpg" />
+        </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-16 h-16 border-4 border-[#E1C48A]/30 border-t-[#E1C48A] rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading public profile...</p>
+        <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin w-16 h-16 border-4 border-[#E1C48A]/30 border-t-[#E1C48A] rounded-full mx-auto mb-4"></div>
+            <p className="text-gray-400">Loading public profile...</p>
+          </div>
         </div>
-      </div>
       </>
     );
   }
@@ -208,21 +215,21 @@ const PublicProfilePage = () => {
   if (!profile) {
     return (
       <>
-      <Helmet>
-              <title>Profile Not Found | Brilson</title>
-              <meta name="description" content="The requested profile could not be found" />
-              <meta property="og:title" content="Profile Not Found | Brilson" />
-              <meta property="og:image" content="https://brilson.in/default-og-image.jpg" />
-              <meta name="robots" content="noindex" />
-            </Helmet>
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] flex items-center justify-center text-white">
-        <div className="text-center">
-          <p className="text-xl text-gray-400">Profile not found</p>
-          <Link to="/" className="text-[#E1C48A] hover:text-[#F5D8A5] mt-4 inline-block">
-            Go back home
-          </Link>
+        <Helmet>
+          <title>Profile Not Found | Brilson</title>
+          <meta name="description" content="The requested profile could not be found" />
+          <meta property="og:title" content="Profile Not Found | Brilson" />
+          <meta property="og:image" content="https://brilson.in/default-og-image.jpg" />
+          <meta name="robots" content="noindex" />
+        </Helmet>
+        <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] flex items-center justify-center text-white">
+          <div className="text-center">
+            <p className="text-xl text-gray-400">Profile not found</p>
+            <Link to="/" className="text-[#E1C48A] hover:text-[#F5D8A5] mt-4 inline-block">
+              Go back home
+            </Link>
+          </div>
         </div>
-      </div>
       </>
     );
   }
@@ -243,7 +250,7 @@ const PublicProfilePage = () => {
     facebook: profile?.facebook || "",
     title: profile?.title || "",
     company: profile?.company || "",
-     youtube: profile?.youtube || "",
+    youtube: profile?.youtube || "",
     snapchat: profile?.snapchat || "",
     sharechat: profile?.sharechat || "",
     moj: profile?.moj || "",
@@ -260,97 +267,105 @@ const PublicProfilePage = () => {
       onClick={onClick}
       className="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 w-full font-Poppins"
     >
-        {React.cloneElement(icon, { size: 20, style: { color }  })}
+      {React.cloneElement(icon, { size: 20, style: { color } })}
       <span className="font-medium text-white flex-1 text-left">{label}</span>
       <FiChevronRight className="text-gray-400" size={16} />
     </motion.button>
   );
 
   const SocialLink = ({ platform, url, icon, color }) => (
-      <motion.a
-        whileHover={{ scale: 1.05, y: -2 }}
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex flex-col items-center justify-center gap-3 p-4 bg-gradient-to-r from-slate-800/40 to-transparent border border-slate-800 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins "
-      >
-        {React.cloneElement(icon, { size: 20, style: { color } })}
-        <span className="font-medium text-white flex-1 text-left">
-          {platform}
-        </span>
-      </motion.a>
-    );
-  
-    // Mobile device ke liye
-  
-    const SocialLink1 = ({ platform, url, icon, color }) => (
-      <motion.a
-        whileHover={{ y: -4 }}
-        whileTap={{ scale: 0.95 }}
-        href={url.startsWith("http") ? url : `https://${url}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="
+    <motion.a
+      whileHover={{ scale: 1.05, y: -2 }}
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex flex-col items-center justify-center gap-3 p-4 bg-gradient-to-r from-slate-800/40 to-transparent border border-slate-800 rounded-xl hover:border-[#E1C48A]/40 transition-all duration-300 font-Poppins "
+    >
+      {React.cloneElement(icon, { size: 20, style: { color } })}
+      <span className="font-medium text-white flex-1 text-left">
+        {platform}
+      </span>
+    </motion.a>
+  );
+
+  // Mobile device ke liye
+
+  const SocialLink1 = ({ platform, url, icon, color }) => (
+    <motion.a
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.95 }}
+      href={url.startsWith("http") ? url : `https://${url}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="
         flex flex-col items-center justify-center gap-2 shadow-lg
         transition-all duration-300
         shrink-0 font-Poppins p-1 w-20 bg-gradient-to-r from-slate-800/40 to-transparent border border-slate-800 rounded-xl
       "
+    >
+      <div
+        className="w-10 h-10 flex items-center justify-center rounded-full"
+        style={{ backgroundColor: `${color}20` }}
       >
-        <div
-          className="w-10 h-10 flex items-center justify-center rounded-full"
-          style={{ backgroundColor: `${color}20` }}
-        >
-          {React.cloneElement(icon, {
-            size: 18,
-            style: { color },
-          })}
-        </div>
-  
-        <span className="text-xs text-gray-300 font-medium">{platform}</span>
-      </motion.a>
-    );
-  
+        {React.cloneElement(icon, {
+          size: 18,
+          style: { color },
+        })}
+      </div>
+
+      <span className="text-xs text-gray-300 font-medium">{platform}</span>
+    </motion.a>
+  );
 
 
-// set Contact Data for the csv 
-// const contact = {
-//   name:profileData.name,
-//   phone:profileData.phone,
-//   email:profileData.email,
-//   company:profileData.company,
-//   website:profileData.website,
-// }
+
+  // set Contact Data for the csv 
+  // const contact = {
+  //   name:profileData.name,
+  //   phone:profileData.phone,
+  //   email:profileData.email,
+  //   company:profileData.company,
+  //   website:profileData.website,
+  // }
 
 
 
   return (
     <>
-      <Toaster 
-        position="top-right" 
+      <Toaster
+        position="top-right"
         toastOptions={{
           style: {
             background: 'linear-gradient(135deg, #0a0a0f 0%, #0f1117 100%)',
             color: '#fff',
             border: '1px solid rgba(255, 255, 255, 0.1)',
           },
-        }} 
+        }}
       />
-      
+      <ProfileActionPopup
+        isOpen={isActionPopupOpen}
+        onClose={() => setIsActionPopupOpen(false)}
+        profile={profileData}
+        logo={logo}
+        onCall={handlePhone}
+        onWhatsApp={handleWhatsApp}
+        onSaveContact={() => downloadVCF(profileData, logo)}
+      />
       <div className="profile bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 text-white bg-transparent font-Roboto">
         {/* Background Effects */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#E1C48A]/5 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/3 rounded-full blur-3xl" />
-          
+
           {/* Grid Pattern */}
-          <div 
+          <div
             className="absolute inset-0 opacity-10"
             style={{
               backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)`,
               backgroundSize: '40px 40px'
             }}
-          /> 
+          />
         </div>
 
         {/* Public Profile Header */}
@@ -358,27 +373,27 @@ const PublicProfilePage = () => {
           <div className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 lg:py-4 md:py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.05 }}
                   className="flex items-center gap-3"
                 >
-          
-                     {/* <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
+
+                  {/* <div className="text-4xl font-Playfair font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">
                 Brilson
               </div> */}
-              
-              <button
-                        onClick={handleShare}
-                        className="lg:flex md:flex hidden px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer font-Poppins"
-                      >
-                        Share Profile
-                      </button>
+
+                  <button
+                    onClick={handleShare}
+                    className="lg:flex md:flex hidden px-8 py-3 bg-gradient-to-r from-[#E1C48A] to-[#C9A86A] text-black font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer font-Poppins"
+                  >
+                    Share Profile
+                  </button>
 
 
                 </motion.div>
               </div>
-              
-              
+
+
             </div>
           </div>
         </div>
@@ -392,12 +407,12 @@ const PublicProfilePage = () => {
             className="relative"
           >
 
-<ProfileCoverPhoto activationCode={slug} />
+            <ProfileCoverPhoto activationCode={slug} />
 
             {/* Main Profile Card */}
             <div className="relative bg-transparent border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
-              
-              
+
+
               {/* Profile Header */}
               <div className="flex flex-col items-center text-center mb-10 mt-4">
                 {/* Round Profile Image */}
@@ -416,7 +431,7 @@ const PublicProfilePage = () => {
                   {profileData.name}
                 </h2>
                 <p className="text-xl text-yellow-600 mb-1 font-Roboto">{profileData.title}</p>
-                
+
                 {/* <p className="text-gray-400 mb-6 font-Poppins">{profileData.company}</p> */}
 
 
@@ -424,28 +439,28 @@ const PublicProfilePage = () => {
                   <p className="text-[#E1C48A] italic text-lg font-Poppins">{profileData.bio}</p>
                 </div>  */}
 
-                  <div className="px-6 py-5 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl border border-gray-700/50">
-  <div className="flex items-start gap-4">
-    {/* Decorative icon */}
-    <div className="hidden sm:block">
-      <svg className="w-8 h-8 text-[#E1C48A]/40" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/>
-      </svg>
-    </div>
-    
-    <div className="flex-1">
-      <p className="text-gray-300 text-lg md:text-xl font-light leading-relaxed font-Roboto">
-        {profileData.bio}
-      </p>
-      
-      {/* Author line (optional) */}
-      {/* <p className="mt-2 text-right text-sm text-gray-500">
+                <div className="px-6 py-5 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl border border-gray-700/50">
+                  <div className="flex items-start gap-4">
+                    {/* Decorative icon */}
+                    <div className="hidden sm:block">
+                      <svg className="w-8 h-8 text-[#E1C48A]/40" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z" />
+                      </svg>
+                    </div>
+
+                    <div className="flex-1">
+                      <p className="text-gray-300 text-lg md:text-xl font-light leading-relaxed font-Roboto">
+                        {profileData.bio}
+                      </p>
+
+                      {/* Author line (optional) */}
+                      {/* <p className="mt-2 text-right text-sm text-gray-500">
         — {profileData.name || 'User'}
       </p> */}
-    </div>
-  </div>
-</div>
-                
+                    </div>
+                  </div>
+                </div>
+
               </div>
 
               {/* Quick Contact Buttons */}
@@ -471,152 +486,152 @@ const PublicProfilePage = () => {
                 <ContactButton
                   icon={<FiUserPlus />}
                   label="Save Contact"
-                  onClick={() => {downloadVCF(profileData, logo)}}
+                  onClick={() => { downloadVCF(profileData, logo) }}
                   color="#FF7F11"
                 />
               </div>
 
 
               <button onClick={handleShare} className="profile lg:hidden md:hidden p-2 w-full flex items-center justify-center gap-3 bg-gradient-to-l to-slate-900 from-slate-950 border-2 border-white/10 rounded-lg mb-5">
-              <CiShare2 size={24} className="text-yellow-400 font-bold" /> <span className="text-lg font-Poppins">Share Profile</span>
+                <CiShare2 size={24} className="text-yellow-400 font-bold" /> <span className="text-lg font-Poppins">Share Profile</span>
               </button>
 
               {/* Sections */}
               <div className="profile space-y-12">
-               
+
                 {/* CONNECT Section */}
                 <div className="profile lg:flex hidden flex-col p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold text-gray-300 mb-4">Connect</h3>
                   <div className="lg:grid hidden grid grid-cols-6 items-center justify-between gap-4">
-                                     {
-                                                           profileData.website ? <>
-                                                           <SocialLink
-                                                           platform="Website"
-                                                           url={profileData.website}
-                                                           icon={<TbWorldSearch />}
-                                                           color="#08CB00"
-                                                         />
-                                                           </> : <></> 
-                                                         }
-                                                         
-                                                         {
-                                                           profileData.instagram ? <>
-                                                           <SocialLink
-                                                           platform="Instagram"
-                                                           url={profileData.instagram}
-                                                           icon={<FiInstagram />}
-                                                           color="#FF0087"
-                                                         />
-                                                           </> : <></>
-                                                         }
-                                                         
-                                                         {
-                                                           profileData.facebook ? <><SocialLink
-                                                           platform="Facebook"
-                                                           url={profileData.facebook}
-                                                           icon={<FaFacebook />}
-                                                           color="#6F00FF"
-                                                         /></> : <></>
-                                                         }
-                                                         
-                                                         
-                                                         {
-                                                           profileData.youtube ? <>
-                                                           <SocialLink
-                                                           platform="YouTube"
-                                                           url={profileData.youtube}
-                                                           icon={<FaYoutube />}
-                                                           color="#F63049"
-                                                         />
-                                                           </> : <></>
-                                                         }
-                                     
-                                       {
-                                                           profileData.linkedin ? <><SocialLink
-                                                           platform="LinkedIn"
-                                                           url={profileData.linkedin}
-                                                           icon={<FaLinkedin  />}
-                                                           color="#0A66C2"
-                                                         /></> : <></>
-                                                         }
-                                     
-                                                         
-                                                         {
-                                                           profileData.twitter ? <>
-                                                           <SocialLink
-                                                           platform="Twitter"
-                                                           url={profileData.twitter}
-                                                           icon={<TbBrandTwitterFilled />}
-                                                           color="#1DA1F2"
-                                                         /></> : <></>
-                                                         }
-                                     
-                                                         {
-                                                           profileData.snapchat ? <>
-                                                           <SocialLink
-                                                           platform="Snap Chat"
-                                                           url={profileData.snapchat}
-                                                           icon={<FaSnapchatGhost />}
-                                                           color="#FFFC00"
-                                                         /></> : <></>
-                                                         }
-                                     
-                                                         {
-                                                           profileData.moj ? <>
-                                                           <SocialLink
-                                                           platform="Moj"
-                                                           url={profileData.moj}
-                                                           icon={<BsEmojiGrin />}
-                                                           color="#80191A"
-                                                         /></> : <></>
-                                                         }
-                                     
-                                                         {
-                                                           profileData.josh ? <>
-                                                           <SocialLink
-                                                           platform="Josh"
-                                                           url={profileData.josh}
-                                                           icon={<MdElectricBolt />}
-                                                           color="#FF0099"
-                                                         /></> : <></>
-                                                         }
-                                     
-                                                         {
-                                                           profileData.pinterest ? <>
-                                                           <SocialLink
-                                                           platform="Pinterest"
-                                                           url={profileData.pinterest}
-                                                           icon={<FaPinterestSquare />}
-                                                           color="#80191A"
-                                                         /></> : <></>
-                                                         }
-                                     
-                                     
-                                     
-                                                         {
-                                                           profileData.reddit ? <>
-                                                           <SocialLink
-                                                           platform="Reddit"
-                                                           url={profileData.reddit}
-                                                           icon={<FaReddit />}
-                                                           color="#FF4500"
-                                                         /></> : <></>
-                                                         }
+                    {
+                      profileData.website ? <>
+                        <SocialLink
+                          platform="Website"
+                          url={profileData.website}
+                          icon={<TbWorldSearch />}
+                          color="#08CB00"
+                        />
+                      </> : <></>
+                    }
 
-                                                         {
-                                                           profileData.sharechat ? <>
-                                                           <SocialLink
-                                                           platform="Share Char"
-                                                           url={profileData.sharechat}
-                                                           icon={<SiSharex />}
-                                                           color="#9661BA"
-                                                         /></> : <></>
-                                                         }
-                                    </div>
-                                  </div>
-                  
-                                  <div
-                                    className="profile w-full 
+                    {
+                      profileData.instagram ? <>
+                        <SocialLink
+                          platform="Instagram"
+                          url={profileData.instagram}
+                          icon={<FiInstagram />}
+                          color="#FF0087"
+                        />
+                      </> : <></>
+                    }
+
+                    {
+                      profileData.facebook ? <><SocialLink
+                        platform="Facebook"
+                        url={profileData.facebook}
+                        icon={<FaFacebook />}
+                        color="#6F00FF"
+                      /></> : <></>
+                    }
+
+
+                    {
+                      profileData.youtube ? <>
+                        <SocialLink
+                          platform="YouTube"
+                          url={profileData.youtube}
+                          icon={<FaYoutube />}
+                          color="#F63049"
+                        />
+                      </> : <></>
+                    }
+
+                    {
+                      profileData.linkedin ? <><SocialLink
+                        platform="LinkedIn"
+                        url={profileData.linkedin}
+                        icon={<FaLinkedin />}
+                        color="#0A66C2"
+                      /></> : <></>
+                    }
+
+
+                    {
+                      profileData.twitter ? <>
+                        <SocialLink
+                          platform="Twitter"
+                          url={profileData.twitter}
+                          icon={<TbBrandTwitterFilled />}
+                          color="#1DA1F2"
+                        /></> : <></>
+                    }
+
+                    {
+                      profileData.snapchat ? <>
+                        <SocialLink
+                          platform="Snap Chat"
+                          url={profileData.snapchat}
+                          icon={<FaSnapchatGhost />}
+                          color="#FFFC00"
+                        /></> : <></>
+                    }
+
+                    {
+                      profileData.moj ? <>
+                        <SocialLink
+                          platform="Moj"
+                          url={profileData.moj}
+                          icon={<BsEmojiGrin />}
+                          color="#80191A"
+                        /></> : <></>
+                    }
+
+                    {
+                      profileData.josh ? <>
+                        <SocialLink
+                          platform="Josh"
+                          url={profileData.josh}
+                          icon={<MdElectricBolt />}
+                          color="#FF0099"
+                        /></> : <></>
+                    }
+
+                    {
+                      profileData.pinterest ? <>
+                        <SocialLink
+                          platform="Pinterest"
+                          url={profileData.pinterest}
+                          icon={<FaPinterestSquare />}
+                          color="#80191A"
+                        /></> : <></>
+                    }
+
+
+
+                    {
+                      profileData.reddit ? <>
+                        <SocialLink
+                          platform="Reddit"
+                          url={profileData.reddit}
+                          icon={<FaReddit />}
+                          color="#FF4500"
+                        /></> : <></>
+                    }
+
+                    {
+                      profileData.sharechat ? <>
+                        <SocialLink
+                          platform="Share Char"
+                          url={profileData.sharechat}
+                          icon={<SiSharex />}
+                          color="#9661BA"
+                        /></> : <></>
+                    }
+                  </div>
+                </div>
+
+                <div
+                  className="profile w-full 
                     border border-white/10 
                     p-4 
                     rounded-xl 
@@ -624,148 +639,148 @@ const PublicProfilePage = () => {
                     flex items-center gap-3 
                     shadow-lg 
                     bg-gradient-to-r from-slate-900 to-slate-950"
-                                  >
-                                    <IoLocationOutline
-                                      size={22}
-                                      className="text-yellow-400 shrink-0"
-                                    />
-                  
-                                    <span className="text-gray-200 text-sm leading-relaxed break-words font-Poppins">
-                                      {profileData.city}
-                                    </span>
-                                  </div>
-                  
-                                  {/* mobile device ke liye */}
-                  
-                                  <div className="lg:hidden flex">
-                                    <div className="lg:hidden grid grid-cols-4 items-center justify-between gap-4">
-                                      {
-                                                            profileData.website ? <>
-                                                            <SocialLink1
-                                                            platform="Website"
-                                                            url={profileData.website}
-                                                            icon={<TbWorldSearch />}
-                                                            color="#08CB00"
-                                                          />
-                                                            </> : <></> 
-                                                          }
-                                                          
-                                                          {
-                                                            profileData.instagram ? <>
-                                                            <SocialLink1
-                                                            platform="Instagram"
-                                                            url={profileData.instagram}
-                                                            icon={<FiInstagram />}
-                                                            color="#FF0087"
-                                                          />
-                                                            </> : <></>
-                                                          }
-                                                          
-                                                          {
-                                                            profileData.facebook ? <><SocialLink1
-                                                            platform="Facebook"
-                                                            url={profileData.facebook}
-                                                            icon={<FaFacebook />}
-                                                            color="#6F00FF"
-                                                          /></> : <></>
-                                                          }
-                                                          
-                                                          
-                                                          {
-                                                            profileData.youtube ? <>
-                                                            <SocialLink1
-                                                            platform="YouTube"
-                                                            url={profileData.youtube}
-                                                            icon={<FaYoutube />}
-                                                            color="#F63049"
-                                                          />
-                                                            </> : <></>
-                                                          }
-                                      
-                                        {
-                                                            profileData.linkedin ? <><SocialLink1
-                                                            platform="LinkedIn"
-                                                            url={profileData.linkedin}
-                                                            icon={<FaLinkedin  />}
-                                                            color="#0A66C2"
-                                                          /></> : <></>
-                                                          }
-                                      
-                                                          
-                                                          {
-                                                            profileData.twitter ? <>
-                                                            <SocialLink1
-                                                            platform="Twitter"
-                                                            url={profileData.twitter}
-                                                            icon={<TbBrandTwitterFilled />}
-                                                            color="#1DA1F2"
-                                                          /></> : <></>
-                                                          }
-                                      
-                                                          {
-                                                            profileData.snapchat ? <>
-                                                            <SocialLink1
-                                                            platform="Snap Chat"
-                                                            url={profileData.snapchat}
-                                                            icon={<FaSnapchatGhost />}
-                                                            color="#FFFC00"
-                                                          /></> : <></>
-                                                          }
-                                      
-                                                          {
-                                                            profileData.moj ? <>
-                                                            <SocialLink1
-                                                            platform="Moj"
-                                                            url={profileData.moj}
-                                                            icon={<BsEmojiGrin />}
-                                                            color="#80191A"
-                                                          /></> : <></>
-                                                          }
-                                      
-                                                          {
-                                                            profileData.josh ? <>
-                                                            <SocialLink1
-                                                            platform="Josh"
-                                                            url={profileData.josh}
-                                                            icon={<MdElectricBolt />}
-                                                            color="#FF0099"
-                                                          /></> : <></>
-                                                          }
-                                      
-                                                          {
-                                                            profileData.pinterest ? <>
-                                                            <SocialLink1
-                                                            platform="Pinterest"
-                                                            url={profileData.pinterest}
-                                                            icon={<FaPinterestSquare />}
-                                                            color="#80191A"
-                                                          /></> : <></>
-                                                          }
-                                      
-                                      
-                                                          {
-                                                            profileData.reddit ? <>
-                                                            <SocialLink1
-                                                            platform="Reddit"
-                                                            url={profileData.reddit}
-                                                            icon={<FaReddit />}
-                                                            color="#FF4500"
-                                                          /></> : <></>
-                                                          }
+                >
+                  <IoLocationOutline
+                    size={22}
+                    className="text-yellow-400 shrink-0"
+                  />
 
-                                                          {
-                                                           profileData.sharechat ? <>
-                                                           <SocialLink1
-                                                           platform="Share Char"
-                                                           url={profileData.sharechat}
-                                                           icon={<SiSharex />}
-                                                           color="#9661BA"
-                                                         /></> : <></>
-                                                         }
-                                      
-                                    </div>
-                                  </div>
-                  
+                  <span className="text-gray-200 text-sm leading-relaxed break-words font-Poppins">
+                    {profileData.city}
+                  </span>
+                </div>
+
+                {/* mobile device ke liye */}
+
+                <div className="lg:hidden flex">
+                  <div className="lg:hidden grid grid-cols-4 items-center justify-between gap-4">
+                    {
+                      profileData.website ? <>
+                        <SocialLink1
+                          platform="Website"
+                          url={profileData.website}
+                          icon={<TbWorldSearch />}
+                          color="#08CB00"
+                        />
+                      </> : <></>
+                    }
+
+                    {
+                      profileData.instagram ? <>
+                        <SocialLink1
+                          platform="Instagram"
+                          url={profileData.instagram}
+                          icon={<FiInstagram />}
+                          color="#FF0087"
+                        />
+                      </> : <></>
+                    }
+
+                    {
+                      profileData.facebook ? <><SocialLink1
+                        platform="Facebook"
+                        url={profileData.facebook}
+                        icon={<FaFacebook />}
+                        color="#6F00FF"
+                      /></> : <></>
+                    }
+
+
+                    {
+                      profileData.youtube ? <>
+                        <SocialLink1
+                          platform="YouTube"
+                          url={profileData.youtube}
+                          icon={<FaYoutube />}
+                          color="#F63049"
+                        />
+                      </> : <></>
+                    }
+
+                    {
+                      profileData.linkedin ? <><SocialLink1
+                        platform="LinkedIn"
+                        url={profileData.linkedin}
+                        icon={<FaLinkedin />}
+                        color="#0A66C2"
+                      /></> : <></>
+                    }
+
+
+                    {
+                      profileData.twitter ? <>
+                        <SocialLink1
+                          platform="Twitter"
+                          url={profileData.twitter}
+                          icon={<TbBrandTwitterFilled />}
+                          color="#1DA1F2"
+                        /></> : <></>
+                    }
+
+                    {
+                      profileData.snapchat ? <>
+                        <SocialLink1
+                          platform="Snap Chat"
+                          url={profileData.snapchat}
+                          icon={<FaSnapchatGhost />}
+                          color="#FFFC00"
+                        /></> : <></>
+                    }
+
+                    {
+                      profileData.moj ? <>
+                        <SocialLink1
+                          platform="Moj"
+                          url={profileData.moj}
+                          icon={<BsEmojiGrin />}
+                          color="#80191A"
+                        /></> : <></>
+                    }
+
+                    {
+                      profileData.josh ? <>
+                        <SocialLink1
+                          platform="Josh"
+                          url={profileData.josh}
+                          icon={<MdElectricBolt />}
+                          color="#FF0099"
+                        /></> : <></>
+                    }
+
+                    {
+                      profileData.pinterest ? <>
+                        <SocialLink1
+                          platform="Pinterest"
+                          url={profileData.pinterest}
+                          icon={<FaPinterestSquare />}
+                          color="#80191A"
+                        /></> : <></>
+                    }
+
+
+                    {
+                      profileData.reddit ? <>
+                        <SocialLink1
+                          platform="Reddit"
+                          url={profileData.reddit}
+                          icon={<FaReddit />}
+                          color="#FF4500"
+                        /></> : <></>
+                    }
+
+                    {
+                      profileData.sharechat ? <>
+                        <SocialLink1
+                          platform="Share Char"
+                          url={profileData.sharechat}
+                          icon={<SiSharex />}
+                          color="#9661BA"
+                        /></> : <></>
+                    }
+
+                  </div>
+                </div>
+
                 {/* About Section */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold mb-3 text-gray-300">About:</h3>
@@ -775,14 +790,14 @@ const PublicProfilePage = () => {
                     </p>
                   </div>
                 </div>
-                
+
                 {/* Portfolio */}
                 {/* <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold mb-3 text-gray-300">Portfolio:</h3>
                   <PortfolioProfile activationCode={slug} />
                 </div> */}
 
-                
+
 
                 {/* Services */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
@@ -791,7 +806,7 @@ const PublicProfilePage = () => {
                 </div>
 
 
-                   {/* Product */}
+                {/* Product */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   <h3 className="text-2xl font-bold mb-3 text-gray-300">Products:</h3>
                   <ProductsProfile activationCode={slug} />
@@ -804,7 +819,7 @@ const PublicProfilePage = () => {
                   <GalleryProfile activationCode={slug} />
                 </div>
 
-{/* Resume */}
+                {/* Resume */}
                 <div className="">
                   {/* <h3 className="text-2xl font-bold mb-3 text-gray-300 flex items-center gap-2">
                     <CiLocationOn size={28} /> Resume
@@ -824,7 +839,7 @@ const PublicProfilePage = () => {
                 </div>
 
 
-{/* Payment Details */}
+                {/* Payment Details */}
                 <div className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 to-transparent border border-white/10 rounded-2xl">
                   {/* <h3 className="text-2xl font-bold mb-3 text-gray-300">Gallery:</h3> */}
                   <PaymentDetailsProfile activationCode={slug} />
@@ -834,7 +849,7 @@ const PublicProfilePage = () => {
 
 
 
-                
+
               </div>
             </div>
           </motion.div>
@@ -842,8 +857,8 @@ const PublicProfilePage = () => {
           <ProfileFooter />
         </div>
 
-        
-        </div>
+
+      </div>
     </>
   );
 };

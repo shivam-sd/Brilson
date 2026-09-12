@@ -79,7 +79,7 @@ const SmartCardBanner = () => {
           <div className="relative">
             <div className="relative">
               <img
-                src="banner.png"
+                src="banner.webp"
                 alt="Brilson smart business card and mobile app mockup"
                 className="relative z-10 w-full max-w-[320px] object-contain drop-shadow-2xl sm:max-w-[380px] md:max-w-[420px] lg:max-w-[480px] xl:max-w-[520px] 2xl:max-w-[560px]"
               />

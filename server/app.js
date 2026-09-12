@@ -66,40 +66,40 @@ const ShippingAddressRouter = require("./routes/ShippingAddress.routes");
 
 // Runtime config
 const { loadConfig, getConfig } = require("./config/runTimeConfigLoader");
+const { globalRateLimiter } = require("./middleware/rateLimiter");
 
 (async function bootstrap() {
   await DBConnection();
 
   await loadConfig();
-//   console.log("Runtime Config Loaded:", getConfig());
+  //   console.log("Runtime Config Loaded:", getConfig());
 
-// Cloudinary runtime setup
-if (getConfig().cloudinary) {
-  cloudinary.config({
-    cloud_name: getConfig().cloudinary.cloudName,
-    api_key: getConfig().cloudinary.apiKey,
-    api_secret: getConfig().cloudinary.apiSecret,
-  });
-}
-
-
-app.use("/public", SharePublicProfilerouter);
+  // Cloudinary runtime setup
+  if (getConfig().cloudinary) {
+    cloudinary.config({
+      cloud_name: getConfig().cloudinary.cloudName,
+      api_key: getConfig().cloudinary.apiKey,
+      api_secret: getConfig().cloudinary.apiSecret,
+    });
+  }
 
 
+  app.use("/public", SharePublicProfilerouter);
 
-app.use((req, res, next) => {
-  res.setHeader("Cache-Control",
-    "no-store, no-cache, must-revalidate, proxy-revalidate");
+
+  app.use((req, res, next) => {
+    res.setHeader("Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate");
 
     res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
+    res.setHeader("Expires", "0");
 
-  next();
+    next();
 
-})
+  })
 
 
-app.use(express.static(path.join(__dirname, "dist")));
+  app.use(express.static(path.join(__dirname, "dist")));
 
   // Middlewares
   app.use(express.json());
@@ -116,19 +116,20 @@ app.use(express.static(path.join(__dirname, "dist")));
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     })
   );
+  app.use(globalRateLimiter)
 
   app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use(fileUpload({
-  useTempFiles: true,
-  tempFileDir: '/tmp/',
-  preserveExtension: true
-}));
+  app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/',
+    preserveExtension: true
+  }));
 
   // Routes
   app.use("/api/users", UserRouter); // ✅
   app.use("/api/auth", authRoutesResetPassword);  // ✅
-  app.use("/api/auth", GoogleAuthRouter);  
+  app.use("/api/auth", GoogleAuthRouter);
   app.use("/api/admin", AdminRouter); //✅
   app.use("/api/cart", CartRouter); // ✅
   app.use("/api", ReferralRouter); // ✅
@@ -146,7 +147,7 @@ app.use(fileUpload({
   app.use("/api/admin", HomepageContentRouter); // ✅
   app.use("/api/admin", PowerfulFeaturesRouter);  // ✅
   app.use("/api/admin", HowToUseRouter);  // ✅
-  app.use("/api/admin",  TestimonialsRouter); // ✅
+  app.use("/api/admin", TestimonialsRouter); // ✅
   app.use("/api/admin", TransformNetwork);  // ✅
   app.use("/api/admin", FooterRouter);  // ✅
   app.use("/api/profile-products", ProfileProductRouter);  // ✅
@@ -158,19 +159,19 @@ app.use(fileUpload({
   app.use("/api/profile/location", LocationReviewRouter);  // ✅
   app.use("/api/profile/resume", ProfileResume);  // ✅
   app.use("/api/profile-cover", profileCoverPhotoRoute); // ✅
-  app.use("/api", ServiceLayoutRouter);   
-app.use("/", SharePublicProfilerouter); // ✅
-app.use("/api/about", AboutPageRouter); // ✅
-app.use("/api/privacy-policy", PrivacyPolicyRouter); // ✅
-app.use("/api/terms-conditions", TermsConditionsRouter); // ✅
-app.use("/api/admin", AdminDashboardRouter); // ✅
-app.use("/api/admin", RefundpolicyRouter); // ✅
-app.use("/api", BulkCardDownloadRouter); 
-app.use("/api", BulkParkingTagDownloadRouter);
-app.use("/api", bulkVisitingcardDownlaod);
-app.use("/api", bulkGoogleReviewDownload);
-app.use("/api", InvoiceAddressRouter); // ✅
-app.use("/api", ShippingAddressRouter);
+  app.use("/api", ServiceLayoutRouter);
+  app.use("/", SharePublicProfilerouter); // ✅
+  app.use("/api/about", AboutPageRouter); // ✅
+  app.use("/api/privacy-policy", PrivacyPolicyRouter); // ✅
+  app.use("/api/terms-conditions", TermsConditionsRouter); // ✅
+  app.use("/api/admin", AdminDashboardRouter); // ✅
+  app.use("/api/admin", RefundpolicyRouter); // ✅
+  app.use("/api", BulkCardDownloadRouter);
+  app.use("/api", BulkParkingTagDownloadRouter);
+  app.use("/api", bulkVisitingcardDownlaod);
+  app.use("/api", bulkGoogleReviewDownload);
+  app.use("/api", InvoiceAddressRouter); // ✅
+  app.use("/api", ShippingAddressRouter);
 
 
 
