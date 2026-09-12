@@ -15,9 +15,9 @@ const Orders = () => {
   }, []);
 
   const [downloadingId, setDownloadingId] = useState(null);
-const { data:orders, isLoading, isError } = useGetMyOrders()
-  console.log("orders", orders)
-  
+  const { data: orders, isLoading, isError, error } = useGetMyOrders()
+  console.log("error in my orders----", error)
+
   const downloadInvoice = async (orderId) => {
     try {
       setDownloadingId(orderId);
