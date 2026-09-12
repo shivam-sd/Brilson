@@ -71,15 +71,15 @@ const ProfilePage = () => {
   const profile = data?.profile;
   const showEditButton = data?.card?._id;
   const id = data?.card?.slug;
-  useEffect(() => {
-    if (isLogoError) {
-      toast.error(logoError?.response?.data?.message || "Failed to load logo");
-    }
-    if(isProfileError) {
-      toast.error(profileError?.response?.data?.message || "Failed to load profile");
-    }
+  // useEffect(() => {
+  //   if (isLogoError) {
+  //     toast.error(logoError?.response?.data?.message || "Failed to load logo");
+  //   }
+  //   if(isProfileError) {
+  //     toast.error(profileError?.response?.data?.message || "Failed to load profile");
+  //   }
 
-  }, [isLogoError, logoError,isProfileError, profileError]);
+  // }, [isLogoError, logoError,isProfileError, profileError]);
 
 
   const handleWhatsApp = () => {
