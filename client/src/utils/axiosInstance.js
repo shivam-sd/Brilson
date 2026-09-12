@@ -33,6 +33,10 @@ axiosInstance.interceptors.response.use(
     (response) => response,
 
     (error) => {
+        if (error?.response?.status === 429) { //to many requests
+            toast.warn(error?.response?.data?.message || error?.message)
+        }
+
         if (error.response?.status === 401 && store.getState().auth.isAdminAuthenticated) {
             store.dispatch(logoutAction());
             toast.error("Session expired. Please log in again.");
