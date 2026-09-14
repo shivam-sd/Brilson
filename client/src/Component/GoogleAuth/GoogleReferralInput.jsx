@@ -29,7 +29,7 @@ const GoogleReferralInput = ({ userId, onSkip, onSuccess }) => {
         `${import.meta.env.VITE_BASE_URL}/api/auth/google/complete-referral`,
         {
           userId: userId,
-          referralCode: referralCode.trim().toUpperCase()
+          referralCode: referralCode
         }
       );
 
@@ -116,11 +116,11 @@ const GoogleReferralInput = ({ userId, onSkip, onSuccess }) => {
               type="text"
               value={referralCode}
               onChange={(e) => {
-                setReferralCode(e.target.value.toUpperCase());
+                setReferralCode(e.target.value);
                 setError('');
               }}
               placeholder="Enter referral code (e.g., BRILSON123)"
-              className="w-full bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus:outline-none focus:border-cyan-500 text-gray-200 placeholder-gray-500 uppercase"
+              className="w-full bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus:outline-none focus:border-cyan-500 text-gray-200 placeholder-gray-500 "
               disabled={loading}
               autoFocus
             />
