@@ -536,6 +536,7 @@ const resendGoogleOTP = async (req, res) => {
 
     try {
       await sendWhatsAppOTP(user.phone, otp);
+      console.log("otp=---------",otp)
     } catch (whatsappError) {
       console.error("WhatsApp send error:", whatsappError);
     }
