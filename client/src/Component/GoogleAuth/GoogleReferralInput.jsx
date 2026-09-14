@@ -120,7 +120,7 @@ const GoogleReferralInput = ({ userId, onSkip, onSuccess }) => {
                 setError('');
               }}
               placeholder="Enter referral code (e.g., BRILSON123)"
-              className="w-full bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus:outline-none focus:border-cyan-500 text-gray-200 placeholder-gray-500 "
+              className="w-full bg-[#1a1fh27] rounded-xl px-4 py-3 border border-white/10 focus:outline-none focus:border-cyan-500 text-gray-200 placeholder-gray-500 "
               disabled={loading}
               autoFocus
             />
