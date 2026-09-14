@@ -146,7 +146,7 @@ const ProductCardPreference = () => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 sm:space-y-6">
 
               <ProductImageCarousel
-                images={product.images}
+                images={[product.coverImg, ...(product.images) || []]}
                 activeImage={activeImage || product.images?.[0]}
                 setActiveImage={setActiveImage}
                 discount={discount}

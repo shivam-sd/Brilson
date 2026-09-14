@@ -40,6 +40,10 @@ const ProductSchema = new mongoose.Schema(
       type: [String],
       required: true,
     },
+    coverImg: {
+      type: String,
+      required: true
+    },
 
     //  SINGLE PRICE SYSTEM
     price: {
