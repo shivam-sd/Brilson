@@ -238,8 +238,8 @@ function generateParkingTagHTML(card, colors) {
       border-radius: 0 0 8px 0;
     }
     .qr-image {
-      width: 520px;
-      height:520px;
+      width: 480px;
+      height:480px;
       display: block;
       image-rendering: auto;
       position: relative;
@@ -272,12 +272,9 @@ function generateParkingTagHTML(card, colors) {
       transition: all 0.3s ease;
       flex: 1;
     }
-    .action-item:hover {
-      transform: translateY(-2px);
-    }
     .action-icon-wrapper {
-      width: 52px;
-      height: 52px;
+      width: 60px;
+      height: 60px;
       border: 1.5px solid #1a1a1a;
       border-radius: 50%;
       display: flex;
@@ -288,13 +285,13 @@ function generateParkingTagHTML(card, colors) {
       position: relative;
     }
     .action-icon {
-      width: 26px;
-      height: 26px;
+      width: 32px;
+      height: 32px;
       color: #1a1a1a;
       transition: all 0.3s ease;
     }
     .action-label {
-      font-size: 11px;
+      font-size: 15px;
       font-weight: 800;
       color: #1a1a1a;
       letter-spacing: 1.5px;
@@ -349,7 +346,7 @@ function generateParkingTagHTML(card, colors) {
       align-items: center;
       gap: 8px;
       opacity: 0.6;
-      font-size: 19px;
+      font-size: 23px;
       font-weight: 700;
       letter-spacing: 3px;
       color: #1a1a1a;
@@ -362,7 +359,7 @@ function generateParkingTagHTML(card, colors) {
       opacity: 0.4;
     }
     .activation-code {
-      font-size: 18px;
+      font-size: 21px;
       font-weight: 700;
       color: #1a1a1a;
       letter-spacing: 3px;
@@ -397,23 +394,23 @@ function generateParkingTagHTML(card, colors) {
     <div class="tag-container">
 
       <!-- TOP HEADER: Brand + Car Icon -->
-      <div class="header-section">
-        <div class="brand-logo">
-          <div class="brand-icon">
-            <svg viewBox="0 0 65 65" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 44h36M12 44a5 5 0 0 1-5-5v-10l6-12A5 5 0 0 1 18 12h24a5 5 0 0 1 5 5l6 12v10a5 5 0 0 1-5 5M12 44a5 5 0 1 0 10 0M48 44a5 5 0 1 0-10 0"/>
-              <circle cx="17" cy="38" r="4" fill="currentColor" fill-opacity="0.2"/>
-              <circle cx="43" cy="38" r="4" fill="currentColor" fill-opacity="0.2"/>
-              <path d="M17 24h26" stroke-width="4"/>
-              <rect x="19" y="14" width="22" height="10" rx="3" fill="currentColor" fill-opacity="0.1"/>
-              <path d="M24 14l-6 8h28l-6-8H24z" fill="currentColor" fill-opacity="0.05"/>
-              <circle cx="9" cy="32" r="3" fill="currentColor" fill-opacity="0.15"/>
-              <circle cx="51" cy="32" r="3" fill="currentColor" fill-opacity="0.15"/>
-            </svg>
-          </div>
-          <h1 class="brand-name">PARKING TAG</h1>
-        </div>
-      </div>
+      // <div class="header-section">
+      //   <div class="brand-logo">
+      //     <div class="brand-icon">
+      //       <svg viewBox="0 0 65 65" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      //         <path d="M12 44h36M12 44a5 5 0 0 1-5-5v-10l6-12A5 5 0 0 1 18 12h24a5 5 0 0 1 5 5l6 12v10a5 5 0 0 1-5 5M12 44a5 5 0 1 0 10 0M48 44a5 5 0 1 0-10 0"/>
+      //         <circle cx="17" cy="38" r="4" fill="currentColor" fill-opacity="0.2"/>
+      //         <circle cx="43" cy="38" r="4" fill="currentColor" fill-opacity="0.2"/>
+      //         <path d="M17 24h26" stroke-width="4"/>
+      //         <rect x="19" y="14" width="22" height="10" rx="3" fill="currentColor" fill-opacity="0.1"/>
+      //         <path d="M24 14l-6 8h28l-6-8H24z" fill="currentColor" fill-opacity="0.05"/>
+      //         <circle cx="9" cy="32" r="3" fill="currentColor" fill-opacity="0.15"/>
+      //         <circle cx="51" cy="32" r="3" fill="currentColor" fill-opacity="0.15"/>
+      //       </svg>
+      //     </div>
+      //     <h1 class="brand-name">PARKING TAG</h1>
+      //   </div>
+      // </div>
 
       <!-- TAGLINE: Scan This Tag -->
       <div class="tagline-section">
@@ -422,15 +419,15 @@ function generateParkingTagHTML(card, colors) {
       </div>
 
       <!-- QR CODE: Main Focus -->
-      <div class="qr-section">
-        <div class="qr-container">
-          <div class="corner-accent corner-tl"></div>
-          <div class="corner-accent corner-tr"></div>
-          <div class="corner-accent corner-bl"></div>
-          <div class="corner-accent corner-br"></div>
-          <img class="qr-image" src="data:image/png;base64,{{QR_DATA}}" alt="QR Code" />
-        </div>
-      </div>
+      // <div class="qr-section">
+      //   <div class="qr-container">
+      //     <div class="corner-accent corner-tl"></div>
+      //     <div class="corner-accent corner-tr"></div>
+      //     <div class="corner-accent corner-bl"></div>
+      //     <div class="corner-accent corner-br"></div>
+      //     <img class="qr-image" src="data:image/png;base64,{{QR_DATA}}" alt="QR Code" />
+      //   </div>
+      // </div>
 
 
       <div class="footer-section">
