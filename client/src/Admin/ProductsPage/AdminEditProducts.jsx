@@ -21,14 +21,17 @@ const AdminEditProduct = () => {
   const [originalImage, setOriginalImage] = useState(null);
   const [tempImageUrl, setTempImageUrl] = useState(null);
 
+  // Cover image state
+  const [coverImgUrl, setCoverImgUrl] = useState(""); // existing cover image url from DB
+  const [coverImgFile, setCoverImgFile] = useState(null); // new file selected
+  const [coverImgPreview, setCoverImgPreview] = useState(""); // blob preview for new file
+
   // Multiple images state
   const [imageFiles, setImageFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
   const [removedImages, setRemovedImages] = useState([]);
 
-  // Track cropped existing images (original URL -> new File mapping)
-  // const [croppedExistingImagesMap, setCroppedExistingImagesMap] = useState({});
   // Track cropped existing images (original URL -> { file, previewUrl } mapping)
   const [croppedExistingImagesMap, setCroppedExistingImagesMap] = useState({});
 
@@ -59,6 +62,44 @@ const AdminEditProduct = () => {
     features: [""],
     metaTags: [""]
   });
+
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif', 'image/avif'];
+  const maxSize = 5 * 1024 * 1024; // 5MB
+
+  // Handle cover image selection
+  const handleCoverImgChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error(`Invalid format: ${file.name}`);
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast.error(`${file.name} exceeds 5MB limit`);
+      e.target.value = "";
+      return;
+    }
+
+    if (coverImgPreview && coverImgPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(coverImgPreview);
+    }
+
+    setCoverImgFile(file);
+    setCoverImgPreview(URL.createObjectURL(file));
+    e.target.value = "";
+  };
+
+  // Remove newly selected cover image (revert to existing one)
+  const removeNewCoverImg = () => {
+    if (coverImgPreview && coverImgPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(coverImgPreview);
+    }
+    setCoverImgFile(null);
+    setCoverImgPreview("");
+  };
 
   // Open cropper for image
   const openCropper = (index, imageUrl, type) => {
@@ -190,9 +231,6 @@ const AdminEditProduct = () => {
     if (!files.length) return;
 
     // Validate file types and sizes
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif', 'image/avif'];
-    const maxSize = 5 * 1024 * 1024; // 5MB
-
     const validFiles = [];
     const invalidFiles = [];
 
@@ -242,7 +280,6 @@ const AdminEditProduct = () => {
     setPreviewImages(newPreviewImages);
   };
 
-  // Remove existing image (mark for deletion)
   // Remove existing image (mark for deletion)
   const removeExistingImage = (index) => {
     const removedImage = existingImages[index];
@@ -337,6 +374,11 @@ const AdminEditProduct = () => {
         features: product.features?.length > 0 ? product.features : [""],
         metaTags: product.metaTags?.length > 0 ? product.metaTags : [""]
       });
+
+      // Set existing cover image
+      if (product.coverImg) {
+        setCoverImgUrl(product.coverImg);
+      }
 
       // Set existing images - store original URLs
       if (product.images && product.images.length > 0) {
@@ -453,6 +495,11 @@ const AdminEditProduct = () => {
       const filteredMetaTags = productData.metaTags.filter(m => m.trim() !== "");
       formData.append('metaTags', JSON.stringify(filteredMetaTags));
 
+      // Cover image - only append if a new file was selected
+      if (coverImgFile) {
+        formData.append('coverImg', coverImgFile);
+      }
+
       // Track which original images are being kept
       const keptOriginalImages = [];
       const croppedImagesToUpload = [];
@@ -531,6 +578,9 @@ const AdminEditProduct = () => {
           URL.revokeObjectURL(url);
         }
       });
+      if (coverImgPreview && coverImgPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(coverImgPreview);
+      }
     };
   }, []);
 
@@ -895,6 +945,68 @@ const AdminEditProduct = () => {
                     )}
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Cover Image Section */}
+            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-200">
+                  Cover Image
+                </h3>
+                <span className="text-sm text-gray-400">Max 5MB</span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-start gap-4">
+                <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-gray-600 bg-gray-900 flex-shrink-0">
+                  {(coverImgPreview || coverImgUrl) ? (
+                    <img
+                      src={coverImgPreview || coverImgUrl}
+                      alt="Cover"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://via.placeholder.com/300x300?text=Image+Error";
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                      <FiImage size={28} />
+                    </div>
+                  )}
+
+                  {coverImgPreview && (
+                    <span className="absolute top-1 left-1 bg-green-600/90 text-white text-[10px] px-2 py-0.5 rounded-full">
+                      NEW
+                    </span>
+                  )}
+
+                  {coverImgPreview && (
+                    <button
+                      type="button"
+                      onClick={removeNewCoverImg}
+                      className="absolute top-1 right-1 p-1 bg-red-500/80 hover:bg-red-600 rounded-full transition"
+                      title="Remove new cover image"
+                    >
+                      <FiX size={12} />
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex-1">
+                  <label className="block text-sm text-gray-400 mb-2">
+                    Upload New Cover Image
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp,image/svg+xml,image/gif,image/avif"
+                    onChange={handleCoverImgChange}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    This is the main image shown on the product card and listings.
+                  </p>
+                </div>
               </div>
             </div>
 
