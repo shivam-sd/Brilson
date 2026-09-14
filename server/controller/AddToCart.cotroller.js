@@ -33,7 +33,7 @@ const addToCart = async (req, res) => {
       cartItem = await CartModel.create({
         userId,
         productId,
-        image: product.images[0],
+        image: product.coverImg || product.images[0],
         title: product.title,
         price: product.price,
         quantity: quantity || 1,
@@ -157,6 +157,130 @@ const clearCart = async (req, res) => {
     });
   }
 };
+const mergeGuestCart = async (req, res) => {
+  try {
+    const userId = req.user;
+    const { items } = req.body;
+
+    if (!Array.isArray(items)) {
+      return res.status(400).json({
+        success: false,
+        error: "Cart items must be an array",
+      });
+    }
+
+    // Guest cart empty 
+    if (items.length === 0) {
+      const cartItems = await CartModel.find({
+        userId,
+      }).populate("productId");
+
+      return res.status(200).json({
+        success: true,
+        message: "No guest items to merge",
+        cartItems,
+      });
+    }
+
+    for (const item of items) {
+
+      const {
+        productId,
+        quantity
+      } = item;
+
+
+      // Invalid product ID
+      if (!productId) {
+        continue;
+      }
+
+
+      const guestQuantity =
+        Number(quantity) || 1;
+
+
+      if (guestQuantity < 1) {
+        continue;
+      }
+
+
+      const product =
+        await ProductModel.findById(productId);
+
+
+      if (!product) {
+        console.log(
+          "Skipping invalid product:",
+          productId
+        );
+
+        continue;
+      }
+
+
+      let cartItem =
+        await CartModel.findOne({
+          userId,
+          productId,
+        });
+
+
+      if (cartItem) {
+
+        cartItem.quantity += guestQuantity;
+
+        await cartItem.save();
+
+      }
+
+      else {
+
+        await CartModel.create({
+          userId,
+          productId,
+
+          image:
+            product.coverImg ||
+            product.images?.[0],
+
+          title:
+            product.title,
+
+          price:
+            product.price,
+
+          quantity:
+            guestQuantity,
+        });
+      }
+    }
+    const cartItems =
+      await CartModel.find({
+        userId,
+      }).populate("productId");
+
+
+    return res.status(200).json({
+      success: true,
+      message: "Guest cart merged successfully",
+      cartItems,
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Merge cart error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      error: "Failed to merge guest cart",
+    });
+  }
+};
 
 
 
@@ -167,4 +291,5 @@ module.exports = {
     updateCartQty,
     removeFromCart,
     clearCart,
+    mergeGuestCart
   }

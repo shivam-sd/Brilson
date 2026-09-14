@@ -21,6 +21,10 @@ const AdminAddProduct = () => {
   // Multiple images state
   const [imageFiles, setImageFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
+
+  // Cover image state
+  const [coverImgFile, setCoverImgFile] = useState(null);
+  const [coverImgPreview, setCoverImgPreview] = useState("");
   
   // Product state - WITHOUT variants
   const [productData, setProductData] = useState({
@@ -45,6 +49,9 @@ const AdminAddProduct = () => {
     features: [""],
     metaTags: [""]
   });
+
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif', 'image/avif'];
+  const maxSize = 5 * 1024 * 1024; // 5MB
 
   // fetch all category
   useEffect(() => {
@@ -75,6 +82,41 @@ const AdminAddProduct = () => {
     };
     fetchBadges();
   }, []);
+
+  // Handle cover image selection
+  const handleCoverImgChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error(`Invalid format: ${file.name}`);
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast.error(`${file.name} exceeds 5MB limit`);
+      e.target.value = "";
+      return;
+    }
+
+    if (coverImgPreview && coverImgPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(coverImgPreview);
+    }
+
+    setCoverImgFile(file);
+    setCoverImgPreview(URL.createObjectURL(file));
+    e.target.value = "";
+  };
+
+  // Remove selected cover image
+  const removeCoverImg = () => {
+    if (coverImgPreview && coverImgPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(coverImgPreview);
+    }
+    setCoverImgFile(null);
+    setCoverImgPreview("");
+  };
 
   // Open cropper for image
   const openCropper = (index, imageUrl) => {
@@ -153,10 +195,6 @@ const AdminAddProduct = () => {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
-    
-    // Validate file types and sizes
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif', 'image/avif'];
-    const maxSize = 5 * 1024 * 1024; // 5MB
     
     const validFiles = [];
     const invalidFiles = [];
@@ -324,6 +362,11 @@ const AdminAddProduct = () => {
       toast.error("At least one product image is required");
       return;
     }
+
+    if (!coverImgFile) {
+      toast.error("Cover image is required");
+      return;
+    }
     
     if (!productData.title.trim()) {
       toast.error("Product title is required");
@@ -366,6 +409,9 @@ const AdminAddProduct = () => {
     formData.append("discountEnabled", productData.discountEnabled);
     formData.append("discountType", productData.discountType);
     formData.append("discountValue", productData.discountValue || "0");
+
+    // Cover image
+    formData.append("coverImg", coverImgFile);
     
     // Append all images - Use 'images' field name to match backend expectation
     imageFiles.forEach((file, index) => {
@@ -409,6 +455,9 @@ const AdminAddProduct = () => {
           URL.revokeObjectURL(url);
         }
       });
+      if (coverImgPreview && coverImgPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(coverImgPreview);
+      }
     };
   }, []);
   
@@ -761,6 +810,62 @@ const AdminAddProduct = () => {
                     )}
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Cover Image Section */}
+            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-200">
+                  Cover Image *
+                </h3>
+                <span className="text-sm text-gray-400">Max 5MB</span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-start gap-4">
+                <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-gray-600 bg-gray-900 flex-shrink-0">
+                  {coverImgPreview ? (
+                    <img
+                      src={coverImgPreview}
+                      alt="Cover"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://via.placeholder.com/300x300?text=Image+Error";
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                      <FiImage size={28} />
+                    </div>
+                  )}
+
+                  {coverImgPreview && (
+                    <button
+                      type="button"
+                      onClick={removeCoverImg}
+                      className="absolute top-1 right-1 p-1 bg-red-500/80 hover:bg-red-600 rounded-full transition"
+                      title="Remove cover image"
+                    >
+                      <FiX size={12} />
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex-1">
+                  <label className="block text-sm text-gray-400 mb-2">
+                    Upload Cover Image *
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp,image/svg+xml,image/gif,image/avif"
+                    onChange={handleCoverImgChange}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    This is the main image shown on the product card and listings.
+                  </p>
+                </div>
               </div>
             </div>
             

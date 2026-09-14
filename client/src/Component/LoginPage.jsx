@@ -5,14 +5,14 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import { FiEyeOff, FiEye } from "react-icons/fi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "../store/slices/authSlice";
 
 import GoogleLoginAuth from "./GoogleAuth/GoogleLoginAuth";
 import GooglePhoneInput from "./GoogleAuth/GooglePhoneInput";
 import GoogleOTPInput from "./GoogleAuth/GoogleOTPInput";
 import GoogleReferralInput from "./GoogleAuth/GoogleReferralInput";
-import { fetchCart } from "../store/slices/cartSlice";
+import { fetchCart, mergeGuestCart, selectCartItems, clearCart } from "../store/slices/cartSlice";
 import { useLogin } from "../api/auth-query";
 
 const LoginPage = () => {
@@ -29,8 +29,35 @@ const LoginPage = () => {
 
   const [googleStep, setGoogleStep] = useState(null);
   const [googleUserData, setGoogleUserData] = useState(null);
+  const guestCart  = useSelector(selectCartItems);
 
   const loginMutation = useLogin();
+
+  const handleLoginCartMerge = async () => {
+    try {
+      if (!guestCart || guestCart.length === 0) {
+        await dispatch(fetchCart()).unwrap();
+        return;
+      }
+
+      await dispatch(
+        mergeGuestCart(guestCart)
+      ).unwrap();
+
+      dispatch(clearCart());
+
+      await dispatch(fetchCart()).unwrap();
+
+    } catch (error) {
+      console.error(
+        "Cart merge failed:",
+        error
+      );
+      toast.error(
+        "Login successful, but cart sync failed. Please try again."
+      );
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -62,6 +89,7 @@ const LoginPage = () => {
 
       if (res?.token) {
         dispatch(setCredentials({ token: res.token, user: res.user }));
+        await handleLoginCartMerge();
       }
 
       toast.success("Login successful");
@@ -70,6 +98,7 @@ const LoginPage = () => {
       if (err.response?.data?.error === "This account is linked with Google. Please sign in with Google.") {
         toast.error("This account uses Google Sign-In. Please click the Google button below.");
       } else {
+        console.log("errorrrrr------------", err)
         toast.error(
           err.response?.data?.error ||
           err.response?.data?.message ||
@@ -78,15 +107,42 @@ const LoginPage = () => {
       }
     } finally {
       setLoading(false);
-      dispatch(fetchCart());
     }
   };
 
 
 
-  const handleGoogleSuccess = (data) => {
-    toast.success("Login successful!");
-    navigate("/");
+  const handleGoogleSuccess = async (data) => {
+    try {
+
+      if (data?.token) {
+        dispatch(
+          setCredentials({
+            token: data.token,
+            user: data.user,
+          })
+        );
+      }
+
+      await handleLoginCartMerge();
+
+      toast.success("Login successful!");
+
+      navigate("/");
+
+    } catch (error) {
+
+      console.error(
+        "Google login cart sync error:",
+        error
+      );
+
+      toast.error(
+        "Login successful, but cart sync failed."
+      );
+
+      navigate("/");
+    }
   };
 
   const handleGoogleError = (error) => {
@@ -107,10 +163,42 @@ const LoginPage = () => {
   };
 
   // Handle OTP success 
-  const handleGoogleOTPSuccess = (data) => {
-    console.log("Google OTP success (direct login):", data);
-    toast.success("Login successful!");
-    navigate("/");
+  const handleGoogleOTPSuccess = async (data) => {
+    try {
+
+      console.log(
+        "Google OTP success:",
+        data
+      );
+
+      if (data?.token) {
+        dispatch(
+          setCredentials({
+            token: data.token,
+            user: data.user,
+          })
+        );
+      }
+
+      await handleLoginCartMerge();
+
+      toast.success("Login successful!");
+
+      navigate("/");
+
+    } catch (error) {
+
+      console.error(
+        "Google OTP cart sync error:",
+        error
+      );
+
+      toast.error(
+        "Login successful, but cart sync failed."
+      );
+
+      navigate("/");
+    }
   };
 
   //  Handle referral
