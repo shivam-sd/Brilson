@@ -17,6 +17,7 @@ import {
   FiGlobe,
   FiX
 } from "react-icons/fi";
+import { BsBucketFill } from "react-icons/bs";
 import HowItWorks from "./HowitWorks";
 import { useGetProductById } from "../api/product-query";
 import ProductImageCarousel from "../Component/ProductImageCarousel";
@@ -219,18 +220,33 @@ const ProductCardPreference = () => {
                     disabled={addingToCart}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer font-Roboto"
+                    className="
+                    flex-1
+                    h-12 sm:h-14
+                    px-3 sm:px-6
+                    bg-gradient-to-r from-cyan-500 to-blue-600
+                    hover:from-cyan-600 hover:to-blue-700
+                    rounded-xl
+                    font-bold text-white
+                    text-[15px] sm:text-lg
+                    disabled:opacity-50
+                    disabled:cursor-not-allowed
+                    transition-all duration-300
+                    shadow-lg shadow-cyan-500/30
+                    flex items-center justify-center
+                    gap-1.5 sm:gap-2
+                    cursor-pointer font-Roboto
+                    whitespace-nowrap
+                    "
                   >
                     {addingToCart ? (
                       <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         <span>Adding...</span>
                       </>
                     ) : (
                       <>
-                        <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
+                        <BsBucketFill size={18} className="sm:w-5 sm:h-5" />
                         <span>ADD TO CART</span>
                       </>
                     )}
@@ -238,11 +254,24 @@ const ProductCardPreference = () => {
 
                   <Link
                     onClick={handleAddtoCart}
-                    className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg transition-all duration-300 shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 text-center font-Roboto"
+                    className="
+                    h-12 sm:h-14
+                    flex-1
+                    bg-gradient-to-r from-orange-500 to-red-600
+                    hover:from-orange-600 hover:to-red-700
+                    rounded-xl
+                    font-bold text-white
+                    text-[15px] sm:text-lg
+                    transition-all duration-300
+                    shadow-lg shadow-orange-500/30
+                    flex items-center justify-center
+                    gap-1.5 sm:gap-2
+                    text-center font-Roboto
+                    whitespace-nowrap
+                    px-3 sm:px-6
+                    "
                   >
-                    <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 15v6" />
-                    </svg>
+                    <FiShoppingCart size={18} className="sm:w-5 sm:h-5" />
                     <span>BUY NOW</span>
                   </Link>
                 </div>
