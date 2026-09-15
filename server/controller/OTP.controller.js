@@ -16,18 +16,18 @@ const sendOTP = async (req, res) => {
     let user = await UserModel.findOne({ phone });
 
     // OTP only for existing user
-   
-    if(user){
-        return res.status(500).json({message: "User Allready Exist!"});
+
+    if (user && user.isVerified === true) {
+      return res.status(500).json({ message: "User Allready Exist!" });
     }
 
     const otp = generateOTP();
-     const otpExpiry = Date.now() + 5 * 60 * 1000;
+    const otpExpiry = Date.now() + 5 * 60 * 1000;
 
 
-      if (!user) {
+    if (!user) {
       user = await UserModel.create({
-        phone:phone,
+        phone: phone,
       });
     }
 
@@ -37,7 +37,11 @@ const sendOTP = async (req, res) => {
     await user.save();
 
     await sendWhatsAppOTP(phone, otp);
+<<<<<<< Updated upstream
   
+=======
+    console.log("phone-----------------", otp)
+>>>>>>> Stashed changes
 
     res.status(200).json({ message: "OTP sent successfully" });
 
@@ -97,6 +101,6 @@ const verifyOTP = async (req, res) => {
 
 
 module.exports = {
-    sendOTP,
-    verifyOTP
+  sendOTP,
+  verifyOTP
 }
