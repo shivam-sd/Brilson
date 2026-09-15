@@ -105,11 +105,13 @@ function generateParkingTagHTML(card, colors) {
       display: flex;
       flex-direction: column;
       position: relative;
+      padding-top:5px;
+      padding-bottom:5px;
       border: 2px solid rgba(26,26,26,0.1);
       box-shadow: 0 20px 50px -15px rgba(0,0,0,0.25);
     }
 
-    /* ===== TOP HEADER SECTION (Brand + Car Icon) ===== */
+    /* ===== TOP HEADER SECTION  ===== */
     .header-section {
       width: 100%;
       padding: 18px 24px 12px 24px;
@@ -119,25 +121,29 @@ function generateParkingTagHTML(card, colors) {
       justify-content: center;
       position: relative;
       border-bottom: 1px solid rgba(26,26,26,0.15);
-    }
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      }
+      .brand-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
       gap: 14px;
     }
     .brand-icon {
       display: flex;
       align-items: center;
       justify-content: center;
+    border:1px solid black;
+    border-radius:50%;
+    padding:3px;
     }
     .brand-icon svg {
-      width: 52px;
-      height: 52px;
+      width: 60px;
+      height: 60px;
       color: #1a1a1a;
     }
     .brand-name {
-      font-size: 32px;
+      font-size: 78px;
       font-weight: 900;
       letter-spacing: 6px;
       color: #1a1a1a;
@@ -150,7 +156,7 @@ function generateParkingTagHTML(card, colors) {
     /* ===== TAGLINE SECTION ===== */
     .tagline-section {
       width: 100%;
-      padding: 14px 20px;
+      padding: 16px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -159,8 +165,8 @@ function generateParkingTagHTML(card, colors) {
       border-bottom: 1px solid rgba(26,26,26,0.15);
     }
     .tagline-title {
-      font-size: 26px;
-      font-weight: 900;
+      font-size: 42px;
+      font-weight: 600;
       letter-spacing: 8px;
       color: #1a1a1a;
       margin: 0;
@@ -168,17 +174,16 @@ function generateParkingTagHTML(card, colors) {
       line-height: 1.1;
     }
     .tagline-sub {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 20px;
+      font-weight: 500;
       letter-spacing: 3px;
       color: rgba(26,26,26,0.7);
-      margin: 6px 0 0 0;
+      margin: 8px 0 0 0;
       text-transform: uppercase;
     }
 
     /* ===== QR CODE SECTION (Main Focus) ===== */
     .qr-section {
-      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -233,8 +238,8 @@ function generateParkingTagHTML(card, colors) {
       border-radius: 0 0 8px 0;
     }
     .qr-image {
-      width: 320px;
-      height: 320px;
+      width: 480px;
+      height: 480px;
       display: block;
       image-rendering: auto;
       position: relative;
@@ -267,12 +272,10 @@ function generateParkingTagHTML(card, colors) {
       transition: all 0.3s ease;
       flex: 1;
     }
-    .action-item:hover {
-      transform: translateY(-2px);
-    }
+  
     .action-icon-wrapper {
-      width: 52px;
-      height: 52px;
+      width: 56px;
+      height: 56px;
       border: 1.5px solid #1a1a1a;
       border-radius: 50%;
       display: flex;
@@ -283,13 +286,13 @@ function generateParkingTagHTML(card, colors) {
       position: relative;
     }
     .action-icon {
-      width: 26px;
-      height: 26px;
+      width: 30px;
+      height: 30px;
       color: #1a1a1a;
       transition: all 0.3s ease;
     }
     .action-label {
-      font-size: 11px;
+      font-size: 16px;
       font-weight: 800;
       color: #1a1a1a;
       letter-spacing: 1.5px;
@@ -314,14 +317,19 @@ function generateParkingTagHTML(card, colors) {
       align-items: center;
       justify-content: center;
       gap: 8px;
+      border:1px solid black;
+      border-radius:20px;
+      padding:3px 8px;
+      margin-top:18px;
+      margin-bottom:8px;
     }
     .website-icon svg {
-      color: #1a1a1a;
-      width: 16px;
-      height: 16px;
+      color: black;
+      width: 20px;
+      height: 20px;
     }
     .website-text {
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 700;
       color: #1a1a1a;
       letter-spacing: 3px;
@@ -332,15 +340,16 @@ function generateParkingTagHTML(card, colors) {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 6px;
       width: 100%;
+      margin-top:8px;
     }
     .activation-label {
       display: flex;
       align-items: center;
       gap: 8px;
       opacity: 0.6;
-      font-size: 10px;
+      font-size: 22px;
       font-weight: 700;
       letter-spacing: 3px;
       color: #1a1a1a;
@@ -353,26 +362,27 @@ function generateParkingTagHTML(card, colors) {
       opacity: 0.4;
     }
     .activation-code {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 800;
       color: #1a1a1a;
       letter-spacing: 3px;
-      margin: 0;
+      margin-top:3px ;
       font-family: 'Libre Franklin', monospace;
     }
     .secure-badge {
       display: flex;
       align-items: center;
+      justify-content:center;
       gap: 5px;
-      margin-top: 2px;
+      margin-top: 10px;
     }
     .secure-badge svg {
-      color: #1a1a1a;
-      width: 12px;
-      height: 12px;
+      color: black;
+      width: 18px;
+      height: 18px;
     }
     .secure-text {
-      font-size: 9px;
+      font-size: 16px;
       color: #1a1a1a;
       letter-spacing: 1.5px;
       font-weight: 700;
@@ -420,6 +430,26 @@ function generateParkingTagHTML(card, colors) {
         </div>
       </div>
 
+
+      <div class="footer-section">
+        
+
+        <div class="activation-wrapper">
+          <div class="activation-label">
+            <div class="label-line"></div>
+            <span>Activation Code</span>
+            <div class="label-line"></div>
+          </div>
+          <div class="activation-code">${displayCode}</div>
+          
+        </div>
+
+        <div class="website-box">
+          <div class="website-icon">${icons.world}</div>
+          <p class="website-text">www.brilson.in</p>
+        </div>
+      </div>
+
       <!-- QUICK ACTIONS: Owner, Call, Location -->
       <div class="actions-section">
         <div class="quick-action">
@@ -455,25 +485,10 @@ function generateParkingTagHTML(card, colors) {
       </div>
 
       <!-- FOOTER: Website + Activation Code -->
-      <div class="footer-section">
-        <div class="website-box">
-          <div class="website-icon">${icons.world}</div>
-          <p class="website-text">www.brilson.in</p>
-        </div>
-
-        <div class="activation-wrapper">
-          <div class="activation-label">
-            <div class="label-line"></div>
-            <span>Activation Code</span>
-            <div class="label-line"></div>
-          </div>
-          <div class="activation-code">${displayCode}</div>
-          <div class="secure-badge">
+      <div class="secure-badge">
             ${icons.shield}
             <span class="secure-text">SECURE • VERIFIED</span>
           </div>
-        </div>
-      </div>
 
     </div>
   </div>
