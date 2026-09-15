@@ -22,6 +22,8 @@ const createProduct = async (req, res) => {
       metaTags,
       gstEnabled,
       gstRate,
+      shippingEnabled,
+      shippingCharge,
       discountEnabled,
       discountType,
       discountValue
@@ -130,6 +132,10 @@ const createProduct = async (req, res) => {
         enabled: gstEnabled === "true",
         rate: Number(gstRate) || 18
       },
+      shipping: {
+        enabled: shippingEnabled === "true",
+        charge: Number(shippingCharge) || 0
+      },
 
       features: featureList,
       metaTags: metaTagList
@@ -176,6 +182,8 @@ const editProduct = async (req, res) => {
     const {
       gstEnabled,
       gstRate,
+      shippingEnabled,
+      shippingCharge,
       discountEnabled,
       discountType,
       discountValue,
@@ -339,8 +347,12 @@ const editProduct = async (req, res) => {
 
     // GST
     updatedData.gst = {
-      enabled: gstEnabled === "true",
+      enabled: gstEnabled == "true",
       rate: Number(gstRate) || existingProduct.gst?.rate || 18
+    };
+    updatedData.shipping = {
+      enabled: shippingEnabled === "true",
+      charge: Number(shippingCharge) || existingProduct.shipping?.charge || 0
     };
 
     // DISCOUNT

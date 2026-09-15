@@ -54,6 +54,9 @@ const AdminEditProduct = () => {
     gstEnabled: "false",
     gstRate: "18",
 
+    shippingEnabled: "false",
+    shippingCharge: "0",
+
     // Discount Fields
     discountEnabled: "false",
     discountType: "percentage",
@@ -366,6 +369,9 @@ const AdminEditProduct = () => {
         gstEnabled: product.gst?.enabled?.toString() || "false",
         gstRate: product.gst?.rate?.toString() || "18",
 
+        shippingEnabled: product.shipping?.enabled?.toString() || "false",
+        shippingCharge: product.shipping?.charge?.toString() || "0",
+
         // Discount Fields
         discountEnabled: product.discount?.enabled?.toString() || "false",
         discountType: product.discount?.type || "percentage",
@@ -481,6 +487,9 @@ const AdminEditProduct = () => {
       // GST Fields
       formData.append('gstEnabled', productData.gstEnabled);
       formData.append('gstRate', productData.gstRate);
+
+      formData.append("shippingEnabled", productData.shippingEnabled);
+      formData.append("shippingCharge", productData.shippingCharge);
 
       // Discount Fields
       formData.append('discountEnabled', productData.discountEnabled);
@@ -780,6 +789,62 @@ const AdminEditProduct = () => {
                     placeholder="18"
                     min="0"
                     max="100"
+                    step="0.01"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Shipping Section */}
+            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-200">
+                  Shipping Configuration
+                </h3>
+
+                <div className="flex items-center gap-2">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="shippingEnabled"
+                      checked={productData.shippingEnabled === "true"}
+                      onChange={(e) =>
+                        handleInputChange({
+                          target: {
+                            name: "shippingEnabled",
+                            type: "checkbox",
+                            checked: e.target.checked,
+                          },
+                        })
+                      }
+                      className="sr-only peer"
+                    />
+
+                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
+
+                    <span className="ml-3 text-sm font-medium text-gray-300">
+                      {productData.shippingEnabled === "true"
+                        ? "Enabled"
+                        : "Disabled"}
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {productData.shippingEnabled === "true" && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Shipping Charge (₹)
+                  </label>
+
+                  <input
+                    type="number"
+                    name="shippingCharge"
+                    value={productData.shippingCharge}
+                    onChange={handleInputChange}
+                    placeholder="50"
+                    min="0"
                     step="0.01"
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                   />

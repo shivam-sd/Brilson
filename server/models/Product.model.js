@@ -80,6 +80,16 @@ const ProductSchema = new mongoose.Schema(
         default: 18
       }
     },
+    shipping: {
+      enabled: {
+        type: Boolean,
+        default: false
+      },
+      charge: {
+        type: Number,
+        default: 0
+      }
+    },
 
 
     color: {
