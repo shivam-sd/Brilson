@@ -37,7 +37,8 @@ const sendOTP = async (req, res) => {
     await user.save();
 
     await sendWhatsAppOTP(phone, otp);
-  
+
+
 
     res.status(200).json({ message: "OTP sent successfully" });
 
