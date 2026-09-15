@@ -405,7 +405,7 @@ const SignupPage = () => {
               </div>
 
               <div>
-                <label className="text-gray-300 text-sm">Referral Code (optional)</label>
+                <label className="text-gray-300 text-sm">Card Referral Key (optional)</label>
                 <div className="mt-2 flex items-center bg-[#1a1a1a] rounded-xl px-4 py-3 border border-white/10 focus-within:border-orange-500">
                   <VscReferences className="w-5 h-5 text-gray-400" />
                   <input
