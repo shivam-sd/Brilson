@@ -15,18 +15,17 @@ import {
   FiChevronRight,
   FiZap,
   FiGlobe,
-  FiZoomIn,
   FiX
 } from "react-icons/fi";
+import { BsBucketFill } from "react-icons/bs";
 import HowItWorks from "./HowitWorks";
 import { useGetProductById } from "../api/product-query";
+import ProductImageCarousel from "../Component/ProductImageCarousel";
 
 const ProductCardPreference = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
   const [activeImage, setActiveImage] = useState("");
@@ -38,7 +37,6 @@ const ProductCardPreference = () => {
   useEffect(() => {
     if (isError) {
       toast.error(error?.response?.data?.message || "Product not found");
-
       return;
     }
 
@@ -75,7 +73,6 @@ const ProductCardPreference = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#05070a] via-gray-900 to-[#05070a] text-white px-4">
         <div className="text-center max-w-md">
 
-          {/* Error Icon */}
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
             <svg
               className="w-10 h-10 text-red-400"
@@ -92,18 +89,15 @@ const ProductCardPreference = () => {
             </svg>
           </div>
 
-          {/* Heading */}
           <h1 className="text-2xl sm:text-3xl font-semibold mb-3">
             Product Not Found
           </h1>
 
-          {/* Message */}
           <p className="text-gray-400 text-sm sm:text-base mb-8 leading-relaxed">
             {error?.response?.data?.message ||
               "The product you're looking for doesn't exist or may have been removed."}
           </p>
 
-          {/* Button */}
           <Link
             to="/products"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold transition-all duration-300 shadow-lg shadow-cyan-500/20 hover:scale-105"
@@ -141,72 +135,26 @@ const ProductCardPreference = () => {
       <div className="min-h-screen bg-gradient-to-br from-[#05070a] via-gray-900 to-[#05070a] text-white overflow-x-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 mt-4 sm:mt-6 md:mt-10">
 
-          {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-gray-400 mb-6 sm:mb-8 text-sm sm:text-base overflow-x-auto whitespace-nowrap pb-2 lg:mt-0 md:mt-0 mt-6 font-Roboto">
-            <Link to="/" className="hover:text-cyan-400 transition">Home</Link>
+            <Link to="/products" className="hover:text-cyan-400 transition">Home</Link>
             <FiChevronRight className="flex-shrink-0" />
             <span className="text-white truncate ">{product.title}</span>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
 
-            {/* IMAGE SECTION - FIXED */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 sm:space-y-6">
-              <div className="relative bg-gray-900/40 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl">
-                {discount && (
-                  <span className="absolute top-3 sm:top-4 md:top-6 left-3 sm:left-4 md:left-6 bg-red-500 px-2 sm:px-3 md:px-4 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-bold z-10 font-Roboto">
-                    {discount}% OFF
-                  </span>
-                )}
-                
-                {/* ✨  Proper image container with fixed aspect ratio */}
-                <div className="relative aspect-square w-full bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl">
-                  <img
-                    src={activeImage || product.images?.[0]}
-                    alt={product.title}
-                    className="w-full h-full object-contain cursor-pointer transition-transform duration-300"
-                    onClick={() => setShowLightbox(true)}
-                    onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/500x500?text=No+Image";
-                    }}
-                  />
 
-                  {/* Zoom button */}
-                  <button
-                    onClick={() => setShowLightbox(true)}
-                    className="absolute bottom-3 right-3 bg-black/50 p-2 rounded-full hover:bg-black/70 transition-colors cursor-pointer"
-                  >
-                    <FiZoomIn className="text-white" size={18} />
-                  </button>
-                </div>
-              </div>
+              <ProductImageCarousel
+                images={[product.coverImg, ...(product.images) || []]}
+                activeImage={activeImage || product.images?.[0]}
+                setActiveImage={setActiveImage}
+                discount={discount}
+                onZoomClick={() => setShowLightbox(true)}
+                alt={product.title}
+              />
 
-              {/* THUMBNAILS - Scrollable on mobile */}
-              {product.images?.length > 1 && (
-                <div className="flex gap-2 sm:gap-3 justify-center overflow-x-auto pb-2 px-2">
-                  {product.images.map((img, index) => (
-                    <div
-                      key={index}
-                      onClick={() => setActiveImage(img)}
-                      className={`cursor-pointer p-1.5 sm:p-2 rounded-xl border transition-all duration-200 flex-shrink-0 ${activeImage === img
-                        ? "border-cyan-400 bg-cyan-400/10"
-                        : "border-white/10 hover:border-cyan-400"
-                        }`}
-                    >
-                      <img
-                        src={img}
-                        alt={`thumbnail ${index + 1}`}
-                        className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 object-cover rounded-lg"
-                        onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/64x64?text=No+Image";
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
 
-              {/* Trust badges */}
               <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                 {[
                   { Icon: FiTruck, label: "Free Shipping" },
@@ -224,7 +172,6 @@ const ProductCardPreference = () => {
               </div>
             </motion.div>
 
-            {/* DETAILS SECTION */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 sm:space-y-6 md:space-y-8">
 
               <div>
@@ -266,51 +213,71 @@ const ProductCardPreference = () => {
                 </div>
               )}
 
-              {/* ACTION BUTTONS */}
               <div className="fixed bottom-[-20px] left-0 right-0 z-50 lg:relative lg:bottom-auto lg:left-auto lg:right-auto bg-gradient-to-b from-transparent to-black/80 lg:bg-transparent p-4 lg:p-0 pt-8 lg:pt-2">
                 <div className="flex flex-row sm:flex-row gap-3 sm:gap-4 max-w-7xl mx-auto lg:max-w-none">
-                  {/* Add to Cart Button */}
                   <motion.button
                     onClick={handleAddtoCart}
                     disabled={addingToCart}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer font-Roboto"
+                    className="
+                    flex-1
+                    h-12 sm:h-14
+                    px-3 sm:px-6
+                    bg-gradient-to-r from-cyan-500 to-blue-600
+                    hover:from-cyan-600 hover:to-blue-700
+                    rounded-xl
+                    font-bold text-white
+                    text-[15px] sm:text-lg
+                    disabled:opacity-50
+                    disabled:cursor-not-allowed
+                    transition-all duration-300
+                    shadow-lg shadow-cyan-500/30
+                    flex items-center justify-center
+                    gap-1.5 sm:gap-2
+                    cursor-pointer font-Roboto
+                    whitespace-nowrap
+                    "
                   >
                     {addingToCart ? (
                       <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         <span>Adding...</span>
                       </>
                     ) : (
                       <>
-                        <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
+                        <BsBucketFill size={18} className="sm:w-5 sm:h-5" />
                         <span>ADD TO CART</span>
                       </>
                     )}
                   </motion.button>
 
-                  {/* Buy Now Button */}
                   <Link
-                    // to={'/your-items'}
                     onClick={handleAddtoCart}
-                    className="flex-1 py-2 sm:py-4 px-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl font-bold text-white lg:text-base md:text-base text-[12px] sm:text-lg transition-all duration-300 shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 text-center font-Roboto"
+                    className="
+                    h-12 sm:h-14
+                    flex-1
+                    bg-gradient-to-r from-orange-500 to-red-600
+                    hover:from-orange-600 hover:to-red-700
+                    rounded-xl
+                    font-bold text-white
+                    text-[15px] sm:text-lg
+                    transition-all duration-300
+                    shadow-lg shadow-orange-500/30
+                    flex items-center justify-center
+                    gap-1.5 sm:gap-2
+                    text-center font-Roboto
+                    whitespace-nowrap
+                    px-3 sm:px-6
+                    "
                   >
-                    <svg className="lg:w-5 md:w-5 lg:h-5 md:h-5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 15v6" />
-                    </svg>
+                    <FiShoppingCart size={18} className="sm:w-5 sm:h-5" />
                     <span>BUY NOW</span>
                   </Link>
                 </div>
               </div>
 
-              {/* Add spacing at bottom on mobile to prevent content hiding behind fixed buttons */}
               <div className="lg:hidden h-24" />
-
-
-
 
               <div className="flex justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-400 pt-2 font-Roboto">
                 <span className="flex gap-1 items-center"><FiShield size={14} /> Secure Checkout</span>
@@ -322,7 +289,6 @@ const ProductCardPreference = () => {
         </div>
       </div>
 
-      {/* ✨ LIGHTBOX MODAL for fullscreen image view */}
       {showLightbox && (
         <div
           className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"

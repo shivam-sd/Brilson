@@ -65,7 +65,7 @@ const orderCreate = async (req, res) => {
         price: finalPrice, 
         image: product.image,
 
-        // Optional (future invoice use)
+        // Optional
         priceBreakup: {
           basePrice,
           discountApplied: product.discount?.enabled || false,

@@ -22,6 +22,8 @@ const createProduct = async (req, res) => {
       metaTags,
       gstEnabled,
       gstRate,
+      shippingEnabled,
+      shippingCharge,
       discountEnabled,
       discountType,
       discountValue
@@ -39,6 +41,18 @@ const createProduct = async (req, res) => {
       });
     }
 
+    if (!req.files || !req.files.coverImg) {
+      return res.status(400).json({
+        error: "Cover image is required!"
+      });
+    }
+
+    if (Array.isArray(req.files.coverImg)) {
+      return res.status(400).json({
+        error: "Only one cover image is allowed"
+      });
+    }
+
     const allowedFormats = [
       "image/jpeg",
       "image/jpg",
@@ -48,6 +62,23 @@ const createProduct = async (req, res) => {
       "image/gif",
       "image/avif"
     ];
+
+    const coverFile = req.files.coverImg;
+
+    if (!allowedFormats.includes(coverFile.mimetype)) {
+      return res.status(400).json({
+        error: `Invalid cover image format: ${coverFile.mimetype}`
+      });
+    }
+
+    const coverUpload = await cloudinary.uploader.upload(
+      coverFile.tempFilePath,
+      {
+        folder: "brilson/product-covers"
+      }
+    );
+
+    const coverImgUrl = coverUpload.secure_url;
 
     let files = req.files.images;
 
@@ -85,6 +116,7 @@ const createProduct = async (req, res) => {
       badge: badge || "",
       description,
       images: imagesArray,
+      coverImg: coverImgUrl,
       stock: stock || 0,
       price: Number(price),
       oldPrice: oldPrice ? Number(oldPrice) : undefined,
@@ -99,6 +131,10 @@ const createProduct = async (req, res) => {
       gst: {
         enabled: gstEnabled === "true",
         rate: Number(gstRate) || 18
+      },
+      shipping: {
+        enabled: shippingEnabled === "true",
+        charge: Number(shippingCharge) || 0
       },
 
       features: featureList,
@@ -146,6 +182,8 @@ const editProduct = async (req, res) => {
     const {
       gstEnabled,
       gstRate,
+      shippingEnabled,
+      shippingCharge,
       discountEnabled,
       discountType,
       discountValue,
@@ -182,6 +220,19 @@ const editProduct = async (req, res) => {
 
       return upload.secure_url;
     };
+
+    // COVER IMAGE UPDATE
+    let finalCoverImg = existingProduct.coverImg;
+
+    if (req.files && req.files.coverImg) {
+      const coverFile = Array.isArray(req.files.coverImg)
+        ? req.files.coverImg[0]
+        : req.files.coverImg;
+
+      finalCoverImg = await uploadImage(coverFile);
+    }
+
+    updatedData.coverImg = finalCoverImg;
 
     // IMAGE UPDATE LOGIC
     let finalImages = [];
@@ -296,8 +347,12 @@ const editProduct = async (req, res) => {
 
     // GST
     updatedData.gst = {
-      enabled: gstEnabled === "true",
+      enabled: gstEnabled == "true",
       rate: Number(gstRate) || existingProduct.gst?.rate || 18
+    };
+    updatedData.shipping = {
+      enabled: shippingEnabled === "true",
+      charge: Number(shippingCharge) || existingProduct.shipping?.charge || 0
     };
 
     // DISCOUNT

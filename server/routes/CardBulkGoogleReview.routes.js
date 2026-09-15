@@ -176,10 +176,7 @@ function generateGoogleReviewCardHTML(card, colors) {
       z-index: 1;
     }
     
-    @keyframes rotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+
     
     .orb {
       position: absolute;
@@ -205,10 +202,7 @@ function generateGoogleReviewCardHTML(card, colors) {
       animation: float 10s ease-in-out infinite reverse;
     }
     
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) scale(1); }
-      50% { transform: translateY(-25px) scale(1.08); }
-    }
+   
     
     .card-container {
       position: relative;
@@ -240,10 +234,7 @@ function generateGoogleReviewCardHTML(card, colors) {
       animation: shimmer 3s ease-in-out infinite;
     }
     
-    @keyframes shimmer {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
-    }
+   
     
     .premium-badge {
       display: flex;
@@ -265,8 +256,8 @@ function generateGoogleReviewCardHTML(card, colors) {
     }
     
     .premium-badge span {
-      font-size: 10px;
-      font-weight: 800;
+      font-size: 12px;
+      font-weight: 900;
       color: #d4a843;
       letter-spacing: 3px;
       text-transform: uppercase;
@@ -299,7 +290,7 @@ function generateGoogleReviewCardHTML(card, colors) {
     }
     
     .feature-item .label {
-      font-size: 9px;
+      font-size: 10px;
       font-weight: 700;
       color: rgba(255,255,255,0.70);
       letter-spacing: 0.5px;
@@ -347,9 +338,9 @@ function generateGoogleReviewCardHTML(card, colors) {
     }
     
     .inspire-divider .inspire-text {
-      font-size: 10px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.40);
+      font-size: 11px;
+      font-weight: 800;
+      color: white;
       letter-spacing: 5px;
       text-transform: uppercase;
     }
@@ -368,8 +359,8 @@ function generateGoogleReviewCardHTML(card, colors) {
     }
     
     .connection-divider .text {
-      font-size: 9px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 800;
       color: rgba(212, 168, 67, 0.60);
       letter-spacing: 2.5px;
       text-transform: uppercase;
@@ -419,8 +410,8 @@ function generateGoogleReviewCardHTML(card, colors) {
     
     .footer-text {
       font-size: 10px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.30);
+      font-weight: 800;
+      color: white;
       letter-spacing: 4px;
       text-transform: uppercase;
     }
@@ -442,8 +433,8 @@ function generateGoogleReviewCardHTML(card, colors) {
     }
     
     .footer-connect span {
-      font-size: 9px;
-      font-weight: 700;
+      font-size: 10px;
+      font-weight: 800;
       color: #d4a843;
       letter-spacing: 2.5px;
       text-transform: uppercase;

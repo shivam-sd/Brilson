@@ -11,7 +11,7 @@ const QR_CODE_STYLING_BROWSER_BUNDLE =
 
 const PAGE_POOL_SIZE = Number(process.env.CARD_RENDER_CONCURRENCY) || 4;
 
-// ✅ Visiting Card Size - Instagram Reel Style
+// Visiting Card Size 
 const VISITING_CARD_VIEWPORT = { width: 500, height: 800 };
 
 let cachedLogoDataUrl = null;
@@ -42,7 +42,7 @@ async function getLogoDataUrl() {
   }
 }
 
-// ✅ VISITING CARD FIXED COLORS
+//  VISITING CARD
 const VISITING_CARD_COLORS = {
   bgColor: "#0a0a1a",
   textColor: "#ffffff",
@@ -51,7 +51,7 @@ const VISITING_CARD_COLORS = {
   accentColor: "black"
 };
 
-// ✅ SVG Icons for Visiting Card
+//  SVG Icons for Visiting Card
 const getIcons = () => ({
   premium: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>`,
   eco: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>`,
@@ -127,11 +127,7 @@ return `<!DOCTYPE html>
       z-index: 1;
     }
     
-    @keyframes rotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
+ 
     /* ✅ Glowing Orbs */
     .orb {
       position: absolute;
@@ -157,12 +153,9 @@ return `<!DOCTYPE html>
       animation: float 10s ease-in-out infinite reverse;
     }
     
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) scale(1); }
-      50% { transform: translateY(-25px) scale(1.08); }
-    }
+
     
-    /* ✅ Main Card Container - Premium Dark Theme */
+    /* ✅ Main Card Container */
     .card-container {
       position: relative;
       z-index: 2;
@@ -194,11 +187,7 @@ return `<!DOCTYPE html>
       animation: shimmer 3s ease-in-out infinite;
     }
     
-    @keyframes shimmer {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
-    }
-    
+  
     /* ✅ Premium Badge */
     .premium-badge {
       display: flex;
@@ -220,8 +209,8 @@ return `<!DOCTYPE html>
     }
     
     .premium-badge span {
-      font-size: 10px;
-      font-weight: 800;
+      font-size: 12px;
+      font-weight: 900;
       color: #d4a843;
       letter-spacing: 3px;
       text-transform: uppercase;
@@ -255,8 +244,8 @@ return `<!DOCTYPE html>
     }
     
     .feature-item .label {
-      font-size: 9px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 800;
       color: rgba(255,255,255,0.70);
       letter-spacing: 0.5px;
       text-transform: uppercase;
@@ -304,9 +293,9 @@ return `<!DOCTYPE html>
     }
     
     .inspire-divider .inspire-text {
-      font-size: 10px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.40);
+      font-size: 11px;
+      font-weight: 800;
+      color: white;
       letter-spacing: 5px;
       text-transform: uppercase;
     }
@@ -326,8 +315,8 @@ return `<!DOCTYPE html>
     }
     
     .connection-divider .text {
-      font-size: 9px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 800;
       color: rgba(212, 168, 67, 0.60);
       letter-spacing: 2.5px;
       text-transform: uppercase;
@@ -379,8 +368,8 @@ return `<!DOCTYPE html>
     
     .footer-text {
       font-size: 10px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.30);
+      font-weight: 800;
+      color: white;
       letter-spacing: 4px;
       text-transform: uppercase;
     }
@@ -402,8 +391,8 @@ return `<!DOCTYPE html>
     }
     
     .footer-connect span {
-      font-size: 9px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 800;
       color: #d4a843;
       letter-spacing: 2.5px;
       text-transform: uppercase;
@@ -804,4 +793,4 @@ process.on("SIGTERM", async () => {
   process.exit(0);
 });
 
-module.exports = router;
+module.exports = router; 

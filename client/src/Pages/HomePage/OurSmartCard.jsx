@@ -189,7 +189,7 @@ const ProductImage = ({ product }) => {
 
   return (
     <img
-      src={product.images[0]}
+      src={product.coverImg || product.images[0]}
       alt={product.title || "Product"}
       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
       loading="lazy"

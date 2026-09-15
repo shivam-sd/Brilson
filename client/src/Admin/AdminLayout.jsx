@@ -83,7 +83,6 @@ const AdminLayout = () => {
   };
 
   const location = useLocation();
-  console.log(location);
   const currentTitle = pageTitles[location.pathname] || "Admin Dashboard";
 
 

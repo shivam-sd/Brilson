@@ -14,7 +14,7 @@ import { FaDownload } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import ParkingTagDesign from "./ManageParkingTag/ParkingTagDesign";
-import ParkingTagPreviewModal from "./ManageParkingTag/PreviewParkingTag";
+// import ParkingTagPreviewModal from "./ManageParkingTag/PreviewParkingTag";
 import JSZip from 'jszip';
 import { selectAdminToken } from "../store/slices/authSlice";
 import { useSelector } from "react-redux";
@@ -26,26 +26,34 @@ const ManageParkingTag = () => {
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
 
+  //  Local state for cards
+  const [cards, setCards] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(100);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
-  const [previewOpen, setPreviewOpen] = useState(false);
+  // const [previewOpen, setPreviewOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
   const tagRef = useRef();
-  const { data, isLoading } = useGetTags(currentPage, searchQuery, limit)
-  const cards = data?.cards ?? [];
+  const { data, isLoading } = useGetTags(currentPage, searchQuery, limit);
+
+  //  renamed to fetchedCards
+  const fetchedCards = data?.cards ?? [];
   const totalCards = data?.totalCards ?? 0;
   const totalPages = data?.totalPages ?? 1;
   const stats = data?.stats ?? { total: 0, activated: 0, inactive: 0 };
 
+  
+  useEffect(() => {
+    setCards(fetchedCards);
+  }, [data]);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
       setCurrentPage(page);
-      fetchCards(page, searchQuery);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -58,10 +66,9 @@ const ManageParkingTag = () => {
   const handleClearSearch = () => {
     setSearchQuery("");
     setCurrentPage(1);
-    fetchCards(1, "");
   };
 
-  // ✅ SINGLE PARKING TAG DOWNLOAD
+  //  SINGLE PARKING TAG DOWNLOAD
   const downloadParkingTag = async (card) => {
     try {
       setSelectedCard(card);
@@ -309,10 +316,10 @@ const ManageParkingTag = () => {
     }
   };
 
-  const previewTag = (card) => {
-    setSelectedCard(card);
-    setPreviewOpen(true);
-  };
+  // const previewTag = (card) => {
+  //   setSelectedCard(card);
+  //   setPreviewOpen(true);
+  // };
 
   const getPageNumbers = () => {
     const pageNumbers = [];
@@ -507,7 +514,7 @@ const ManageParkingTag = () => {
               <th className="p-3 text-left text-xs font-medium text-gray-300">Owner</th>
               <th className="p-3 text-left text-xs font-medium text-gray-300">Activation</th>
               <th className="p-3 text-left text-xs font-medium text-gray-300">Created</th>
-              <th className="p-3 text-center text-xs font-medium text-gray-300">Preview</th>
+              {/* <th className="p-3 text-center text-xs font-medium text-gray-300">Preview</th> */}
               <th className="p-3 text-center text-xs font-medium text-gray-300">Download</th>
               <th className="p-3 text-center text-xs font-medium text-gray-300">Profile</th>
             </tr>
@@ -533,7 +540,7 @@ const ManageParkingTag = () => {
                   <td className="p-3 text-gray-400 text-sm whitespace-nowrap">
                     {new Date(card.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="p-3 text-center">
+                  {/* <td className="p-3 text-center">
                     <button
                       onClick={() => previewTag(card)}
                       disabled={!card.qrUrl}
@@ -542,7 +549,7 @@ const ManageParkingTag = () => {
                     >
                       <FiEye className="w-4 h-4" />
                     </button>
-                  </td>
+                  </td> */}
                   <td className="p-3 text-center">
                     <button
                       onClick={() => downloadParkingTag(card)}
@@ -592,11 +599,11 @@ const ManageParkingTag = () => {
         </div>
       </div>
 
-      <ParkingTagPreviewModal
+      {/* <ParkingTagPreviewModal
         isOpen={previewOpen}
         onClose={() => setPreviewOpen(false)}
         card={selectedCard}
-      />
+      /> */}
     </div>
   );
 };

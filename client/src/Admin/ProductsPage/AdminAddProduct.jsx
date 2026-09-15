@@ -21,7 +21,11 @@ const AdminAddProduct = () => {
   // Multiple images state
   const [imageFiles, setImageFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
-  
+
+  // Cover image state
+  const [coverImgFile, setCoverImgFile] = useState(null);
+  const [coverImgPreview, setCoverImgPreview] = useState("");
+
   // Product state - WITHOUT variants
   const [productData, setProductData] = useState({
     category: "",
@@ -32,26 +36,32 @@ const AdminAddProduct = () => {
     oldPrice: "",
     color: "",
     stock: "",
-    
+
     // GST Fields
     gstEnabled: "false",
     gstRate: "18",
-    
+
+    shippingEnabled: "false",
+    shippingCharge: "0",
+
     // Discount Fields
     discountEnabled: "false",
     discountType: "percentage",
     discountValue: "",
-    
+
     features: [""],
     metaTags: [""]
   });
+
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif', 'image/avif'];
+  const maxSize = 5 * 1024 * 1024; // 5MB
 
   // fetch all category
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/category/active`,{withCredentials: true}
+          `${import.meta.env.VITE_BASE_URL}/api/category/active`, { withCredentials: true }
         );
         setCategories(res?.data?.categories || []);
       } catch (error) {
@@ -66,7 +76,7 @@ const AdminAddProduct = () => {
     const fetchBadges = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/badges/active`,{withCredentials: true}
+          `${import.meta.env.VITE_BASE_URL}/api/badges/active`, { withCredentials: true }
         );
         setBadges(res?.data?.badges || []);
       } catch (error) {
@@ -75,6 +85,41 @@ const AdminAddProduct = () => {
     };
     fetchBadges();
   }, []);
+
+  // Handle cover image selection
+  const handleCoverImgChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error(`Invalid format: ${file.name}`);
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast.error(`${file.name} exceeds 5MB limit`);
+      e.target.value = "";
+      return;
+    }
+
+    if (coverImgPreview && coverImgPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(coverImgPreview);
+    }
+
+    setCoverImgFile(file);
+    setCoverImgPreview(URL.createObjectURL(file));
+    e.target.value = "";
+  };
+
+  // Remove selected cover image
+  const removeCoverImg = () => {
+    if (coverImgPreview && coverImgPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(coverImgPreview);
+    }
+    setCoverImgFile(null);
+    setCoverImgPreview("");
+  };
 
   // Open cropper for image
   const openCropper = (index, imageUrl) => {
@@ -89,35 +134,35 @@ const AdminAddProduct = () => {
   const handleCropComplete = async (croppedFile) => {
     try {
       setShowCropper(false);
-      
+
       const options = {
         maxSizeMB: 0.3,
         maxWidthOrHeight: 500,
         useWebWorker: true,
         fileType: 'image/jpeg'
       };
-      
+
       const finalFile = await imageCompression(croppedFile, options);
-      
+
       // Update the image at the current index
       const newImageFiles = [...imageFiles];
       const newPreviewImages = [...previewImages];
-      
+
       // Revoke old preview URL to avoid memory leaks
       if (previewImages[currentImageIndex]) {
         URL.revokeObjectURL(previewImages[currentImageIndex]);
       }
-      
+
       // Update with new cropped file
       newImageFiles[currentImageIndex] = finalFile;
       const newPreviewUrl = URL.createObjectURL(finalFile);
       newPreviewImages[currentImageIndex] = newPreviewUrl;
-      
+
       setImageFiles(newImageFiles);
       setPreviewImages(newPreviewImages);
-      
+
       toast.success("Image cropped successfully!");
-      
+
     } catch (err) {
       console.error('Crop complete error:', err);
       toast.error("Error cropping image");
@@ -137,30 +182,26 @@ const AdminAddProduct = () => {
       setTempImageUrl(null);
     }
   };
-  
+
   const handleCropCancel = () => {
     setShowCropper(false);
-    
+
     // Don't revoke the original image URL because it's still being used in the preview
     // The original image URL is from previewImages array and should not be revoked here
-    
+
     setCurrentImageIndex(null);
     setOriginalImage(null);
     setTempImageUrl(null);
   };
-  
+
   // Multiple image upload handler
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
-    
-    // Validate file types and sizes
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml', 'image/gif', 'image/avif'];
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    
+
     const validFiles = [];
     const invalidFiles = [];
-    
+
     files.forEach(file => {
       if (!allowedTypes.includes(file.type)) {
         invalidFiles.push(`${file.name} (Invalid format)`);
@@ -170,84 +211,84 @@ const AdminAddProduct = () => {
         validFiles.push(file);
       }
     });
-    
+
     if (invalidFiles.length > 0) {
       toast.error(`Invalid files: ${invalidFiles.join(', ')}`);
     }
-    
+
     if (validFiles.length > 0) {
       // Limit to maximum 10 images
       const currentCount = imageFiles.length;
       const availableSlots = 10 - currentCount;
       const filesToAdd = validFiles.slice(0, availableSlots);
-      
+
       if (filesToAdd.length < validFiles.length) {
         toast.warning(`Only ${availableSlots} more image(s) allowed. Maximum 10 images total.`);
       }
-      
+
       const newFiles = [...imageFiles, ...filesToAdd];
       setImageFiles(newFiles);
-      
+
       // Create preview URLs
       const newPreviews = filesToAdd.map(file => URL.createObjectURL(file));
       setPreviewImages([...previewImages, ...newPreviews]);
     }
   };
-  
+
   // Remove image
   const removeImage = (index) => {
     // Revoke the object URL to avoid memory leaks
     if (previewImages[index] && previewImages[index].startsWith('blob:')) {
       URL.revokeObjectURL(previewImages[index]);
     }
-    
+
     const newImageFiles = imageFiles.filter((_, i) => i !== index);
     const newPreviewImages = previewImages.filter((_, i) => i !== index);
-    
+
     setImageFiles(newImageFiles);
     setPreviewImages(newPreviewImages);
-    
+
     toast.success("Image removed");
   };
-  
+
   // Reorder images (drag and drop)
   const handleDragStart = (e, index) => {
     e.dataTransfer.setData('text/plain', index);
     e.dataTransfer.effectAllowed = 'move';
   };
-  
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   };
-  
+
   const handleDrop = (e, dropIndex) => {
     e.preventDefault();
     const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
-    
+
     if (dragIndex === dropIndex) return;
-    
+
     const newImageFiles = [...imageFiles];
     const newPreviewImages = [...previewImages];
-    
+
     // Reorder files
     const [movedFile] = newImageFiles.splice(dragIndex, 1);
     newImageFiles.splice(dropIndex, 0, movedFile);
-    
+
     // Reorder previews
     const [movedPreview] = newPreviewImages.splice(dragIndex, 1);
     newPreviewImages.splice(dropIndex, 0, movedPreview);
-    
+
     setImageFiles(newImageFiles);
     setPreviewImages(newPreviewImages);
-    
+
     toast.success("Image reordered");
   };
-  
+
   // Handle basic input changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     if (type === 'checkbox') {
       setProductData((prev) => ({
         ...prev,
@@ -260,7 +301,7 @@ const AdminAddProduct = () => {
       }));
     }
   };
-  
+
   // Add feature
   const addFeature = () => {
     setProductData((prev) => ({
@@ -268,7 +309,7 @@ const AdminAddProduct = () => {
       features: [...prev.features, ""],
     }));
   };
-  
+
   // Update feature
   const updateFeature = (index, value) => {
     const newFeatures = [...productData.features];
@@ -278,7 +319,7 @@ const AdminAddProduct = () => {
       features: newFeatures,
     }));
   };
-  
+
   // Remove feature
   const removeFeature = (index) => {
     const newFeatures = productData.features.filter((_, i) => i !== index);
@@ -287,7 +328,7 @@ const AdminAddProduct = () => {
       features: newFeatures,
     }));
   };
-  
+
   // Add Meta tags
   const addMetaTags = () => {
     setProductData((prev) => ({
@@ -295,7 +336,7 @@ const AdminAddProduct = () => {
       metaTags: [...prev.metaTags, ""],
     }));
   };
-  
+
   // Update meta tags
   const updateMetaTags = (index, value) => {
     const newMetaTags = [...productData.metaTags];
@@ -305,7 +346,7 @@ const AdminAddProduct = () => {
       metaTags: newMetaTags,
     }));
   };
-  
+
   // Remove meta tags
   const removeMetaTags = (index) => {
     const newMetaTags = productData.metaTags.filter((_, i) => i !== index);
@@ -314,39 +355,44 @@ const AdminAddProduct = () => {
       metaTags: newMetaTags,
     }));
   };
-  
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
     if (imageFiles.length === 0) {
       toast.error("At least one product image is required");
       return;
     }
-    
+
+    if (!coverImgFile) {
+      toast.error("Cover image is required");
+      return;
+    }
+
     if (!productData.title.trim()) {
       toast.error("Product title is required");
       return;
     }
-    
+
     if (!productData.category) {
       toast.error("Product category is required");
       return;
     }
-    
+
     if (!productData.description.trim()) {
       toast.error("Product description is required");
       return;
     }
-    
+
     if (!productData.price || productData.price <= 0) {
       toast.error("Valid product price is required");
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     // Prepare data for API
     const formData = new FormData();
     formData.append("title", productData.title.trim());
@@ -357,21 +403,27 @@ const AdminAddProduct = () => {
     formData.append("oldPrice", productData.oldPrice || "");
     formData.append("color", productData.color || "");
     formData.append("stock", productData.stock || "0");
-    
+
     // GST Fields
     formData.append("gstEnabled", productData.gstEnabled);
     formData.append("gstRate", productData.gstRate);
-    
+
+    formData.append("shippingEnabled", productData.shippingEnabled);
+    formData.append("shippingCharge", productData.shippingCharge);
+
     // Discount Fields
     formData.append("discountEnabled", productData.discountEnabled);
     formData.append("discountType", productData.discountType);
     formData.append("discountValue", productData.discountValue || "0");
-    
+
+    // Cover image
+    formData.append("coverImg", coverImgFile);
+
     // Append all images - Use 'images' field name to match backend expectation
     imageFiles.forEach((file, index) => {
       formData.append("images", file);
     });
-    
+
     formData.append(
       "features",
       JSON.stringify(productData.features.filter((f) => f.trim()))
@@ -380,17 +432,17 @@ const AdminAddProduct = () => {
       "metaTags",
       JSON.stringify(productData.metaTags.filter((m) => m.trim()))
     );
-    
+
     try {
-      
+
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/admin/add/products`,
         formData,
-        { 
+        {
           withCredentials: true,
         }
       );
-      
+
       toast.success("Product added successfully");
       navigate("/admindashboard/products/list");
     } catch (err) {
@@ -400,7 +452,7 @@ const AdminAddProduct = () => {
       setIsSubmitting(false);
     }
   };
-  
+
   // Cleanup preview URLs on component unmount
   useEffect(() => {
     return () => {
@@ -409,9 +461,12 @@ const AdminAddProduct = () => {
           URL.revokeObjectURL(url);
         }
       });
+      if (coverImgPreview && coverImgPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(coverImgPreview);
+      }
     };
   }, []);
-  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
@@ -424,7 +479,7 @@ const AdminAddProduct = () => {
             Fill in all product details below
           </p>
         </div>
-        
+
         {/* Form */}
         <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-2xl p-6 md:p-8">
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -445,7 +500,7 @@ const AdminAddProduct = () => {
                   required
                 />
               </div>
-              
+
               {/* Category */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -466,7 +521,7 @@ const AdminAddProduct = () => {
                   ))}
                 </select>
               </div>
-              
+
               {/* Badge */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -486,7 +541,7 @@ const AdminAddProduct = () => {
                   ))}
                 </select>
               </div>
-              
+
               {/* Price */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -504,7 +559,7 @@ const AdminAddProduct = () => {
                   required
                 />
               </div>
-              
+
               {/* Old Price */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -521,7 +576,7 @@ const AdminAddProduct = () => {
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                 />
               </div>
-              
+
               {/* Stock */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -537,7 +592,7 @@ const AdminAddProduct = () => {
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
                 />
               </div>
-              
+
               {/* Color */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -553,7 +608,7 @@ const AdminAddProduct = () => {
                 />
               </div>
             </div>
-            
+
             {/* GST Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
@@ -582,7 +637,7 @@ const AdminAddProduct = () => {
                   </label>
                 </div>
               </div>
-              
+
               {productData.gstEnabled === "true" && (
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -602,7 +657,63 @@ const AdminAddProduct = () => {
                 </div>
               )}
             </div>
-            
+
+            {/* Shipping Section */}
+            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-200">
+                  Shipping Configuration
+                </h3>
+
+                <div className="flex items-center gap-2">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="shippingEnabled"
+                      checked={productData.shippingEnabled === "true"}
+                      onChange={(e) =>
+                        handleInputChange({
+                          target: {
+                            name: "shippingEnabled",
+                            type: "checkbox",
+                            checked: e.target.checked,
+                          },
+                        })
+                      }
+                      className="sr-only peer"
+                    />
+
+                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
+
+                    <span className="ml-3 text-sm font-medium text-gray-300">
+                      {productData.shippingEnabled === "true"
+                        ? "Enabled"
+                        : "Disabled"}
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {productData.shippingEnabled === "true" && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Shipping Charge (₹)
+                  </label>
+
+                  <input
+                    type="number"
+                    name="shippingCharge"
+                    value={productData.shippingCharge ?? ""}
+                    onChange={handleInputChange}
+                    placeholder="50"
+                    min="0"
+                    step="0.01"
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 outline-none transition"
+                  />
+                </div>
+              )}
+            </div>
+
             {/* Discount Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
@@ -631,7 +742,7 @@ const AdminAddProduct = () => {
                   </label>
                 </div>
               </div>
-              
+
               {productData.discountEnabled === "true" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   <div>
@@ -648,7 +759,7 @@ const AdminAddProduct = () => {
                       <option value="fixed">Fixed Amount (₹)</option>
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       {productData.discountType === "percentage" ? "Discount Percentage (%)" : "Discount Amount (₹)"}
@@ -667,7 +778,7 @@ const AdminAddProduct = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -683,7 +794,7 @@ const AdminAddProduct = () => {
                 required
               />
             </div>
-            
+
             {/* Features Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
@@ -698,7 +809,7 @@ const AdminAddProduct = () => {
                   <FiPlus size={16} /> Add Feature
                 </button>
               </div>
-              
+
               <div className="space-y-3">
                 {productData.features.map((feature, index) => (
                   <div key={index} className="flex gap-3">
@@ -723,7 +834,7 @@ const AdminAddProduct = () => {
                 ))}
               </div>
             </div>
-            
+
             {/* Meta Tags Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
@@ -738,7 +849,7 @@ const AdminAddProduct = () => {
                   <FiPlus size={16} /> Add Meta Tags
                 </button>
               </div>
-              
+
               <div className="space-y-3">
                 {productData.metaTags.map((metaTags, index) => (
                   <div key={index} className="flex gap-3">
@@ -763,7 +874,63 @@ const AdminAddProduct = () => {
                 ))}
               </div>
             </div>
-            
+
+            {/* Cover Image Section */}
+            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-200">
+                  Cover Image *
+                </h3>
+                <span className="text-sm text-gray-400">Max 5MB</span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-start gap-4">
+                <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-gray-600 bg-gray-900 flex-shrink-0">
+                  {coverImgPreview ? (
+                    <img
+                      src={coverImgPreview}
+                      alt="Cover"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://via.placeholder.com/300x300?text=Image+Error";
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                      <FiImage size={28} />
+                    </div>
+                  )}
+
+                  {coverImgPreview && (
+                    <button
+                      type="button"
+                      onClick={removeCoverImg}
+                      className="absolute top-1 right-1 p-1 bg-red-500/80 hover:bg-red-600 rounded-full transition"
+                      title="Remove cover image"
+                    >
+                      <FiX size={12} />
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex-1">
+                  <label className="block text-sm text-gray-400 mb-2">
+                    Upload Cover Image *
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp,image/svg+xml,image/gif,image/avif"
+                    onChange={handleCoverImgChange}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-500 file:text-white hover:file:bg-cyan-600"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    This is the main image shown on the product card and listings.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Multiple Image Upload Section */}
             <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-600">
               <div className="flex justify-between items-center mb-4">
@@ -774,7 +941,7 @@ const AdminAddProduct = () => {
                   {imageFiles.length}/10 images • Max 5MB each
                 </span>
               </div>
-              
+
               <div>
                 <label className="block text-sm text-gray-400 mb-2">
                   Upload Product Images *
@@ -789,7 +956,7 @@ const AdminAddProduct = () => {
                 <p className="text-xs text-gray-500 mt-2">
                   You can select multiple images at once. Drag and drop to reorder. First image will be the main product image. Click on image to crop.
                 </p>
-                
+
                 {/* Image Preview Grid */}
                 {previewImages.length > 0 && (
                   <div className="mt-6">
@@ -849,7 +1016,7 @@ const AdminAddProduct = () => {
                 )}
               </div>
             </div>
-            
+
             {/* Submit Button */}
             <div className="pt-6 border-t border-gray-700">
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -860,7 +1027,7 @@ const AdminAddProduct = () => {
                 >
                   Cancel
                 </button>
-                
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -874,10 +1041,10 @@ const AdminAddProduct = () => {
           </form>
         </div>
       </div>
-      
+
       {/* Image Cropper Modal */}
       {showCropper && (
-        <ImageCropper 
+        <ImageCropper
           image={originalImage}
           onCancel={handleCropCancel}
           onCropComplete={handleCropComplete}
@@ -885,6 +1052,6 @@ const AdminAddProduct = () => {
       )}
     </div>
   );
-}; 
+};
 
 export default AdminAddProduct;

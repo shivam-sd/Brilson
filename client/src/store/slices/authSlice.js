@@ -40,6 +40,7 @@ const authSlice = createSlice({
     },
 });
 
+
 export const { setCredentials, logoutAction } = authSlice.actions;
 
 export const selectAuth = (state) => state.auth;

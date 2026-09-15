@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Lock, Phone } from "lucide-react";
+import { Lock, Phone, ArrowRight, User, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import { FiEyeOff, FiEye } from "react-icons/fi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "../store/slices/authSlice";
 
 import GoogleLoginAuth from "./GoogleAuth/GoogleLoginAuth";
 import GooglePhoneInput from "./GoogleAuth/GooglePhoneInput";
 import GoogleOTPInput from "./GoogleAuth/GoogleOTPInput";
 import GoogleReferralInput from "./GoogleAuth/GoogleReferralInput";
-import { fetchCart } from "../store/slices/cartSlice";
+import { fetchCart, mergeGuestCart, selectCartItems, clearCart } from "../store/slices/cartSlice";
 import { useLogin } from "../api/auth-query";
 
 const LoginPage = () => {
@@ -29,8 +29,27 @@ const LoginPage = () => {
 
   const [googleStep, setGoogleStep] = useState(null);
   const [googleUserData, setGoogleUserData] = useState(null);
+  const guestCart = useSelector(selectCartItems);
 
   const loginMutation = useLogin();
+
+  const handleLoginCartMerge = async () => {
+    try {
+      if (!guestCart || guestCart.length === 0) {
+        await dispatch(fetchCart()).unwrap();
+        return;
+      }
+
+      await dispatch(mergeGuestCart(guestCart)).unwrap();
+
+      dispatch(clearCart());
+
+      await dispatch(fetchCart()).unwrap();
+    } catch (error) {
+      console.error("Cart merge failed:", error);
+      toast.error("Login successful, but cart sync failed. Please try again.");
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -62,6 +81,7 @@ const LoginPage = () => {
 
       if (res?.token) {
         dispatch(setCredentials({ token: res.token, user: res.user }));
+        await handleLoginCartMerge();
       }
 
       toast.success("Login successful");
@@ -70,6 +90,7 @@ const LoginPage = () => {
       if (err.response?.data?.error === "This account is linked with Google. Please sign in with Google.") {
         toast.error("This account uses Google Sign-In. Please click the Google button below.");
       } else {
+        console.log("errorrrrr------------", err);
         toast.error(
           err.response?.data?.error ||
           err.response?.data?.message ||
@@ -78,15 +99,32 @@ const LoginPage = () => {
       }
     } finally {
       setLoading(false);
-      dispatch(fetchCart());
     }
   };
 
+  const handleGoogleSuccess = async (data) => {
+    try {
+      if (data?.token) {
+        dispatch(
+          setCredentials({
+            token: data.token,
+            user: data.user,
+          })
+        );
+      }
 
+      await handleLoginCartMerge();
 
-  const handleGoogleSuccess = (data) => {
-    toast.success("Login successful!");
-    navigate("/");
+      toast.success("Login successful!");
+
+      navigate("/");
+    } catch (error) {
+      console.error("Google login cart sync error:", error);
+
+      toast.error("Login successful, but cart sync failed.");
+
+      navigate("/");
+    }
   };
 
   const handleGoogleError = (error) => {
@@ -96,31 +134,49 @@ const LoginPage = () => {
   const handleGooglePhoneRequired = (data) => {
     console.log("Google phone required:", data);
     setGoogleUserData(data);
-    setGoogleStep('phone');
+    setGoogleStep("phone");
   };
 
   const handleGooglePhoneComplete = (data) => {
     console.log("Google phone complete:", data);
-    setGoogleUserData(prev => ({ ...prev, ...data }));
-    setGoogleStep('otp');
+    setGoogleUserData((prev) => ({ ...prev, ...data }));
+    setGoogleStep("otp");
     toast.success("OTP sent to your phone");
   };
 
-  // Handle OTP success 
-  const handleGoogleOTPSuccess = (data) => {
-    console.log("Google OTP success (direct login):", data);
-    toast.success("Login successful!");
-    navigate("/");
+  const handleGoogleOTPSuccess = async (data) => {
+    try {
+      console.log("Google OTP success:", data);
+
+      if (data?.token) {
+        dispatch(
+          setCredentials({
+            token: data.token,
+            user: data.user,
+          })
+        );
+      }
+
+      await handleLoginCartMerge();
+
+      toast.success("Login successful!");
+
+      navigate("/");
+    } catch (error) {
+      console.error("Google OTP cart sync error:", error);
+
+      toast.error("Login successful, but cart sync failed.");
+
+      navigate("/");
+    }
   };
 
-  //  Handle referral
   const handleGoogleReferralRequired = (data) => {
     console.log("Google referral required:", data);
-    setGoogleUserData(prev => ({ ...prev, ...data }));
-    setGoogleStep('referral');
+    setGoogleUserData((prev) => ({ ...prev, ...data }));
+    setGoogleStep("referral");
   };
 
-  // Handle referral success
   const handleGoogleReferralSuccess = (data) => {
     console.log("Google referral success:", data);
     toast.success("Login successful!");
@@ -128,13 +184,13 @@ const LoginPage = () => {
   };
 
   const handleGoogleBack = () => {
-    if (googleStep === 'otp') {
-      setGoogleStep('phone');
-    } else if (googleStep === 'phone') {
+    if (googleStep === "otp") {
+      setGoogleStep("phone");
+    } else if (googleStep === "phone") {
       setGoogleStep(null);
       setGoogleUserData(null);
-    } else if (googleStep === 'referral') {
-      setGoogleStep('otp');
+    } else if (googleStep === "referral") {
+      setGoogleStep("otp");
     }
   };
 
@@ -149,30 +205,28 @@ const LoginPage = () => {
         toastOptions={{
           style: {
             zIndex: 999999,
-            marginTop: 100
-          }
+            marginTop: 100,
+          },
         }}
       />
-      <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#050505] via-[#0b0c10] to-[#050505] px-4 py-10">
+      <div className="min-h-screen min-h-[100dvh] w-full flex items-center justify-center bg-black px-4 py-6">
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full max-w-md bg-[#0f1116]/80 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-white/10 mt-20"
+          className="w-full max-w-md bg-[#111111] p-6 rounded-3xl shadow-2xl border border-white/10 my-auto"
         >
-          {/* HEADING */}
-          <div className="text-center mb-8">
-            <h2 className="lg:text-5xl text-4xl font-semibold text-white leading-tight">
-              Welcome <span className="text-cyan-400">Back</span>
+          <div className="text-center mb-6">
+            <h2 className="text-4xl font-extrabold text-white leading-tight">
+              Welcome <span className="text-orange-500">Back</span>
             </h2>
-            <p className="text-gray-400 text-sm mt-1">
-              Sign in to access your dashboard
+            <p className="text-gray-400 text-sm mt-2">
+              Sign in to access your account
             </p>
           </div>
 
-          {/* GOOGLE SIGN-IN SECTION */}
           {!googleStep && (
-            <div className="mb-6">
+            <div className="mb-5">
               <GoogleLoginAuth
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleError}
@@ -181,8 +235,7 @@ const LoginPage = () => {
             </div>
           )}
 
-          {/* Google Phone Input */}
-          {googleStep === 'phone' && googleUserData && (
+          {googleStep === "phone" && googleUserData && (
             <GooglePhoneInput
               userData={googleUserData}
               onComplete={handleGooglePhoneComplete}
@@ -190,150 +243,125 @@ const LoginPage = () => {
             />
           )}
 
-          {/*  Google OTP Input  */}
-          {googleStep === 'otp' && googleUserData && (
+          {googleStep === "otp" && googleUserData && (
             <GoogleOTPInput
               userId={googleUserData.userId}
               phone={googleUserData.phone}
               onSuccess={handleGoogleOTPSuccess}
               onBack={handleGoogleBack}
-              onReferralRequired={handleGoogleReferralRequired} // ✅ NEW
+              onReferralRequired={handleGoogleReferralRequired}
             />
           )}
 
-          {/* Google Referral Input  */}
-          {googleStep === 'referral' && googleUserData && (
+          {googleStep === "referral" && googleUserData && (
             <GoogleReferralInput
               userId={googleUserData.userId}
               onSuccess={handleGoogleReferralSuccess}
               onSkip={() => {
-                // Handle skip - will login without referral
                 setGoogleStep(null);
                 setGoogleUserData(null);
-                navigate('/');
+                navigate("/");
               }}
             />
           )}
 
-
-
           {!googleStep && (
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-700"></div>
+                <div className="w-full border-t border-gray-800"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-[#0f1116] text-gray-400">
-                  Or login with
-                </span>
+                <span className="px-3 bg-[#111111] text-gray-500">OR</span>
               </div>
             </div>
           )}
 
-
           {!googleStep && (
-            <form className="space-y-6" onSubmit={handleLogin}>
-              {/* Phone */}
+            <form className="space-y-5" onSubmit={handleLogin}>
               <div>
-                <label className="text-gray-300 text-sm">Phone Number *</label>
-                <div className="mt-2 flex items-center bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus-within:border-cyan-500">
-                  <Phone className="w-5 h-5 text-gray-400" />
+                <label className="text-gray-300 text-sm">Phone Number</label>
+                <div className="mt-2 flex items-center bg-[#1a1a1a] rounded-xl border border-white/10 focus-within:border-orange-500">
+                  <div className="flex items-center gap-1 px-3 py-3 border-r border-white/10 text-gray-300">
+                    <span className="text-lg leading-none">🇮🇳</span>
+                    <span className="text-sm">+91</span>
+                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                  </div>
                   <input
                     type="tel"
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
-                    placeholder="1234567890"
+                    placeholder="Enter mobile number"
                     required
                     maxLength="10"
-                    className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
+                    className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 px-3 py-3"
                   />
                 </div>
               </div>
 
-              {/* Password */}
               <div>
-                <label className="text-gray-300 text-sm">Password *</label>
-                <div className="mt-2 flex items-center bg-[#1a1f27] rounded-xl px-4 py-3 border border-white/10 focus-within:border-cyan-500">
+                <label className="text-gray-300 text-sm">Password</label>
+                <div className="mt-2 flex items-center bg-[#1a1a1a] rounded-xl px-4 py-3 border border-white/10 focus-within:border-orange-500">
                   <Lock className="w-5 h-5 text-gray-400" />
                   <input
                     type={seePassword ? "text" : "password"}
                     name="password"
                     value={form.password}
                     onChange={handleChange}
-                    placeholder="••••••••"
+                    placeholder="Enter password"
                     required
                     minLength="6"
                     className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
                   />
-                  <div className="cursor-pointer" onClick={handleSeePassword}>
+                  <div className="cursor-pointer text-gray-400" onClick={handleSeePassword}>
                     {seePassword ? <FiEye /> : <FiEyeOff />}
                   </div>
                 </div>
               </div>
 
-              {/* Submit Button */}
+              <div className="flex justify-end">
+                <Link
+                  className="text-sm text-orange-500 hover:underline"
+                  to={"/users/forgot-password/brilson"}
+                >
+                  Forgot Password?
+                </Link>
+              </div>
+
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/30 mt-6 hover:shadow-cyan-500/50 transition-all disabled:opacity-50"
+                className="w-full py-3 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? "Logging in..." : "Login"}
+                {!loading && <ArrowRight className="w-5 h-5" />}
               </motion.button>
+
+              <Link to="/signup">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  className="w-full py-3 rounded-lg border border-orange-500 text-orange-500 flex items-center justify-center gap-2 hover:bg-orange-500/10 transition-all"
+                >
+                  <User className="w-5 h-5" />
+                  Create Account
+                </motion.button>
+              </Link>
             </form>
           )}
 
-
-
-          {!googleStep && (
-            <>
-              <div className="lg:flex items-center justify-center gap-20 mt-8 pt-6 border-t border-gray-800 hidden">
-                <Link
-                  className="text-sm mb-3 text-cyan-400 hover:underline"
-                  to={"/users/forgot-password/brilson"}
-                >
-                  Forgot Password
-                </Link>
-                <p className="text-center text-gray-400 text-sm mb-3">
-                  Don't have an account?{" "}
-                  <Link to="/signup" className="text-cyan-400 hover:underline font-medium">
-                    Create One
-                  </Link>
-                </p>
-              </div>
-
-              {/* Mobile */}
-              <div className="lg:hidden flex items-center justify-center mt-8 pt-6 border-t border-gray-800 flex-col">
-                <p className="text-center text-gray-400 text-sm mb-3">
-                  Don't have an account?{" "}
-                  <Link to="/signup" className="text-cyan-400 hover:underline font-medium">
-                    Create One
-                  </Link>
-                </p>
-                <Link
-                  className="text-sm mb-3 text-cyan-400 hover:underline"
-                  to={"/users/forgot-password/brilson"}
-                >
-                  Forgot Password
-                </Link>
-              </div>
-            </>
-          )}
-
-          {/* Google flow indicator */}
           {googleStep && (
             <div className="mt-4 text-center text-gray-400 text-sm">
-              {googleStep === 'phone'
-                ? '📱 Enter your phone number to continue'
-                : googleStep === 'otp'
-                  ? '🔑 Enter OTP to verify your phone'
-                  : '🎁 Enter referral code or skip'
-              }
+              {googleStep === "phone"
+                ? "📱 Enter your phone number to continue"
+                : googleStep === "otp"
+                ? "🔑 Enter OTP to verify your phone"
+                : "🎁 Enter referral code or skip"}
             </div>
           )}
-
         </motion.div>
       </div>
     </>
