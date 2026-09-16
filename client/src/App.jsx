@@ -111,6 +111,7 @@ import UsersList from "./Admin/UsersList";
 import ReferralManagement from "./Admin/ReferralManagement";
 import RecentCards from "./Admin/RecentCards";
 import EkqrPayment from "./Component/EkqrPayment";
+import ReferralCommission from "./Admin/ReferralCommission"
 
 
 
@@ -282,6 +283,16 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ReferralManagement />
+                  </ProtectedRoute>
+                }
+              />
+
+
+              <Route
+                path="admin/ReferralCommission"
+                element={
+                  <ProtectedRoute>
+                    <ReferralCommission />
                   </ProtectedRoute>
                 }
               />

@@ -61,6 +61,7 @@ const bulkGoogleReviewDownload = require("./routes/CardBulkGoogleReview.routes")
 const InvoiceAddressRouter = require("./routes/InvoiceAddress.route");
 const GoogleAuthRouter = require("./routes/GoogleAuthRoute/GoogleAuthRouter.routes");
 const ShippingAddressRouter = require("./routes/ShippingAddress.routes");
+const referralCommissionRoutes = require("./routes/ReferralCommission.routes");
 
 
 
@@ -172,6 +173,7 @@ const { globalRateLimiter } = require("./middleware/rateLimiter");
   app.use("/api", bulkGoogleReviewDownload);
   app.use("/api", InvoiceAddressRouter); // ✅
   app.use("/api", ShippingAddressRouter);
+  app.use("/api/admin", referralCommissionRoutes);
 
 
 

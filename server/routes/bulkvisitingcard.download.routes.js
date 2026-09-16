@@ -783,7 +783,7 @@ router.get("/visiting-cards/:id/download", async (req, res) => {
   }
 });
 
-// ✅ GRACEFUL SHUTDOWN
+//  GRACEFUL SHUTDOWN
 process.on("SIGINT", async () => {
   if (browserInstance) await browserInstance.close().catch(() => {});
   process.exit(0);
