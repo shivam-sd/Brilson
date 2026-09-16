@@ -80,31 +80,31 @@ const getReferralCommissions = async (req, res) => {
 
 
 
-// const initializeReferralCommissions = async () => {
-//   const defaultCommissions = [
-//     { level: 1, amount: 100 },
-//     { level: 2, amount: 50 },
-//     { level: 3, amount: 30 },
-//     { level: 4, amount: 20 },
-//     { level: 5, amount: 10 },
-//     { level: 6, amount: 5 },
-//     { level: 7, amount: 5 },
-//   ];
+const initializeReferralCommissions = async () => {
+  const defaultCommissions = [
+    { level: 1, amount: 100 },
+    { level: 2, amount: 50 },
+    { level: 3, amount: 30 },
+    { level: 4, amount: 20 },
+    { level: 5, amount: 10 },
+    { level: 6, amount: 5 },
+    { level: 7, amount: 5 },
+  ];
 
-//   for (const commission of defaultCommissions) {
-//     await ReferralCommissionModel.updateOne(
-//       { level: commission.level },
-//       {
-//         $setOnInsert: commission,
-//       },
-//       {
-//         upsert: true,
-//       }
-//     );
-//   }
-// };
+  for (const commission of defaultCommissions) {
+    await ReferralCommissionModel.updateOne(
+      { level: commission.level },
+      {
+        $setOnInsert: commission,
+      },
+      {
+        upsert: true,
+      }
+    );
+  }
+};
 
-// initializeReferralCommissions();
+initializeReferralCommissions();
 
 
 
