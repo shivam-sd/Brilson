@@ -270,6 +270,10 @@ const CartPage = () => {
             rate:
               product.gst?.rate || 0,
           },
+          shipping: {
+            enabled: product.shipping?.enabled || false,
+            charge: product.shipping?.charge || 0,
+          },
 
           discount: {
             enabled:

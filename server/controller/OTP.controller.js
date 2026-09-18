@@ -22,6 +22,7 @@ const sendOTP = async (req, res) => {
     }
 
     const otp = generateOTP();
+    // console.log("otp:- ",otp);
     const otpExpiry = Date.now() + 5 * 60 * 1000;
 
 

@@ -168,6 +168,9 @@ const Checkout = () => {
         const gstEnabled = product.gst?.enabled || false;
         const gstRate = product.gst?.rate || 0;
 
+        const shippingEnabled = product.shipping?.enabled || false;
+        const shippingCharge = Number(product.shipping?.charge) || 0;
+
         const discountEnabled = product.discount?.enabled || false;
         const discountType = product.discount?.type || "percentage";
         const discountValue = product.discount?.value || 0;
@@ -203,6 +206,10 @@ const Checkout = () => {
             type: discountType,
             value: discountValue,
           },
+          shipping: {
+            enabled: shippingEnabled,
+            charge: shippingCharge,
+          },
           discountAmount,
           gstAmount,
           finalPrice,
@@ -218,29 +225,45 @@ const Checkout = () => {
   };
 
   /* AMOUNT CALCULATION */
-  const { subtotal, totalDiscount, totalGst, total } = useMemo(() => {
+  const { subtotal, totalDiscount, totalGst, total, totalShipping } = useMemo(() => {
     if (checkoutData.subtotal !== undefined) {
       return {
         subtotal: checkoutData.subtotal || 0,
         totalDiscount: checkoutData.totalDiscount || 0,
         totalGst: checkoutData.totalGst || 0,
         total: checkoutData.total || 0,
+        totalShipping: checkoutData.totalShipping || 0,
       };
     }
 
     let subtotal = 0;
     let totalDiscount = 0;
     let totalGst = 0;
+    let totalShipping = 0;
 
     orderItems.forEach((item) => {
       subtotal += item.itemTotal || 0;
       totalDiscount += item.discountAmount || 0;
       totalGst += item.gstAmount || 0;
+
+      if (item.shipping?.enabled === true) {
+        totalShipping += Number(item.shipping.charge) || 0;
+      }
     });
 
-    const total = subtotal - totalDiscount + totalGst;
+    const total =
+      subtotal -
+      totalDiscount +
+      totalGst +
+      totalShipping;
 
-    return { subtotal, totalDiscount, totalGst, total };
+    return {
+      subtotal,
+      totalDiscount,
+      totalGst,
+      totalShipping,
+      total,
+    };
   }, [orderItems, checkoutData]);
 
   /* ADDRESS VALIDATION */
@@ -281,6 +304,7 @@ const Checkout = () => {
           price: item.basePrice,
           quantity: item.quantity,
           gst: item.gst,
+          shipping: item.shipping,
           discount: item.discount,
           discountAmount: item.discountAmount,
           gstAmount: item.gstAmount,
@@ -631,8 +655,17 @@ const Checkout = () => {
                   <span className="text-gray-400 text-sm sm:text-base">
                     Shipping
                   </span>
-                  <span className="text-green-400 text-sm sm:text-base">
-                    FREE
+
+                  <span
+                    className={
+                      totalShipping > 0
+                        ? "text-orange-400 font-semibold text-sm sm:text-base"
+                        : "text-green-400 text-sm sm:text-base"
+                    }
+                  >
+                    {totalShipping > 0
+                      ? `+₹${totalShipping.toFixed(2)}`
+                      : "FREE"}
                   </span>
                 </div>
 

@@ -181,3 +181,14 @@ export const useGetInvoices = (page, limit) => {
         },
     });
 }
+
+export const useGetLabelsData = () => {
+    return useMutation({
+        mutationFn: async (orderIds) => {
+            const { data } = await axiosInstance.post(`/api/order/details/labelsData`, {
+                orderIds: orderIds
+            });
+            return data;
+        },
+    });
+};
