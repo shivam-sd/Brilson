@@ -111,6 +111,7 @@ import UsersList from "./Admin/UsersList";
 import ReferralManagement from "./Admin/ReferralManagement";
 import RecentCards from "./Admin/RecentCards";
 import EkqrPayment from "./Component/EkqrPayment";
+import LabelsPage from "./Admin/lables/LabelsPage";
 import ReferralCommission from "./Admin/ReferralCommission"
 
 
@@ -267,7 +268,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              
+
 
               <Route
                 path="customers/list"
@@ -455,6 +456,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AdminOrderDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/orders/detils/labels"
+              element={
+                <ProtectedRoute>
+                  <LabelsPage />
                 </ProtectedRoute>
               }
             />
