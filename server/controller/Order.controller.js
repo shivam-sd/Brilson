@@ -6,97 +6,248 @@ const mongoose = require("mongoose");
 
 
 
-  //  CREATE ORDER
-
+//  CREATE ORDER
 const orderCreate = async (req, res) => {
-  try { 
+  try {
     const userId = req.user;
-    const { address } = req.body;
+    const { address, items } = req.body;
 
     if (!address) {
-      return res.status(400).json({ error: "Address required" });
+      return res.status(400).json({
+        success: false,
+        message: "Address required",
+      });
     }
 
-    const cartItems = await CartModel
-      .find({ userId })
-      .populate("productId");
-
-    if (!cartItems.length) {
-      return res.status(400).json({ error: "Cart is empty" });
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Order items required",
+      });
     }
 
-    let subTotal = 0;
-    let amount = 0;
-    let gstAmount = 0;
+    for (const item of items) {
+      if (!mongoose.Types.ObjectId.isValid(item.productId)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid productId: ${item.productId}`,
+        });
+      }
+
+      const quantity = Number(item.quantity);
+
+      if (!Number.isInteger(quantity) || quantity <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid quantity for product ${item.productId}`,
+        });
+      }
+    }
+
+    const itemMap = new Map();
+
+    for (const item of items) {
+      const productId = item.productId.toString();
+
+      if (itemMap.has(productId)) {
+        const existing = itemMap.get(productId);
+
+        existing.quantity += Number(item.quantity);
+      } else {
+        itemMap.set(productId, {
+          productId: item.productId,
+          quantity: Number(item.quantity),
+        });
+      }
+    }
+
+    const uniqueItems = Array.from(itemMap.values());
+
+    const productIds = uniqueItems.map(
+      (item) => item.productId
+    );
+
+    const products = await ProductModel.find({
+      _id: {
+        $in: productIds,
+      },
+      isDeleted: 0,
+    });
+
+    const productMap = new Map(
+      products.map((product) => [
+        product._id.toString(),
+        product,
+      ])
+    );
+
+    for (const item of uniqueItems) {
+      if (!productMap.has(item.productId.toString())) {
+        return res.status(400).json({
+          success: false,
+          message: `Product not found: ${item.productId}`,
+        });
+      }
+    }
+
+    let subtotal = 0;
     let discountAmount = 0;
+    let gstAmount = 0;
+    let shippingAmount = 0;
 
-    const orderItems = cartItems.map((item) => {
-      const product = item.productId;
+    const orderItems = [];
 
-      let basePrice = product.price;
-      let finalPrice = basePrice;
-      amount = basePrice;
+    for (const item of uniqueItems) {
+      const product = productMap.get(
+        item.productId.toString()
+      );
 
-      /*  DISCOUNT  */
-      if (product.discount?.enabled) {
+      const quantity = item.quantity;
+
+      if (product.stock < quantity) {
+        return res.status(400).json({
+          success: false,
+          message: `${product.title} has only ${product.stock} item(s) available`,
+        });
+      }
+
+      const price = Number(product.price) || 0;
+
+      if (price < 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid price for ${product.title}`,
+        });
+      }
+
+      const itemSubtotal = price * quantity;
+
+      let itemDiscount = 0;
+
+      if (product.discount?.enabled === true) {
+        const discountValue =
+          Number(product.discount.value) || 0;
+
         if (product.discount.type === "percentage") {
-          finalPrice -= (basePrice * product.discount.value) / 100;
-        } else if (product.discount.type === "flat") {
-          finalPrice -= product.discount.value;
-          discountAmount = product.discount.value
+          itemDiscount =
+            (itemSubtotal * discountValue) / 100;
+        }
+
+        else if (product.discount.type === "fixed") {
+          itemDiscount = discountValue;
         }
       }
-      discountAmount = product.discount.value
-      
-      /*  GST  */
-      if (product.gst?.enabled) {
-        finalPrice += (finalPrice * product.gst.rate) / 100;
-        gstAmount = product.gst.rate
+      itemDiscount = Math.min(
+        itemDiscount,
+        itemSubtotal
+      );
+
+      const taxableAmount =
+        itemSubtotal - itemDiscount;
+
+      let itemGst = 0;
+
+      if (product.gst?.enabled === true) {
+        const gstRate =
+          Number(product.gst.rate) || 0;
+
+        itemGst =
+          (taxableAmount * gstRate) / 100;
       }
 
-      finalPrice = Number(finalPrice.toFixed(2));
+      let itemShipping = 0;
 
-      subTotal += finalPrice * item.quantity;
+      if (product.shipping?.enabled === true) {
+        itemShipping =
+          Number(product.shipping.charge) || 0;
+      }
 
-      return {
+      subtotal += itemSubtotal;
+
+      discountAmount += itemDiscount;
+
+      gstAmount += itemGst;
+
+      shippingAmount += itemShipping;
+
+      const itemTotal =
+        taxableAmount +
+        itemGst +
+        itemShipping;
+
+      orderItems.push({
         productId: product._id,
+
         productTitle: product.title,
-        quantity: item.quantity,
-        price: finalPrice, 
-        image: product.image,
 
-        // Optional
-        priceBreakup: {
-          basePrice,
-          discountApplied: product.discount?.enabled || false,
-          gstApplied: product.gst?.enabled || false,
-        },
-      };
-    });
+        quantity,
 
-    /*  CREATE ORDER  */
+        price: Number(price.toFixed(2)),
+      });
+    }
+
+    subtotal = Number(
+      subtotal.toFixed(2)
+    );
+
+    discountAmount = Number(
+      discountAmount.toFixed(2)
+    );
+
+    gstAmount = Number(
+      gstAmount.toFixed(2)
+    );
+
+    shippingAmount = Number(
+      shippingAmount.toFixed(2)
+    );
+
+    const totalAmount = Number(
+      (
+        subtotal -
+        discountAmount +
+        gstAmount +
+        shippingAmount
+      ).toFixed(2)
+    );
+
     const order = await OrderModel.create({
       userId,
+
       items: orderItems,
+
       address,
-      totalAmount: Number(subTotal.toFixed(2)),
-      status: "pending",
-      amount:amount,
-      gstAmount:gstAmount,
-      discountAmount:discountAmount
+
+      amount: subtotal,
+
+      totalAmount,
+
+      discountAmount,
+
+      gstAmount,
+
+      shippingAmount,
+
     });
 
-    /*  CLEAR CART  */
-    // await CartModel.deleteMany({ userId });
-
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
+
+      message: "Order created successfully",
+
       order,
     });
 
-  } catch (err) {
-    console.error("Order Create Error:", err);
-    res.status(500).json({ error: "Order create failed" });
+  } catch (error) {
+    console.log(
+      "Order Create Error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Order create failed",
+    });
   }
 };
 
@@ -104,7 +255,9 @@ const orderCreate = async (req, res) => {
 
 
 
-  //  USER ORDERS
+
+
+//  USER ORDERS
 
 const getOrderProduct = async (req, res) => {
   try {
@@ -135,7 +288,7 @@ const updateOrderStatus = async (req, res) => {
 
     const allowedStatus = [
       "pending",
-      "processing", 
+      "processing",
       "shipped",
       "delivered",
       "cancelled",
@@ -178,16 +331,16 @@ const allOrders = async (req, res) => {
       .sort({ createdAt: -1 });
 
 
-      // console.log(orders)
+    // console.log(orders)
 
-      const sevenDays = new Date();
-      sevenDays.setDate(sevenDays.getDate() - 7);
+    const sevenDays = new Date();
+    sevenDays.setDate(sevenDays.getDate() - 7);
 
-      const lastSevenDaysOrder = orders.filter((order) => {
+    const lastSevenDaysOrder = orders.filter((order) => {
       return new Date(order.createdAt) >= sevenDays
-      });
+    });
 
-      console.log(lastSevenDaysOrder); 
+    console.log(lastSevenDaysOrder);
 
     res.status(200).json({
       success: true,
@@ -200,39 +353,67 @@ const allOrders = async (req, res) => {
   }
 };
 
-const GetOrderDetails = async (req,res) => {
-  try{
+const GetOrderDetails = async (req, res) => {
+  try {
     const userId = req.user;
-    const {orderId} = req.params;
+    const { orderId } = req.params;
 
-    if(!mongoose.Types.ObjectId.isValid(orderId)){
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
       return res.status(400).json({ error: "Invalid Order ID" });
     }
 
-    const orderDetails = await OrderModel.findOne({ _id:orderId});
-console.log(orderDetails)
-    if(!orderDetails){
-      return res.status(404).json({error:"Order Details Not Found"});
+    const orderDetails = await OrderModel.findOne({ _id: orderId });
+    console.log(orderDetails)
+    if (!orderDetails) {
+      return res.status(404).json({ error: "Order Details Not Found" });
     }
 
-    res.status(200).send({message:"Order Details",
-      data:{
-              address:orderDetails?.address,
-      items:orderDetails?.items,
-      amount:orderDetails?.amount,
-      totalAmount:orderDetails?.totalAmount,
-      paymentStatus:orderDetails?.status,
-      orderStatus:orderDetails?.orderStatus,
-      } 
+    res.status(200).send({
+      message: "Order Details",
+      data: {
+        address: orderDetails?.address,
+        items: orderDetails?.items,
+        amount: orderDetails?.amount,
+        totalAmount: orderDetails?.totalAmount,
+        paymentStatus: orderDetails?.status,
+        orderStatus: orderDetails?.orderStatus,
+      }
     });
 
 
-  }catch(err){
+  } catch (err) {
     console.log("error from get order details", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
+
+const getLabelData = async (req, res) => {
+  try {
+    const { orderIds } = req.body;
+
+    if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
+      return res.status(400).json({ error: "Please provide selected Order IDs" });
+    }
+
+    const labelsData = await OrderModel.find({
+      _id: { $in: orderIds }
+    })
+
+    if (!labelsData || labelsData.length === 0) {
+      return res.status(404).json({ error: "No orders found for the provided IDs" });
+    }
+
+    res.status(200).json({
+      message: "Label Data Fetched Successfully",
+      data: labelsData
+    });
+
+  } catch (err) {
+    console.log("Error from get label data API", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 
 
 module.exports = {
@@ -240,5 +421,6 @@ module.exports = {
   getOrderProduct,
   updateOrderStatus,
   allOrders,
-  GetOrderDetails
+  GetOrderDetails,
+  getLabelData
 }

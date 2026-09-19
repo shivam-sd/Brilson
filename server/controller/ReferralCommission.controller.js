@@ -104,7 +104,13 @@ const initializeReferralCommissions = async () => {
   }
 };
 
-initializeReferralCommissions();
+initializeReferralCommissions()
+  .then(() => {
+    console.log("Referral commissions initialized successfully");
+  })
+  .catch((error) => {
+    console.error("Referral commission initialization error:", error);
+  });
 
 
 

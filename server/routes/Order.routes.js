@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {orderCreate, updatePaymentStatus, updateOrderStatus, getOrderProduct, allOrders, GetOrderDetails} = require("../controller/Order.controller");
+const { orderCreate, updatePaymentStatus, updateOrderStatus, getOrderProduct, allOrders, GetOrderDetails, getLabelData } = require("../controller/Order.controller");
 const authUser = require("../middleware/authUserToken");
 const authAdminToken = require("../middleware/authAdminToken");
 
@@ -9,15 +9,18 @@ const authAdminToken = require("../middleware/authAdminToken");
 router.post("/orders/create", authUser, orderCreate);
 router.get("/orders", authUser, getOrderProduct);
 // router.post("/orders/update/paymentStatus", updatePaymentStatus);
- router.get("/allorders",authAdminToken, allOrders);
+router.get("/allorders", authAdminToken, allOrders);
 
 // order status admin change karega.
 router.put("/orders/update/orderStatus", authAdminToken, updateOrderStatus);
 
+router.get("/allorders", authAdminToken, allOrders);
 
 // order details
 
 router.get("/order/details/:orderId", GetOrderDetails);
+
+router.post("/order/details/labelsData", authAdminToken, getLabelData);
 
 
 
