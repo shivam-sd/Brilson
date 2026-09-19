@@ -113,6 +113,7 @@ import RecentCards from "./Admin/RecentCards";
 import EkqrPayment from "./Component/EkqrPayment";
 import LabelsPage from "./Admin/lables/LabelsPage";
 import ReferralCommission from "./Admin/ReferralCommission"
+import NewProfilePage from "./Pages/newProfile/pages/ProfilePage";
 
 
 
@@ -188,7 +189,10 @@ function App() {
 
 
 
+            <Route path="/newpublic/profile/:slug" element={<NewProfilePage />} />
+
             <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
+
             <Route path="/profile/P/edit/:slug" element={<EditParkingTagProfile />} />
             <Route path="/profile/google-review/edit/:activationCode" element={<EditGoogleReviewsProfile />} />
             <Route path="/card/activate" element={<ActivateCard />} />
