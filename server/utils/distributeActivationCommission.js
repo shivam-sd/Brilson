@@ -1,30 +1,74 @@
 const UserModel = require("../models/User.model");
-
-const LEVEL_COMMISSIONS = [100, 50, 30, 20, 10, 5, 5];
+const ReferralCommissionModel = require("../models/ReferralCommission.model");
 
 const distributeActivationCommission = async (activatedUserId) => {
   try {
+    
     let currentUser = await UserModel.findById(activatedUserId);
+
+    if (!currentUser) {
+      console.log("Activated user not found:", activatedUserId);
+      return;
+    }
+
+  
+    const commissionConfigs = await ReferralCommissionModel.find()
+      .sort({ level: 1 })
+      .lean();
+
+    if (!commissionConfigs.length) {
+      console.log("No referral commission configuration found");
+      return;
+    }
+
     let level = 0;
 
-    while (currentUser?.referredBy && level < 7) {
 
-      const upline = await UserModel.findById(currentUser.referredBy);
-      if (!upline) break;
+    while (
+      currentUser?.referredBy &&
+      level < commissionConfigs.length
+    ) {
+      
+      const upline = await UserModel.findById(
+        currentUser.referredBy
+      );
 
-      const commission = LEVEL_COMMISSIONS[level];
+      if (!upline) {
+        console.log(
+          `Upline not found for level ${level + 1}`
+        );
+        break;
+      }
 
-      upline.rewardBalance += commission;
+    
+      const commissionConfig = commissionConfigs[level];
+
+      
+      const commission = Number(commissionConfig.amount) || 0;
+
+    
+      upline.rewardBalance =
+        (Number(upline.rewardBalance) || 0) + commission;
+
       await upline.save();
 
-      console.log(`Level ${level + 1} → ${upline.name} earned ₹${commission}`);
+      console.log(
+        `Level ${commissionConfig.level} → ${upline.name} earned ₹${commission}`
+      );
+
 
       currentUser = upline;
       level++;
     }
 
+    console.log(
+      `Activation commission distribution completed for user ${activatedUserId}`
+    );
   } catch (err) {
-    console.error("Activation Commission Error:", err);
+    console.error(
+      "Activation Commission Error:",
+      err
+    );
   }
 };
 

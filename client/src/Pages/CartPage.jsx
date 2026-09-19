@@ -191,36 +191,46 @@ const CartPage = () => {
     subtotal,
     totalDiscount,
     totalGst,
+    totalShipping,
     total,
     totalItems,
   } = useMemo(() => {
     let subtotal = 0;
     let totalDiscount = 0;
     let totalGst = 0;
+    let totalShipping = 0;
 
     cartItems.forEach((item) => {
       const calc = calculateItemPrice(item);
 
+      const product = getProduct(item);
+
       subtotal += calc.itemTotal;
       totalDiscount += calc.discountAmount;
       totalGst += calc.gstAmount;
+
+      // Shipping
+      if (product.shipping?.enabled) {
+        totalShipping += Number(product.shipping?.charge) || 0;
+      }
     });
 
     const totalItems = cartItems.reduce(
-      (sum, item) =>
-        sum + (item.quantity || 1),
+      (sum, item) => sum + (item.quantity || 1),
       0
     );
 
     const total =
       subtotal -
       totalDiscount +
-      totalGst;
+      totalGst +
+      totalShipping;
 
     return {
       subtotal,
       totalDiscount,
       totalGst,
+      totalShipping,
       total,
       totalItems,
     };
@@ -293,6 +303,7 @@ const CartPage = () => {
           subtotal,
           totalDiscount,
           totalGst,
+          totalShipping,
           total,
         },
       },
@@ -882,149 +893,149 @@ const CartPage = () => {
                     <AnimatePresence>
 
                       {/* {isSummaryExpanded && ( */}
-                        <motion.div
-                          initial={{
-                            height: 0,
-                            opacity: 0,
-                          }}
-                          animate={{
-                            height: "auto",
-                            opacity: 1,
-                          }}
-                          exit={{
-                            height: 0,
-                            opacity: 0,
-                          }}
-                          className="px-4 pb-4 p-2"
-                        >
+                      <motion.div
+                        initial={{
+                          height: 0,
+                          opacity: 0,
+                        }}
+                        animate={{
+                          height: "auto",
+                          opacity: 1,
+                        }}
+                        exit={{
+                          height: 0,
+                          opacity: 0,
+                        }}
+                        className="px-4 pb-4 p-2"
+                      >
 
-                          <div className="space-y-3 pt-3 border-t border-white/10">
+                        <div className="space-y-3 pt-3 border-t border-white/10">
 
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-400">
+                              Subtotal
+                            </span>
+
+                            <span className="font-bold">
+                              ₹
+                              {subtotal.toLocaleString()}
+                            </span>
+                          </div>
+
+                          {totalDiscount > 0 && (
                             <div className="flex justify-between items-center">
                               <span className="text-gray-400">
-                                Subtotal
+                                Discount
                               </span>
 
+                              <span className="text-green-400 font-bold">
+                                -₹
+                                {totalDiscount.toLocaleString()}
+                              </span>
+                            </div>
+                          )}
+
+                          {totalGst > 0 && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-400">
+                                GST
+                              </span>
+
+                              <span className="text-blue-400 font-bold">
+                                +₹
+                                {totalGst.toLocaleString()}
+                              </span>
+                            </div>
+                          )}
+
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-400">
+                              Shipping
+                            </span>
+
+                            <span className="text-green-400">
+                              Free
+                            </span>
+                          </div>
+
+                          <div className="flex justify-between items-center pt-3 border-t border-white/10">
+
+                            <div>
                               <span className="font-bold">
+                                Total
+                              </span>
+
+                              <p className="text-xs text-gray-400">
+                                Final amount after GST & Discount
+                              </p>
+                            </div>
+
+                            <div className="text-right">
+
+                              <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
                                 ₹
-                                {subtotal.toLocaleString()}
-                              </span>
-                            </div>
-
-                            {totalDiscount > 0 && (
-                              <div className="flex justify-between items-center">
-                                <span className="text-gray-400">
-                                  Discount
-                                </span>
-
-                                <span className="text-green-400 font-bold">
-                                  -₹
-                                  {totalDiscount.toLocaleString()}
-                                </span>
-                              </div>
-                            )}
-
-                            {totalGst > 0 && (
-                              <div className="flex justify-between items-center">
-                                <span className="text-gray-400">
-                                  GST
-                                </span>
-
-                                <span className="text-blue-400 font-bold">
-                                  +₹
-                                  {totalGst.toLocaleString()}
-                                </span>
-                              </div>
-                            )}
-
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-400">
-                                Shipping
-                              </span>
-
-                              <span className="text-green-400">
-                                Free
-                              </span>
-                            </div>
-
-                            <div className="flex justify-between items-center pt-3 border-t border-white/10">
-
-                              <div>
-                                <span className="font-bold">
-                                  Total
-                                </span>
-
-                                <p className="text-xs text-gray-400">
-                                  Final amount after GST & Discount
-                                </p>
+                                {total.toLocaleString()}
                               </div>
 
-                              <div className="text-right">
-
-                                <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                                  ₹
-                                  {total.toLocaleString()}
-                                </div>
-
-                                <p className="text-xs text-gray-400">
-                                  {totalItems}{" "}
-                                  {totalItems === 1
-                                    ? "item"
-                                    : "items"}
-                                </p>
-
-                              </div>
+                              <p className="text-xs text-gray-400">
+                                {totalItems}{" "}
+                                {totalItems === 1
+                                  ? "item"
+                                  : "items"}
+                              </p>
 
                             </div>
-
-                            <button
-                              onClick={
-                                handleCheckout
-                              }
-                              className="w-full mt-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
-                            >
-                              <FiLock size={18} />
-
-                              Proceed to Checkout
-
-                              <FiChevronRight />
-                            </button>
-
-                            <div className="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
-
-                              <div className="flex items-start gap-2">
-
-                                <FiShield
-                                  className="text-green-400 mt-0.5 flex-shrink-0"
-                                  size={16}
-                                />
-
-                                <div>
-
-                                  <p className="text-xs text-green-400 font-medium">
-                                    Secure Checkout
-                                  </p>
-
-                                  <p className="text-xs text-gray-400 mt-0.5">
-                                    Your payment information is encrypted and secure
-                                  </p>
-
-                                </div>
-
-                              </div>
-
-                            </div>
-
-                            <Link
-                              to="/products"
-                              className="block w-full mt-3 py-2.5 border border-white/20 hover:border-white/40 text-center rounded-xl hover:bg-white/5 transition-all text-sm"
-                            >
-                              Continue Shopping
-                            </Link>
 
                           </div>
 
-                        </motion.div>
+                          <button
+                            onClick={
+                              handleCheckout
+                            }
+                            className="w-full mt-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                          >
+                            <FiLock size={18} />
+
+                            Proceed to Checkout
+
+                            <FiChevronRight />
+                          </button>
+
+                          <div className="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+
+                            <div className="flex items-start gap-2">
+
+                              <FiShield
+                                className="text-green-400 mt-0.5 flex-shrink-0"
+                                size={16}
+                              />
+
+                              <div>
+
+                                <p className="text-xs text-green-400 font-medium">
+                                  Secure Checkout
+                                </p>
+
+                                <p className="text-xs text-gray-400 mt-0.5">
+                                  Your payment information is encrypted and secure
+                                </p>
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                          <Link
+                            to="/products"
+                            className="block w-full mt-3 py-2.5 border border-white/20 hover:border-white/40 text-center rounded-xl hover:bg-white/5 transition-all text-sm"
+                          >
+                            Continue Shopping
+                          </Link>
+
+                        </div>
+
+                      </motion.div>
                       {/* )} */}
 
                     </AnimatePresence>
@@ -1107,8 +1118,16 @@ const CartPage = () => {
                           Shipping
                         </span>
 
-                        <span className="text-green-400 text-sm sm:text-base">
-                          Free
+                        <span
+                          className={
+                            totalShipping > 0
+                              ? "text-orange-400 font-bold"
+                              : "text-green-400"
+                          }
+                        >
+                          {totalShipping > 0
+                            ? `+₹${totalShipping.toLocaleString()}`
+                            : "Free"}
                         </span>
 
                       </div>

@@ -29,6 +29,7 @@ const AdminPassToProfile = () => {
   const referralCode = balanceData?.referalCode || '';
   const balance = balanceData?.Balance || 0;
 
+  
   // useEffect(() => {
   //   if (isBalanceError) {
   //     toast.error(
@@ -150,13 +151,13 @@ const AdminPassToProfile = () => {
             <FiEye size={14} />
             <span>View</span>
           </Link>
-          <Link
-            to={`/profile/edit/${card.activationCode}`}
-            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
+          <button
+           onClick={() => {navigate(`/profile/edit/${card.activationCode}`, {replace:true})}}
+            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg cursor-pointer"
           >
             <FiEdit size={14} />
             <span>Edit</span>
-          </Link>
+          </button>
         </div>
       </div>
     </motion.div>
@@ -223,13 +224,13 @@ const AdminPassToProfile = () => {
             <FiEye size={14} />
             <span>View</span>
           </Link>
-          <Link
-            to={`/profile/P/edit/${tag.activationCode}`}
-            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
+          <button
+            onClick={() => {navigate(`/profile/P/edit/${tag.activationCode}`, {replace:true})}}
+            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg cursor-pointer"
           >
             <FiEdit size={14} />
             <span>Edit</span>
-          </Link>
+          </button>
         </div>
       </div>
     </motion.div>
@@ -304,13 +305,13 @@ const AdminPassToProfile = () => {
             <FiEye size={14} />
             <span>View</span>
           </Link>
-          <Link
-            to={`/profile/google-review/edit/${review.activationCode}`}
-            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
+          <button
+          onClick={() => {navigate(`/profile/google-review/edit/${review.activationCode}`, {replace:true})}}
+            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg cursor-pointer"
           >
             <FiEdit size={14} />
             <span>Edit</span>
-          </Link>
+          </button>
         </div>
       </div>
     </motion.div>

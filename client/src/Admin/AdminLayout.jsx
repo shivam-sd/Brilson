@@ -68,12 +68,13 @@ const AdminLayout = () => {
     "/admindashboard/products/list": "Admin Products",
     "/admindashboard/orders/list": "Admin Orders",
     "/admindashboard/users/list": "Users List",
-    "/admindashboard/admin/referral": "Referral Management",
     "/admindashboard/customers/list": "Admin Customers",
     "/admindashboard/manage-cards": "Admin Manage Cards (QR)",
     "/admindashboard/manage-cards/card": "Admin Manage Cards (CARD)",
     "/admindashboard/manage-parking-tag": "Admin Manage Parking Tag",
     "/admindashboard/manage-google-reviews": "Admin Manage Google Reviews",
+    "/admindashboard/admin/referral": "Referral Management",
+    "/admindashboard/admin/ReferralCommission": "Referral Commission",
     "/admindashboard/selling-overview": "Admin Selling Overview",
     "/admindashboard/orders/invoices": "Admin Orders Invoices",
     "/admindashboard/landing/page/content": "Admin Landing Page Content",
@@ -301,12 +302,7 @@ const AdminLayout = () => {
             </NavLink>
 
 
-            <NavLink
-              to="admin/referral"
-              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-sm"
-            >
-              <VscReferences size={18} /> Referral Manage...
-            </NavLink>
+
 
             <NavLink
               to="manage-cards"
@@ -335,6 +331,24 @@ const AdminLayout = () => {
             >
               <MdReviews size={18} /> Manage Google Reviews
             </NavLink>
+
+            <NavLink
+              to="admin/referral"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-sm"
+            >
+              <VscReferences size={18} /> Referral Manage...
+            </NavLink>
+
+
+
+                        <NavLink
+              to="admin/ReferralCommission"
+              className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 duration-200 whitespace-nowrap text-sm"
+            >
+              <VscReferences size={18} /> Referral Commiss...
+            </NavLink>
+
+
 
             <NavLink
               to="selling-overview"
