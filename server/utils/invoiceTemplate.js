@@ -296,10 +296,10 @@ module.exports = (order, invoiceAddress) => `
         ` : ''}
         
         <!-- Shipping Cost -->
-        ${order.cost > 0 ? `
+        ${order.shippingAmount > 0 ? `
         <div class="summary-row">
           <span>Shipping Cost</span>
-          <span>+₹${order.cost.toFixed(2)}</span>
+          <span>+₹${order.shippingAmount}</span>
         </div>
         ` : `
         <div class="summary-row">
