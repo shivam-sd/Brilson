@@ -11,7 +11,7 @@ import ServicesSection from "./ServicesSection";
 export const SECTION_COMPONENTS = {
   about: AboutSection,
   services: ServicesSection,
-  portfolio: PortfolioSection,
+  products: PortfolioSection,
   gallery: GallerySection,
   location: LocationSection,
   resume: ResumeSection,

@@ -6,8 +6,9 @@ import ContactActions from "./ContactActions";
 import SocialLinks from "./SocialLinks";
 import SafeImage from "./ui/SafeImage";
 import { Link } from "react-router-dom";
-import { FaGoogle } from "react-icons/fa";
+import { FaGoogle, FaStar } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
+import { FcGoogle } from "react-icons/fc";
 
 const initialsOf = (name) =>
   name
@@ -131,7 +132,33 @@ function ProfileCard({ profile }) {
         <div className="mt-5">
           <ContactActions profile={profile} />
         </div>
-        <div className="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+        <div className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-2">
+          <Link
+            to={profile?.reviewLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Review on Google"
+            className="group flex min-h-[52px] w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
+          >
+            <span className="grid h-10 w-10 shrink-0 place-items-center">
+              <FcGoogle
+                className="h-9 w-9 transition-transform duration-300 group-hover:scale-105"
+                aria-hidden="true"
+              />
+            </span>
+
+            <span className="flex flex-col items-start leading-none">
+              <span className="text-[10px] font-semibold text-white">
+                Google Review
+              </span>
+
+              <span className="mt-1.5 flex items-center gap-0.5 text-[#fbbc04]">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <FaStar key={star} className="h-3 w-3" aria-hidden="true" />
+                ))}
+              </span>
+            </span>
+          </Link>
           <button
             type="button"
             onClick={handleShare}
@@ -145,22 +172,7 @@ function ProfileCard({ profile }) {
             <span>{shareStatus || "Share Profile"}</span>
           </button>
 
-          <Link
-            to={profile?.reviewLink}
-            target="_blank"
-            className="group flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
-          >
-            <FaGoogle className="h-4 w-4" aria-hidden="true" />
 
-            <span className="decoration-white/30 underline-offset-4 group-hover:decoration-orange-400">
-              Review on Google
-            </span>
-
-            <FiExternalLink
-              className="h-4 w-4 text-white/50 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-orange-400"
-              aria-hidden="true"
-            />
-          </Link>
         </div>
 
         <div className="hidden md:block mt-5 border-t border-white/10 pt-5">
