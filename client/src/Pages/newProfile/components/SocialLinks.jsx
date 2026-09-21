@@ -6,10 +6,10 @@ function SocialLinks({ links }) {
   if (!links?.length) return null;
 
   return (
-    <div className="w-full rounded-xl border border-white/10 bg-white/[0.02] p-3">
+    <div className="w-full overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] p-3">
       <ul
         aria-label="Social media"
-        className="grid w-full grid-cols-5 gap-2.5"
+        className="flex w-full gap-2.5 overflow-x-auto pb-1 scrollbar-none"
       >
         {links.map(({ platform, url }) => {
           const config = SOCIAL_PLATFORMS[platform];
@@ -19,7 +19,7 @@ function SocialLinks({ links }) {
           const { Icon, label, className } = config;
 
           return (
-            <li key={platform}>
+            <li key={platform} className="shrink-0">
               <a
                 href={url}
                 target="_blank"
@@ -30,7 +30,7 @@ function SocialLinks({ links }) {
                   group
                   flex
                   min-h-[58px]
-                  w-full
+                  w-[72px]
                   flex-col
                   items-center
                   justify-center
@@ -59,18 +59,19 @@ function SocialLinks({ links }) {
                     className
                   )}
                 >
-                  {platform === "snapchat" ? <Icon
-                    className="h-[15px] w-[15px]"
-                    aria-hidden="true"
-                    stroke="black"
-                    strokeWidth="1.5"
-
-                  />
-                    :
+                  {platform === "snapchat" ? (
                     <Icon
                       className="h-[15px] w-[15px]"
                       aria-hidden="true"
-                    />}
+                      stroke="black"
+                      strokeWidth="1.5"
+                    />
+                  ) : (
+                    <Icon
+                      className="h-[15px] w-[15px]"
+                      aria-hidden="true"
+                    />
+                  )}
                 </span>
 
                 <span className="max-w-full truncate text-[9px] font-medium leading-none text-white/65 group-hover:text-white">
