@@ -24,39 +24,45 @@ const orderSchema = new mongoose.Schema(
     },
 
     items: [
-      {
-        productId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
-        },
+  {
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
 
-        productTitle: {
-          type: String,
-          required: true,
-        },
+    productTitle: {
+      type: String,
+      required: true,
+    },
 
-        variantId: {
-          type: mongoose.Schema.Types.ObjectId,
-        },
+  
+    productImage: {
+      type: String,
+    },
 
-        variantName: {
-          type: String,
-        },
+    variantId: {
+      type: mongoose.Schema.Types.ObjectId,
+    },
 
-        quantity: {
-          type: Number,
-          required: true,
-          min: 1,
-        },
+    variantName: {
+      type: String,
+    },
 
-        price: {
-          type: Number,
-          required: true,
-          min: 0,
-        },
-      },
-    ],
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+  },
+],
+
 
     address: {
       name: {

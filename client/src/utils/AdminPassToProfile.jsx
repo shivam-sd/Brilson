@@ -1,35 +1,258 @@
 import React, { useEffect, useState } from "react";
-import {
-  FiCopy, FiEye, FiEdit, FiCheck, FiPlus
-} from "react-icons/fi";
+import { FiCopy, FiEye, FiEdit2, FiCheck, FiPlus } from "react-icons/fi";
 import { MdOutlineReviews } from "react-icons/md";
 import { FaTags, FaIdCard } from "react-icons/fa";
-import {
-  Wallet, Gift
-} from "lucide-react";
-import { motion } from "framer-motion";
+import { Wallet, Gift } from "lucide-react";
 import { Toaster, toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import Header from "../Component/Header";
 import Footer from "../Component/Footer";
 import ReferralDashboard from "./ReferralDashboard";
-import { useSelector } from "react-redux";
-import { useGetBalance, useGetUserCards, useGetUserGoogleReviews, useGetUserParkingTags } from "../api/client-query";
+import {
+  useGetBalance,
+  useGetUserCards,
+  useGetUserGoogleReviews,
+  useGetUserParkingTags,
+} from "../api/client-query";
 
+/* ------------------------------------------------------------------ */
+/*  Design tokens (static class names so Tailwind never purges them)   */
+/* ------------------------------------------------------------------ */
+const ACCENTS = {
+  indigo: {
+    tint: "bg-indigo-500/10 text-indigo-400",
+    solid: "bg-indigo-500 hover:bg-indigo-400 text-white",
+    soft: "bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20",
+  },
+  emerald: {
+    tint: "bg-emerald-500/10 text-emerald-400",
+    solid: "bg-emerald-500 hover:bg-emerald-400 text-white",
+    soft: "bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20",
+  },
+  rose: {
+    tint: "bg-rose-500/10 text-rose-400",
+    solid: "bg-rose-500 hover:bg-rose-400 text-white",
+    soft: "bg-rose-500/10 text-rose-300 hover:bg-rose-500/20",
+  },
+};
 
+const FOCUS =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950";
+
+/* ------------------------------------------------------------------ */
+/*  Small building blocks                                              */
+/* ------------------------------------------------------------------ */
+const StatusPill = ({ active }) => (
+  <span
+    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
+      active ? "bg-emerald-500/10 text-emerald-400" : "bg-amber-500/10 text-amber-400"
+    }`}
+  >
+    <span
+      className={`h-1.5 w-1.5 rounded-full ${active ? "bg-emerald-400" : "bg-amber-400"}`}
+    />
+    {active ? "Active" : "Inactive"}
+  </span>
+);
+
+const SkeletonGrid = () => (
+  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {[1, 2, 3].map((i) => (
+      <div
+        key={i}
+        className="animate-pulse rounded-2xl border border-zinc-800 bg-zinc-900 p-5"
+      >
+        <div className="flex items-center gap-3">
+          <div className="h-11 w-11 rounded-xl bg-zinc-800" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 w-2/3 rounded bg-zinc-800" />
+            <div className="h-3 w-1/2 rounded bg-zinc-800" />
+          </div>
+        </div>
+        <div className="mt-5 h-3 w-1/3 rounded bg-zinc-800" />
+        <div className="mt-5 grid grid-cols-2 gap-2">
+          <div className="h-9 rounded-lg bg-zinc-800" />
+          <div className="h-9 rounded-lg bg-zinc-800" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+/* One reusable card for cards / tags / reviews */
+const ItemCard = ({
+  accent,
+  leading,
+  title,
+  subtitle,
+  isActivated,
+  details = [],
+  viewTo,
+  editTo,
+}) => {
+  const navigate = useNavigate();
+  const a = ACCENTS[accent];
+
+  return (
+    <article className="flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900 p-5 transition-colors hover:border-zinc-700">
+      <div className="flex items-start gap-3">
+        <div
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg font-semibold ${a.tint}`}
+        >
+          {leading}
+        </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-base font-semibold text-zinc-100">{title}</h3>
+          <div className="mt-0.5 line-clamp-2 text-sm text-zinc-400">{subtitle}</div>
+        </div>
+      </div>
+
+      <div className="mt-5 flex items-center justify-between">
+        <StatusPill active={isActivated} />
+      </div>
+
+      {details.length > 0 && (
+        <dl className="mt-4 space-y-2 border-t border-zinc-800 pt-4 text-sm">
+          {details.map((d) => (
+            <div key={d.label} className="flex items-center justify-between gap-3">
+              <dt className="text-zinc-500">{d.label}</dt>
+              <dd className="truncate font-mono text-xs text-zinc-300">{d.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      <div className="mt-5 grid grid-cols-2 gap-2 pt-1">
+        <Link
+          to={viewTo}
+          className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${a.soft} ${FOCUS}`}
+        >
+          <FiEye size={15} />
+          View
+        </Link>
+        <button
+          type="button"
+          onClick={() => navigate(editTo, { replace: true })}
+          className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-zinc-800 px-3 py-2 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-700 ${FOCUS}`}
+        >
+          <FiEdit2 size={15} />
+          Edit
+        </button>
+      </div>
+    </article>
+  );
+};
+
+/* Section wrapper: header + loading / list / empty state */
+const Section = ({
+  accent,
+  icon: Icon,
+  title,
+  items,
+  loading,
+  hasActive,
+  activatePath,
+  activateLabel,
+  emptyTitle,
+  emptyText,
+  renderItem,
+}) => {
+  const navigate = useNavigate();
+  const a = ACCENTS[accent];
+  const count = items.length;
+  const activeCount = items.filter((i) => i.isActivated === true).length;
+
+  return (
+    <section className="mb-14">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${a.tint}`}>
+            <Icon size={20} />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-zinc-100">{title}</h2>
+            <p className="text-sm text-zinc-500">
+              {loading
+                ? "Loading…"
+                : count === 0
+                ? "Nothing added yet"
+                : `${count} total, ${hasActive ? activeCount : 0} active`}
+            </p>
+          </div>
+        </div>
+
+        {!loading && count === 0 && (
+          <button
+            type="button"
+            onClick={() => navigate(activatePath)}
+            className={`inline-flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${a.solid} ${FOCUS}`}
+          >
+            <FiPlus size={16} />
+            {activateLabel}
+          </button>
+        )}
+      </div>
+
+      {loading ? (
+        <SkeletonGrid />
+      ) : count > 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((item, index) => renderItem(item, index))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center rounded-2xl border border-dashed border-zinc-800 px-6 py-12 text-center">
+          <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${a.tint}`}>
+            <Icon size={26} />
+          </div>
+          <h3 className="text-base font-semibold text-zinc-100">{emptyTitle}</h3>
+          <p className="mt-1 max-w-sm text-sm text-zinc-400">{emptyText}</p>
+          <Link
+            to={activatePath}
+            className={`mt-5 inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors ${a.solid} ${FOCUS}`}
+          >
+            <FiPlus size={16} />
+            {activateLabel}
+          </Link>
+        </div>
+      )}
+    </section>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/*  Page                                                               */
+/* ------------------------------------------------------------------ */
 const AdminPassToProfile = () => {
   const [copied, setCopied] = useState(false);
-  const navigate = useNavigate();
 
-  const { data: balanceData, isLoading: isBalanceLoading, isError: isBalanceError, error: balanceError } = useGetBalance();
-  const { data: cards = [], isLoading: isUserCardsLoading, isError: isUserCardsError, error: userCardsError } = useGetUserCards(balanceData?.userId);
-  const { data: parkingTags = [], isLoading: isTagsLoading, isError: isTagsError, error: tagsError } = useGetUserParkingTags(balanceData?.userId);
-  const { data: googleReviews = [], isLoading: isReviewsLoading, isError: isReviewsError, error: reviewsError } = useGetUserGoogleReviews(balanceData?.userId);
-  const referralCode = balanceData?.referalCode || '';
+  const {
+    data: balanceData,
+    isLoading: isBalanceLoading,
+    isError: isBalanceError,
+    error: balanceError,
+  } = useGetBalance();
+  const {
+    data: cards = [],
+    isLoading: isUserCardsLoading,
+    isError: isUserCardsError,
+    error: userCardsError,
+  } = useGetUserCards(balanceData?.userId);
+  const {
+    data: parkingTags = [],
+    isLoading: isTagsLoading,
+    isError: isTagsError,
+    error: tagsError,
+  } = useGetUserParkingTags(balanceData?.userId);
+  const {
+    data: googleReviews = [],
+    isLoading: isReviewsLoading,
+    isError: isReviewsError,
+    error: reviewsError,
+  } = useGetUserGoogleReviews(balanceData?.userId);
+
+  const referralCode = balanceData?.referalCode || "";
   const balance = balanceData?.Balance || 0;
 
-  
   // useEffect(() => {
   //   if (isBalanceError) {
   //     toast.error(
@@ -60,293 +283,11 @@ const AdminPassToProfile = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const hasActiveCards = cards.some(card => card.isActivated === true);
-  const hasActiveTags = parkingTags.some(tag => tag.isActivated === true);
-  const hasActiveReviews = googleReviews.some(review => review.isActivated === true);
+  const hasActiveCards = cards.some((card) => card.isActivated === true);
+  const hasActiveTags = parkingTags.some((tag) => tag.isActivated === true);
+  const hasActiveReviews = googleReviews.some((review) => review.isActivated === true);
 
-  // Loading Skeleton Component
-  const LoadingSkeleton = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="relative bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-hidden">
-          <div className="animate-pulse">
-            <div className="flex items-center justify-center mb-3">
-              <div className="w-14 h-14 rounded-full bg-gray-700/50" />
-            </div>
-            <div className="text-center mb-3">
-              <div className="h-5 bg-gray-700/50 rounded-lg w-32 mx-auto mb-2" />
-              <div className="h-3 bg-gray-700/50 rounded-lg w-24 mx-auto" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="h-3 bg-gray-700/50 rounded w-16" />
-                <div className="h-5 bg-gray-700/50 rounded w-20" />
-              </div>
-            </div>
-            <div className="flex items-center gap-2 mt-4">
-              <div className="flex-1 h-9 bg-gray-700/50 rounded-lg" />
-              <div className="flex-1 h-9 bg-gray-700/50 rounded-lg" />
-            </div>
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-shimmer" />
-        </div>
-      ))}
-    </div>
-  );
-
-  // Card Item Component
-  const CardItem = ({ card, index }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
-      whileHover={{ y: -4, scale: 1.02 }}
-      className="group"
-    >
-      <div className="relative bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-gray-800/80 backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-hidden hover:border-cyan-500/30 transition-all duration-300">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-2xl group-hover:opacity-100 opacity-0 transition-opacity" />
-
-        <div className="mb-4">
-          <div className="flex items-center justify-center mb-3">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-2 border-cyan-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <span className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                {card.profile?.name?.charAt(0) || card.name?.charAt(0) || "C"}
-              </span>
-            </div>
-          </div>
-
-          <div className="text-center mb-3">
-            <h3 className="text-lg font-bold text-white mb-1 truncate">
-              {card.profile?.name || card.name || "Unnamed Card"}
-            </h3>
-            <p className="text-gray-400 text-xs line-clamp-2">
-              {card.profile?.bio || card.bio || "No bio added"}
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-xs">Status</span>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${card.isActivated
-                ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                }`}>
-                {card.isActivated ? "Active" : "Inactive"}
-              </span>
-            </div>
-            {card.activationCode && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400 text-xs">Code</span>
-                <span className="text-white text-xs font-mono truncate">{card.activationCode.slice(0, 8)}...</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Link
-            to={`/profile/${card.activationCode}`}
-            className="flex-1 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
-          >
-            <FiEye size={14} />
-            <span>View</span>
-          </Link>
-          <button
-           onClick={() => {navigate(`/profile/edit/${card.activationCode}`, {replace:true})}}
-            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg cursor-pointer"
-          >
-            <FiEdit size={14} />
-            <span>Edit</span>
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  );
-
-  // Parking Tag Item Component
-  const ParkingTagItem = ({ tag, index }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
-      whileHover={{ y: -4, scale: 1.02 }}
-      className="group"
-    >
-      <div className="relative bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-gray-800/80 backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-hidden hover:border-emerald-500/30 transition-all duration-300">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-green-500/10 rounded-full blur-2xl group-hover:opacity-100 opacity-0 transition-opacity" />
-
-        <div className="mb-4">
-          <div className="flex items-center justify-center mb-3">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500/20 to-green-500/20 border-2 border-emerald-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <FaTags className="text-emerald-400 text-2xl" />
-            </div>
-          </div>
-
-          <div className="text-center mb-3">
-            <h3 className="text-lg font-bold text-white mb-1 truncate">
-              {tag?.profile?.ownerName || "Parking Tag"}
-            </h3>
-            <p className="text-gray-400 text-xs">
-              {tag?.profile?.vehicleNumber ? `Vehicle: ${tag?.profile?.vehicleNumber}` : "Vehicle Number not added"}
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-xs">Status</span>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${tag.isActivated
-                ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                }`}>
-                {tag.isActivated ? "Active" : "Inactive"}
-              </span>
-            </div>
-            {tag.activationCode && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400 text-xs">Code</span>
-                <span className="text-white text-xs font-mono truncate">{tag.activationCode.slice(0, 8)}...</span>
-              </div>
-            )}
-            {tag.tagId && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400 text-xs">Tag ID</span>
-                <span className="text-white text-xs font-mono truncate">{tag.tagId.slice(0, 8)}...</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Link
-            to={`/profile/P/${tag.activationCode}`}
-            className="flex-1 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
-          >
-            <FiEye size={14} />
-            <span>View</span>
-          </Link>
-          <button
-            onClick={() => {navigate(`/profile/P/edit/${tag.activationCode}`, {replace:true})}}
-            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg cursor-pointer"
-          >
-            <FiEdit size={14} />
-            <span>Edit</span>
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  );
-
-  // Google Review Item Component
-  const GoogleReviewItem = ({ review, index }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
-      whileHover={{ y: -4, scale: 1.02 }}
-      className="group"
-    >
-      <div className="relative bg-gradient-to-br from-gray-900/80 via-gray-900/60 to-gray-800/80 backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-hidden hover:border-red-500/30 transition-all duration-300">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-red-500/10 to-orange-500/10 rounded-full blur-2xl group-hover:opacity-100 opacity-0 transition-opacity" />
-
-        <div className="mb-4">
-          <div className="flex items-center justify-center mb-3">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500/20 to-orange-500/20 border-2 border-red-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-
-
-              <MdOutlineReviews className="text-red-400 text-2xl" />
-
-            </div>
-          </div>
-
-          <div className="text-center mb-3">
-            <h3 className="text-lg font-bold text-white mb-1 truncate">
-              {review.profile?.brandName || "Google Review"}
-            </h3>
-            <p className="text-gray-400 text-xs line-clamp-2">
-              {review.profile?.googleReviewLink ? (
-                <Link
-                  to={review.profile.googleReviewLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-green-500 hover:text-red-300 truncate block"
-                >
-                  {review.profile.googleReviewLink.length > 40
-                    ? `${review.profile.googleReviewLink.substring(0, 40)}...`
-                    : review.profile.googleReviewLink}
-                </Link>
-              ) : "No review link added"}
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-xs">Status</span>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${review.isActivated
-                ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                }`}>
-                {review.isActivated ? "Active" : "Inactive"}
-              </span>
-            </div>
-            {review.activationCode && (
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400 text-xs">Code</span>
-                <span className="text-white text-xs font-mono truncate">{review.activationCode.slice(0, 8)}...</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Link
-            to={`/profile/google-review/${review.activationCode}`}
-            className="flex-1 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 rounded-lg text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg"
-          >
-            <FiEye size={14} />
-            <span>View</span>
-          </Link>
-          <button
-          onClick={() => {navigate(`/profile/google-review/edit/${review.activationCode}`, {replace:true})}}
-            className="flex-1 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-1 text-sm group-hover:shadow-lg cursor-pointer"
-          >
-            <FiEdit size={14} />
-            <span>Edit</span>
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  );
-
-  // Section Header Component
-  const SectionHeader = ({ icon: Icon, title, count, hasItems, onActivate, loading, buttonText = "Activate Now", gradientColors = "from-cyan-500/20 to-blue-500/20", iconColor = "text-cyan-400" }) => (
-    <div className="mb-6">
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-3 tracking-widest font-Roboto">
-          <div className={`p-3 rounded-xl bg-gradient-to-br ${gradientColors} border border-${iconColor.split('-')[1]}-500/30`}>
-            <Icon className={iconColor} size={24} />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              {title}
-            </h3>
-            <p className="text-sm text-gray-400">
-              {loading ? "Loading..." : `${count} item${count !== 1 ? 's' : ''} • ${hasItems ? "Has active items" : "No active items"}`}
-            </p>
-          </div>
-        </div>
-
-        {!loading && count === 0 && (
-          <button
-            onClick={onActivate}
-            className="px-5 py-2.5 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 rounded-xl text-yellow-400 hover:from-yellow-500/30 hover:to-amber-500/30 transition-all flex items-center gap-2 text-sm font-medium cursor-pointer hover:shadow-lg"
-          >
-            <FiPlus size={16} />
-            <span>{buttonText}</span>
-          </button>
-        )}
-      </div>
-    </div>
-  );
+  const shortCode = (v) => (v ? `${v.slice(0, 8)}…` : "");
 
   return (
     <>
@@ -354,10 +295,9 @@ const AdminPassToProfile = () => {
         position="top-right"
         toastOptions={{
           style: {
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-            color: '#fff',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(10px)',
+            background: "#18181b",
+            color: "#f4f4f5",
+            border: "1px solid #27272a",
           },
           duration: 3000,
         }}
@@ -365,238 +305,193 @@ const AdminPassToProfile = () => {
 
       <Header />
 
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f1117] to-[#0a0a0f] text-white pt-24 pb-12">
-        {/* Animated Background */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/5 rounded-full blur-3xl" />
+      <main className="min-h-screen bg-zinc-950 pb-16 pt-24 text-zinc-100">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
-          <div
-            className="absolute inset-0 opacity-5"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)`,
-              backgroundSize: '40px 40px'
-            }}
-          />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          {/* Hero Section with Balance & Referral */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-12"
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Balance Card */}
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 border border-white/10 p-6">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-2xl" />
-                <div className="relative flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
-                    <Wallet className="text-cyan-400" size={28} />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-400 tracking-widest font-Roboto">Available Balance</p>
-                    {isBalanceLoading ? (
-                      <div className="h-8 w-32 bg-gray-700/50 rounded-lg animate-pulse mt-1" />
-                    ) : (
-                      <p className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent tracking-widest font-Roboto">
-                        ₹{balance}
-                      </p>
-                    )}
-                  </div>
+          {/* Balance + referral */}
+          <div className="mb-14 grid gap-4 md:grid-cols-2">
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
+                  <Wallet size={24} />
                 </div>
-              </div>
-
-              {/* Referral Card */}
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 border border-white/10 p-6">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-yellow-500/10 to-amber-500/10 rounded-full blur-2xl" />
-                <div className="relative flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/30">
-                      <Gift className="text-yellow-400" size={28} />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400 tracking-widest font-Roboto">Referral Code</p>
-                      {isBalanceLoading ? (
-                        <div className="h-6 w-40 bg-gray-700/50 rounded-lg animate-pulse mt-1" />
-                      ) : (
-                        <code className="text-xl font-bold text-yellow-300 tracking-widest font-Roboto">
-                          {referralCode ? referralCode : "Activate Your Card First!"}
-                        </code>
-                      )}
-                    </div>
-                  </div>
-
-                  {!isBalanceLoading && (
-                    <button
-                      onClick={copyReferralCode}
-                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/30 hover:from-yellow-500/30 hover:to-amber-500/30 transition-all flex items-center gap-2 cursor-pointer"
-                    >
-                      {copied ? (
-                        <>
-                          <FiCheck className="text-green-400" size={18} />
-                          <span className="text-sm">Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <FiCopy className="text-yellow-400" size={18} />
-                          <span className="text-sm">Copy</span>
-                        </>
-                      )}
-                    </button>
+                <div>
+                  <p className="text-sm text-zinc-400">Available balance</p>
+                  {isBalanceLoading ? (
+                    <div className="mt-2 h-8 w-32 animate-pulse rounded-lg bg-zinc-800" />
+                  ) : (
+                    <p className="mt-0.5 text-3xl font-semibold tracking-tight text-zinc-50">
+                      ₹{balance}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
-          </motion.div>
 
-          {/* Digital Cards Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mb-12"
-          >
-            <SectionHeader
-              icon={FaIdCard}
-              title="Digital Cards"
-              count={cards.length}
-              hasItems={hasActiveCards}
-              loading={isUserCardsLoading}
-              onActivate={() => navigate("/card/activate")}
-              buttonText="Activate Card"
-            />
-
-            {isUserCardsLoading ? (
-              <LoadingSkeleton />
-            ) : cards.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 tracking-widest font-Roboto">
-                {cards.map((card, index) => (
-                  <CardItem key={card._id || index} card={card} index={index} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-16 bg-gray-900/30 rounded-2xl border border-white/10 ">
-                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 flex items-center justify-center">
-                  <FaIdCard className="text-gray-500" size={32} />
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+                    <Gift size={24} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-zinc-400">Your referral code</p>
+                    {isBalanceLoading ? (
+                      <div className="mt-2 h-6 w-40 animate-pulse rounded-lg bg-zinc-800" />
+                    ) : (
+                      <p
+                        className={`mt-0.5 font-mono ${
+                          referralCode
+                            ? "text-xl font-semibold text-zinc-50"
+                            : "text-sm text-zinc-400"
+                        }`}
+                      >
+                        {referralCode ? referralCode : "Activate a card to get your code"}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">No Digital Cards Yet</h3>
-                <p className="text-gray-400 mb-6 text-sm">Create your first digital card to showcase your profile</p>
-                <Link
-                  to="/card/activate"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl text-white font-medium hover:from-cyan-600 hover:to-blue-600 transition-all shadow-lg"
-                >
-                  <FiPlus size={16} />
-                  <span>Activate Card</span>
-                </Link>
+
+                {!isBalanceLoading && (
+                  <button
+                    type="button"
+                    onClick={copyReferralCode}
+                    className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-700 ${FOCUS}`}
+                  >
+                    {copied ? (
+                      <>
+                        <FiCheck className="text-emerald-400" size={16} />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <FiCopy size={16} />
+                        Copy
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
+            </div>
+          </div>
+
+          {/* Digital cards */}
+          <Section
+            accent="indigo"
+            icon={FaIdCard}
+            title="Digital cards"
+            items={cards}
+            loading={isUserCardsLoading}
+            hasActive={hasActiveCards}
+            activatePath="/card/activate"
+            activateLabel="Activate card"
+            emptyTitle="No digital cards yet"
+            emptyText="Activate your first card to share your profile with a single tap."
+            renderItem={(card, index) => (
+              <ItemCard
+                key={card._id || index}
+                accent="indigo"
+                leading={card.profile?.name?.charAt(0) || card.name?.charAt(0) || "C"}
+                title={card.profile?.name || card.name || "Unnamed card"}
+                subtitle={card.profile?.bio || card.bio || "No bio added"}
+                isActivated={card.isActivated}
+                details={
+                  card.activationCode
+                    ? [{ label: "Code", value: shortCode(card.activationCode) }]
+                    : []
+                }
+                viewTo={`/profile/${card.activationCode}`}
+                editTo={`/profile/edit/${card.activationCode}`}
+              />
             )}
-          </motion.div>
+          />
 
-          {/* Parking Tags Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mb-12"
-          >
-            <SectionHeader
-              icon={FaTags}
-              title="Parking Tags"
-              count={parkingTags.length}
-              hasItems={hasActiveTags}
-              loading={isTagsLoading}
-              onActivate={() => navigate("/parking-tag/activate")}
-              buttonText="Activate Parking Tag"
-              gradientColors="from-emerald-500/20 to-green-500/20"
-              iconColor="text-emerald-400"
-            />
-
-            {isTagsLoading ? (
-              <LoadingSkeleton />
-            ) : parkingTags.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 tracking-widest font-Roboto">
-                {parkingTags.map((tag, index) => (
-                  <ParkingTagItem key={tag._id || index} tag={tag} index={index} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-16 bg-gray-900/30 rounded-2xl border border-white/10">
-                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 flex items-center justify-center ">
-                  <FaTags className="text-gray-500" size={32} />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">No Parking Tags Yet</h3>
-                <p className="text-gray-400 mb-6 text-sm">Activate a parking tag for convenient parking access</p>
-                <Link
-                  to="/parking-tag/activate"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl text-white font-medium hover:from-emerald-600 hover:to-green-600 transition-all shadow-lg"
-                >
-                  <FiPlus size={16} />
-                  <span>Activate Parking Tag</span>
-                </Link>
-              </div>
+          {/* Parking tags */}
+          <Section
+            accent="emerald"
+            icon={FaTags}
+            title="Parking tags"
+            items={parkingTags}
+            loading={isTagsLoading}
+            hasActive={hasActiveTags}
+            activatePath="/parking-tag/activate"
+            activateLabel="Activate parking tag"
+            emptyTitle="No parking tags yet"
+            emptyText="Activate a tag so people can reach you when your vehicle needs to move."
+            renderItem={(tag, index) => (
+              <ItemCard
+                key={tag._id || index}
+                accent="emerald"
+                leading={<FaTags size={18} />}
+                title={tag?.profile?.ownerName || "Parking tag"}
+                subtitle={
+                  tag?.profile?.vehicleNumber
+                    ? `Vehicle: ${tag.profile.vehicleNumber}`
+                    : "Vehicle number not added"
+                }
+                isActivated={tag.isActivated}
+                details={[
+                  ...(tag.activationCode
+                    ? [{ label: "Code", value: shortCode(tag.activationCode) }]
+                    : []),
+                  ...(tag.tagId ? [{ label: "Tag ID", value: shortCode(tag.tagId) }] : []),
+                ]}
+                viewTo={`/profile/P/${tag.activationCode}`}
+                editTo={`/profile/P/edit/${tag.activationCode}`}
+              />
             )}
-          </motion.div>
+          />
 
-          {/* Google Reviews Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mb-12"
-          >
-            <SectionHeader
-              icon={MdOutlineReviews}
-              title="Google Reviews"
-              count={googleReviews.length}
-              hasItems={hasActiveReviews}
-              loading={isReviewsLoading}
-              onActivate={() => navigate("/google-reviews/activate")}
-              buttonText="Activate Google Review"
-              gradientColors="from-red-500/20 to-orange-500/20"
-              iconColor="text-red-400"
-            />
-
-            {isReviewsLoading ? (
-              <LoadingSkeleton />
-            ) : googleReviews.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 tracking-widest font-Roboto">
-                {googleReviews.map((review, index) => (
-                  <GoogleReviewItem key={review._id || index} review={review} index={index} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-16 bg-gray-900/30 rounded-2xl border border-white/10">
-                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 flex items-center justify-center">
-                  <MdOutlineReviews className="text-gray-500" size={32} />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">No Google Reviews Yet</h3>
-                <p className="text-gray-400 mb-6 text-sm">Activate Google Reviews to collect and manage customer feedback</p>
-                <Link
-                  to="/google-reviews/activate"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl text-white font-medium hover:from-red-600 hover:to-orange-600 transition-all shadow-lg"
-                >
-                  <FiPlus size={16} />
-                  <span>Activate Google Reviews</span>
-                </Link>
-              </div>
+          {/* Google reviews */}
+          <Section
+            accent="rose"
+            icon={MdOutlineReviews}
+            title="Google reviews"
+            items={googleReviews}
+            loading={isReviewsLoading}
+            hasActive={hasActiveReviews}
+            activatePath="/google-reviews/activate"
+            activateLabel="Activate Google review"
+            emptyTitle="No Google review links yet"
+            emptyText="Activate a review link to collect customer feedback faster."
+            renderItem={(review, index) => (
+              <ItemCard
+                key={review._id || index}
+                accent="rose"
+                leading={<MdOutlineReviews size={22} />}
+                title={review.profile?.brandName || "Google review"}
+                subtitle={
+                  review.profile?.googleReviewLink ? (
+                    <a
+                      href={review.profile.googleReviewLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block truncate text-rose-300 underline-offset-2 hover:underline"
+                    >
+                      {review.profile.googleReviewLink.length > 40
+                        ? `${review.profile.googleReviewLink.substring(0, 40)}…`
+                        : review.profile.googleReviewLink}
+                    </a>
+                  ) : (
+                    "No review link added"
+                  )
+                }
+                isActivated={review.isActivated}
+                details={
+                  review.activationCode
+                    ? [{ label: "Code", value: shortCode(review.activationCode) }]
+                    : []
+                }
+                viewTo={`/profile/google-review/${review.activationCode}`}
+                editTo={`/profile/google-review/edit/${review.activationCode}`}
+              />
             )}
-          </motion.div>
+          />
 
-          {/* Referral Dashboard */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <ReferralDashboard />
-          </motion.div>
-
+          {/* Referral dashboard */}
+          <ReferralDashboard />
         </div>
-      </div>
+      </main>
 
       <Footer />
     </>
