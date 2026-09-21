@@ -183,7 +183,7 @@ const Layout = () => {
                     className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex gap-1 border-white/30 border-2 p-2 rounded-lg cursor-pointer flex items-center justify-center"
                   >
                     <IoIosArrowRoundBack size={30} color="white" />
-                    Go Back
+                    Go Home
                   </button>
 
 
@@ -283,7 +283,7 @@ const Layout = () => {
                     className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex gap-1 border-white/30 border-2 p-2 rounded-lg cursor-pointer"
                   >
                     <IoIosArrowRoundBack size={28} color="white" />
-                    Go Back
+                    Go Home
                   </button>
                 </div>
               )}
