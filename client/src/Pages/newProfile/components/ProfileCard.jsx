@@ -1,6 +1,6 @@
 import { memo, useState } from "react";
 import { FaLocationDot, FaShareNodes } from "react-icons/fa6";
-import { LuCheck } from "react-icons/lu";
+import { LuCheck, LuPencil } from "react-icons/lu";
 import { BOTTOM_QUOTE, HANDWRITTEN_LINES } from "../data/profileConfig";
 import ContactActions from "./ContactActions";
 import SocialLinks from "./SocialLinks";
@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 import { FaGoogle, FaStar } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../../store/slices/authSlice";
 
 const initialsOf = (name) =>
   name
@@ -19,8 +21,10 @@ const initialsOf = (name) =>
     .join("")
     .toUpperCase();
 
-function ProfileCard({ profile }) {
+function ProfileCard({ profile, code }) {
   const [shareStatus, setShareStatus] = useState("");
+  const currentUserId = useSelector(selectUser)
+  const isOwner = currentUserId?._id === profile?.profileId
 
   const { name, tagline, location, profileImage, coverImage, verified, socialLinks, image } = profile;
 
@@ -66,6 +70,14 @@ function ProfileCard({ profile }) {
       className="overflow-hidden rounded-[22px] border border-white/10 bg-gradient-to-b from-[#0a1016] to-[#03060a] shadow-[0_24px_60px_-24px_rgba(0,0,0,1)]"
     >
       <div className="relative h-[300px] sm:h-[340px]">
+        {isOwner && <Link
+          to={`/profile/edit/${code}`}
+          aria-label="Edit profile"
+          className="absolute right-4 top-4 z-20 inline-flex items-center gap-2 rounded-lg border border-orange-400/40 bg-[#05090d]/85 px-3 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-orange-400 hover:bg-orange-500/10 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 motion-reduce:transition-none sm:right-5 sm:top-5"
+        >
+          <LuPencil className="h-4 w-4" aria-hidden="true" />
+          <span>Edit</span>
+        </Link>}
         <div className="absolute inset-0">
           <SafeImage
             src={coverImage}

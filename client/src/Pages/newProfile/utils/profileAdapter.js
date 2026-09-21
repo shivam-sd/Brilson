@@ -29,6 +29,7 @@ export function normalizeProfile(cardRes, logoRes, reviewLink) {
       email: p.email || "",
     },
     socialLinks,
-    reviewLink
+    reviewLink,
+    profileId: cardRes?.card?.owner?._id,
   };
 }

@@ -51,7 +51,7 @@ export default function ProfilePage() {
           {loading ? (
             <ProfileCardSkeleton />
           ) : profile ? (
-            <ProfileCard profile={profile} logoData={logoQuery?.data} />
+            <ProfileCard profile={profile} code={code} />
           ) : (
             <ProfileError canRetry={cardQuery.isError} onRetry={() => cardQuery.refetch()} />
           )}
