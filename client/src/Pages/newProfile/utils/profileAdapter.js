@@ -1,7 +1,7 @@
 import { SOCIAL_PLATFORMS } from "../data/profileConfig";
 import { buildPhone, ensureUrl } from "./helpers";
 
-export function normalizeProfile(cardRes, logoRes) {
+export function normalizeProfile(cardRes, logoRes, reviewLink) {
   if (!cardRes) return null;
 
   const p = cardRes.profile ?? cardRes.card?.profile ?? {};
@@ -29,5 +29,6 @@ export function normalizeProfile(cardRes, logoRes) {
       email: p.email || "",
     },
     socialLinks,
+    reviewLink
   };
 }

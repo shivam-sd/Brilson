@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useGetCard, useGetProfileLogo } from "../api/profileApi";
+import { useGetCard, useGetLocation, useGetProfileLogo } from "../api/profileApi";
 import AccordionList from "../components/AccordionList";
 import ProfileCard from "../components/ProfileCard";
 import ProfileCardSkeleton from "../components/ProfileCardSkeleton";
@@ -30,11 +30,12 @@ export default function ProfilePage() {
   const { slug: code } = useParams()
   const cardQuery = useGetCard(code);
   const logoQuery = useGetProfileLogo(code);
+  const googleReviewData = useGetLocation(code);
 
   const loading = cardQuery.isLoading || logoQuery.isLoading;
   const profile = useMemo(
-    () => normalizeProfile(cardQuery.data, logoQuery.data?.profileLogo),
-    [cardQuery.data, logoQuery.data?.profileLogo]
+    () => normalizeProfile(cardQuery.data, logoQuery.data?.profileLogo, googleReviewData?.data?.data?.googleReviewLink),
+    [cardQuery.data, logoQuery.data?.profileLogo, googleReviewData?.data?.data?.googleReviewLink]
   );
 
   return (

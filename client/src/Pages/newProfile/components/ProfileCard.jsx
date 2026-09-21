@@ -5,6 +5,9 @@ import { BOTTOM_QUOTE, HANDWRITTEN_LINES } from "../data/profileConfig";
 import ContactActions from "./ContactActions";
 import SocialLinks from "./SocialLinks";
 import SafeImage from "./ui/SafeImage";
+import { Link } from "react-router-dom";
+import { FaGoogle } from "react-icons/fa";
+import { FiExternalLink } from "react-icons/fi";
 
 const initialsOf = (name) =>
   name
@@ -128,11 +131,11 @@ function ProfileCard({ profile }) {
         <div className="mt-5">
           <ContactActions profile={profile} />
         </div>
-        <div className="mt-5">
+        <div className="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
           <button
             type="button"
             onClick={handleShare}
-            className="group mx-auto flex w-full max-w-[320px] items-center justify-center gap-2.5 rounded-xl border border-white/10  px-5 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60  active:translate-y-0 motion-reduce:transition-none"
+            className="group flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
             aria-label="Share profile"
           >
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-orange-500/15 text-orange-400 transition-transform duration-300 group-hover:scale-110">
@@ -141,6 +144,23 @@ function ProfileCard({ profile }) {
 
             <span>{shareStatus || "Share Profile"}</span>
           </button>
+
+          <Link
+            to={profile?.reviewLink}
+            target="_blank"
+            className="group flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
+          >
+            <FaGoogle className="h-4 w-4" aria-hidden="true" />
+
+            <span className="decoration-white/30 underline-offset-4 group-hover:decoration-orange-400">
+              Review on Google
+            </span>
+
+            <FiExternalLink
+              className="h-4 w-4 text-white/50 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-orange-400"
+              aria-hidden="true"
+            />
+          </Link>
         </div>
 
         <div className="hidden md:block mt-5 border-t border-white/10 pt-5">

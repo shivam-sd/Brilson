@@ -6,7 +6,6 @@ export const useGetProfileLogo = (code) =>
     queryKey: ["profile-logo", code],
     queryFn: async () => {
       const { data } = await axiosInstance.get(`/api/profile-logo/get/${code}`);
-      console.log("api call---", data)
       return data;
     },
     enabled: Boolean(code),
