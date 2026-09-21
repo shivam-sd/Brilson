@@ -180,6 +180,8 @@ const orderCreate = async (req, res) => {
 
         productTitle: product.title,
 
+        productImage: product.coverImg || "",
+
         quantity,
 
         price: Number(price.toFixed(2)),

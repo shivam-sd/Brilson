@@ -195,6 +195,7 @@ const Checkout = () => {
         return {
           productId: product._id || item.productId,
           productTitle: item.productTitle || item.title || product.title,
+          image: product.image || "",
           basePrice,
           quantity,
           gst: {
@@ -301,6 +302,8 @@ const Checkout = () => {
         items: orderItems.map((item) => ({
           productId: item.productId,
           productTitle: item.productTitle,
+          productImage:
+      item.image || item.productImage || item.coverImg || item.images?.[0] || "",
           price: item.basePrice,
           quantity: item.quantity,
           gst: item.gst,
