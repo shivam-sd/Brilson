@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { FaLocationDot } from "react-icons/fa6";
+import { memo, useState } from "react";
+import { FaLocationDot, FaShareNodes } from "react-icons/fa6";
 import { LuCheck } from "react-icons/lu";
 import { BOTTOM_QUOTE, HANDWRITTEN_LINES } from "../data/profileConfig";
 import ContactActions from "./ContactActions";
@@ -16,8 +16,45 @@ const initialsOf = (name) =>
     .toUpperCase();
 
 function ProfileCard({ profile }) {
-  console.log(profile.socialLinks)
+  const [shareStatus, setShareStatus] = useState("");
+
   const { name, tagline, location, profileImage, coverImage, verified, socialLinks, image } = profile;
+
+
+  const handleShare = async () => {
+    const shareData = {
+      title: name,
+      text: tagline ? `${name} - ${tagline}` : `Check out ${name}'s profile`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      await navigator.clipboard.writeText(window.location.href);
+      setShareStatus("Profile link copied!");
+
+      setTimeout(() => {
+        setShareStatus("");
+      }, 2000);
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        setShareStatus("Profile link copied!");
+
+        setTimeout(() => {
+          setShareStatus("");
+        }, 2000);
+      } catch {
+        setShareStatus("Unable to share profile");
+      }
+    }
+  };
 
   return (
     <article
@@ -90,6 +127,20 @@ function ProfileCard({ profile }) {
 
         <div className="mt-5">
           <ContactActions profile={profile} />
+        </div>
+        <div className="mt-5">
+          <button
+            type="button"
+            onClick={handleShare}
+            className="group mx-auto flex w-full max-w-[320px] items-center justify-center gap-2.5 rounded-xl border border-white/10  px-5 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60  active:translate-y-0 motion-reduce:transition-none"
+            aria-label="Share profile"
+          >
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-orange-500/15 text-orange-400 transition-transform duration-300 group-hover:scale-110">
+              <FaShareNodes className="h-4 w-4" aria-hidden="true" />
+            </span>
+
+            <span>{shareStatus || "Share Profile"}</span>
+          </button>
         </div>
 
         <div className="hidden md:block mt-5 border-t border-white/10 pt-5">
