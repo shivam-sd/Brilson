@@ -59,10 +59,18 @@ function SocialLinks({ links }) {
                     className
                   )}
                 >
-                  <Icon
+                  {platform === "snapchat" ? <Icon
                     className="h-[15px] w-[15px]"
                     aria-hidden="true"
+                    stroke="black"
+                    strokeWidth="1.5"
+
                   />
+                    :
+                    <Icon
+                      className="h-[15px] w-[15px]"
+                      aria-hidden="true"
+                    />}
                 </span>
 
                 <span className="max-w-full truncate text-[9px] font-medium leading-none text-white/65 group-hover:text-white">

@@ -14,6 +14,7 @@ import {
 import { FaCreditCard, FaEnvelope, FaGlobe, FaGoogle, FaPhone, FaUser, FaUserPlus, FaWhatsapp } from "react-icons/fa";
 import { LuBox, LuImage } from "react-icons/lu";
 import { FaFileLines, FaGear, FaLocationDot } from "react-icons/fa6";
+import { TbBrandSnapchat } from "react-icons/tb";
 
 export const BOTTOM_QUOTE = "Turning Ideas Into Impact";
 export const HANDWRITTEN_LINES = ["Let's", "Connect", "Create", "Together..."];
@@ -98,58 +99,35 @@ export const ACCORDION_SECTIONS = [
 
 
 export const SOCIAL_PLATFORMS = {
+  website: {
+    label: "Website",
+    Icon: FaGlobe,
+    className: "bg-[#111827]",
+  },
+  whatsapp: {
+    label: "WhatsApp",
+    Icon: SiWhatsapp,
+    className: "bg-[#25D366]",
+  },
   facebook: {
     label: "Facebook",
     Icon: SiFacebook,
     className: "bg-[#1877F2]",
   },
-
   instagram: {
     label: "Instagram",
     Icon: SiInstagram,
     className:
       "bg-[linear-gradient(45deg,#f9ce34,#ee2a7b_50%,#6228d7)]",
   },
-
-  josh: {
-    label: "Josh",
-    Icon: SiSnapchat,
-    className: "bg-black",
-  },
-
   linkedin: {
     label: "LinkedIn",
     Icon: SiLinkedin,
     className: "bg-[#0A66C2]",
   },
-
-  moj: {
-    label: "Moj",
-    Icon: SiMojeek,
-    className: "bg-black",
-  },
-
-  pinterest: {
-    label: "Pinterest",
-    Icon: SiPinterest,
-    className: "bg-[#E60023]",
-  },
-
-  reddit: {
-    label: "Reddit",
-    Icon: SiReddit,
-    className: "bg-[#FF4500]",
-  },
-
-  sharechat: {
-    label: "ShareChat",
-    Icon: SiSnapchat,
-    className: "bg-[#FF4B55]",
-  },
-
   snapchat: {
     label: "Snapchat",
-    Icon: SiSnapchat,
+    Icon: TbBrandSnapchat,
     className: "bg-[#FFFC00] text-black",
   },
 
@@ -164,22 +142,38 @@ export const SOCIAL_PLATFORMS = {
     Icon: SiX,
     className: "bg-black ring-1 ring-white/30",
   },
-
-  website: {
-    label: "Website",
-    Icon: FaGlobe,
-    className: "bg-[#111827]",
-  },
-
-  whatsapp: {
-    label: "WhatsApp",
-    Icon: SiWhatsapp,
-    className: "bg-[#25D366]",
-  },
-
   youtube: {
     label: "YouTube",
     Icon: SiYoutube,
     className: "bg-[#FF0000]",
+  },
+
+  pinterest: {
+    label: "Pinterest",
+    Icon: SiPinterest,
+    className: "bg-[#E60023]",
+  },
+
+
+
+  reddit: {
+    label: "Reddit",
+    Icon: SiReddit,
+    className: "bg-[#FF4500]",
+  },
+  josh: {
+    label: "Josh",
+    Icon: SiSnapchat,
+    className: "bg-black",
+  },
+  sharechat: {
+    label: "ShareChat",
+    Icon: SiSnapchat,
+    className: "bg-[#FF4B55]",
+  },
+  moj: {
+    label: "Moj",
+    Icon: SiMojeek,
+    className: "bg-black",
   },
 };

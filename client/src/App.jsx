@@ -180,7 +180,6 @@ function App() {
             <Route path="/c/google-review/:activationCode" element={<CheckGoogleReviewStatus />} />
 
             <Route path="/admin/passTo/Profile" element={<AdminPassToProfile />} />
-            <Route path="/profile/:slug" element={<ProfilePage />} />
             <Route path="/profile/P/:slug" element={<ParkingTagProfile />} />
             <Route path="/profile/P/public/:slug" element={<ParkingTagPublicProfile />} />
 
@@ -189,9 +188,12 @@ function App() {
 
 
 
-            <Route path="/newpublic/profile/:slug" element={<NewProfilePage />} />
+            {/* <Route path="/newpublic/profile/:slug" element={<NewProfilePage />} /> */}
+            {/* <Route path="/profile/:slug" element={<ProfilePage />} /> */}
 
-            <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
+            <Route path="/profile/:slug" element={<NewProfilePage />} />
+
+            <Route path="/public/profile/:slug" element={<NewProfilePage />} />
 
             <Route path="/profile/P/edit/:slug" element={<EditParkingTagProfile />} />
             <Route path="/profile/google-review/edit/:activationCode" element={<EditGoogleReviewsProfile />} />
