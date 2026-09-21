@@ -10,6 +10,7 @@ export default function SafeImage({
   fallback,
   eager = false,
   loading = false,
+  fit = "cover",
 }) {
   const [status, setStatus] = useState(src ? "loading" : "error");
   const imgRef = useRef(null);
@@ -17,7 +18,10 @@ export default function SafeImage({
   useEffect(() => {
     setStatus(src ? "loading" : "error");
     const el = imgRef.current;
-    if (src && el?.complete && el.naturalWidth > 0) setStatus("loaded");
+
+    if (src && el?.complete && el.naturalWidth > 0) {
+      setStatus("loaded");
+    }
   }, [src]);
 
   const showShimmer = loading || status === "loading";
@@ -25,7 +29,10 @@ export default function SafeImage({
   return (
     <div className={cn("relative overflow-hidden bg-white/[0.04]", className)}>
       {showShimmer && (
-        <div aria-hidden="true" className="absolute inset-0 animate-pulse bg-white/10 motion-reduce:animate-none" />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 animate-pulse bg-white/10 motion-reduce:animate-none"
+        />
       )}
 
       {status === "error" || !src ? (
@@ -45,7 +52,9 @@ export default function SafeImage({
           onLoad={() => setStatus("loaded")}
           onError={() => setStatus("error")}
           className={cn(
-            "h-full w-full object-cover transition-opacity duration-500 motion-reduce:transition-none",
+            "w-full transition-opacity duration-500 motion-reduce:transition-none",
+            fit === "cover" && "h-full object-cover",
+            fit === "contain" && "h-auto object-contain",
             status === "loaded" ? "opacity-100" : "opacity-0",
             imgClassName
           )}
