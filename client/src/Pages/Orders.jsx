@@ -16,9 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGetMyOrders } from "../api/client-query";
 
-/* ------------------------------------------------------------------ */
-/*  Static token maps (kept static so Tailwind doesn't purge them)     */
-/* ------------------------------------------------------------------ */
+
 const PAYMENT_STATUS = {
   paid: { label: "Paid", classes: "bg-emerald-500/10 text-emerald-400" },
   pending: { label: "Payment pending", classes: "bg-amber-500/10 text-amber-400" },
@@ -43,9 +41,7 @@ const stepIndex = (orderStatus) => {
 const FOCUS =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950";
 
-/* ------------------------------------------------------------------ */
-/*  Small pieces                                                       */
-/* ------------------------------------------------------------------ */
+
 const PaymentBadge = ({ status }) => {
   const cfg = PAYMENT_STATUS[status] || PAYMENT_STATUS.cancelled;
   return (
