@@ -59,6 +59,7 @@ const CashfreePayment = ({ createdOrder, total }) => {
     });
 
 
+    
     if (!cashfree) {
       toast.error("Cashfree SDK failed to load");
       return;

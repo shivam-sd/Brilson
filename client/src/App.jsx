@@ -111,6 +111,9 @@ import UsersList from "./Admin/UsersList";
 import ReferralManagement from "./Admin/ReferralManagement";
 import RecentCards from "./Admin/RecentCards";
 import EkqrPayment from "./Component/EkqrPayment";
+import LabelsPage from "./Admin/lables/LabelsPage";
+import ReferralCommission from "./Admin/ReferralCommission"
+import NewProfilePage from "./Pages/newProfile/pages/ProfilePage";
 
 
 
@@ -177,7 +180,6 @@ function App() {
             <Route path="/c/google-review/:activationCode" element={<CheckGoogleReviewStatus />} />
 
             <Route path="/admin/passTo/Profile" element={<AdminPassToProfile />} />
-            <Route path="/profile/:slug" element={<ProfilePage />} />
             <Route path="/profile/P/:slug" element={<ParkingTagProfile />} />
             <Route path="/profile/P/public/:slug" element={<ParkingTagPublicProfile />} />
 
@@ -186,7 +188,13 @@ function App() {
 
 
 
-            <Route path="/public/profile/:slug" element={<PublicProfilePage />} />
+            {/* <Route path="/newpublic/profile/:slug" element={<NewProfilePage />} /> */}
+            {/* <Route path="/profile/:slug" element={<ProfilePage />} /> */}
+
+            <Route path="/profile/:slug" element={<NewProfilePage />} />
+
+            <Route path="/public/profile/:slug" element={<NewProfilePage />} />
+
             <Route path="/profile/P/edit/:slug" element={<EditParkingTagProfile />} />
             <Route path="/profile/google-review/edit/:activationCode" element={<EditGoogleReviewsProfile />} />
             <Route path="/card/activate" element={<ActivateCard />} />
@@ -266,7 +274,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              
+
 
               <Route
                 path="customers/list"
@@ -282,6 +290,16 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ReferralManagement />
+                  </ProtectedRoute>
+                }
+              />
+
+
+              <Route
+                path="admin/ReferralCommission"
+                element={
+                  <ProtectedRoute>
+                    <ReferralCommission />
                   </ProtectedRoute>
                 }
               />
@@ -444,6 +462,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AdminOrderDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/orders/detils/labels"
+              element={
+                <ProtectedRoute>
+                  <LabelsPage />
                 </ProtectedRoute>
               }
             />

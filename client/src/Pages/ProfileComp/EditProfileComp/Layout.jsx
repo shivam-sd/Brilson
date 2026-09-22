@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { Outlet, NavLink, useParams, useLocation } from "react-router-dom";
 import { MdOutlinePayment } from "react-icons/md";
 import { FaLocationCrosshairs } from "react-icons/fa6";
 import { FaFilePdf } from "react-icons/fa";
 import { PiSelectionBackgroundFill } from "react-icons/pi";
-import { 
-  Menu, 
-  X, 
-  User, 
-  Briefcase, 
-  Settings, 
-  Package, 
+import { useNavigate } from "react-router-dom";
+import { IoIosArrowRoundBack } from "react-icons/io";
+
+import {
+  Menu,
+  X,
+  User,
+  Briefcase,
+  Settings,
+  Package,
   Image,
   ChevronRight,
   Smartphone,
@@ -21,22 +24,24 @@ import {
   Search,
   Edit2,
   Home,
-  ChevronLeft
-} from 'lucide-react';
+  ChevronLeft,
+} from "lucide-react";
 import { TbWorldStar } from "react-icons/tb";
 import { BiSolidContact } from "react-icons/bi";
 
 const Layout = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [activePath, setActivePath] = useState('');
+  const [activePath, setActivePath] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const path = location.pathname.split('/').pop();
-    setActivePath(path || 'profile');
+    const path = location.pathname.split("/").pop();
+    setActivePath(path || "profile");
   }, [location]);
 
   // Handle resize
@@ -48,25 +53,30 @@ const Layout = () => {
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (isMobile && isMobileMenuOpen) {
-        const sidebar = document.getElementById('mobile-sidebar');
-        const menuButton = document.getElementById('menu-button');
-        
-        if (sidebar && !sidebar.contains(e.target) && menuButton && !menuButton.contains(e.target)) {
+        const sidebar = document.getElementById("mobile-sidebar");
+        const menuButton = document.getElementById("menu-button");
+
+        if (
+          sidebar &&
+          !sidebar.contains(e.target) &&
+          menuButton &&
+          !menuButton.contains(e.target)
+        ) {
           setIsMobileMenuOpen(false);
         }
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobile, isMobileMenuOpen]);
 
   const menuItems = [
@@ -87,74 +97,73 @@ const Layout = () => {
     //   mobileIcon: <PiSelectionBackgroundFill size={22} />
     // },
     {
-      id: 'basic-info',
-      path: '',
-      label: 'Basic Info',
+      id: "basic-info",
+      path: "",
+      label: "Basic Info",
       icon: <Edit2 size={20} />,
       badge: null,
-      mobileIcon: <Edit2 size={22} />
+      mobileIcon: <Edit2 size={22} />,
     },
     {
-      id: 'update-social-links',
-      path: 'update-social-links',
-      label: 'Social Media',
+      id: "update-social-links",
+      path: "update-social-links",
+      label: "Social Media",
       icon: <TbWorldStar size={20} />,
       badge: null,
-      mobileIcon: <TbWorldStar size={22} />
+      mobileIcon: <TbWorldStar size={22} />,
     },
     {
-      id: 'services',
-      path: 'services',
-      label: 'Services',
+      id: "services",
+      path: "services",
+      label: "Services",
       icon: <Settings size={20} />,
-      badge: 'New',
-      mobileIcon: <Settings size={22} />
+      badge: "New",
+      mobileIcon: <Settings size={22} />,
     },
     {
-      id: 'products',
-      path: 'products',
-      label: 'Products',
+      id: "products",
+      path: "products",
+      label: "Products",
       icon: <Package size={20} />,
-      badge: '12',
-      mobileIcon: <Package size={22} />
+      badge: "12",
+      mobileIcon: <Package size={22} />,
     },
     {
-      id: 'gallery',
-      path: 'gallery',
-      label: 'Gallery',
+      id: "gallery",
+      path: "gallery",
+      label: "Gallery",
       icon: <Image size={20} />,
       badge: null,
-      mobileIcon: <Image size={22} />
+      mobileIcon: <Image size={22} />,
     },
     {
-      id: 'payment',
-      path: 'payment-details',
-      label: 'Payment',
+      id: "payment",
+      path: "payment-details",
+      label: "Payment",
       icon: <MdOutlinePayment size={20} />,
       badge: null,
-      mobileIcon: <MdOutlinePayment size={22} />
+      mobileIcon: <MdOutlinePayment size={22} />,
     },
     {
-      id: 'location&review',
-      path: 'location&review',
-      label: 'Location',
+      id: "location&review",
+      path: "location&review",
+      label: "Location",
       icon: <FaLocationCrosshairs size={20} />,
       badge: null,
-      mobileIcon: <FaLocationCrosshairs size={22} />
+      mobileIcon: <FaLocationCrosshairs size={22} />,
     },
     {
-      id: 'resume',
-      path: 'resume',
-      label: 'Resume',
+      id: "resume",
+      path: "resume",
+      label: "Resume",
       icon: <FaFilePdf size={20} />,
       badge: null,
-      mobileIcon: <FaFilePdf size={22} />
-    }
+      mobileIcon: <FaFilePdf size={22} />,
+    },
   ];
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-white relative">
-      
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-gray-900 to-gray-950 border-b border-gray-800/50 px-4 py-3 flex items-center justify-between backdrop-blur-xl font-Roboto">
         <button
@@ -164,8 +173,24 @@ const Layout = () => {
         >
           {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
+
         
-        <div className="flex items-center gap-2">
+
+        <button
+                    onClick={() => {
+                      navigate("/", { replace: true });
+                    }}
+                    className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex gap-1 border-white/30 border-2 p-2 rounded-lg cursor-pointer flex items-center justify-center"
+                  >
+                    <IoIosArrowRoundBack size={30} color="white" />
+                    Go Home
+                  </button>
+
+
+
+        {/* <div className="flex items-center gap-2"> */}
+
+          
           {/* <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
             <User size={16} />
           </div>
@@ -173,14 +198,14 @@ const Layout = () => {
             <h2 className="text-sm font-semibold">Edit Profile</h2>
             <p className="text-xs text-gray-400">ID: {id?.slice(-6)}</p>
           </div> */}
-        </div>
+        {/* </div> */}
 
-        <div className="w-10 h-10"></div>
+        {/* <div className="w-10 h-10"></div> */}
       </div>
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
           onClick={() => setIsMobileMenuOpen(false)}
         />
@@ -191,39 +216,37 @@ const Layout = () => {
         id="mobile-sidebar"
         className={`
           fixed lg:static inset-y-0 left-0 z-50
-          ${isMobile ? 'w-[85%] max-w-[320px]' : 'w-72 lg:w-80'}
+          ${isMobile ? "w-[85%] max-w-[320px]" : "w-72 lg:w-80"}
           bg-gradient-to-b from-gray-900 to-gray-950
           border-r border-gray-800/50
           backdrop-blur-xl backdrop-saturate-150
           transform transition-transform duration-300 ease-out
-          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          ${isCollapsed ? 'lg:w-20' : 'lg:w-80'}
+          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          ${isCollapsed ? "lg:w-20" : "lg:w-80"}
           shadow-2xl shadow-black/50
           overflow-y-auto
           pb-20
         `}
         style={{
-          boxShadow: isMobile ? '10px 0 30px rgba(0,0,0,0.5)' : ''
+          boxShadow: isMobile ? "10px 0 30px rgba(0,0,0,0.5)" : "",
         }}
       >
         {/* Mobile Sidebar Header */}
         {isMobile && (
           <div className="sticky top-0 bg-gradient-to-b from-gray-900 to-gray-900/95 backdrop-blur-xl p-4 border-b border-gray-800/50 z-10 font-Roboto">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
-                    <User size={24} />
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-gray-900"></div>
+              <div className="relative flex gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
+                  <User size={16} />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                  <h3 className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                     Profile Editor
-                  </h2>
+                  </h3>
                   <p className="text-xs text-gray-400">ID: {id?.slice(-8)}</p>
                 </div>
               </div>
+              
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2 hover:bg-gray-800/50 rounded-lg transition-all"
@@ -239,19 +262,29 @@ const Layout = () => {
           <div className="p-6 border-b border-gray-800/50">
             <div className="flex items-center justify-between">
               {!isCollapsed && (
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-                      <User size={20} />
+                <div className="flex items-center justify-between gap-3 w-full">
+                  <div className="relative flex gap-2">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
+                      <User size={16} />
                     </div>
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-gray-900"></div>
+                    <div>
+                      <h3 className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                        Profile Editor
+                      </h3>
+                      <p className="text-xs text-gray-400">
+                        ID: {id?.slice(-8)}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                      Profile Editor
-                    </h2>
-                    <p className="text-xs text-gray-400">ID: {id?.slice(-8)}</p>
-                  </div>
+                  <button
+                    onClick={() => {
+                      navigate("/", { replace: true });
+                    }}
+                    className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex gap-1 border-white/30 border-2 p-2 rounded-lg cursor-pointer"
+                  >
+                    <IoIosArrowRoundBack size={28} color="white" />
+                    Go Home
+                  </button>
                 </div>
               )}
             </div>
@@ -274,50 +307,60 @@ const Layout = () => {
                 }}
                 className={({ isActive }) => `
                   flex items-center gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300
-                  ${isActive 
-                    ? 'bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-700/30 shadow-lg shadow-blue-900/20' 
-                    : 'hover:bg-gray-800/30 hover:border-gray-700/30 border border-transparent'
+                  ${
+                    isActive
+                      ? "bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-700/30 shadow-lg shadow-blue-900/20"
+                      : "hover:bg-gray-800/30 hover:border-gray-700/30 border border-transparent"
                   }
                   group relative
-                  ${isMobile ? 'text-base' : 'text-sm'}
+                  ${isMobile ? "text-base" : "text-sm"}
                 `}
               >
-                <div className={`
+                <div
+                  className={`
                   p-2 rounded-lg transition-all duration-300
-                  ${activePath === item.id 
-                    ? 'bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg shadow-blue-500/30' 
-                    : 'bg-gray-900/50 group-hover:bg-gray-800/50'
+                  ${
+                    activePath === item.id
+                      ? "bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg shadow-blue-500/30"
+                      : "bg-gray-900/50 group-hover:bg-gray-800/50"
                   }
-                `}>
-                  {React.cloneElement(isMobile ? (item.mobileIcon || item.icon) : item.icon, {
-                    className: activePath === item.id 
-                      ? 'text-white' 
-                      : 'text-gray-400 group-hover:text-gray-300'
-                  })}
+                `}
+                >
+                  {React.cloneElement(
+                    isMobile ? item.mobileIcon || item.icon : item.icon,
+                    {
+                      className:
+                        activePath === item.id
+                          ? "text-white"
+                          : "text-gray-400 group-hover:text-gray-300",
+                    },
+                  )}
                 </div>
-                
+
                 {(!isCollapsed || isMobile) && (
                   <>
                     <div className="flex-1 min-w-0">
-                      <span className={`
+                      <span
+                        className={`
                         font-medium block transition-colors
-                        ${activePath === item.id ? 'text-white' : 'text-gray-300 group-hover:text-white'}
-                      `}>
+                        ${activePath === item.id ? "text-white" : "text-gray-300 group-hover:text-white"}
+                      `}
+                      >
                         {item.label}
                       </span>
-                      
                     </div>
-                    
+
                     {activePath === item.id && (
-                      <ChevronRight size={16} className="text-blue-300 animate-pulse flex-shrink-0" />
+                      <ChevronRight
+                        size={16}
+                        className="text-blue-300 animate-pulse flex-shrink-0"
+                      />
                     )}
                   </>
                 )}
               </NavLink>
             ))}
           </nav>
-
-          
         </div>
 
         {/* Mobile Bottom Safe Area */}
@@ -325,10 +368,12 @@ const Layout = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className={`
+      <div
+        className={`
         flex-1 min-h-screen overflow-y-auto
-        ${isMobile ? 'pt-[72px]' : ''}
-      `}>
+        ${isMobile ? "pt-[72px]" : ""}
+      `}
+      >
         <div className="h-full bg-gradient-to-b from-gray-950/50 via-gray-950/30 to-gray-950/50">
           {/* Animated Background Elements */}
           <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -338,7 +383,6 @@ const Layout = () => {
 
           {/* Content Container */}
           <div className="relative h-full p-3 sm:p-4 md:p-6 lg:p-8">
-            
             {/* Mobile Header Spacer */}
             {isMobile && <div className="h-2"></div>}
 

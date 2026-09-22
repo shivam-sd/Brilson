@@ -11,6 +11,8 @@ module.exports = async (order) => {
       .toString()
       .slice(-6)}`;
 
+      
+
       // set invoice number in order first becouse it give undefined in template
       order.invoice = {
         number: invoiceNumber
@@ -42,7 +44,9 @@ module.exports = async (order) => {
 });
 
     const page = await browser.newPage();
+
 console.log("order from createinvoice:", order);
+
     await page.setContent(invoiceTemplate(order, InvoiceAddress), {
       waitUntil: "domcontentloaded",
       timeout: 60000

@@ -11,7 +11,7 @@ const QR_CODE_STYLING_BROWSER_BUNDLE =
 
 const PAGE_POOL_SIZE = Number(process.env.CARD_RENDER_CONCURRENCY) || 4;
 
-// 2.5" × 4" @ 300 DPI (Portrait Orientation)
+// 2.5" × 4" 
 const PARKING_TAG_VIEWPORT = { width: 750, height: 1200 };
 
 let cachedLogoDataUrl = null;

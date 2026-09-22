@@ -22,6 +22,7 @@ const sendOTP = async (req, res) => {
     }
 
     const otp = generateOTP();
+    // console.log("otp:- ",otp);
     const otpExpiry = Date.now() + 5 * 60 * 1000;
 
 
@@ -37,8 +38,6 @@ const sendOTP = async (req, res) => {
     await user.save();
 
     await sendWhatsAppOTP(phone, otp);
-
-
 
     res.status(200).json({ message: "OTP sent successfully" });
 
