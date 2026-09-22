@@ -112,7 +112,7 @@ const OrderItemRow = ({ item, onClick }) => {
       onClick={onClick}
       className={`flex w-full items-center gap-4 rounded-xl p-2 text-left transition-colors hover:bg-zinc-800/60 ${FOCUS} cursor-pointer`}
     >
-      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-800">
+      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-800 ">
         {item.productImage ? (
           <img
             src={item.productImage}
@@ -164,9 +164,6 @@ const OrderSkeleton = () => (
   </div>
 );
 
-/* ------------------------------------------------------------------ */
-/*  Page                                                                */
-/* ------------------------------------------------------------------ */
 const Orders = () => {
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.token);
@@ -200,8 +197,11 @@ const Orders = () => {
   };
 
   const goToProduct = (item) => {
-    if (!item.productId?._id) return;
-    navigate(`/products/${item.productId?._id}`);
+    if (!item.productId
+._id) return;
+    console.log(item)
+    navigate(`/products/${item.productId
+._id}`);
   };
 
   return (
@@ -210,11 +210,11 @@ const Orders = () => {
         {/* Title */}
         <div className="mb-8 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
-            <FiShoppingBag size={20} />
+            <FiShoppingBag size={18} />
           </div>
           <div>
-            <h1 className="text-xl font-semibold sm:text-2xl">Your orders</h1>
-            <p className="text-sm text-zinc-500">Track, manage and download invoices</p>
+            <h2 className="text-xl font-semibold sm:text-2xl">Your orders</h2>
+            {/* <p className="text-sm text-zinc-500">Track, manage and download invoices</p> */}
           </div>
         </div>
 

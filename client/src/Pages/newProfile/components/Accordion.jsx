@@ -35,7 +35,11 @@ function Accordion({ icon: Icon, title, subtitle, color = "orange", defaultOpen 
           aria-controls={panelId}
           onClick={toggle}
           className={cn(
+<<<<<<< HEAD
             "flex w-full items-center gap-4 p-3.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset sm:p-4",
+=======
+            "cursor-pointer flex w-full items-center gap-4 p-3.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset sm:p-4",
+>>>>>>> a6b2c6dbbd351996ff94c746733c391c73cf7aed
             theme.focus
           )}
         >
@@ -50,7 +54,11 @@ function Accordion({ icon: Icon, title, subtitle, color = "orange", defaultOpen 
 
           <LuChevronDown
             className={cn(
+<<<<<<< HEAD
               "h-5 w-5 shrink-0 text-slate-200 transition-transform duration-300 motion-reduce:transition-none",
+=======
+              "cursor-pointer h-5 w-5 shrink-0 text-slate-200 transition-transform duration-300 motion-reduce:transition-none",
+>>>>>>> a6b2c6dbbd351996ff94c746733c391c73cf7aed
               open && "rotate-180"
             )}
             aria-hidden="true"

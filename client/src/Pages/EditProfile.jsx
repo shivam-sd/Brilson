@@ -9,11 +9,14 @@ import ImageCropper from "./ProfileComp/EditProfileComp/ImageCropper/ImageCroppe
 import CoverImageCropper from "./ProfileComp/EditProfileComp/ImageCropper/CoverImageCropper";
 import { selectToken } from "../store/slices/authSlice";
 import { useSelector } from "react-redux";
+import { useUpdateProfile } from "../api/client-query";
  
 const EditProfile = () => {
   const { id } = useParams();
+  const [Id, setId] = useState(null);
   const navigate = useNavigate();
   const token = useSelector(selectToken);
+  const { mutateAsync: updateProfile, isPending: isUpdating } =useUpdateProfile(id,Id); // here id:Card Code/id like "7ODDZSSM" and Id is _id
   
   // Loading states
   const [loading, setLoading] = useState(false);
@@ -21,7 +24,6 @@ const EditProfile = () => {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   
   // IDs
-  const [Id, setId] = useState(null);
   
   // Phone error
   const [phoneError, setPhoneError] = useState("");
@@ -369,23 +371,16 @@ const EditProfile = () => {
     try {
       setLoading(true);
 
-      await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/api/card/${Id}/edit`,
-        {
-          name: form.name,
-          email: form.email,
-          phone: form.phone,
-          bio: form.bio,
-          about: form.about,
-          city: form.city,
-          whatsapp: form.whatsapp,
-          website: form.website,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        }
-      );
+      await updateProfile({
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      bio: form.bio,
+      about: form.about,
+      city: form.city,
+      whatsapp: form.whatsapp,
+      website: form.website,
+    });
 
 
       await uploadCover(); 
