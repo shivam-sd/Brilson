@@ -278,12 +278,20 @@ const Layout = () => {
                   </div>
                   <button
                     onClick={() => {
+<<<<<<< Updated upstream
                       navigate("/", { replace: true });
+=======
+                      navigate(-1, { replace: true });
+>>>>>>> Stashed changes
                     }}
                     className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex gap-1 border-white/30 border-2 p-2 rounded-lg cursor-pointer"
                   >
                     <IoIosArrowRoundBack size={28} color="white" />
+<<<<<<< Updated upstream
                     Go Home
+=======
+                    Go Back
+>>>>>>> Stashed changes
                   </button>
                 </div>
               )}
