@@ -278,20 +278,12 @@ const Layout = () => {
                   </div>
                   <button
                     onClick={() => {
-<<<<<<< HEAD
                       navigate("/", { replace: true });
-=======
-                      navigate(-1, { replace: true });
->>>>>>> a6b2c6dbbd351996ff94c746733c391c73cf7aed
                     }}
                     className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex gap-1 border-white/30 border-2 p-2 rounded-lg cursor-pointer"
                   >
                     <IoIosArrowRoundBack size={28} color="white" />
-<<<<<<< HEAD
                     Go Home
-=======
-                    Go Back
->>>>>>> a6b2c6dbbd351996ff94c746733c391c73cf7aed
                   </button>
                 </div>
               )}
