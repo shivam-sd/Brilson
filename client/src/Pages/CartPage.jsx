@@ -210,8 +210,9 @@ const CartPage = () => {
       totalGst += calc.gstAmount;
 
       // Shipping
-      if (product.shipping?.enabled) {
-        totalShipping += Number(product.shipping?.charge) || 0;
+      // console.log("charge----",Number(product.shipping?.charge),item)
+      if (product.shipping?.enabled || item.productId?.shippingEnabled) {
+        totalShipping += Number(product.shipping?.charge) ||  item.productId?.shippingCharge || 0;
       }
     });
 
@@ -957,8 +958,16 @@ const CartPage = () => {
                               Shipping
                             </span>
 
-                            <span className="text-green-400">
-                              Free
+                            <span
+                              className={
+                                totalShipping > 0
+                                  ? "text-orange-400 font-bold"
+                                  : "text-green-400"
+                              }
+                            > {totalShipping}
+                              {totalShipping > 0
+                                ? `+₹${totalShipping.toLocaleString()}`
+                                : "Free"}
                             </span>
                           </div>
 

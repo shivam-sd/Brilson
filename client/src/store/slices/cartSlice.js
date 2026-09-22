@@ -44,7 +44,6 @@ export const fetchCart = createAsyncThunk(
 
 export const addToCart = createAsyncThunk(
     "cart/addToCart",
-
     async (product, { getState, rejectWithValue }) => {
         try {
             const token = getState().auth.token;
@@ -110,6 +109,8 @@ export const addToCart = createAsyncThunk(
                             coverImg: product.coverImg,
                             gst: product.gst,
                             discount: product.discount,
+                            shippingEnabled: product.shipping?.enabled,
+                            shippingCharge: product.shipping?.charge,
                         },
 
                         productTitle: product.title,
