@@ -13,10 +13,8 @@ import axios from "axios";
 import { BookCheck } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { selectCartCount, clearCart } from "../store/slices/cartSlice";
-import { selectToken, selectUser, logoutAction } from "../store/slices/authSlice";
 
-import LogoSection from "./LogoSection";
+// import UserAllCards from "./UserAllCards";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -30,7 +28,19 @@ const Header = () => {
 
   const menuRef = useRef(null);
   const isLoggedIn = !!token;
-  const navigate = useNavigate();
+
+  // Get user data to check if Google user
+  const getUserData = () => {
+    try {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        return JSON.parse(userStr);
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -55,6 +65,30 @@ const Header = () => {
     };
   }, []);
 
+  const navigate = useNavigate();
+
+  /* CART COUNT */
+  const getCartCount = async () => {
+    try {
+      if (isLoggedIn) {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/cart/user`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+        );
+        // setCartCount(res.data.cartItems?.length || 0);
+      } else {
+        const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+        // setCartCount(localCart.length);
+      }
+    } catch {
+      // setCartCount(0);
+    }
+  };
+
+  /* ACTIVE CARD */
   const fetchMyActiveCard = async () => {
     try {
       if (!token) {
@@ -85,11 +119,22 @@ const Header = () => {
     fetchMyActiveCard();
   }, [token]);
 
+  useEffect(() => {
+    // const handleCartUpdate = () => getCartCount();
+    // window.addEventListener("cartUpdate", handleCartUpdate);
+    // return () => window.removeEventListener("cartUpdate", handleCartUpdate);
+  }, []);
+
+
+
   const handleLogout = async () => {
     try {
       if (token) {
+        // Check if user is Google user
+        const user = getUserData();
         const isGoogleUser = user?.isGoogleUser || false;
 
+        // Choose correct logout endpoint
         const logoutEndpoint = isGoogleUser
           ? `${import.meta.env.VITE_BASE_URL}/api/auth/google/logout`
           : `${import.meta.env.VITE_BASE_URL}/api/users/logout`;
@@ -100,27 +145,34 @@ const Header = () => {
           {
             withCredentials: true,
             headers: {
-              Authorization: `Bearer ${token}`,
-            },
+              Authorization: `Bearer ${token}`
+            }
           }
         );
 
-        toast.success(
-          res.data?.message || "Logged out successfully"
-        );
+        navigate("/", { replace: true });
+        toast.success(res.data.message || "Logged out successfully");
       }
     } catch (err) {
+      console.log("Logout API error:", err);
+      
+      // 🔥 Even if API fails, show appropriate message
       if (err.response?.data?.message) {
         toast.error(err.response.data.message);
       } else {
         toast.error("Logout failed. Please try again.");
       }
     } finally {
-      dispatch(logoutAction());
-      dispatch(clearCart());
+      // Frontend cleanup (same for both)
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("googleUser");
+      setToken(null);
       setMyCardProfile(null);
       setMobileProfileOpen(false);
-
+      
+      // 🔥 Force navigation to home after cleanup
       setTimeout(() => {
         navigate("/", { replace: true });
       }, 100);
@@ -219,13 +271,8 @@ const Header = () => {
                     My Admin
                   </Link>
 
-                  <Link
-                    to="/orders"
-                    className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white flex items-center tracking-widest font-Roboto font-semibold"
-                  >
-                    <span>
-                      My Orders
-                    </span>
+                  <Link to="/orders" className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white flex items-center tracking-widest font-Roboto font-semibold">
+                    <span>My Orders</span>
                   </Link>
 
                   <button
@@ -248,7 +295,10 @@ const Header = () => {
 
           <Link
             to="/get-card"
-            className="group inline-flex items-center gap-2 px-6 py-2 rounded-full text-white font-medium relative overflow-hidden border border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-500/40 shadow-gray-800 shadow-lg transition-all duration-300 hover:scale-105 tracking-widest font-Roboto"
+            className="group inline-flex items-center gap-2 px-6 py-2 rounded-full
+  text-white font-medium relative overflow-hidden border
+border-t-cyan-400/40 border-r-orange-400/40 border-l-amber-400/40 border-b-red-500/40  shadow-gray-800 shadow-lg
+  transition-all duration-300 hover:scale-105 tracking-widest font-Roboto"
             style={{
               textShadow:
                 "2px 2px 3px rgba(136,0,136,0.5)",
@@ -256,15 +306,14 @@ const Header = () => {
                 "left center",
             }}
           >
-            <span>
-              Get Your NFC Card
-            </span>
+            <span>Get Your Card</span>
           </Link>
 
         </div>
 
         <div className="md:hidden flex items-center justify-between w-full">
 
+          {/* PROFILE */}
           {!isLoggedIn ? (
             <Link to="/login">
               <div className="p-2 rounded-full border-2 border-white/20 flex items-center justify-center shadow-2xl shadow-blue-700">
@@ -307,18 +356,6 @@ const Header = () => {
                       My Admin
                     </Link>
 
-                    <Link
-                      to="/orders"
-                      onClick={() =>
-                        setMobileProfileOpen(
-                          false
-                        )
-                      }
-                      className="px-3 py-2 hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-Roboto"
-                    >
-                      My Orders
-                    </Link>
-
                     <button
                       onClick={handleLogout}
                       className="px-3 py-2 text-left hover:bg-gray-800 rounded text-gray-300 hover:text-white tracking-widest font-Roboto"
@@ -334,10 +371,13 @@ const Header = () => {
             </div>
           )}
 
+          {/* LOGO */}
           <Link to="/">
-            <div className="flex font-semibold ml-8">
-
-              {/* <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest">
+            <div
+              className="flex items-center text-white text-2xl font-semibold ml-8"
+            >
+              {/* <img src="/logo2.png" alt="logo" className="w-6" loading="lazy" /> */}
+              <div className="text-4xl font-Roboto font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent tracking-widest ">
                 Brilson
               </div> */}
 
@@ -347,14 +387,9 @@ const Header = () => {
             </div>
           </Link>
 
-          <Link
-            to="/your-items"
-            className="relative text-2xl text-white"
-          >
-            <div className="p-2 rounded-full border-2 border-white/20 flex items-center justify-center shadow-2xl shadow-blue-700">
-            <LuShoppingCart size={23} />
-            </div>
-
+          {/* CART */}
+          <Link to="/your-items" className="relative text-2xl text-white">
+            <LuShoppingCart size={28} />
             {cartCount > 0 && (
               <span className="absolute -top-3 -right-3 w-6 h-6 bg-red-500 text-white rounded-full text-sm flex items-center justify-center font-bold">
                 {cartCount}
@@ -369,9 +404,7 @@ const Header = () => {
             }
             className="hover:bg-gray-800 rounded text-gray-300 hover:text-white"
           >
-            <div className="p-2 rounded-full border-2 border-white/20 flex items-center justify-center shadow-2xl shadow-blue-700">
-            <BookCheck size={23} />
-            </div>
+            <BookCheck size={28} />
           </Link>
 
         </div>
