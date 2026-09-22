@@ -132,7 +132,7 @@ function ProfileCard({ profile, code }) {
       </div>
 
       <div className="px-4 pb-6 pt-8 text-center sm:px-6">
-        <h1 className="text-[28px] font-bold leading-tight tracking-tight text-white sm:text-[32px]">{name}</h1>
+        <h2 className="text-[28px] font-bold leading-tight tracking-tight text-white sm:text-[32px]">{name}</h2>
         {tagline && <p className="mt-1.5 text-[15px] text-slate-200">{tagline}</p>}
         {location && (
           <p className="mt-2.5 inline-flex items-center justify-center gap-1.5 text-[15px] text-slate-200">
@@ -174,7 +174,7 @@ function ProfileCard({ profile, code }) {
           <button
             type="button"
             onClick={handleShare}
-            className="group flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
+            className="cursor-pointer group flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
             aria-label="Share profile"
           >
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-orange-500/15 text-orange-400 transition-transform duration-300 group-hover:scale-110">
