@@ -52,7 +52,7 @@ export default function SafeImage({
           onLoad={() => setStatus("loaded")}
           onError={() => setStatus("error")}
           className={cn(
-            "w-full transition-opacity duration-500 motion-reduce:transition-none",
+            "w-full transition-opacity duration-500 motion-reduce:transition-none cursor-pointer",
             fit === "cover" && "h-full object-cover",
             fit === "contain" && "h-auto object-contain",
             status === "loaded" ? "opacity-100" : "opacity-0",

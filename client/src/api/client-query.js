@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../utils/axiosInstance";
 
 export const useGetFooter = () => {
@@ -124,6 +124,7 @@ export const useGetProfile = (slug) => {
             return data;
         },
         enabled: !!slug,
+        // refetchOnMount: "always",
     });
 };
 
@@ -191,5 +192,32 @@ export const useGetMyOrders = () => {
             const { data } = await axiosInstance.get(`/api/orders`);
             return data.orders || [];
         },
+    });
+};
+
+export const useUpdateProfile = (code, id) => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (profileData) => {
+            const { data } = await axiosInstance.put(
+                `/api/card/${id}/edit`,
+                profileData
+            );
+
+            return data;
+        },
+        onSuccess: async () => {
+            queryClient.invalidateQueries({
+                queryKey: ["card", code]
+            })
+
+            await queryClient.invalidateQueries({
+                queryKey: ["profileLogo", code],
+            });
+
+            await queryClient.invalidateQueries({
+                queryKey: ["profile-location", code],
+            });
+        }
     });
 };

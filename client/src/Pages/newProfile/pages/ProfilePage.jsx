@@ -57,7 +57,7 @@ export default function ProfilePage() {
           )}
         </div>
 
-        <div>
+        <div className="mb-7">
           <AccordionList code={code} profile={profile} />
 
           <div className="mt-5 border-t border-white/10 pt-5 sm:hidden">

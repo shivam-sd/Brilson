@@ -6,7 +6,7 @@ import ContactActions from "./ContactActions";
 import SocialLinks from "./SocialLinks";
 import SafeImage from "./ui/SafeImage";
 import { Link } from "react-router-dom";
-import { FaGoogle, FaStar } from "react-icons/fa";
+import { FaCamera, FaGoogle, FaStar } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { useSelector } from "react-redux";
@@ -69,43 +69,139 @@ function ProfileCard({ profile, code }) {
       aria-label={`${name}'s profile`}
       className="overflow-hidden rounded-[22px] border border-white/10 bg-gradient-to-b from-[#0a1016] to-[#03060a] shadow-[0_24px_60px_-24px_rgba(0,0,0,1)]"
     >
-      <div className="relative h-[300px] sm:h-[340px]">
-        {isOwner && <Link
-          to={`/profile/edit/${code}`}
-          aria-label="Edit profile"
-          className="absolute right-4 top-4 z-20 inline-flex items-center gap-2 rounded-lg border border-orange-400/40 bg-[#05090d]/85 px-3 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-orange-400 hover:bg-orange-500/10 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 motion-reduce:transition-none sm:right-5 sm:top-5"
-        >
-          <LuPencil className="h-4 w-4" aria-hidden="true" />
-          <span>Edit</span>
-        </Link>}
+      <div className="relative h-[150px] sm:h-[340px]">
+        {isOwner && (
+          <Link
+            to={`/profile/edit/${code}`}
+            aria-label="Edit profile"
+            className="absolute right-4 top-4 z-30 inline-flex items-center gap-2 rounded-lg border border-orange-400/40 bg-[#05090d]/85 px-3 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-orange-400 hover:bg-orange-500/10 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 motion-reduce:transition-none sm:right-5 sm:top-5"
+          >
+            <LuPencil className="h-4 w-4" aria-hidden="true" />
+            <span>Edit</span>
+          </Link>
+        )}
+
+        {/* Cover */}
         <div className="absolute inset-0">
           <SafeImage
             src={coverImage}
             alt=""
             eager
-            className="h-full w-full bg-[#0a1016]"
-            imgClassName="object-top grayscale contrast-110"
+            className="lg:h-full h-full w-full bg-[#0a1016]"
+            imgClassName="none"
           />
         </div>
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-[#05090d]" />
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-black/45 via-transparent to-transparent" />
 
-        {/* handwritten flourish */}
-        <div aria-hidden="true" className="pointer-events-none absolute left-4 top-14 select-none sm:left-6 sm:top-16">
-          <p className="font-script -rotate-[9deg] text-[26px] leading-[1.08] text-white/95 sm:text-[31px]">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-[#05090d]"
+        />
+
+        {/* <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-r from-black/45 via-transparent to-transparent"
+        /> */}
+
+        {/* Handwritten flourish */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-4 top-14 select-none sm:left-6 sm:top-16"
+        >
+          {/* <p className="font-script -rotate-[9deg] text-[26px] leading-[1.08] text-white/95 sm:text-[31px]">
             {HANDWRITTEN_LINES.map((line, i) => (
-              <span key={line} className="block" style={{ paddingLeft: `${[0, 4, 14, 0][i] ?? 0}px` }}>
+              <span
+                key={line}
+                className="block"
+                style={{
+                  paddingLeft: `${[0, 4, 14, 0][i] ?? 0}px`,
+                }}
+              >
                 {line}
               </span>
             ))}
-          </p>
-          <svg className="-mt-1 h-4 w-28 text-orange-500 sm:w-32" viewBox="0 0 128 16" fill="none">
-            <path d="M2 14C34 12 86 7 126 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
+          </p> */}
         </div>
 
-        {/* avatar */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-5">
+        {/*MOBILE AVATAR \*/}
+        {/* MOBILE AVATAR */}
+        <div className="absolute bottom-0 left-4 right-4 z-50 flex items-center gap-3 translate-y-1/2 md:hidden">
+          {/* Avatar */}
+          <div className="relative shrink-0">
+            <div
+              className="
+        h-[96px] w-[96px]
+        min-[380px]:h-[104px] min-[380px]:w-[104px]
+        min-[430px]:h-[112px] min-[430px]:w-[112px]
+        rounded-full
+        border-4 border-orange-500
+        bg-[#05090d]
+        p-[3px]
+        shadow-[0_0_36px_-4px_rgba(249,115,22,0.5)]
+      "
+            >
+              <SafeImage
+                src={profileImage}
+                alt={`Photo of ${name}`}
+                eager
+                className="h-full w-full rounded-full"
+                // imgClassName="object-cover grayscale"
+                imgClassName="object-cover"
+                fallback={
+                  <div className="grid h-full w-full place-items-center rounded-full bg-gradient-to-br from-orange-500/30 to-slate-800 text-2xl font-bold text-white">
+                    {initialsOf(name)}
+                  </div>
+                }
+              />
+            </div>
+
+            {/* Camera button */}
+            {/* {isOwner && (
+      <Link
+        to={`/profile/edit/${code}`}
+        aria-label="Change profile photo"
+        className="absolute bottom-0 right-[-4px] grid h-10 w-10 place-items-center rounded-full border-2 border-[#05090d] bg-[#30343a] text-white shadow-lg"
+      >
+        <FaCamera className="h-4 w-4" />
+      </Link>
+    )} */}
+
+            {/* Verified */}
+            {/* {verified && (
+      <span className="absolute bottom-1 right-1 grid h-[27px] w-[27px] translate-x-1/2 place-items-center rounded-full border-2 border-[#05090d] bg-[#2f7cf6] text-white shadow-lg">
+        <LuCheck
+          className="h-3.5 w-3.5"
+          strokeWidth={3.5}
+          aria-hidden="true"
+        />
+        <span className="sr-only">Verified profile</span>
+      </span>
+    )} */}
+          </div>
+
+          {/* Name stays attached to avatar */}
+          <div className="min-w-0 flex-1">
+            <h2
+              className="
+        truncate
+        text-left
+        text-[14px]
+        font-bold
+        leading-tight
+        tracking-tight
+        text-white
+        min-[380px]:text-[15px]
+        min-[430px]:text-[16px] mt-5
+      "
+            >
+              {name}
+            </h2>
+          </div>
+        </div>
+
+        {/* =========================================================
+      DESKTOP AVATAR
+      ========================================================= */}
+        <div className="absolute bottom-0 left-1/2 hidden -translate-x-1/2 translate-y-5 md:block">
           <div className="group relative">
             <div className="h-[124px] w-[124px] rounded-full border-4 border-orange-500 bg-[#05090d] p-[3px] shadow-[0_0_36px_-4px_rgba(249,115,22,0.5)] transition-transform duration-300 hover:scale-105 motion-reduce:transition-none sm:h-[134px] sm:w-[134px]">
               <SafeImage
@@ -121,30 +217,37 @@ function ProfileCard({ profile, code }) {
                 }
               />
             </div>
-            {verified && (
+
+            {/* {verified && (
               <span className="absolute bottom-1 right-1 grid h-[30px] w-[30px] place-items-center rounded-full border-2 border-[#05090d] bg-[#2f7cf6] text-white shadow-lg">
-                <LuCheck className="h-4 w-4" strokeWidth={3.5} aria-hidden="true" />
+                <LuCheck
+                  className="h-4 w-4"
+                  strokeWidth={3.5}
+                  aria-hidden="true"
+                />
                 <span className="sr-only">Verified profile</span>
               </span>
-            )}
+            )} */}
           </div>
         </div>
       </div>
 
-      <div className="px-4 pb-6 pt-8 text-center sm:px-6">
-        <h1 className="text-[28px] font-bold leading-tight tracking-tight text-white sm:text-[32px]">{name}</h1>
-        {tagline && <p className="mt-1.5 text-[15px] text-slate-200">{tagline}</p>}
+      <div className="px-4 pb-6 pt-2 sm:pt-6 text-center sm:px-6">
+        <h2 className="hidden md:block ml-10 sm:ml-0 text-[15px] font-bold leading-tight tracking-tight text-white sm:text-[25px]">
+          {name}
+        </h2>       
+         {/* {tagline && <p className="mt-1.5 text-[15px] text-slate-200">{tagline}</p>}
         {location && (
           <p className="mt-2.5 inline-flex items-center justify-center gap-1.5 text-[15px] text-slate-200">
             <FaLocationDot className="h-4 w-4 text-orange-500" aria-hidden="true" />
             {location}
           </p>
-        )}
+        )} */}
 
-        <div className="mt-5">
+        <div className="md:mt-2 mt-10">
           <ContactActions profile={profile} />
         </div>
-        <div className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-2">
+        <div className="md:mt-5 mt-1 grid grid-cols-2 gap-2.5 sm:grid-cols-2">
           <Link
             to={profile?.reviewLink}
             target="_blank"
@@ -174,7 +277,7 @@ function ProfileCard({ profile, code }) {
           <button
             type="button"
             onClick={handleShare}
-            className="group flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
+            className="cursor-pointer group flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
             aria-label="Share profile"
           >
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-orange-500/15 text-orange-400 transition-transform duration-300 group-hover:scale-110">

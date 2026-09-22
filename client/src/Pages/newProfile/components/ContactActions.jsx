@@ -4,9 +4,9 @@ import { cn } from "../utils/helpers";
 import { downloadVCard } from "../utils/vcard";
 
 const tile = cn(
-  "flex min-h-[68px] flex-col items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-1.5 py-3",
+  "cursor-pointer flex min-h-[68px] flex-col items-center justify-center gap-1.5 rounded-xl md:border md:border-white/10 md:bg-white/[0.03] md:px-1.5 md:py-3",
   "text-center text-[11px] font-medium leading-tight text-slate-100 sm:text-xs",
-  "transition duration-200 hover:-translate-y-0.5 hover:border-orange-400/40 hover:bg-white/[0.07] hover:shadow-[0_10px_24px_-12px_rgba(249,115,22,0.55)]",
+  "transition duration-200 hover:-translate-y-0.5 md:hover:border-orange-400/40 md:hover:bg-white/[0.07] md:hover:shadow-[0_10px_24px_-12px_rgba(249,115,22,0.55)]",
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/80 motion-reduce:transition-none",
   "disabled:pointer-events-none disabled:opacity-40"
 );
@@ -39,7 +39,7 @@ function ContactActions({ profile }) {
   const whatsappNumber = contacts.whatsapp.replace(/\D/g, "");
 
   return (
-    <div className="grid grid-cols-2 gap-2 min-[420px]:grid-cols-4">
+    <div className="grid grid-cols-4 gap-2 min-[420px]:grid-cols-4">
       <ActionTile iconKey="call" label="Call" href={contacts.phone ? `tel:${contacts.phone}` : null} />
       <ActionTile
         iconKey="whatsapp"
