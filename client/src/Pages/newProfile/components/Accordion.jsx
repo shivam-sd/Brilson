@@ -39,7 +39,7 @@ function Accordion({ icon: Icon, title, subtitle, color = "orange", defaultOpen 
             theme.focus
           )}
         >
-          <span className={cn("grid h-14 w-14 shrink-0 place-items-center rounded-xl sm:h-[62px] sm:w-[62px]", theme.iconBox)}>
+          <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-xl sm:h-[62px] sm:w-[62px]", theme.iconBox)}>
             <Icon className={cn("h-6 w-6 sm:h-7 sm:w-7", theme.icon)} aria-hidden="true" />
           </span>
 
