@@ -88,7 +88,7 @@ export const SECTION_THEMES = {
 };
 
 export const ACCORDION_SECTIONS = [
-  { id: "about", title: "About", subtitle: "Know more about me and my journey", icon: FaUser, color: "blue" },
+  // { id: "about", title: "About", subtitle: "Know more about me and my journey", icon: FaUser, color: "blue" },
   { id: "services", title: "Services", subtitle: "What I offer", icon: FaGear, color: "orange" },
   { id: "products", title: "Products", subtitle: "View my Products", icon: LuBox, color: "purple" },
   { id: "gallery", title: "Gallery", subtitle: "Photos & moments", icon: LuImage, color: "green" },
