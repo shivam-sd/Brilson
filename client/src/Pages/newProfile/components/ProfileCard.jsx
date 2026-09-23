@@ -23,16 +23,28 @@ const initialsOf = (name) =>
 
 function ProfileCard({ profile, code }) {
   const [shareStatus, setShareStatus] = useState("");
-  const currentUserId = useSelector(selectUser)
-  const isOwner = currentUserId?._id === profile?.profileId
+  const [bioExpanded, setBioExpanded] = useState(false);
 
-  const { name, tagline, location, profileImage, coverImage, verified, socialLinks, image } = profile;
+  const currentUserId = useSelector(selectUser);
+  const isOwner = currentUserId?._id === profile?.profileId;
 
+  const {
+    name,
+    tagline,
+    location,
+    profileImage,
+    coverImage,
+    verified,
+    socialLinks,
+    image,
+  } = profile;
 
   const handleShare = async () => {
     const shareData = {
       title: name,
-      text: tagline ? `${name} - ${tagline}` : `Check out ${name}'s profile`,
+      text: tagline
+        ? `${name} - ${tagline}`
+        : `Check out ${name}'s profile`,
       url: window.location.href,
     };
 
@@ -123,20 +135,20 @@ function ProfileCard({ profile, code }) {
         </div>
 
         {/*MOBILE AVATAR \*/}
-        <div className="absolute bottom-0 left-4 right-4 z-50 flex items-center gap-3 translate-y-1/2 md:hidden">
+        <div className="absolute bottom-0 left-4 z-50 translate-y-1/2 md:hidden">
           {/* Avatar */}
           <div className="relative shrink-0">
             <div
               className="
-        h-[96px] w-[96px]
-        min-[380px]:h-[104px] min-[380px]:w-[104px]
-        min-[430px]:h-[112px] min-[430px]:w-[112px]
-        rounded-full
-        border-4 border-orange-500
-        bg-[#05090d]
-        p-[3px]
-        shadow-[0_0_36px_-4px_rgba(249,115,22,0.5)]
-      "
+                h-[96px] w-[96px]
+                min-[380px]:h-[104px] min-[380px]:w-[104px]
+                min-[430px]:h-[112px] min-[430px]:w-[112px]
+                rounded-full
+                border-4 border-orange-500
+                bg-[#05090d]
+                p-[3px]
+                shadow-[0_0_36px_-4px_rgba(249,115,22,0.5)]
+              "
             >
               <SafeImage
                 src={profileImage}
@@ -152,65 +164,21 @@ function ProfileCard({ profile, code }) {
                 }
               />
             </div>
-
-            {/* Camera button */}
-            {/* {isOwner && (
-      <Link
-        to={`/profile/edit/${code}`}
-        aria-label="Change profile photo"
-        className="absolute bottom-0 right-[-4px] grid h-10 w-10 place-items-center rounded-full border-2 border-[#05090d] bg-[#30343a] text-white shadow-lg"
-      >
-        <FaCamera className="h-4 w-4" />
-      </Link>
-    )} */}
-
             {/* Verified */}
             {/* {verified && (
-      <span className="absolute bottom-1 right-1 grid h-[27px] w-[27px] translate-x-1/2 place-items-center rounded-full border-2 border-[#05090d] bg-[#2f7cf6] text-white shadow-lg">
-        <LuCheck
-          className="h-3.5 w-3.5"
-          strokeWidth={3.5}
-          aria-hidden="true"
-        />
-        <span className="sr-only">Verified profile</span>
-      </span>
-    )} */}
+              <span className="absolute bottom-1 right-1 grid h-[27px] w-[27px] translate-x-1/2 place-items-center rounded-full border-2 border-[#05090d] bg-[#2f7cf6] text-white shadow-lg">
+                <LuCheck
+                  className="h-3.5 w-3.5"
+                  strokeWidth={3.5}
+                  aria-hidden="true"
+                />
+                <span className="sr-only">Verified profile</span>
+              </span>
+            )} */}
           </div>
-
-          <div className="min-w-0 flex-1 pt-5">
-            <h2
-              className="
-        truncate
-        text-left
-        text-[14px]
-        font-bold
-        leading-tight
-        tracking-tight
-        text-white
-        min-[380px]:text-[15px]
-        min-[430px]:text-[16px]
-      "
-            >
-              {name}
-            </h2>
-
-            {tagline && (
-              <p className="mt-1 truncate text-left text-[12px] font-medium leading-tight text-white/75 min-[380px]:text-[13px]">
-                {tagline}
-              </p>
-            )}
-          </div>
-
-          {/* {location && (
-            <span className="max-w-[80px] shrink-0 truncate self-center text-right text-[11px] font-medium text-white/75">
-              {location}
-            </span>
-          )} */}
         </div>
 
-        {/* =========================================================
-      DESKTOP AVATAR
-      ========================================================= */}
+        {/*DESKTOP AVATAR*/}
         <div className="absolute bottom-0 left-1/2 hidden -translate-x-1/2 translate-y-5 md:block">
           <div className="group relative">
             <div className="h-[124px] w-[124px] rounded-full border-4 border-orange-500 bg-[#05090d] p-[3px] shadow-[0_0_36px_-4px_rgba(249,115,22,0.5)] transition-transform duration-300 hover:scale-105 motion-reduce:transition-none sm:h-[134px] sm:w-[134px]">
@@ -242,10 +210,75 @@ function ProfileCard({ profile, code }) {
         </div>
       </div>
 
-      <div className="px-4 pb-6 pt-2 sm:pt-6 text-center sm:px-6">
+      <div className="px-4 pb-6 pt-0 text-center sm:px-6 sm:pt-6">
+        <div className="relative mb-4 min-h-[86px] md:hidden">
+          <div className="absolute -top-[43px] left-4">
+            <div className="w-[96px] min-[380px]:w-[104px] min-[430px]:w-[112px]" />
+          </div>
+
+          <div
+            className="
+              ml-[108px]
+              min-[380px]:ml-[116px]
+              min-[430px]:ml-[124px]
+              pt-1
+              text-left
+            "
+          >
+            <h2
+              className="
+                truncate
+                text-[14px]
+                font-bold
+                leading-tight
+                tracking-tight
+                text-white
+                min-[380px]:text-[15px]
+                min-[430px]:text-[16px]
+              "
+            >
+              {name}
+            </h2>
+
+            {tagline && (
+              <div className="mt-1">
+                <p
+                  className={[
+                    "text-[12px] font-medium leading-[1.25] text-white/75 min-[380px]:text-[13px]",
+                    bioExpanded ? "break-words" : "line-clamp-2",
+                  ].join(" ")}
+                >
+                  {tagline}
+                </p>
+
+                {tagline.length > 90 && (
+                  <button
+                    type="button"
+                    onClick={() => setBioExpanded((prev) => !prev)}
+                    className="
+                      mt-1
+                      text-[11px]
+                      font-semibold
+                      text-orange-400
+                      transition-colors
+                      hover:text-orange-300
+                      focus-visible:outline-none
+                      focus-visible:ring-1
+                      focus-visible:ring-orange-400
+                    "
+                  >
+                    {bioExpanded ? "See less" : "See more"}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
         <h2 className="hidden md:block ml-10 sm:ml-0 text-[15px] font-bold leading-tight tracking-tight text-white sm:text-[25px]">
           {name}
         </h2>
+
         {/* {tagline && <p className="mt-1.5 text-[15px] text-slate-200">{tagline}</p>}
         {location && (
           <p className="mt-2.5 inline-flex items-center justify-center gap-1.5 text-[15px] text-slate-200">
@@ -254,11 +287,16 @@ function ProfileCard({ profile, code }) {
           </p>
         )} */}
 
-        <div className="md:mt-2 mt-14">
+        <div className="md:mt-2 mt-0">
           <ContactActions profile={profile} />
         </div>
-        <div className={`md:mt-5 mt-2 grid ${profile?.reviewLink ? 'grid-cols-2' : 'grid-cols-1'} gap-2.5 sm:grid-cols-2`}>
-          {profile?.reviewLink &&
+
+        <div
+          className={`md:mt-5 mt-2 grid ${
+            profile?.reviewLink ? "grid-cols-2" : "grid-cols-1"
+          } gap-2.5 sm:grid-cols-2`}
+        >
+          {profile?.reviewLink && (
             <Link
               to={profile?.reviewLink}
               target="_blank"
@@ -280,11 +318,17 @@ function ProfileCard({ profile, code }) {
 
                 <span className="mt-1.5 flex items-center gap-0.5 text-[#fbbc04]">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <FaStar key={star} className="h-3 w-3" aria-hidden="true" />
+                    <FaStar
+                      key={star}
+                      className="h-3 w-3"
+                      aria-hidden="true"
+                    />
                   ))}
                 </span>
               </span>
-            </Link>}
+            </Link>
+          )}
+
           <button
             type="button"
             onClick={handleShare}
