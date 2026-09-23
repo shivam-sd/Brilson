@@ -15,13 +15,14 @@ import { FaCreditCard, FaEnvelope, FaGlobe, FaGoogle, FaPhone, FaUser, FaUserPlu
 import { LuBox, LuImage } from "react-icons/lu";
 import { FaFileLines, FaGear, FaLocationDot } from "react-icons/fa6";
 import { TbBrandSnapchat } from "react-icons/tb";
+import { FcPhone } from "react-icons/fc";
 
 export const BOTTOM_QUOTE = "Turning Ideas Into Impact";
 export const HANDWRITTEN_LINES = ["Let's", "Connect", "Create", "Together..."];
 
 
 export const CONTACT_ICONS = {
-  call: { Icon: FaPhone, className: "text-orange-400" },
+  call: { Icon: FaPhone, className: "text-[#25d366]" },
   whatsapp: { Icon: FaWhatsapp, className: "text-[#25d366]" },
   email: { Icon: FaEnvelope, className: "text-amber-400" },
   save: { Icon: FaUserPlus, className: "text-orange-400" },
@@ -91,7 +92,7 @@ export const ACCORDION_SECTIONS = [
   { id: "services", title: "Services", subtitle: "What I offer", icon: FaGear, color: "orange" },
   { id: "products", title: "Products", subtitle: "View my Products", icon: LuBox, color: "purple" },
   { id: "gallery", title: "Gallery", subtitle: "Photos & moments", icon: LuImage, color: "green" },
-  { id: "location", title: "Location & Contact", subtitle: "Get in touch", icon: FaLocationDot, color: "amber" },
+  { id: "location", title: "Location", subtitle: "Get in touch", icon: FaLocationDot, color: "amber" },
   { id: "google-review", title: "Google Review", subtitle: "Directions & customer reviews", icon: FaGoogle, color: "indigo" },
   { id: "payment", title: "Payment Details", subtitle: "Bank & UPI details", icon: FaCreditCard, color: "teal" },
   { id: "resume", title: "Resume / CV", subtitle: "Download my resume", icon: FaFileLines, color: "rose" },
@@ -127,8 +128,8 @@ export const SOCIAL_PLATFORMS = {
   },
   snapchat: {
     label: "Snapchat",
-    Icon: TbBrandSnapchat,
-    className: "bg-[#FFFC00] text-black",
+    Icon: SiSnapchat,
+    className: "bg-black text-black",
   },
 
   telegram: {
