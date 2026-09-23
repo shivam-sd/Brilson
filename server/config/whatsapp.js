@@ -9,7 +9,7 @@ const sendWhatsAppOTP = async (phone, otp) => {
 
   }catch(err){
     console.log("WhatsApp OTP Sending Error:", err);
-    res,status(500).json({error:"Server Error", err});
+    // res,status(500).json({error:"Server Error", err});
   }
 
 };
