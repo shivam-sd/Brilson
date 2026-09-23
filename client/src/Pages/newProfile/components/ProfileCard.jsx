@@ -257,8 +257,8 @@ function ProfileCard({ profile, code }) {
         <div className="md:mt-2 mt-14">
           <ContactActions profile={profile} />
         </div>
-        <div className="hidden md:block">
-          <div className="md:mt-5 mt-1 grid grid-cols-2 gap-2.5 sm:grid-cols-2">
+        <div className={`md:mt-5 mt-2 grid ${profile?.reviewLink ? 'grid-cols-2' : 'grid-cols-1'} gap-2.5 sm:grid-cols-2`}>
+          {profile?.reviewLink &&
             <Link
               to={profile?.reviewLink}
               target="_blank"
@@ -284,22 +284,19 @@ function ProfileCard({ profile, code }) {
                   ))}
                 </span>
               </span>
-            </Link>
-            <button
-              type="button"
-              onClick={handleShare}
-              className="cursor-pointer group flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
-              aria-label="Share profile"
-            >
-              <span className="grid h-8 w-8 place-items-center rounded-lg bg-orange-500/15 text-orange-400 transition-transform duration-300 group-hover:scale-110">
-                <FaShareNodes className="h-4 w-4" aria-hidden="true" />
-              </span>
+            </Link>}
+          <button
+            type="button"
+            onClick={handleShare}
+            className="cursor-pointer group flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
+            aria-label="Share profile"
+          >
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-orange-500/15 text-orange-400 transition-transform duration-300 group-hover:scale-110">
+              <FaShareNodes className="h-4 w-4" aria-hidden="true" />
+            </span>
 
-              <span>{shareStatus || "Share Profile"}</span>
-            </button>
-
-
-          </div>
+            <span>{shareStatus || "Share Profile"}</span>
+          </button>
         </div>
 
         <div className="hidden md:block mt-5 border-t border-white/10 pt-5">

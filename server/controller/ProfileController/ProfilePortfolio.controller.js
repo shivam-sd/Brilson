@@ -135,6 +135,7 @@ const getSinglePortfolio = async (req,res) => {
 const getPortfolio = async (req, res) => {
   try {
     const { activationCode } = req.params;
+    console.log("api call-------")
 
     const Portfolio = await PortfolioModel.find({ activationCode }).sort({createdAt: -1});
 

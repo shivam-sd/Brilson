@@ -92,3 +92,14 @@ export const useGetPaymentDetails = (code) =>
     },
     enabled: Boolean(code),
   });
+
+export const useGetSectionAvailability = (activationCode) => {
+  return useQuery({
+    queryKey: ["section-availability", activationCode],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(`/api/profile-services/section-availability/${activationCode}`)
+      return data
+    },
+    enabled: Boolean(activationCode),
+  });
+};

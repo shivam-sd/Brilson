@@ -93,7 +93,7 @@ export const ACCORDION_SECTIONS = [
   { id: "products", title: "Products", subtitle: "View my Products", icon: LuBox, color: "purple" },
   { id: "gallery", title: "Gallery", subtitle: "Photos & moments", icon: LuImage, color: "green" },
   { id: "location", title: "Location", subtitle: "Get in touch", icon: FaLocationDot, color: "amber" },
-  { id: "google-review", title: "Google Review", subtitle: "Directions & customer reviews", icon: FaGoogle, color: "indigo" },
+  // { id: "google-review", title: "Google Review", subtitle: "Directions & customer reviews", icon: FaGoogle, color: "indigo" },
   { id: "payment", title: "Payment Details", subtitle: "Bank & UPI details", icon: FaCreditCard, color: "teal" },
   { id: "resume", title: "Resume / CV", subtitle: "Download my resume", icon: FaFileLines, color: "rose" },
 ];
