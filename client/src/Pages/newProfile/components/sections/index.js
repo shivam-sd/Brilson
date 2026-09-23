@@ -15,6 +15,6 @@ export const SECTION_COMPONENTS = {
   gallery: GallerySection,
   location: LocationSection,
   resume: ResumeSection,
-  "google-review": GoogleReviewSection,
+  // "google-review": GoogleReviewSection,
   payment: PaymentSection,
 };

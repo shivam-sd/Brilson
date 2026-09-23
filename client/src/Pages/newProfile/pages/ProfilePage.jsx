@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useGetCard, useGetLocation, useGetProfileLogo } from "../api/profileApi";
+import { useGetCard, useGetLocation, useGetProfileLogo, useGetSectionAvailability } from "../api/profileApi";
 import AccordionList from "../components/AccordionList";
 import ProfileCard from "../components/ProfileCard";
 import ProfileCardSkeleton from "../components/ProfileCardSkeleton";
@@ -31,6 +31,7 @@ export default function ProfilePage() {
   const cardQuery = useGetCard(code);
   const logoQuery = useGetProfileLogo(code);
   const googleReviewData = useGetLocation(code);
+  const sectionQuery = useGetSectionAvailability(code);
 
   const loading = cardQuery.isLoading || logoQuery.isLoading;
   const profile = useMemo(
@@ -58,7 +59,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="mb-7">
-          <AccordionList code={code} profile={profile} />
+          <AccordionList code={code} profile={profile} availability={sectionQuery.data?.data}/>
 
           <div className="mt-5 border-t border-white/10 pt-5 sm:hidden">
             <SocialLinks links={profile?.socialLinks} />

@@ -1,5 +1,10 @@
 const ProfileService = require("../../models/ProfileModel/ProfileServices.Model");
 const CardProfile = require("../../models/CardProfile");
+const ProfileProductModel = require("../../models/ProfileModel/ProfileProduct.Model");
+const ProfileGalleryModel = require("../../models/ProfileModel/ProfileGalleryModel");
+const locationModel = require("../../models/ProfileModel/Location&Reviews.model");
+const PaymentDetailsModel = require("../../models/ProfileModel/PaymentDetails.Model");
+const resumeModel = require("../../models/ProfileModel/ProfileResume");
 const cloudinary = require("cloudinary").v2;
 
 
@@ -160,23 +165,23 @@ const getServices = async (req, res) => {
 
 
 const getSingleService = async (req, res) => {
-    try{
-        const { serviceId } = req.params;
+  try {
+    const { serviceId } = req.params;
 
-        const service = await ProfileService.findById(serviceId);
+    const service = await ProfileService.findById(serviceId);
 
-        if(!service){
-            return res.status(404).json({message: "Service not found"});
-        }
-
-        res.json({
-            success: true,
-            data: service,
-        })
-
-    }catch(err){
-        res.status(500).json({ message: err.message });
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
     }
+
+    res.json({
+      success: true,
+      data: service,
+    })
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 }
 
 
@@ -201,10 +206,52 @@ const deleteService = async (req, res) => {
   }
 };
 
+const getSectionAvailability = async (req, res) => {
+  try {
+    const { activationCode } = req.params;
+
+    const [
+      galleryCount,
+      productsCount,
+      servicesCount,
+      locationReviews,
+      paymentDetails,
+      resume,
+    ] = await Promise.all([
+      ProfileGalleryModel.countDocuments({ activationCode }),
+      ProfileProductModel.countDocuments({ activationCode }),
+      ProfileService.countDocuments({ activationCode }),
+      locationModel.findOne({ activationCode }).select("_id").lean(),
+      PaymentDetailsModel.findOne({ activationCode }).select("_id").lean(),
+      resumeModel.findOne({ activationCode }).select("_id").lean(),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        gallery: galleryCount > 0,
+        products: productsCount > 0,
+        services: servicesCount > 0,
+        location: Boolean(locationReviews),
+        payment: Boolean(paymentDetails),
+        resume: Boolean(resume),
+      },
+    });
+  } catch (err) {
+    console.error("getSectionAvailability error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message || "Internal server error",
+    });
+  }
+};
+
 module.exports = {
   addService,
   updateService,
   getServices,
   getSingleService,
   deleteService,
+  getSectionAvailability,
 };
