@@ -52,7 +52,7 @@ const EditProfile = () => {
     countryCode: "+91",
     WacountryCode: "+91",
     bio: "",
-    about: "",
+    // about: "",
     city: "",
     whatsapp: "",
     website: "",
@@ -376,7 +376,7 @@ const EditProfile = () => {
       email: form.email,
       phone: form.phone,
       bio: form.bio,
-      about: form.about,
+      // about: form.about,
       city: form.city,
       whatsapp: form.whatsapp,
       website: form.website,
@@ -671,7 +671,7 @@ const EditProfile = () => {
               </div>
 
               {/* About - Full width */}
-              <div className="mt-4 md:mt-6">
+              {/* <div className="mt-4 md:mt-6">
                 <Textarea 
                   label="About" 
                   name="about" 
@@ -680,7 +680,7 @@ const EditProfile = () => {
                   rows={4} 
                   placeholder="Tell more about yourself..."
                 />
-              </div>
+              </div> */}
 
               {/* Save Changes Button */}
               <motion.button
