@@ -10,17 +10,13 @@ function SocialLinks({ links }) {
     <div
       className="
         fixed bottom-3 left-1/2 z-50 w-[calc(100%-24px)] -translate-x-1/2
-        rounded-xl border border-cyan-400/20
-        bg-gradient-to-b from-[#08141d]/95 to-[#050c12]/95
-        px-2 py-2
-        shadow-[0_12px_35px_-15px_rgba(34,211,238,0.4)]
-        backdrop-blur-md
+        rounded-xl border border-white/10 bg-white/[0.03]
+         backdrop-blur-md
 
         md:static md:w-full md:translate-x-0
-        md:rounded-2xl md:px-3 md:pb-3 md:pt-4
+        md:rounded-2xl md:px-3 md:pb-3 md:pt-2
       "
     >
-      {/* Desktop only */}
       <div className="mb-3 hidden items-center justify-center md:flex">
         <h3 className="text-[15px] font-semibold tracking-wide text-white">
           Connect with me
@@ -30,9 +26,13 @@ function SocialLinks({ links }) {
       <ul
         aria-label="Social media"
         className="
-          flex justify-center gap-2 overflow-x-auto
+          flex w-full min-w-0
+          justify-start gap-1
+          overflow-x-auto overflow-y-hidden
           scrollbar-none
-          md:justify-start md:gap-3
+          overscroll-x-contain
+          touch-pan-x
+          md:justify-start
         "
       >
         {links.map(({ platform, url }) => {
@@ -52,19 +52,14 @@ function SocialLinks({ links }) {
                 title={label}
                 className="
                   group flex h-[54px] w-[54px]
-                  items-center justify-center
-                  rounded-lg border border-white/10
-                  bg-[#07131c]
+                  shrink-0 items-center justify-center
                   transition-colors duration-200
-                  hover:border-cyan-400/30
-                  hover:bg-white/[0.06]
                   focus-visible:outline-none
                   focus-visible:ring-2
-                  focus-visible:ring-cyan-400
                   motion-reduce:transition-none
 
-                  md:h-[86px] md:w-[80px]
-                  md:flex-col md:gap-2 md:rounded-xl md:px-2
+                  md:h-[86px] md:w-[50px]
+                  md:flex-col md:gap-2 md:rounded-xl
                 "
               >
                 <span
@@ -79,8 +74,7 @@ function SocialLinks({ links }) {
                   />
                 </span>
 
-                {/* Mobile: label hidden */}
-                <span className="hidden max-w-full truncate text-[10px] font-medium leading-none text-white/75 group-hover:text-white md:block">
+                <span className="hidden max-w-full truncate text-[9px] font-medium leading-none text-white/75 group-hover:text-white md:block">
                   {label}
                 </span>
               </Link>

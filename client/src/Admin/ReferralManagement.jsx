@@ -48,7 +48,7 @@ const ReferralManagement = () => {
   }
 
   return (
-    <div className="p-6 space-y-6 min-h-screen">
+    <div className="p-6 space-y-6 min-h-screen lg:mt-0 md:mt-0 mt-10">
 
       {/* Summary Cards */}
       <ReferralSummaryCards data={data} />

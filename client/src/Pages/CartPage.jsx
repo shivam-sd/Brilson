@@ -964,7 +964,7 @@ const CartPage = () => {
                                   ? "text-orange-400 font-bold"
                                   : "text-green-400"
                               }
-                            > {totalShipping}
+                            >
                               {totalShipping > 0
                                 ? `+₹${totalShipping.toLocaleString()}`
                                 : "Free"}

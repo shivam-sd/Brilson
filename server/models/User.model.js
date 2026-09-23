@@ -8,10 +8,10 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-   activeToken: {
-  type: String,
-  default: null
-},
+    activeToken: {
+      type: String,
+      default: null
+    },
 
     email: {
       type: String,
@@ -19,15 +19,15 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-       googleId: {
+    googleId: {
       type: String,
       sparse: true,
       index: true,
     },
-    
-    isGoogleUser:{
-      type:Boolean,
-      default:false
+
+    isGoogleUser: {
+      type: Boolean,
+      default: false
     },
 
     phone: {
@@ -46,10 +46,12 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       // required: true,
+      select: false,
+
     },
 
     resetPasswordToken: String,
-resetPasswordExpire: Date,
+    resetPasswordExpire: Date,
 
 
 
@@ -109,21 +111,21 @@ resetPasswordExpire: Date,
       },
     ],
 
-//     referralCount: {
-//   type: Number,
-//   default: 0
-// },
+    //     referralCount: {
+    //   type: Number,
+    //   default: 0
+    // },
 
-referralStatus: {
-  type: String,
-  enum: ["in_progress", "completed"],
-  default: "in_progress"
-},
+    referralStatus: {
+      type: String,
+      enum: ["in_progress", "completed"],
+      default: "in_progress"
+    },
 
-hasReceivedFirstActivationReward: {
-  type: Boolean,
-  default: false
-}
+    hasReceivedFirstActivationReward: {
+      type: Boolean,
+      default: false
+    }
 
   },
 
@@ -131,9 +133,9 @@ hasReceivedFirstActivationReward: {
 );
 
 
-userSchema.index({ referredBy: 1 });                          
-userSchema.index({ referralStatus: 1 });  
-userSchema.index({ email: 1 });         
+userSchema.index({ referredBy: 1 });
+userSchema.index({ referralStatus: 1 });
+userSchema.index({ email: 1 });
 
 
 module.exports = mongoose.model("User", userSchema);

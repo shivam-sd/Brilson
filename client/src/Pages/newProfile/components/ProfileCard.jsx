@@ -123,7 +123,6 @@ function ProfileCard({ profile, code }) {
         </div>
 
         {/*MOBILE AVATAR \*/}
-        {/* MOBILE AVATAR */}
         <div className="absolute bottom-0 left-4 right-4 z-50 flex items-center gap-3 translate-y-1/2 md:hidden">
           {/* Avatar */}
           <div className="relative shrink-0">
@@ -178,8 +177,7 @@ function ProfileCard({ profile, code }) {
     )} */}
           </div>
 
-          {/* Name stays attached to avatar */}
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 pt-5">
             <h2
               className="
         truncate
@@ -190,12 +188,24 @@ function ProfileCard({ profile, code }) {
         tracking-tight
         text-white
         min-[380px]:text-[15px]
-        min-[430px]:text-[16px] mt-5
+        min-[430px]:text-[16px]
       "
             >
               {name}
             </h2>
+
+            {tagline && (
+              <p className="mt-1 truncate text-left text-[12px] font-medium leading-tight text-white/75 min-[380px]:text-[13px]">
+                {tagline}
+              </p>
+            )}
           </div>
+
+          {/* {location && (
+            <span className="max-w-[80px] shrink-0 truncate self-center text-right text-[11px] font-medium text-white/75">
+              {location}
+            </span>
+          )} */}
         </div>
 
         {/* =========================================================
@@ -209,7 +219,7 @@ function ProfileCard({ profile, code }) {
                 alt={`Photo of ${name}`}
                 eager
                 className="h-full w-full rounded-full"
-                imgClassName="grayscale transition-[filter] duration-500 hover:grayscale-0 motion-reduce:transition-none"
+                imgClassName="transition-[filter] duration-500 motion-reduce:transition-none"
                 fallback={
                   <div className="grid h-full w-full place-items-center bg-gradient-to-br from-orange-500/30 to-slate-800 text-3xl font-bold text-white">
                     {initialsOf(name)}
@@ -235,8 +245,8 @@ function ProfileCard({ profile, code }) {
       <div className="px-4 pb-6 pt-2 sm:pt-6 text-center sm:px-6">
         <h2 className="hidden md:block ml-10 sm:ml-0 text-[15px] font-bold leading-tight tracking-tight text-white sm:text-[25px]">
           {name}
-        </h2>       
-         {/* {tagline && <p className="mt-1.5 text-[15px] text-slate-200">{tagline}</p>}
+        </h2>
+        {/* {tagline && <p className="mt-1.5 text-[15px] text-slate-200">{tagline}</p>}
         {location && (
           <p className="mt-2.5 inline-flex items-center justify-center gap-1.5 text-[15px] text-slate-200">
             <FaLocationDot className="h-4 w-4 text-orange-500" aria-hidden="true" />
@@ -244,50 +254,52 @@ function ProfileCard({ profile, code }) {
           </p>
         )} */}
 
-        <div className="md:mt-2 mt-10">
+        <div className="md:mt-2 mt-14">
           <ContactActions profile={profile} />
         </div>
-        <div className="md:mt-5 mt-1 grid grid-cols-2 gap-2.5 sm:grid-cols-2">
-          <Link
-            to={profile?.reviewLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Review on Google"
-            className="group flex min-h-[52px] w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
-          >
-            <span className="grid h-10 w-10 shrink-0 place-items-center">
-              <FcGoogle
-                className="h-9 w-9 transition-transform duration-300 group-hover:scale-105"
-                aria-hidden="true"
-              />
-            </span>
-
-            <span className="flex flex-col items-start leading-none">
-              <span className="text-[10px] font-semibold text-white">
-                Google Review
+        <div className="hidden md:block">
+          <div className="md:mt-5 mt-1 grid grid-cols-2 gap-2.5 sm:grid-cols-2">
+            <Link
+              to={profile?.reviewLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Review on Google"
+              className="group flex min-h-[52px] w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
+            >
+              <span className="grid h-10 w-10 shrink-0 place-items-center">
+                <FcGoogle
+                  className="h-9 w-9 transition-transform duration-300 group-hover:scale-105"
+                  aria-hidden="true"
+                />
               </span>
 
-              <span className="mt-1.5 flex items-center gap-0.5 text-[#fbbc04]">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <FaStar key={star} className="h-3 w-3" aria-hidden="true" />
-                ))}
+              <span className="flex flex-col items-start leading-none">
+                <span className="text-[10px] font-semibold text-white">
+                  Google Review
+                </span>
+
+                <span className="mt-1.5 flex items-center gap-0.5 text-[#fbbc04]">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <FaStar key={star} className="h-3 w-3" aria-hidden="true" />
+                  ))}
+                </span>
               </span>
-            </span>
-          </Link>
-          <button
-            type="button"
-            onClick={handleShare}
-            className="cursor-pointer group flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
-            aria-label="Share profile"
-          >
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-orange-500/15 text-orange-400 transition-transform duration-300 group-hover:scale-110">
-              <FaShareNodes className="h-4 w-4" aria-hidden="true" />
-            </span>
+            </Link>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="cursor-pointer group flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[15px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-orange-400/60 hover:bg-white/[0.05] active:translate-y-0 motion-reduce:transition-none"
+              aria-label="Share profile"
+            >
+              <span className="grid h-8 w-8 place-items-center rounded-lg bg-orange-500/15 text-orange-400 transition-transform duration-300 group-hover:scale-110">
+                <FaShareNodes className="h-4 w-4" aria-hidden="true" />
+              </span>
 
-            <span>{shareStatus || "Share Profile"}</span>
-          </button>
+              <span>{shareStatus || "Share Profile"}</span>
+            </button>
 
 
+          </div>
         </div>
 
         <div className="hidden md:block mt-5 border-t border-white/10 pt-5">
