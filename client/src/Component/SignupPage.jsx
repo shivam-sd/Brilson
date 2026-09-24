@@ -275,7 +275,7 @@ const SignupPage = () => {
             </div>
           )}
 
-          {step === "form" && !googleStep && (
+          {/* {step === "form" && !googleStep && (
             <div className="mb-5">
               <GoogleLoginAuth
                 onSuccess={handleGoogleSuccess}
@@ -283,9 +283,9 @@ const SignupPage = () => {
                 onPhoneRequired={handleGooglePhoneRequired}
               />
             </div>
-          )}
+          )} */}
 
-          {googleStep === "phone" && googleUserData && (
+          {/* {googleStep === "phone" && googleUserData && (
             <GooglePhoneInput
               userData={googleUserData}
               onComplete={handleGooglePhoneComplete}
@@ -313,15 +313,15 @@ const SignupPage = () => {
                 navigate("/");
               }}
             />
-          )}
+          )} */}
 
           {step === "form" && !googleStep && (
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-800"></div>
+                {/* <div className="w-full border-t border-gray-800"></div> */}
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-3 bg-[#111111] text-gray-500">OR</span>
+                {/* <span className="px-3 bg-[#111111] text-gray-500">OR</span> */}
               </div>
             </div>
           )}

@@ -225,7 +225,7 @@ const LoginPage = () => {
             </p>
           </div>
 
-          {!googleStep && (
+          {/* {!googleStep && (
             <div className="mb-5">
               <GoogleLoginAuth
                 onSuccess={handleGoogleSuccess}
@@ -233,17 +233,17 @@ const LoginPage = () => {
                 onPhoneRequired={handleGooglePhoneRequired}
               />
             </div>
-          )}
+          )} */}
 
-          {googleStep === "phone" && googleUserData && (
+          {/* {googleStep === "phone" && googleUserData && (
             <GooglePhoneInput
               userData={googleUserData}
               onComplete={handleGooglePhoneComplete}
               onBack={handleGoogleBack}
             />
-          )}
+          )} */}
 
-          {googleStep === "otp" && googleUserData && (
+          {/* {googleStep === "otp" && googleUserData && (
             <GoogleOTPInput
               userId={googleUserData.userId}
               phone={googleUserData.phone}
@@ -251,9 +251,9 @@ const LoginPage = () => {
               onBack={handleGoogleBack}
               onReferralRequired={handleGoogleReferralRequired}
             />
-          )}
+          )} */}
 
-          {googleStep === "referral" && googleUserData && (
+          {/* {googleStep === "referral" && googleUserData && (
             <GoogleReferralInput
               userId={googleUserData.userId}
               onSuccess={handleGoogleReferralSuccess}
@@ -263,15 +263,15 @@ const LoginPage = () => {
                 navigate("/");
               }}
             />
-          )}
+          )} */}
 
           {!googleStep && (
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-800"></div>
+                {/* <div className="w-full border-t border-gray-800"></div> */}
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-3 bg-[#111111] text-gray-500">OR</span>
+                {/* <span className="px-3 bg-[#111111] text-gray-500">OR</span> */}
               </div>
             </div>
           )}

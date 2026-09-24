@@ -111,7 +111,7 @@ const ProductSchema = new mongoose.Schema(
       default: [],
     },
 
-    //  MLM CONFIG (unchanged)
+    //  MLM CONFIG 
     isMLMProduct: {
       type: Boolean,
       default: false,
