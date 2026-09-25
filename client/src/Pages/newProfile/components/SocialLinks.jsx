@@ -11,7 +11,7 @@ function SocialLinks({ links }) {
       className="
         fixed bottom-3 left-1/2 z-50 w-[calc(100%-24px)] -translate-x-1/2
         rounded-xl border border-white/10 bg-white/[0.03]
-         backdrop-blur-md
+         
 
         md:static md:w-full md:translate-x-0
         md:rounded-2xl md:px-3 md:pb-3 md:pt-2

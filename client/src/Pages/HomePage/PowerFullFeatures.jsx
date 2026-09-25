@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { memo } from "react";
 import {
   FiBarChart2,
   FiGlobe,
@@ -15,10 +15,17 @@ import {
   FiHome,
   FiUser,
   FiSettings,
-  FiShield,
 } from "react-icons/fi";
 // API call no longer used — feature data is now hardcoded below.
 // import { useGetFeatures } from "../../api/client-query";
+//
+// framer-motion removed from this file entirely. It was only used for a
+// one-time scroll-in fade/slide (h2, p, cards) and a JS-driven hover lift.
+// Neither needs a ~50kb animation library:
+//   - entrance fade/slide -> dropped (content just renders directly)
+//   - hover lift -> plain CSS `transition-transform` + Tailwind's
+//     `hover:-translate-y-2`, which is GPU-accelerated and costs nothing
+//     until the user actually hovers.
 
 /* ------------------------------------------------------------------ */
 /* Per-feature CSS-only visuals (no images). Each one is matched by   */
@@ -26,9 +33,14 @@ import {
 /*   0 Analytics Dashboard  1 Global Reach       2 Secure & Private   */
 /*   3 Always Updated       4 Mobile Friendly    5 NFC Technology     */
 /*   6 QR Code Backup       7 Custom Designs                          */
+/*                                                                      */
+/* Each is wrapped in memo() — they only depend on the `style` prop,   */
+/* which never changes after mount, so this skips needless re-renders  */
+/* of ~8 fairly deep DOM subtrees whenever the parent re-renders.      */
 /* ------------------------------------------------------------------ */
 
-const AnalyticsVisual = ({ style }) => (
+const AnalyticsVisual = memo(function AnalyticsVisual({ style }) {
+  return (
   <div
     className={`relative w-full h-full overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.07] via-white/[0.03] to-transparent ${style.accent}`}
   >
@@ -152,8 +164,10 @@ const AnalyticsVisual = ({ style }) => (
       </span>
 
       <div className="flex items-center gap-1">
+        {/* was animate-pulse — that repaints forever, even off-screen.
+            Static dot, same color/glow, no continuous animation. */}
         <span
-          className="w-1.5 h-1.5 rounded-full animate-pulse"
+          className="w-1.5 h-1.5 rounded-full"
           style={{
             background: style.glow,
             boxShadow: `0 0 6px ${style.glow}`,
@@ -166,10 +180,12 @@ const AnalyticsVisual = ({ style }) => (
       </div>
     </div>
   </div>
-);
+  );
+});
 
 
-const GlobeVisual = ({ style }) => (
+const GlobeVisual = memo(function GlobeVisual({ style }) {
+  return (
   <div
     className={`relative w-full h-full flex items-center justify-center overflow-hidden ${style.accent}`}
   >
@@ -315,8 +331,9 @@ const GlobeVisual = ({ style }) => (
     {/* Small label */}
     <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
       <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/[0.05] border border-white/10">
+        {/* was animate-pulse — made static, same look at rest */}
         <span
-          className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"
+          className="w-1.5 h-1.5 rounded-full bg-current"
           style={{
             boxShadow: `0 0 6px ${style.glow}`,
           }}
@@ -328,11 +345,12 @@ const GlobeVisual = ({ style }) => (
       </div>
     </div>
   </div>
-);
+  );
+});
 
 
 
-const ShieldVisual = ({ style }) => {
+const ShieldVisual = memo(function ShieldVisual({ style }) {
   const Icon = style.icon;
 
   return (
@@ -382,11 +400,12 @@ const ShieldVisual = ({ style }) => {
       </div>
     </div>
   );
-};
+});
 
 
 
-const UpdatedVisual = ({ style }) => (
+const UpdatedVisual = memo(function UpdatedVisual({ style }) {
+  return (
   <div
     className={`relative w-full h-full flex items-center justify-center ${style.accent}`}
   >
@@ -413,10 +432,8 @@ const UpdatedVisual = ({ style }) => (
             boxShadow: `0 0 14px ${style.glow}`,
           }}
         >
-          <FiRefreshCw
-            className="w-5 h-5 animate-spin"
-            style={{ animationDuration: "3.5s" }}
-          />
+          {/* was animate-spin, forever — icon reads fine static too */}
+          <FiRefreshCw className="w-5 h-5" />
         </div>
 
         <span className="mt-2 text-[7px] font-semibold text-white/80">
@@ -463,10 +480,12 @@ const UpdatedVisual = ({ style }) => (
       </span>
     </div>
   </div>
-);
+  );
+});
 
 
-const MobileVisual = ({ style }) => (
+const MobileVisual = memo(function MobileVisual({ style }) {
+  return (
   <div
     className={`relative w-full h-full flex items-center justify-center overflow-visible ${style.accent}`}
   >
@@ -580,10 +599,12 @@ const MobileVisual = ({ style }) => (
       </span>
     </div>
   </div>
-);
+  );
+});
 
 
-const NfcVisual = ({ style }) => (
+const NfcVisual = memo(function NfcVisual({ style }) {
+  return (
   <div
     className={`relative w-full h-full flex items-center justify-center ${style.accent}`}
   >
@@ -621,7 +642,8 @@ const NfcVisual = ({ style }) => (
       </div>
     </div>
   </div>
-);
+  );
+});
 
 
 const QR_PATTERN = [
@@ -632,7 +654,8 @@ const QR_PATTERN = [
   1, 0, 1, 1, 0,
 ];
 
-const QrVisual = ({ style }) => (
+const QrVisual = memo(function QrVisual({ style }) {
+  return (
   <div
     className={`relative w-full h-full flex items-center justify-center overflow-hidden ${style.accent}`}
   >
@@ -744,11 +767,13 @@ const QrVisual = ({ style }) => (
    
     </div>
   </div>
-);
+  );
+});
 
 
 
-const CustomDesignsVisual = ({ style }) => (
+const CustomDesignsVisual = memo(function CustomDesignsVisual({ style }) {
+  return (
   <div
     className={`relative w-full h-full flex items-center justify-center overflow-hidden  ${style.accent}`}
   >
@@ -861,7 +886,8 @@ const CustomDesignsVisual = ({ style }) => (
     </div>
   
   </div>
-);
+  );
+});
 
 
 
@@ -926,6 +952,75 @@ const FEATURES_DATA = [
   },
 ];
 
+// Each style pairs a border/glow color with a small badge icon.
+// Kept outside the component so it's built once, not on every render.
+const colorStyles = [
+  {
+    border: "from-yellow-400 via-orange-400 to-yellow-500",
+    glow: "rgba(255, 190, 0, 0.5)",
+    accent: "text-yellow-400",
+    badgeShadow: "rgba(255, 190, 0, 0.55)",
+    icon: FiZap,
+  },
+  {
+    border: "from-purple-500 via-violet-500 to-purple-400",
+    glow: "rgba(150, 60, 255, 0.45)",
+    accent: "text-purple-400",
+    badgeShadow: "rgba(150, 60, 255, 0.5)",
+    icon: FiGlobe,
+  },
+  {
+    border: "from-blue-500 via-cyan-500 to-blue-400",
+    glow: "rgba(0, 180, 255, 0.45)",
+    accent: "text-cyan-400",
+    badgeShadow: "rgba(0, 180, 255, 0.5)",
+    icon: FiBarChart2,
+  },
+  {
+    border: "from-sky-500 via-blue-500 to-cyan-400",
+    glow: "rgba(0, 150, 255, 0.45)",
+    accent: "text-sky-400",
+    badgeShadow: "rgba(0, 150, 255, 0.5)",
+    icon: FiSmartphone,
+  },
+   {
+    border: "from-pink-500 via-rose-500 to-pink-400",
+    glow: "rgba(255, 0, 120, 0.45)",
+    accent: "text-pink-400",
+    badgeShadow: "rgba(255, 0, 120, 0.5)",
+    icon: FiKey,
+  },
+  {
+    border: "from-teal-400 via-emerald-400 to-green-500",
+    glow: "rgba(0, 255, 150, 0.45)",
+    accent: "text-emerald-400",
+    badgeShadow: "rgba(0, 255, 150, 0.5)",
+    icon: FiLock,
+  },
+  {
+    border: "from-green-400 via-lime-400 to-green-500",
+    glow: "rgba(140, 255, 0, 0.45)",
+    accent: "text-lime-400",
+    badgeShadow: "rgba(140, 255, 0, 0.5)",
+    icon: FiRefreshCw,
+  },
+  {
+    border: "from-violet-500 via-purple-500 to-indigo-400",
+    glow: "rgba(150, 60, 255, 0.45)",
+    accent: "text-violet-400",
+    badgeShadow: "rgba(150, 60, 255, 0.5)",
+    icon: FiLayout,
+  },
+];
+
+// Split a two-word title so the second word can carry the accent color,
+// matching "Analytics Dashboard" / "Global Reach" style headings.
+const splitTitle = (title = "") => {
+  const words = title.trim().split(" ");
+  if (words.length < 2) return { first: title, rest: "" };
+  return { first: words[0], rest: words.slice(1).join(" ") };
+};
+
 const PowerFullFeatures = () => {
 
   // Previously fetched from the backend:
@@ -936,144 +1031,28 @@ const PowerFullFeatures = () => {
   const feature = FEATURES_DATA;
   const subHeading = SUB_HEADING;
 
-  // Each style pairs a border/glow color with a small badge icon,
-  // mirroring the accent-per-feature treatment from the reference cards.
-  const colorStyles = [
-    {
-      border: "from-yellow-400 via-orange-400 to-yellow-500",
-      glow: "rgba(255, 190, 0, 0.5)",
-      accent: "text-yellow-400",
-      badgeShadow: "rgba(255, 190, 0, 0.55)",
-      icon: FiZap,
-    },
-    {
-      border: "from-purple-500 via-violet-500 to-purple-400",
-      glow: "rgba(150, 60, 255, 0.45)",
-      accent: "text-purple-400",
-      badgeShadow: "rgba(150, 60, 255, 0.5)",
-      icon: FiGlobe,
-    },
-    {
-      border: "from-blue-500 via-cyan-500 to-blue-400",
-      glow: "rgba(0, 180, 255, 0.45)",
-      accent: "text-cyan-400",
-      badgeShadow: "rgba(0, 180, 255, 0.5)",
-      icon: FiBarChart2,
-    },
-    {
-      border: "from-sky-500 via-blue-500 to-cyan-400",
-      glow: "rgba(0, 150, 255, 0.45)",
-      accent: "text-sky-400",
-      badgeShadow: "rgba(0, 150, 255, 0.5)",
-      icon: FiSmartphone,
-    },
-     {
-      border: "from-pink-500 via-rose-500 to-pink-400",
-      glow: "rgba(255, 0, 120, 0.45)",
-      accent: "text-pink-400",
-      badgeShadow: "rgba(255, 0, 120, 0.5)",
-      icon: FiKey,
-    },
-    {
-      border: "from-teal-400 via-emerald-400 to-green-500",
-      glow: "rgba(0, 255, 150, 0.45)",
-      accent: "text-emerald-400",
-      badgeShadow: "rgba(0, 255, 150, 0.5)",
-      icon: FiLock,
-    },
-    {
-      border: "from-green-400 via-lime-400 to-green-500",
-      glow: "rgba(140, 255, 0, 0.45)",
-      accent: "text-lime-400",
-      badgeShadow: "rgba(140, 255, 0, 0.5)",
-      icon: FiRefreshCw,
-    },
-    {
-      border: "from-violet-500 via-purple-500 to-indigo-400",
-      glow: "rgba(150, 60, 255, 0.45)",
-      accent: "text-violet-400",
-      badgeShadow: "rgba(150, 60, 255, 0.5)",
-      icon: FiLayout,
-    },
-  ];
-
-  // Single orchestrated reveal sequence — cards stagger in once, no per-card scroll triggers.
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.15,
-      },
-    },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 26, scale: 0.96 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-    },
-  };
-
-  // Split a two-word title so the second word can carry the accent color,
-  // matching "Analytics Dashboard" / "Global Reach" style headings.
-  const splitTitle = (title = "") => {
-    const words = title.trim().split(" ");
-    if (words.length < 2) return { first: title, rest: "" };
-    return { first: words[0], rest: words.slice(1).join(" ") };
-  };
-
   return (
     <section className="relative w-full lg:py-20 py-12 text-white overflow-hidden bg-black">
-      {/* Animated gradient backdrop */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-black via-[#0a0a0c] to-black bg-[length:200%_200%]"
-      />
+      {/* Static backdrop/glow layers — plain divs, no animation library needed */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black via-[#0a0a0c] to-black bg-[length:200%_200%]" />
 
-      {/* Soft radial glow accents, drifting slowly */}
-      <motion.div
-        className="absolute -top-32 -left-20 w-96 h-96 rounded-full bg-cyan-500/[0.06]"
-       
-      />
-      <motion.div
-        className="absolute -bottom-32 -right-20 w-96 h-96 rounded-full bg-indigo-500/[0.06]"
-        
-      />
+      {/* Soft radial glow accents */}
+      <div className="absolute -top-32 -left-20 w-96 h-96 rounded-full bg-cyan-500/[0.06]" />
+      <div className="absolute -bottom-32 -right-20 w-96 h-96 rounded-full bg-indigo-500/[0.06]" />
 
       <div className="relative max-w-7xl mx-auto px-6">
-        {/* Title */}
-        <motion.h2
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center text-3xl md:text-5xl font-semibold mt-6 tracking-widest font-Roboto"
-        >
+        {/* Title — renders directly, no scroll-triggered fade/slide */}
+        <h2 className="text-center text-3xl md:text-5xl font-semibold mt-6 tracking-widest font-Roboto">
           Powerful <span className="text-yellow-400">Features</span>
-        </motion.h2>
+        </h2>
 
         {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.15, duration: 0.6 }}
-          className="text-center text-gray-300 mt-4 max-w-2xl mx-auto text-md tracking-widest font-Roboto"
-        >
+        <p className="text-center text-gray-300 mt-4 max-w-2xl mx-auto text-md tracking-widest font-Roboto">
           {subHeading}
-        </motion.p>
+        </p>
 
-        {/* Feature cards  */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.15 }}
-          className="mt-16 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 tracking-widest font-Roboto"
-        >
+        {/* Feature cards */}
+        <div className="mt-16 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 tracking-widest font-Roboto">
           {feature.map((item, index) => {
             const style = colorStyles[index % colorStyles.length];
             const Icon = style.icon;
@@ -1081,11 +1060,11 @@ const PowerFullFeatures = () => {
             const Visual = visualVariants[index % visualVariants.length];
 
             return (
-              <motion.div
+              <div
                 key={index}
-                variants={cardVariants}
-                whileHover={{ y: -8, transition: { duration: 0.25, ease: "easeOut" } }}
-                className="relative rounded-[26px] p-[1.5px] h-full cursor-pointer"
+                // Hover lift is now plain CSS (GPU-accelerated transform +
+                // transition), instead of a JS animation driven by framer-motion.
+                className="relative rounded-[26px] p-[1.5px] h-full cursor-pointer transition-transform duration-300 ease-out hover:-translate-y-2 will-change-transform"
                 style={{
                   boxShadow: `0 30px 60px -18px ${style.glow}, 0 10px 28px -8px rgba(0,0,0,0.6)`,
                 }}
@@ -1153,10 +1132,10 @@ const PowerFullFeatures = () => {
 
                   
                 </div>
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

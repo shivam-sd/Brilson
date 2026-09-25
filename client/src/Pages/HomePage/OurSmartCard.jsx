@@ -226,7 +226,6 @@ const OurSmartCard = () => {
   const { data: fetchProducts, isLoading, error, isError } = useGetAllProducts()
 
   useEffect(() => {
-    console.log("error---", error)
     if (isError) {
       toast.error(error?.response?.data?.message || "Product not found");
       return;
@@ -311,7 +310,7 @@ const OurSmartCard = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -10 }}
-                className="relative h-full min-h-full p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-gray-900/70 to-gray-800/70 backdrop-blur-lg hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 group tracking-widest font-Roboto flex flex-col"
+                className="relative h-full min-h-full p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-gray-900/70 to-gray-800/70 hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 group tracking-widest font-Roboto flex flex-col"
               >
                 {/* Product Badge */}
                 {renderBadge(product.badge)}

@@ -19,7 +19,7 @@ const UserRegister = async (req, res) => {
   try {
     const { name, phone, password, referralCode } = req.body;
 
-    if (!name || !phone || !password) {
+    if (!name || !phone || !password || !referralCode) {
       return res.status(400).json({ error: "All fields are required" });
     }
 

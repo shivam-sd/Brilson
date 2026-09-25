@@ -86,7 +86,7 @@ function ProfileCard({ profile, code }) {
           <Link
             to={`/profile/edit/${code}`}
             aria-label="Edit profile"
-            className="absolute right-4 top-4 z-30 inline-flex items-center gap-2 rounded-lg border border-orange-400/40 bg-[#05090d]/85 px-3 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-orange-400 hover:bg-orange-500/10 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 motion-reduce:transition-none sm:right-5 sm:top-5"
+            className="absolute right-4 top-4 z-30 inline-flex items-center gap-2 rounded-lg border border-orange-400/40 bg-[#05090d]/85 px-3 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:border-orange-400 hover:bg-orange-500/10 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 motion-reduce:transition-none sm:right-5 sm:top-5"
           >
             <LuPencil className="h-4 w-4" aria-hidden="true" />
             <span>Edit</span>

@@ -10,10 +10,10 @@ import { FaWhatsapp } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../store/slices/authSlice";
 
-import GoogleLoginAuth from "./GoogleAuth/GoogleLoginAuth";
-import GooglePhoneInput from "./GoogleAuth/GooglePhoneInput";
-import GoogleOTPInput from "./GoogleAuth/GoogleOTPInput";
-import GoogleReferralInput from "./GoogleAuth/GoogleReferralInput";
+// import GoogleLoginAuth from "./GoogleAuth/GoogleLoginAuth";
+// import GooglePhoneInput from "./GoogleAuth/GooglePhoneInput";
+// import GoogleOTPInput from "./GoogleAuth/GoogleOTPInput";
+// import GoogleReferralInput from "./GoogleAuth/GoogleReferralInput";
 import { useRegister, useSendOTP, useVerifyOTP } from "../api/auth-query";
 
 const RESEND_SECONDS = 30;
@@ -79,6 +79,10 @@ const SignupPage = () => {
 
     if (!form.name || !form.phone || !form.password || !form.confirm) {
       return toast.error("All fields are required");
+    }
+
+    if (!form.referralCode) {
+      return toast.error("Please Enter Card Referral Key!");
     }
 
     const phoneRegex = /^\d{10}$/;
@@ -175,56 +179,56 @@ const SignupPage = () => {
     }
   };
 
-  const handleGoogleSuccess = (data) => {
-    toast.success("Login successful!");
-    navigate("/");
-  };
+  // const handleGoogleSuccess = (data) => {
+  //   toast.success("Login successful!");
+  //   navigate("/");
+  // };
 
-  const handleGoogleError = (error) => {
-    toast.error(error);
-  };
+  // const handleGoogleError = (error) => {
+  //   toast.error(error);
+  // };
 
-  const handleGooglePhoneRequired = (data) => {
-    console.log("Google phone required:", data);
-    setGoogleUserData(data);
-    setGoogleStep("phone");
-  };
+  // const handleGooglePhoneRequired = (data) => {
+  //   console.log("Google phone required:", data);
+  //   setGoogleUserData(data);
+  //   setGoogleStep("phone");
+  // };
 
-  const handleGooglePhoneComplete = (data) => {
-    console.log("Google phone complete:", data);
-    setGoogleUserData((prev) => ({ ...prev, ...data }));
-    setGoogleStep("otp");
-    toast.success("OTP sent to your phone");
-  };
+  // const handleGooglePhoneComplete = (data) => {
+  //   console.log("Google phone complete:", data);
+  //   setGoogleUserData((prev) => ({ ...prev, ...data }));
+  //   setGoogleStep("otp");
+  //   toast.success("OTP sent to your phone");
+  // };
 
-  const handleGoogleOTPSuccess = (data) => {
-    console.log("Google OTP success (direct login):", data);
-    toast.success("Login successful!");
-    navigate("/");
-  };
+  // const handleGoogleOTPSuccess = (data) => {
+  //   console.log("Google OTP success (direct login):", data);
+  //   toast.success("Login successful!");
+  //   navigate("/");
+  // };
 
-  const handleGoogleReferralRequired = (data) => {
-    console.log("Google referral required:", data);
-    setGoogleUserData((prev) => ({ ...prev, ...data }));
-    setGoogleStep("referral");
-  };
+  // const handleGoogleReferralRequired = (data) => {
+  //   console.log("Google referral required:", data);
+  //   setGoogleUserData((prev) => ({ ...prev, ...data }));
+  //   setGoogleStep("referral");
+  // };
 
-  const handleGoogleReferralSuccess = (data) => {
-    console.log("Google referral success:", data);
-    toast.success("Login successful!");
-    navigate("/");
-  };
+  // const handleGoogleReferralSuccess = (data) => {
+  //   console.log("Google referral success:", data);
+  //   toast.success("Login successful!");
+  //   navigate("/");
+  // };
 
-  const handleGoogleBack = () => {
-    if (googleStep === "otp") {
-      setGoogleStep("phone");
-    } else if (googleStep === "phone") {
-      setGoogleStep(null);
-      setGoogleUserData(null);
-    } else if (googleStep === "referral") {
-      setGoogleStep("otp");
-    }
-  };
+  // const handleGoogleBack = () => {
+  //   if (googleStep === "otp") {
+  //     setGoogleStep("phone");
+  //   } else if (googleStep === "phone") {
+  //     setGoogleStep(null);
+  //     setGoogleUserData(null);
+  //   } else if (googleStep === "referral") {
+  //     setGoogleStep("otp");
+  //   }
+  // };
 
   const handleSeePassword = () => {
     setSeePassword(!seePassword);
@@ -405,7 +409,7 @@ const SignupPage = () => {
               </div>
 
               <div>
-                <label className="text-gray-300 text-sm">Card Referral Key (optional)</label>
+                <label className="text-gray-300 text-sm">Card Referral Key</label>
                 <div className="mt-2 flex items-center bg-[#1a1a1a] rounded-xl px-4 py-3 border border-white/10 focus-within:border-orange-500">
                   <VscReferences className="w-5 h-5 text-gray-400" />
                   <input
@@ -413,6 +417,7 @@ const SignupPage = () => {
                     name="referralCode"
                     value={form.referralCode}
                     onChange={handleChange}
+                    
                     placeholder="Referral Code"
                     className="w-full bg-transparent outline-none text-gray-200 placeholder-gray-500 ml-3"
                   />

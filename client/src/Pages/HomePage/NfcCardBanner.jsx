@@ -3,16 +3,16 @@ import { ArrowRight, Wifi, Share2, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CARD_IMAGES = [
-    "/nfc_cards/brilson-nfc-card-1.png",
-    "/nfc_cards/brilson-nfc-card-2.png",
-    "/nfc_cards/brilson-nfc-card-3.png",
-    "/nfc_cards/brilson-nfc-card-4.png",
-    "/nfc_cards/brilson-nfc-card-5.png",
-    "/nfc_cards/brilson-nfc-card-6.png",
-    "/nfc_cards/brilson-nfc-card-7.png",
-    "/nfc_cards/brilson-nfc-card-8.png",
-    "/nfc_cards/brilson-nfc-card-9.png",
-    "/nfc_cards/brilson-nfc-card-10.jpeg"
+    "/nfc_cards/brilson-nfc-card-1.webp",
+    "/nfc_cards/brilson-nfc-card-2.webp",
+    "/nfc_cards/brilson-nfc-card-3.webp",
+    "/nfc_cards/brilson-nfc-card-4.webp",
+    "/nfc_cards/brilson-nfc-card-5.webp",
+    "/nfc_cards/brilson-nfc-card-6.webp",
+    "/nfc_cards/brilson-nfc-card-7.webp",
+    "/nfc_cards/brilson-nfc-card-8.webp",
+    "/nfc_cards/brilson-nfc-card-9.webp",
+    "/nfc_cards/brilson-nfc-card-10.webp"
 ];
 
 const IMAGE_COUNT = CARD_IMAGES.length;
@@ -30,49 +30,42 @@ export default function NfcCardBanner() {
         return () => clearInterval(interval);
     }, []);
 
-    const handleImageError = (index) => {
-        if (index === activeIndex) {
-            setActiveIndex((prev) => (prev + 1) % IMAGE_COUNT);
-        }
+    const handleImageError = () => {
+        setActiveIndex((prev) => (prev + 1) % IMAGE_COUNT);
     };
 
     return (
         <div className="relative w-full overflow-hidden bg-gradient-to-b from-black via-[#0a0a0c] to-black font-[Inter]">
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+            {/*
+              NOTE: Space Grotesk font is no longer imported here via @import
+              (that was render-blocking and added an extra network request on
+              every page load). Add this ONE line to your main index.html
+              <head> instead, with preconnect — it loads in parallel with the
+              page instead of blocking it:
 
+              <link rel="preconnect" href="https://fonts.googleapis.com">
+              <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+              <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+              Font-family below still points to 'Space Grotesk' so the look
+              stays exactly the same once you add that link tag.
+            */}
+            <style>{`
                 .font-display {
                     font-family: 'Space Grotesk', sans-serif;
-                }
-
-                @keyframes floaty {
-                    0%, 100% {
-                        transform: translateY(0px) rotate(-3deg);
-                    }
-
-                    50% {
-                        transform: translateY(-16px) rotate(2deg);
-                    }
                 }
 
                 .float-card {
                     animation: floaty 6s ease-in-out infinite;
                 }
 
-                @keyframes glowPulse {
-                    0%, 100% {
-                        opacity: 0.12;
-                        transform: translate(-50%, -50%) scale(1);
-                    }
-
-                    50% {
-                        opacity: 0.24;
-                        transform: translate(-50%, -50%) scale(1.15);
-                    }
+                @keyframes floaty {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-10px); }
                 }
 
                 .glow-pulse {
-                    animation: glowPulse 4s ease-in-out infinite;
+                    opacity: 0.16;
                 }
 
                 .card-fade {
@@ -80,10 +73,11 @@ export default function NfcCardBanner() {
                 }
             `}</style>
 
-            {/* Thin top hairline — on black there's no natural blend from the section above, so this gives a clean seam */}
+            {/* Thin top hairline */}
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-            <div className="pointer-events-none absolute -top-32 left-1/3 h-[30rem] w-[30rem] rounded-full bg-[#4F8CFF] opacity-[0.06] blur-[130px]" />
+            {/* Smaller, static ambient glow (was a 30rem animated 130px blur — very expensive to paint every frame) */}
+            <div className="pointer-events-none absolute -top-32 left-1/3 h-[20rem] w-[20rem] rounded-full bg-[#4F8CFF] opacity-[0.05] blur-[80px]" />
 
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.03),transparent_60%)]" />
 
@@ -143,21 +137,34 @@ export default function NfcCardBanner() {
 
                 <div className="relative flex h-[330px] w-full max-w-sm items-center justify-center px-5 lg:h-[480px]">
 
-                    <div className="glow-pulse pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 rounded-full bg-[#4F8CFF] blur-[80px]" />
+                    <div className="glow-pulse pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#4F8CFF] blur-[60px]" />
 
                     <div className="float-card relative h-full w-full">
-                        {CARD_IMAGES.map((src, index) => (
-                            <img
-                                key={index}
-                                src={src}
-                                alt="Brilson NFC digital business card"
-                                onError={() => handleImageError(index)}
-                                className="card-fade absolute inset-0 h-full w-full object-contain drop-shadow-2xl lg:scale-130"
-                                style={{
-                                    opacity: index === activeIndex ? 1 : 0,
-                                }}
-                            />
-                        ))}
+                        {/*
+                          Only the CURRENT image is mounted in the DOM now
+                          (previously all 10 images were downloaded + decoded
+                          on page load, opacity:0 or not). Browser only
+                          fetches one image at a time, and the next one just
+                          before it's needed.
+                        */}
+                        <img
+                            key={activeIndex}
+                            src={CARD_IMAGES[activeIndex]}
+                            alt="Brilson NFC digital business card"
+                            onError={handleImageError}
+                            width={400}
+                            height={480}
+                            loading={activeIndex === 0 ? "eager" : "lazy"}
+                            fetchpriority={activeIndex === 0 ? "high" : "auto"}
+                            decoding="async"
+                            className="card-fade absolute inset-0 h-full w-full object-contain drop-shadow-2xl lg:scale-130"
+                        />
+                        {/* Preload the next image quietly so the crossfade still feels instant */}
+                        <link
+                            rel="preload"
+                            as="image"
+                            href={CARD_IMAGES[(activeIndex + 1) % IMAGE_COUNT]}
+                        />
                     </div>
 
                     <div className="absolute bottom-0 left-1/2 flex -translate-x-1/2 gap-2 lg:-bottom-1">
