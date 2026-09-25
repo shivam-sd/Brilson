@@ -7,7 +7,6 @@ import HowitWorks from "./Pages/HowitWorks";
 import BestSeller from "./Component/BestSeller";
 import PersonalCard from "./Component/PersonalCards";
 import BusinessCard from "./Component/BusinessCards";
-import Pricing from "./Pages/Pricing";
 import LoginPage from "./Component/LoginPage";
 import SignupPage from "./Component/SignupPage";
 import Master from "./Component/Master";
@@ -239,7 +238,6 @@ function App() {
             <Route path="/best-seller" element={<BestSeller />} />
             <Route path="/personal-card" element={<PersonalCard />} />
             <Route path="/business-card" element={<BusinessCard />} />
-            <Route path="/pricing" element={<Pricing />} />
             <Route path="/admin/login" element={<AdminLogin />} />
 
             <Route

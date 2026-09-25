@@ -34,7 +34,7 @@ const SmartCardBanner = () => {
 
         {/* Left Content */}
         <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-3 lg:space-y-4 lg:py-6 md:py-6">
-          <h2 className="text-3xl font-bold text-white sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl lg:leading-15 tracking-tight">
+          <h2 className="text-3xl font-bold text-white sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-5xl lg:leading-15 tracking-tight">
             The{' '}
             <span className="bg-gradient-to-r from-[#4F9DFF] via-[#6FB8FF] to-[#9ED0FF] bg-clip-text text-transparent">
               Smart Business Card
@@ -80,6 +80,8 @@ const SmartCardBanner = () => {
             <div className="relative">
               <img
                 src="banner.webp"
+                fetchPriority="high"
+                loading="eager"
                 alt="Brilson smart business card and mobile app mockup"
                 className="relative z-10 w-full max-w-[320px] object-contain drop-shadow-2xl sm:max-w-[380px] md:max-w-[420px] lg:max-w-[480px] xl:max-w-[520px] 2xl:max-w-[560px]"
               />

@@ -41,7 +41,7 @@ export default function ParkingTagBanner() {
 
                     <div className="float-card w-full max-w-sm overflow-hidden rounded-[28px] bg-white p-3 shadow-2xl ring-1 ring-white/10 lg:max-w-md">
                         <img
-                            src={"./parkingcard.png"}
+                            src={"./parkingcard.webp"}
                             alt="Brilson parking tag QR scan"
                             className="w-full rounded-[20px]"
                         />

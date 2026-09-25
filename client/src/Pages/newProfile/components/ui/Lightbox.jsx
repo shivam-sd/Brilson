@@ -3,7 +3,7 @@ import { LuChevronLeft, LuChevronRight, LuX } from "react-icons/lu";
 import { optimizeImage } from "../../utils/helpers";
 
 const iconBtn =
-  "absolute grid h-10 w-10 place-items-center rounded-full bg-black/60 text-white backdrop-blur transition-colors hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white";
+  "absolute grid h-10 w-10 place-items-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white";
 
 export default function Lightbox({ items, index, onClose, onChange }) {
   const ref = useRef(null);

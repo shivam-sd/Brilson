@@ -469,7 +469,7 @@ const Checkout = () => {
           {/* LEFT COLUMN */}
           <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             {/* Shipping Address */}
-            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl">
+            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl">
               <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
                 <FiTruck className="text-cyan-400 w-5 h-5 sm:w-6 sm:h-6" />
                 Shipping Address
