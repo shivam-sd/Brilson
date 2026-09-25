@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectCards, Pagination } from "swiper/modules";
+import { motion } from "framer-motion";
 import { Quote, Star, Sparkles, TrendingUp, Users, Award, Zap } from "lucide-react";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -82,7 +83,9 @@ const Testimonials = () => {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header Section */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
           className="text-center mb-16"
@@ -105,7 +108,7 @@ const Testimonials = () => {
           <p className="md:text-base lg:text-base text-sm text-gray-300 max-w-3xl mx-auto leading-relaxed tracking-widest font-Poppins">
             Join thousands of professionals who have transformed their networking experience with our smart digital solutions.
           </p>
-        </div>
+        </motion.div>
 
         {/* Testimonials Carousel */}
         <div className="relative">
@@ -137,7 +140,7 @@ const Testimonials = () => {
               >
                 {testimonials.map((testimonial) => (
                   <SwiperSlide key={testimonial.id}>
-                    <div
+                    <motion.div
                       whileHover={{ y: -10 }}
                       transition={{ duration: 0.3 }}
                       className="relative group mt-10 cursor-pointer"
@@ -194,7 +197,7 @@ const Testimonials = () => {
                         {/* Hover Effect Line */}
                         <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 group-hover:w-full group-hover:left-0 transition-all duration-500 -translate-x-1/2 group-hover:translate-x-0"></div>
                       </div>
-                    </div>
+                    </motion.div>
                   </SwiperSlide>
                 ))}
               </Swiper>

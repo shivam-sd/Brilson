@@ -226,7 +226,6 @@ const OurSmartCard = () => {
   const { data: fetchProducts, isLoading, error, isError } = useGetAllProducts()
 
   useEffect(() => {
-    console.log("error---", error)
     if (isError) {
       toast.error(error?.response?.data?.message || "Product not found");
       return;

@@ -16,7 +16,6 @@ import { toast } from "react-toastify";
 import { selectCartCount, clearCart } from "../store/slices/cartSlice";
 import { selectToken, selectUser, logoutAction } from "../store/slices/authSlice";
 
-import LogoSection from "./LogoSection";
 
 const Header = () => {
   const dispatch = useDispatch();
