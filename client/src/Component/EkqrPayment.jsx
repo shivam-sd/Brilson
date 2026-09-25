@@ -120,7 +120,7 @@ const EkqrPayment = ({ createdOrder, total, token }) => {
           <div className="grid grid-cols-2 gap-2">
             {paymentData.upi_intent.gpay_link && (
               <a
-                href={paymentData.upi_intent.gpay_link}
+                href={paymentData.upi_intent.gpay_link}  aria-label="Gpay"
                 className="text-center py-2 px-3 bg-green-600/20 hover:bg-green-600/30 rounded-lg text-green-400 text-sm transition"
               >
                 GPay
@@ -128,7 +128,7 @@ const EkqrPayment = ({ createdOrder, total, token }) => {
             )}
             {paymentData.upi_intent.phonepe_link && (
               <a
-                href={paymentData.upi_intent.phonepe_link}
+                href={paymentData.upi_intent.phonepe_link} aria-label="phonepe"
                 className="text-center py-2 px-3 bg-purple-600/20 hover:bg-purple-600/30 rounded-lg text-purple-400 text-sm transition"
               >
                 PhonePe
@@ -136,7 +136,7 @@ const EkqrPayment = ({ createdOrder, total, token }) => {
             )}
             {paymentData.upi_intent.paytm_link && (
               <a
-                href={paymentData.upi_intent.paytm_link}
+                href={paymentData.upi_intent.paytm_link} aria-label="paytm"
                 className="text-center py-2 px-3 bg-blue-600/20 hover:bg-blue-600/30 rounded-lg text-blue-400 text-sm transition"
               >
                 PayTM

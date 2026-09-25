@@ -22,7 +22,7 @@ function ActionTile({ iconKey, label, href, external, onClick }) {
 
   if (href) {
     return (
-      <a href={href} className={tile} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+      <a href={href}  aria-label="contacts" className={tile} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
         {inner}
       </a>
     );

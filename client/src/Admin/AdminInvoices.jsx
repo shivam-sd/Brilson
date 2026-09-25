@@ -112,6 +112,7 @@ const AdminInvoices = () => {
                   <a
                     href={inv.pdfUrl}
                     target="_blank"
+                    aria-label="download"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-cyan-400 font-semibold hover:underline"
                   >

@@ -8,7 +8,7 @@ function LinkButton({ href, icon: Icon, title, hint }) {
   return (
     <a
       href={href}
-      target="_blank"
+      target="_blank" aria-label="googlereview"
       rel="noopener noreferrer"
       className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3.5 transition-colors duration-200 hover:border-indigo-400/40 hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/70"
     >

@@ -141,7 +141,7 @@ const UpdateResume = () => {
 
             <a
               href={existingResume.resume}
-              target="_blank"
+              target="_blank" aria-label="view"
               download={existingResume.name}
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm transition"

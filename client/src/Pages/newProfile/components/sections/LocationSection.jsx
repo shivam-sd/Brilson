@@ -83,7 +83,7 @@ function LinkButton({ href, icon: Icon, children }) {
     <a
       href={href}
       target="_blank"
-      rel="noopener noreferrer"
+      rel="noopener noreferrer" aria-label="locations"
       className={cn(
         "flex items-center justify-center gap-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm font-semibold text-amber-100",
         "transition-colors duration-200 hover:bg-amber-400/20",

@@ -465,7 +465,7 @@ const AdminPassToProfile = () => {
                     <a
                       href={review.profile.googleReviewLink}
                       target="_blank"
-                      rel="noopener noreferrer"
+                      rel="noopener noreferrer" aria-label="reviews"
                       className="block truncate text-rose-300 underline-offset-2 hover:underline"
                     >
                       {review.profile.googleReviewLink.length > 40

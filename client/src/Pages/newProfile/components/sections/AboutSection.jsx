@@ -14,7 +14,7 @@ export default function AboutSection({ profile }) {
       {website && (
         <a
           href={website}
-          target="_blank"
+          target="_blank" aria-label="about"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 rounded-lg border border-blue-400/25 bg-blue-500/10 px-3.5 py-2 text-sm font-medium text-blue-200 transition-colors hover:bg-blue-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70"
         >
