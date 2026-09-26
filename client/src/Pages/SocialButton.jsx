@@ -3,7 +3,7 @@ const SocialButton = ({ icon, label, url, gradient }) => {
     <a
       href={url}
       target="_blank"
-      rel="noopener noreferrer"
+      rel="noopener noreferrer" aria-label="scrollbtn"
       className={`
         group flex items-center justify-center gap-3
         px-4 py-2 rounded-xl

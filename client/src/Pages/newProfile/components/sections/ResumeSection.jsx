@@ -13,7 +13,7 @@ export default function ResumeSection({ code }) {
       <a
         href={url}
         target="_blank"
-        rel="noopener noreferrer"
+        rel="noopener noreferrer" aria-label="resume"
         className="group flex items-center gap-3.5 rounded-xl border border-white/10 bg-white/[0.03] p-3.5 transition-colors duration-200 hover:border-rose-400/40 hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/70"
       >
         <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-[#8c0f2e]">

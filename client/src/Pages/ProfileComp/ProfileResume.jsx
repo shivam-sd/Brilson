@@ -30,7 +30,7 @@ const ProfileResume = ({ activationCode }) => {
         {/* Download Button */}
         <a
           href={resume.resume}
-          download={resume.name}
+          download={resume.name} aria-label="profileresume"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 

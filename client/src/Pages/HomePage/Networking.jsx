@@ -52,7 +52,7 @@ const Networking = () => {
           </div>
 
           {/* Heading with gradient text */}
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-tight tracking-wide font-Roboto">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-tight tracking-wide font-Roboto text-white">
             {response?.heading ? (
               <span dangerouslySetInnerHTML={{
                 __html: response?.heading.replace(
