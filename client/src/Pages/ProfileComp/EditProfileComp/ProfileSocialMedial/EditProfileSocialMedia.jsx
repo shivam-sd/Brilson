@@ -111,7 +111,7 @@ const EditProfileSocialMedia = () => {
     <>
       <Toaster position="top-right" />
 
-      <div className="min-h-screen bg-gradient-to-br from-[#0B0F1A] via-[#05070D] to-[#0B0F1A] flex items-center justify-center px-4 py-10">
+      <div className="min-h-screen bg-gradient-to-br from-[#0B0F1A] via-[#05070D] to-[#0B0F1A] flex items-center justify-center px-2 pb-6">
         <motion.form
           onSubmit={handleSubmit}
           initial={{ opacity: 0, y: 40 }}
@@ -123,7 +123,7 @@ const EditProfileSocialMedia = () => {
             Social Media
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-6 mt-8">
+          <div className="grid md:grid-cols-2 gap-3 mt-8">
             {/* <Input label="Company" name="company" value={form.company} onChange={handleChange} /> */}
             <Input
               label="LinkedIn"

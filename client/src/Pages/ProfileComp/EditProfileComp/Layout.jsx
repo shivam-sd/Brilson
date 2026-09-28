@@ -177,6 +177,7 @@ const Layout = () => {
 
 
         <button
+<<<<<<< Updated upstream
           onClick={() => {
             navigate("/", { replace: true });
           }}
@@ -185,6 +186,16 @@ const Layout = () => {
           <IoIosArrowRoundBack size={30} color="white" />
           Go Home
         </button>
+=======
+                    onClick={() => {
+                      navigate("/admin/passTo/Profile", {replace:true});
+                    }}
+                    className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex gap-1 border-white/30 border-2 p-2 rounded-lg cursor-pointer flex items-center justify-center"
+                  >
+                    <IoIosArrowRoundBack size={30} color="white" />
+                    Go Back
+                  </button>
+>>>>>>> Stashed changes
 
 
 
@@ -259,7 +270,7 @@ const Layout = () => {
 
         {/* Desktop Sidebar Header */}
         {!isMobile && (
-          <div className="p-6 border-b border-gray-800/50">
+          <div className="p-2 border-b border-gray-800/50">
             <div className="flex items-center justify-between">
               {!isCollapsed && (
                 <div className="flex items-center justify-between gap-3 w-full">
@@ -278,7 +289,7 @@ const Layout = () => {
                   </div>
                   <button
                     onClick={() => {
-                      navigate(-1, { replace: true });
+                      navigate("/admin/passTo/Profile", { replace: true });
                     }}
                     className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex gap-1 border-white/30 border-2 p-2 rounded-lg cursor-pointer"
                   >
@@ -294,6 +305,7 @@ const Layout = () => {
         {/* Navigation Menu */}
         <div className="p-3 md:p-4">
           <nav className="space-y-1">
+<<<<<<< Updated upstream
             {menuItems.map((item) => {
               const basePath = `/profile/edit/${id}`;
               const targetPath = item.path ? `${basePath}/${item.path}` : basePath;
@@ -314,6 +326,23 @@ const Layout = () => {
                   className={`
             flex items-center gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300
             ${isActive
+=======
+            {menuItems.map((item) => (
+              <NavLink
+                key={item.id}
+                replace
+                to={`/profile/edit/${id}/${item.path}`}
+                end
+                onClick={() => {
+                  if (isMobile) {
+                    setIsMobileMenuOpen(false);
+                  }
+                }}
+                className={({ isActive }) => `
+                  flex items-center gap-3 px-3 md:px-4 rounded-xl transition-all duration-300
+                  ${
+                    isActive
+>>>>>>> Stashed changes
                       ? "bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-700/30 shadow-lg shadow-blue-900/20"
                       : "hover:bg-gray-800/30 hover:border-gray-700/30 border border-transparent"
                     }

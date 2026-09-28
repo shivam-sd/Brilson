@@ -205,19 +205,51 @@ const getMyReferrals = async (req, res) => {
 
     const referrals = await UserModel.find({
       referredBy: userId,
-    }).select("name referralStatus createdAt");
+    }).select("name referralStatus createdAt").lean();
 
+
+     const referralIds = referrals.map((r) => r._id);
+    console.log("ids", referralIds);
+
+    // Har referral ke kitne referrals hain
+
+    const counts = await UserModel.aggregate([
+      {$match:{referredBy:{$in:referralIds}}},
+      {$group:{ _id: "$referredBy", count: { $sum: 1 } } },
+    ])
+
+    let countMap = {};
+    counts.map((c) => {
+      countMap[c._id.toString()] = c.count;
+    })
+
+    const referralsWithCount = referrals.map((r) => ({
+      ...r, 
+      referralCount: countMap[r._id.toString()] || 0
+    }))
+
+
+    
     const total = referrals.length;
     const completed = referrals.filter(
       (r) => r.referralStatus === "completed",
     ).length;
     const inProgress = total - completed;
+    
+
+    // how many my referrals refer
+  const totalReferralsOfMyReferrals = counts.reduce(
+    (sum, c) => sum + c.count,
+    0
+  );
+
 
     res.json({
       totalReferrals: total,
       completed,
       inProgress,
-      referrals,
+      totalReferralsOfMyReferrals,
+      referrals:referralsWithCount,
     });
   } catch (err) {
     res.status(500).json({ error: "Server error", err });

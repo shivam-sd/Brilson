@@ -67,7 +67,7 @@ const ReferralDashboard = () => {
 
   // ===== STATUS BADGE COMPONENT =====
   const StatusBadge = ({ status }) => {
-    // ✅ Added 'in_progress' support
+    
     const styles = {
       completed: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
       in_progress: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
