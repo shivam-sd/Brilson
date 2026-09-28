@@ -292,76 +292,78 @@ const Layout = () => {
         )}
 
         {/* Navigation Menu */}
-        {/* Navigation Menu */}
         <div className="p-3 md:p-4">
           <nav className="space-y-1">
-            {menuItems.map((item) => (
-              <NavLink
-                key={item.id}
-                replace
-                to={`/profile/edit/${id}/${item.path}`}
-                end
-                onClick={() => {
-                  if (isMobile) {
-                    setIsMobileMenuOpen(false);
-                  }
-                }}
-                className={({ isActive }) => `
-          flex items-center gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300
-          ${isActive
-                    ? "bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-700/30 shadow-lg shadow-blue-900/20"
-                    : "hover:bg-gray-800/30 hover:border-gray-700/30 border border-transparent"
-                  }
-          group relative
-          ${isMobile ? "text-base" : "text-sm"}
-        `}
-              >
-                {({ isActive }) => (
-                  <>
-                    <div
-                      className={`
+            {menuItems.map((item) => {
+              const basePath = `/profile/edit/${id}`;
+              const targetPath = item.path ? `${basePath}/${item.path}` : basePath;
+              const currentPath = decodeURIComponent(location.pathname).replace(/\/+$/, "");
+              const isActive = currentPath === targetPath;
+
+              return (
+                <NavLink
+                  key={item.id}
+                  replace
+                  to={targetPath}
+                  end
+                  onClick={() => {
+                    if (isMobile) {
+                      setIsMobileMenuOpen(false);
+                    }
+                  }}
+                  className={`
+            flex items-center gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300
+            ${isActive
+                      ? "bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-700/30 shadow-lg shadow-blue-900/20"
+                      : "hover:bg-gray-800/30 hover:border-gray-700/30 border border-transparent"
+                    }
+            group relative
+            ${isMobile ? "text-base" : "text-sm"}
+          `}
+                >
+                  <div
+                    className={`
               p-2 rounded-lg transition-all duration-300
               ${isActive
-                          ? "bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg shadow-blue-500/30"
-                          : "bg-gray-900/50 group-hover:bg-gray-800/50"
-                        }
+                        ? "bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg shadow-blue-500/30"
+                        : "bg-gray-900/50 group-hover:bg-gray-800/50"
+                      }
             `}
-                    >
-                      {React.cloneElement(
-                        isMobile ? item.mobileIcon || item.icon : item.icon,
-                        {
-                          className: isActive
-                            ? "text-white"
-                            : "text-gray-400 group-hover:text-gray-300",
-                        },
-                      )}
-                    </div>
+                  >
+                    {React.cloneElement(
+                      isMobile ? item.mobileIcon || item.icon : item.icon,
+                      {
+                        className: isActive
+                          ? "text-white"
+                          : "text-gray-400 group-hover:text-gray-300",
+                      },
+                    )}
+                  </div>
 
-                    {(!isCollapsed || isMobile) && (
-                      <>
-                        <div className="flex-1 min-w-0">
-                          <span
-                            className={`
+                  {(!isCollapsed || isMobile) && (
+                    <>
+                      <div className="flex-1 min-w-0">
+                        <span
+                          className={`
                     font-medium block transition-colors
                     ${isActive ? "text-white" : "text-gray-300 group-hover:text-white"}
                   `}
-                          >
-                            {item.label}
-                          </span>
-                        </div>
+                        >
+                          {item.label}
+                        </span>
+                      </div>
 
-                        {isActive && (
-                          <ChevronRight
-                            size={16}
-                            className="text-blue-300 animate-pulse flex-shrink-0"
-                          />
-                        )}
-                      </>
-                    )}
-                  </>
-                )}
-              </NavLink>
-            ))}
+                      {isActive && (
+                        <ChevronRight
+                          size={16}
+                          className="text-blue-300 animate-pulse flex-shrink-0"
+                        />
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              );
+            })}
           </nav>
         </div>
 
