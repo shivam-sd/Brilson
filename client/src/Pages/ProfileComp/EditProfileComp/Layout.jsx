@@ -305,28 +305,6 @@ const Layout = () => {
         {/* Navigation Menu */}
         <div className="p-3 md:p-4">
           <nav className="space-y-1">
-<<<<<<< Updated upstream
-            {menuItems.map((item) => {
-              const basePath = `/profile/edit/${id}`;
-              const targetPath = item.path ? `${basePath}/${item.path}` : basePath;
-              const currentPath = decodeURIComponent(location.pathname).replace(/\/+$/, "");
-              const isActive = currentPath === targetPath;
-
-              return (
-                <NavLink
-                  key={item.id}
-                  replace
-                  to={targetPath}
-                  end
-                  onClick={() => {
-                    if (isMobile) {
-                      setIsMobileMenuOpen(false);
-                    }
-                  }}
-                  className={`
-            flex items-center gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300
-            ${isActive
-=======
             {menuItems.map((item) => (
               <NavLink
                 key={item.id}
@@ -342,7 +320,6 @@ const Layout = () => {
                   flex items-center gap-3 px-3 md:px-4 rounded-xl transition-all duration-300
                   ${
                     isActive
->>>>>>> Stashed changes
                       ? "bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-700/30 shadow-lg shadow-blue-900/20"
                       : "hover:bg-gray-800/30 hover:border-gray-700/30 border border-transparent"
                     }
