@@ -177,16 +177,6 @@ const Layout = () => {
 
 
         <button
-<<<<<<< Updated upstream
-          onClick={() => {
-            navigate("/", { replace: true });
-          }}
-          className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex gap-1 border-white/30 border-2 p-2 rounded-lg cursor-pointer flex items-center justify-center"
-        >
-          <IoIosArrowRoundBack size={30} color="white" />
-          Go Home
-        </button>
-=======
                     onClick={() => {
                       navigate("/admin/passTo/Profile", {replace:true});
                     }}
@@ -195,7 +185,6 @@ const Layout = () => {
                     <IoIosArrowRoundBack size={30} color="white" />
                     Go Back
                   </button>
->>>>>>> Stashed changes
 
 
 
