@@ -406,7 +406,7 @@ const EditProfile = () => {
     <>
       <Toaster position="top-right" />
 
-      <div className="min-h-screen bg-gradient-to-br from-[#0B0F1A] via-[#05070D] to-[#0B0F1A] py-6 md:py-10">
+      <div className="min-h-screen bg-gradient-to-br from-[#0B0F1A] via-[#05070D] to-[#0B0F1A] pb-6 md:py-10">
         <div className="w-full max-w-4xl mx-auto bg-[#111827] border border-gray-800 rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden">
           
           {/* COVER PHOTO SECTION - Like Facebook */}
@@ -464,7 +464,7 @@ const EditProfile = () => {
           </div>
 
           {/* PROFILE PHOTO SECTION - Overlapping like Facebook */}
-          <div className="relative px-4 md:px-8 mb-16">
+          <div className="relative px-4 md:px-8 mb-10">
             <div className="absolute -top-16 left-4 md:left-8">
               <div className="relative group">
                 {/* Profile Photo */}
@@ -527,12 +527,12 @@ const EditProfile = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h3 className="text-2xl font-semibold text-white mb-6 border-b border-gray-800 pb-2 text-center tracking-widest font-Roboto">
+              <h3 className="text-2xl font-semibold text-white mb-4 border-b border-gray-800 pb-2 text-center tracking-widest font-Roboto">
                 Basic Information
               </h3>
 
-              {/* Grid - Responsive */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {/* Grid  */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6">
                 <Input 
                   label="Full Name & Company Name" 
                   name="name" 

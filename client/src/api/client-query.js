@@ -96,6 +96,7 @@ export const useGetReferrals = () => {
         queryKey: ["referrals"],
         queryFn: async () => {
             const { data } = await axiosInstance.get("/api/user/referral");
+            // console.log(data);
             return data;
         }
     });
