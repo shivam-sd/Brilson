@@ -174,24 +174,24 @@ const Layout = () => {
           {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
 
-        
+
 
         <button
-                    onClick={() => {
-                      navigate("/", { replace: true });
-                    }}
-                    className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex gap-1 border-white/30 border-2 p-2 rounded-lg cursor-pointer flex items-center justify-center"
-                  >
-                    <IoIosArrowRoundBack size={30} color="white" />
-                    Go Home
-                  </button>
+          onClick={() => {
+            navigate("/", { replace: true });
+          }}
+          className="text-base font-Roboto font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex gap-1 border-white/30 border-2 p-2 rounded-lg cursor-pointer flex items-center justify-center"
+        >
+          <IoIosArrowRoundBack size={30} color="white" />
+          Go Home
+        </button>
 
 
 
         {/* <div className="flex items-center gap-2"> */}
 
-          
-          {/* <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+
+        {/* <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
             <User size={16} />
           </div>
           <div>
@@ -246,7 +246,7 @@ const Layout = () => {
                   <p className="text-xs text-gray-400">ID: {id?.slice(-8)}</p>
                 </div>
               </div>
-              
+
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2 hover:bg-gray-800/50 rounded-lg transition-all"
@@ -292,6 +292,7 @@ const Layout = () => {
         )}
 
         {/* Navigation Menu */}
+        {/* Navigation Menu */}
         <div className="p-3 md:p-4">
           <nav className="space-y-1">
             {menuItems.map((item) => (
@@ -306,55 +307,56 @@ const Layout = () => {
                   }
                 }}
                 className={({ isActive }) => `
-                  flex items-center gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300
-                  ${
-                    isActive
-                      ? "bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-700/30 shadow-lg shadow-blue-900/20"
-                      : "hover:bg-gray-800/30 hover:border-gray-700/30 border border-transparent"
+          flex items-center gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300
+          ${isActive
+                    ? "bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-700/30 shadow-lg shadow-blue-900/20"
+                    : "hover:bg-gray-800/30 hover:border-gray-700/30 border border-transparent"
                   }
-                  group relative
-                  ${isMobile ? "text-base" : "text-sm"}
-                `}
+          group relative
+          ${isMobile ? "text-base" : "text-sm"}
+        `}
               >
-                <div
-                  className={`
-                  p-2 rounded-lg transition-all duration-300
-                  ${
-                    activePath === item.id
-                      ? "bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg shadow-blue-500/30"
-                      : "bg-gray-900/50 group-hover:bg-gray-800/50"
-                  }
-                `}
-                >
-                  {React.cloneElement(
-                    isMobile ? item.mobileIcon || item.icon : item.icon,
-                    {
-                      className:
-                        activePath === item.id
-                          ? "text-white"
-                          : "text-gray-400 group-hover:text-gray-300",
-                    },
-                  )}
-                </div>
-
-                {(!isCollapsed || isMobile) && (
+                {({ isActive }) => (
                   <>
-                    <div className="flex-1 min-w-0">
-                      <span
-                        className={`
-                        font-medium block transition-colors
-                        ${activePath === item.id ? "text-white" : "text-gray-300 group-hover:text-white"}
-                      `}
-                      >
-                        {item.label}
-                      </span>
+                    <div
+                      className={`
+              p-2 rounded-lg transition-all duration-300
+              ${isActive
+                          ? "bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg shadow-blue-500/30"
+                          : "bg-gray-900/50 group-hover:bg-gray-800/50"
+                        }
+            `}
+                    >
+                      {React.cloneElement(
+                        isMobile ? item.mobileIcon || item.icon : item.icon,
+                        {
+                          className: isActive
+                            ? "text-white"
+                            : "text-gray-400 group-hover:text-gray-300",
+                        },
+                      )}
                     </div>
 
-                    {activePath === item.id && (
-                      <ChevronRight
-                        size={16}
-                        className="text-blue-300 animate-pulse flex-shrink-0"
-                      />
+                    {(!isCollapsed || isMobile) && (
+                      <>
+                        <div className="flex-1 min-w-0">
+                          <span
+                            className={`
+                    font-medium block transition-colors
+                    ${isActive ? "text-white" : "text-gray-300 group-hover:text-white"}
+                  `}
+                          >
+                            {item.label}
+                          </span>
+                        </div>
+
+                        {isActive && (
+                          <ChevronRight
+                            size={16}
+                            className="text-blue-300 animate-pulse flex-shrink-0"
+                          />
+                        )}
+                      </>
                     )}
                   </>
                 )}
