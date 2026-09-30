@@ -35,15 +35,17 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
-    images: {
-      type: [String],
-      required: true,
-    },
     coverImg: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Image",
       required: true
     },
+    images: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image"
+      }
+    ],
 
     //  SINGLE PRICE SYSTEM
     price: {
