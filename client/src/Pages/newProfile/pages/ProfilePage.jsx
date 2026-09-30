@@ -7,12 +7,15 @@ import { normalizeProfile } from "../utils/profileAdapter";
 import "../styles/profile.css";
 import { useParams } from "react-router-dom";
 import SocialLinks from "../components/SocialLinks";
+import { useDispatch, useSelector } from "react-redux";
+import { selectProfileTheme, toggleProfileTheme } from "../../../store/slices/profileThemeSlice"; 
+import ThemeToggle from "../components/ui/ThemeToggle";
 
 function ProfileError({ onRetry, canRetry }) {
   return (
-    <div role="alert" className="rounded-[22px] border border-white/10 bg-[#0a1016] px-6 py-14 text-center">
-      <p className="text-lg font-semibold text-white">This profile couldn&apos;t be loaded</p>
-      <p className="mt-2 text-sm text-slate-400">Check the link and your connection, then try again.</p>
+    <div role="alert" className="rounded-[22px] border border-[var(--p-border)] bg-[var(--p-surface)] px-6 py-14 text-center">
+      <p className="text-lg font-semibold text-[color:var(--p-text)]">This profile couldn&apos;t be loaded</p>
+      <p className="mt-2 text-sm text-[color:var(--p-muted)]">Check the link and your connection, then try again.</p>
       {canRetry && (
         <button
           type="button"
@@ -27,6 +30,8 @@ function ProfileError({ onRetry, canRetry }) {
 }
 
 export default function ProfilePage() {
+const dispatch = useDispatch();
+const theme = useSelector(selectProfileTheme);
   const { slug: code } = useParams()
   const cardQuery = useGetCard(code);
   const logoQuery = useGetProfileLogo(code);
@@ -40,7 +45,8 @@ export default function ProfilePage() {
   );
 
   return (
-    <div className="profile-page profile-bg min-h-screen text-slate-100 antialiased">
+    <div data-theme={theme} className="profile-page profile-bg min-h-screen antialiased">
+       <ThemeToggle theme={theme} onToggle={() => dispatch(toggleProfileTheme())} />
       <main
         className={[
           "mx-auto grid w-full max-w-[640px] grid-cols-1 gap-4 px-4 py-5 sm:gap-5 sm:px-6 sm:py-8",
@@ -57,6 +63,7 @@ export default function ProfilePage() {
             <ProfileError canRetry={cardQuery.isError} onRetry={() => cardQuery.refetch()} />
           )}
         </div>
+
 
         <div className="mb-7">
           <AccordionList code={code} profile={profile} availability={sectionQuery.data?.data}/>
