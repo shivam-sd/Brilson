@@ -25,12 +25,12 @@ function SocialLinks({ links }) {
         aria-label="Social media"
         className="
           flex w-full min-w-0
-          justify-start gap-1
+          justify-center gap-1
           overflow-x-auto overflow-y-hidden
           scrollbar-none
           overscroll-x-contain
           touch-pan-x
-          md:justify-start
+          md:justify-center
         "
       >
         {links.map(({ platform, url }) => {
@@ -62,7 +62,7 @@ function SocialLinks({ links }) {
               >
                 <span
                   className={cn(
-                    "grid h-8 w-8 place-items-center rounded-full text-white md:h-10 md:w-10",
+                    "grid h-8 w-8 place-items-center justify-center rounded-full text-white md:h-10 md:w-10",
                     className
                   )}
                 >

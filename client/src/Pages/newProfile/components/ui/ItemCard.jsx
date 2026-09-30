@@ -10,32 +10,32 @@ export default function ItemCard({ item, color = "orange" }) {
   const priceLabel = formatPrice(price);
 
   return (
-    <article className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] sm:flex-row">
+    <article className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-[var(--p-border)] bg-[var(--p-surface-2)] sm:flex-row">
       {image && (
         <SafeImage
           src={image}
           alt={title}
           fit="contain"
-          className="w-full shrink-0 bg-black sm:w-52 sm:self-stretch"
+          className="w-full shrink-0 bg-[var(--p-surface-2)] sm:w-52 sm:self-stretch"
           imgClassName="h-auto w-full sm:h-full sm:object-contain"
         />
       )}
 
       <div className="flex min-w-0 flex-1 flex-col gap-2 p-4">
         <div className="flex items-start justify-between gap-3">
-          <h4 className="min-w-0 text-base font-semibold leading-snug text-white">
+          <h4 className="min-w-0 text-base font-semibold leading-snug text-[color:var(--p-text)]">
             {title}
           </h4>
 
           {priceLabel && (
-            <span className="shrink-0 rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-xs font-semibold text-white">
+            <span className="shrink-0 rounded-full border border-[var(--p-border)] bg-[var(--p-surface-2)] px-2.5 py-1 text-xs font-semibold text-[color:var(--p-text)]">
               {priceLabel}
             </span>
           )}
         </div>
 
         {description && (
-          <p className="break-words text-sm leading-relaxed text-slate-400">
+          <p className="break-words text-sm leading-relaxed text-[color:var(--p-muted)]">
             {description}
           </p>
         )}
@@ -45,7 +45,7 @@ export default function ItemCard({ item, color = "orange" }) {
             {features.map((feature) => (
               <li
                 key={feature}
-                className="rounded-md bg-white/[0.06] px-2 py-1 text-xs text-slate-300"
+                className="rounded-md bg-[var(--p-surface-2)] px-2 py-1 text-xs text-[color:var(--p-muted)]"
               >
                 {feature}
               </li>

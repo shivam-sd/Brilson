@@ -746,6 +746,7 @@ const Textarea = ({ label, ...props }) => (
     <label className="text-sm text-gray-400 mb-2 block tracking-widest font-Roboto">{label}</label>
     <textarea 
       {...props} 
+      maxLength={100}
       className="w-full px-4 py-3 rounded-xl bg-[#0B1220] border border-gray-700 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-none placeholder-gray-500 tracking-widest font-Poppins" 
     />
   </div>
