@@ -18,7 +18,7 @@ const createError = (message, statusCode = 400) => {
 };
 
 const validateFile = (file) => {
-    if (!file || !file.buffer) {
+    if (!file) {
         throw createError("Image file is required");
     }
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
@@ -31,15 +31,21 @@ const validateFile = (file) => {
 
 const uploadToCloudinary = (file, folder) =>
     new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
+        cloudinary.uploader.upload(
+            file.tempFilePath,
             {
                 folder,
                 public_id: crypto.randomUUID(),
                 resource_type: "image",
             },
-            (error, result) => (error ? reject(error) : resolve(result))
+            (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(result);
+                }
+            }
         );
-        stream.end(file.buffer);
     });
 
 const uploadImage = async (file, folder) => {
@@ -53,7 +59,7 @@ const uploadImage = async (file, folder) => {
             publicId: result.public_id,
             secureUrl: result.secure_url,
             folder,
-            fileName: file.originalname,
+            fileName: file.originalname || file.name,
             format: result.format,
             resourceType: result.resource_type,
             bytes: result.bytes,

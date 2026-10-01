@@ -1,4 +1,5 @@
 const profileLogoModel = require("../../models/ProfileModel/ProfileLogo.Model");
+const { uploadImage, deleteImage } = require("../../services/image.service");
 const cloudinary = require("cloudinary").v2;
 
 
@@ -102,7 +103,7 @@ const addProfileLogo = async (req, res) => {
 //       { folder: "brilson/profile-logo" }
 //     );
 
-   
+
 //     const profileLogo = await profileLogoModel.findOneAndUpdate(
 //       { activationCode },
 //       {
@@ -134,46 +135,60 @@ const updateProfileLogo = async (req, res) => {
     const { activationCode } = req.body;
 
     if (!activationCode) {
-      return res.status(400).json({ message: "Activation code required" });
-    }
-
-    const file = req.files?.image;
-    // if (!file) {
-    //   return res.status(400).json({ message: "Image required" });
-    // }
-
-    // Upload to cloudinary
-    const result = await cloudinary.uploader.upload(
-      file.tempFilePath,
-      { folder: "brilson/profile-logo" }
-    );
-
-    // Check if logo exists
-    const existingLogo = await profileLogoModel.findOne({ activationCode });
-
-    let profileLogo;
-
-    if (existingLogo) {
-      // Update
-      existingLogo.image = result.secure_url;
-      profileLogo = await existingLogo.save();
-    } else {
-      // Create new
-      profileLogo = await profileLogoModel.create({
-        activationCode,
-        image: result.secure_url,
+      return res.status(400).json({
+        message: "Activation code required",
       });
     }
 
-    res.json({
-      success: true,
-      profileLogo,
+    const file = req.files?.image;
+
+    if (!file) {
+      return res.status(400).json({
+        message: "Image required",
+      });
+    }
+
+    const existingLogo = await profileLogoModel.findOne({
+      activationCode,
     });
 
+    const uploadedImage = await uploadImage(
+      file,
+      "brilson/profile-logo"
+    );
+
+    try {
+      let profileLogo;
+
+      if (existingLogo) {
+        const oldImageId = existingLogo.image;
+
+        existingLogo.image = uploadedImage._id;
+        profileLogo = await existingLogo.save();
+
+        if (oldImageId) {
+          await deleteImage(oldImageId);
+        }
+      } else {
+        profileLogo = await profileLogoModel.create({
+          activationCode,
+          image: uploadedImage._id,
+        });
+      }
+
+      return res.json({
+        success: true,
+        profileLogo,
+      });
+    } catch (error) {
+      await deleteImage(uploadedImage._id);
+      throw error;
+    }
   } catch (err) {
     console.log(err);
-    res.status(500).json({
-      error: "Profile logo update error",
+
+    return res.status(err.statusCode || 500).json({
+      message: err.message || "Profile logo update error",
     });
   }
 };
@@ -182,24 +197,28 @@ const updateProfileLogo = async (req, res) => {
 
 
 
-const getProfileLogo = async (req,res) => {
-    try{
-        const {activationCode} = req.params;
+const getProfileLogo = async (req, res) => {
+  try {
+    const { activationCode } = req.params;
 
-        const profileLogo = await profileLogoModel.findOne({activationCode});
+    const profileLogo = await profileLogoModel.findOne({ activationCode }).populate({
+      path: "image",
+      match: { isDeleted: 0 },
+      select: "secureUrl fileName ",
+    });
 
-        if(!profileLogo){
-            return res.status(404).json({message:"Profile Logo Not Found!"});
-        }
-
-        res.status(200).json({success:true, profileLogo});
-
-    }catch(err){
-        res.status(500).json({error:"Internal Server Error Fetching Profile Logo"});
-        console.log(err)
+    if (!profileLogo) {
+      return res.status(404).json({ message: "Profile Logo Not Found!" });
     }
+
+    res.status(200).json({ success: true, profileLogo });
+
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ message: "Internal Server Error Fetching Profile Logo" });
+  }
 }
 
 
 
-module.exports = {addProfileLogo, updateProfileLogo, getProfileLogo}
+module.exports = { addProfileLogo, updateProfileLogo, getProfileLogo }

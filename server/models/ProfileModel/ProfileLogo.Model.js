@@ -2,11 +2,13 @@ const mongoose = require("mongoose");
 
 
 const profileLogoSchema = new mongoose.Schema({
-    image:{
-        type:String
+    image: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image",
     },
-    activationCode:{
-        type:String
+    activationCode: {
+        type: String,
+        index: true,
     }
 });
 
@@ -15,4 +17,4 @@ const profileLogoSchema = new mongoose.Schema({
 const profileModel = mongoose.model("Profile Logo", profileLogoSchema);
 
 
-module.exports =  profileModel;
+module.exports = profileModel;

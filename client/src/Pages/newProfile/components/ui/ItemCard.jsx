@@ -13,7 +13,7 @@ export default function ItemCard({ item, color = "orange" }) {
     <article className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] sm:flex-row">
       {image && (
         <SafeImage
-          src={image}
+          src={image.secureUrl}
           alt={title}
           fit="contain"
           className="w-full shrink-0 bg-black sm:w-52 sm:self-stretch"
