@@ -48,7 +48,7 @@ export default function PaymentDetails({ data }) {
       <div className="flex flex-col gap-4 sm:flex-row">
         {data?.image && (
           <SafeImage
-            src={data.image}
+            src={data.image?.secureUrl}
             alt="Payment QR code"
             className="h-36 w-36 shrink-0 self-center rounded-lg sm:self-start"
             imgClassName="object-contain"

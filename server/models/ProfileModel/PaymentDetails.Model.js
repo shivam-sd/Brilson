@@ -19,7 +19,8 @@ const PaymentDetailsSchema = new mongoose.Schema(
     },
 
     image: {
-      type: String, // QR Image URL
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Image",
     },
 
     upi: {

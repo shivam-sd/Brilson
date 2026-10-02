@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Loader2, Image as ImgIcon } from "lucide-react";
-import { toast } from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import { selectToken } from "../../../../store/slices/authSlice";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const UpdatePaymentDetails = () => {
   const { id } = useParams();
@@ -53,7 +53,7 @@ const UpdatePaymentDetails = () => {
           image: null,
         });
 
-        setPreview(data.image);
+        setPreview(data.image?.secureUrl);
       } catch (err) {
         toast.error("Failed to load payment details");
       } finally {
