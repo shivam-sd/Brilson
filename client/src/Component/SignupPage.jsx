@@ -81,6 +81,10 @@ const SignupPage = () => {
       return toast.error("All fields are required");
     }
 
+    if (!form.referralCode) {
+      return toast.error("Referral code is required");
+    }
+
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(form.phone)) {
       return toast.error("Phone number must be exactly 10 digits");
