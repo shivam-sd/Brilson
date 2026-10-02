@@ -21,6 +21,9 @@ const validateFile = (file) => {
     if (!file) {
         throw createError("Image file is required");
     }
+    if (!file.buffer && !file.tempFilePath) {
+        throw createError("Image file data is missing");
+    }
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
         throw createError("Only JPEG, JPG, PNG and WebP images are allowed");
     }
@@ -31,21 +34,47 @@ const validateFile = (file) => {
 
 const uploadToCloudinary = (file, folder) =>
     new Promise((resolve, reject) => {
-        cloudinary.uploader.upload(
-            file.tempFilePath,
-            {
-                folder,
-                public_id: crypto.randomUUID(),
-                resource_type: "image",
-            },
-            (error, result) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(result);
+        if (file?.buffer) {
+            const stream = cloudinary.uploader.upload_stream(
+                {
+                    folder,
+                    public_id: crypto.randomUUID(),
+                    resource_type: "image",
+                },
+                (error, result) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(result);
+                    }
                 }
-            }
-        );
+            );
+
+            stream.end(file.buffer);
+            return;
+        }
+
+        if (file?.tempFilePath) {
+            cloudinary.uploader.upload(
+                file.tempFilePath,
+                {
+                    folder,
+                    public_id: crypto.randomUUID(),
+                    resource_type: "image",
+                },
+                (error, result) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(result);
+                    }
+                }
+            );
+
+            return;
+        }
+
+        reject(createError("Image file data is missing"));
     });
 
 const uploadImage = async (file, folder) => {
