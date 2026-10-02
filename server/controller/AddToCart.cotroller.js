@@ -33,7 +33,7 @@ const addToCart = async (req, res) => {
       cartItem = await CartModel.create({
         userId,
         productId,
-        image: product.coverImg || product.images[0],
+        image: product.coverImg,
         title: product.title,
         price: product.price,
         quantity: quantity || 1,
@@ -61,7 +61,7 @@ const getUserCart = async (req, res) => {
     const userId = req.user;
 
     const cartItems = await CartModel.find({ userId })
-      .populate("productId");
+      .populate("productId").populate({ path: "image", select: "secureUrl fileName" });
 
     const user = await UserModel.findById(userId);
 

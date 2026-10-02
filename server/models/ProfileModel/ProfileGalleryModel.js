@@ -14,7 +14,8 @@ const profileGallerySchema = new mongoose.Schema({
     type: String,
   },
   image: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Image",
   },
   category: {
     type: String,

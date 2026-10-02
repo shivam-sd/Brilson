@@ -89,7 +89,7 @@ const PaymentDetails = () => {
             {paymentData.image && (
               <div className="flex justify-center">
                 <img
-                  src={paymentData.image}
+                  src={paymentData.image?.secureUrl}
                   alt="QR"
                   className="w-48 h-48 object-cover rounded-2xl border border-white/20 shadow-xl hover:scale-105 transition duration-300"
                 />

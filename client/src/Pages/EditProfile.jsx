@@ -102,7 +102,7 @@ const EditProfile = () => {
           const logoRes = await axios.get(
             `${import.meta.env.VITE_BASE_URL}/api/profile-logo/get/${id}`
           );
-          setLogo(logoRes.data.profileLogo.image);
+          setLogo(logoRes.data.profileLogo.image?.secureUrl);
         } catch (err) {
           console.log("No logo found");
         }

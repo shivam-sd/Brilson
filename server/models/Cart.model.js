@@ -11,8 +11,11 @@ const cartSchema = new mongoose.Schema({
     ref: "Product",
     required: true,
   },
-  
-  image: String,
+
+  image: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Image",
+  },
 
   variantId: {
     type: mongoose.Schema.Types.ObjectId,
