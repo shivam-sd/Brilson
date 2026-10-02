@@ -68,7 +68,7 @@ const salt = config?.payU?.salt || process.env.PAYU_SALT;
         surl: `${process.env.PayU_Verify_Payment_Url1}/api/payment/payu/verify`,
         furl: `${process.env.PayU_Verify_Payment_Url1}/api/payment/payu-failure`,
         hash
-      }
+      } 
     });
 
   } catch (err) {
