@@ -22,7 +22,7 @@ export default function GallerySection({ code }) {
               className="group block aspect-square w-full overflow-hidden rounded-xl border border-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/80"
             >
               <SafeImage
-                src={item.image}
+                src={item.image?.secureUrl}
                 alt=""
                 className="h-full w-full"
                 imgClassName="transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"

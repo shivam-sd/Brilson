@@ -4,8 +4,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 // const generateReferralCode = require("../utils/generateReferralCode");
 const CardProfileModel = require("../models/CardProfile");
-const nodemailer = require("nodemailer");
-
+// const nodemailer = require("nodemailer");
+const sendGreetingMessage = require("../services/GreetingMessage");
 
 
 // Generate Token
@@ -90,11 +90,21 @@ const UserRegister = async (req, res) => {
       user,
     });
 
+
+    // Send greeting message
+    sendGreetingMessage(user.phone, user.name)
+      .then((response) => {
+        console.log("Greeting message sent successfully:", response);
+      })
+      .catch((error) => {
+        console.error("Failed to send greeting message:", JSON.stringify(error));
+      });
+
   } catch (err) {
     console.log("Register Error:", err);
     res.status(500).json({ error: "Server Error" });
   }
-};
+}; 
 
 
 
@@ -138,6 +148,7 @@ const UserLogin = async (req, res) => {
     });
 
     res.status(200).json({ message: "Login successful", token, user });
+
   } catch (err) {
     console.log("Login Error:", err);
     console.log(err.stack)

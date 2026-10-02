@@ -96,7 +96,7 @@ const ServiceCard = ({ service, index, onDelete, isEditMode, isCarousel }) => {
       {/* Image Section */}
       <div className="relative h-48 w-full overflow-hidden">
         <img
-          src={service.image}
+          src={service?.image?.secureUrl}
           alt={service.title}
           className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
         />

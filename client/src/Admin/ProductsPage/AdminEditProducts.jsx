@@ -23,6 +23,7 @@ const AdminEditProduct = () => {
 
   // Cover image state
   const [coverImgUrl, setCoverImgUrl] = useState(""); // existing cover image url from DB
+  const [coverImgId, setCoverImgId] = useState(""); // existing cover image id from DB
   const [coverImgFile, setCoverImgFile] = useState(null); // new file selected
   const [coverImgPreview, setCoverImgPreview] = useState(""); // blob preview for new file
 
@@ -125,14 +126,11 @@ const AdminEditProduct = () => {
 
       const finalFile = await imageCompression(croppedFile, options);
 
-      // Store the original image URL before replacing
-      const originalImageUrl = existingImages[index];
+      const originalImage = existingImages[index];
+      const originalImageUrl = originalImage.secureUrl;
 
-      // Create new preview URL for the cropped image
       const newPreviewUrl = URL.createObjectURL(finalFile);
 
-      // Store the mapping from original URL to cropped file
-      // Also store the preview URL for easy lookup
       setCroppedExistingImagesMap(prev => ({
         ...prev,
         [originalImageUrl]: {
@@ -141,9 +139,11 @@ const AdminEditProduct = () => {
         }
       }));
 
-      // Update the existing image with new cropped version (store as blob URL for preview)
       const newExistingImages = [...existingImages];
-      newExistingImages[index] = newPreviewUrl;
+      newExistingImages[index] = {
+        ...originalImage,
+        secureUrl: newPreviewUrl
+      };
       setExistingImages(newExistingImages);
 
       toast.success("Image cropped successfully!");
@@ -287,17 +287,19 @@ const AdminEditProduct = () => {
   const removeExistingImage = (index) => {
     const removedImage = existingImages[index];
     setRemovedImages([...removedImages, removedImage]);
+
     const newExistingImages = existingImages.filter((_, i) => i !== index);
     setExistingImages(newExistingImages);
 
-    // Also remove from cropped images map if exists and cleanup preview URL
-    if (croppedExistingImagesMap[removedImage]) {
-      // Revoke the preview URL if it exists
-      if (croppedExistingImagesMap[removedImage].previewUrl) {
-        URL.revokeObjectURL(croppedExistingImagesMap[removedImage].previewUrl);
+    const originalImageUrl = removedImage.secureUrl;
+
+    if (croppedExistingImagesMap[originalImageUrl]) {
+      if (croppedExistingImagesMap[originalImageUrl].previewUrl) {
+        URL.revokeObjectURL(croppedExistingImagesMap[originalImageUrl].previewUrl);
       }
+
       const newMap = { ...croppedExistingImagesMap };
-      delete newMap[removedImage];
+      delete newMap[originalImageUrl];
       setCroppedExistingImagesMap(newMap);
     }
 
@@ -306,10 +308,13 @@ const AdminEditProduct = () => {
 
 
   // Restore removed image
-  const restoreExistingImage = (imageUrl) => {
-    const newRemovedImages = removedImages.filter(img => img !== imageUrl);
+  const restoreExistingImage = (imageId) => {
+    const restoredImage = removedImages.find(img => img._id === imageId);
+    if (!restoredImage) return;
+
+    const newRemovedImages = removedImages.filter(img => img._id !== imageId);
     setRemovedImages(newRemovedImages);
-    setExistingImages([...existingImages, imageUrl]);
+    setExistingImages([...existingImages, restoredImage]);
   };
 
   // Reorder images (drag and drop)
@@ -382,11 +387,12 @@ const AdminEditProduct = () => {
       });
 
       // Set existing cover image
-      if (product.coverImg) {
-        setCoverImgUrl(product.coverImg);
+      if (product?.coverImg?.secureUrl) {
+        setCoverImgUrl(product.coverImg.secureUrl);
+        setCoverImgId(product.coverImg._id || "");
       }
 
-      // Set existing images - store original URLs
+      // Set existing images
       if (product.images && product.images.length > 0) {
         setExistingImages([...product.images]);
       }
@@ -504,51 +510,49 @@ const AdminEditProduct = () => {
       const filteredMetaTags = productData.metaTags.filter(m => m.trim() !== "");
       formData.append('metaTags', JSON.stringify(filteredMetaTags));
 
-      // Cover image - only append if a new file was selected
+      // Cover image
+      if (coverImgId) {
+        formData.append('coverImgId', coverImgId);
+      }
+
       if (coverImgFile) {
         formData.append('coverImg', coverImgFile);
       }
 
-      // Track which original images are being kept
       const keptOriginalImages = [];
       const croppedImagesToUpload = [];
       const croppedMapping = [];
 
-      // Process existing images
-      existingImages.forEach((image, index) => {
-        // Check if this image is a blob URL (cropped version)
-        if (image.startsWith('blob:')) {
-          // Find which original image this cropped version belongs to
+      existingImages.forEach((image) => {
+        const imageUrl = image.secureUrl;
+
+        if (imageUrl?.startsWith('blob:')) {
           for (const [originalUrl, croppedData] of Object.entries(croppedExistingImagesMap)) {
-            if (croppedData.previewUrl === image) {
+            if (croppedData.previewUrl === imageUrl) {
               croppedImagesToUpload.push(croppedData.file);
               croppedMapping.push({
-                originalUrl: originalUrl,
+                originalImageId: image._id,
+                originalUrl,
                 fileIndex: croppedImagesToUpload.length - 1
               });
               break;
             }
           }
         } else {
-          // This is an original image URL - check if it was cropped
-          if (croppedExistingImagesMap[image]) {
-            // This image was cropped, so we don't include the original
-            // The cropped version will replace it
-            // Don't add to keptOriginalImages
+          if (croppedExistingImagesMap[imageUrl]) {
           } else {
-            // This is an original image that hasn't been cropped
-            keptOriginalImages.push(image);
+            keptOriginalImages.push(image._id);
           }
         }
       });
 
-      // Send original images that are kept (not removed and not cropped)
       formData.append('existingImages', JSON.stringify(keptOriginalImages));
 
-      // Handle removed images
-      formData.append('removedImages', JSON.stringify(removedImages));
+      formData.append(
+        'removedImages',
+        JSON.stringify(removedImages.map((image) => image._id))
+      );
 
-      // Upload cropped images as separate files with mapping
       croppedImagesToUpload.forEach(file => {
         formData.append('croppedImages', file);
       });
@@ -582,9 +586,9 @@ const AdminEditProduct = () => {
         }
       });
       // Clean up cropped existing image blob URLs
-      existingImages.forEach(url => {
-        if (url && url.startsWith('blob:')) {
-          URL.revokeObjectURL(url);
+      existingImages.forEach(image => {
+        if (image?.secureUrl && image.secureUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(image.secureUrl);
         }
       });
       if (coverImgPreview && coverImgPreview.startsWith('blob:')) {
@@ -1116,11 +1120,11 @@ const AdminEditProduct = () => {
                           onDragOver={handleDragOver}
                           onDrop={(e) => handleDrop(e, index, 'existing')}
                           className="relative group cursor-pointer"
-                          onClick={() => openCropper(index, image, 'existing')}
+                          onClick={() => openCropper(index, image?.secureUrl, 'existing')}
                         >
                           <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-600 hover:border-cyan-500 transition bg-gray-900">
                             <img
-                              src={image}
+                              src={image?.secureUrl}
                               alt={`Product ${index + 1}`}
                               className="w-full h-full object-cover"
                               onError={(e) => {

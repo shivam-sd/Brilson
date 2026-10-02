@@ -1,12 +1,31 @@
 const { default: mongoose } = require("mongoose");
 const ProductModel = require("../models/Product.model");
+const { uploadImage, uploadImages, deleteImages } = require("../services/image.service");
 const cloudinary = require("cloudinary").v2;
+const fs = require("fs")
 
 
-
-// products handle bye the admin
+const toUploadFile = async (file) => ({
+  buffer: file.tempFilePath
+    ? await fs.promises.readFile(file.tempFilePath)
+    : file.data,
+  mimetype: file.mimetype,
+  size: file.size,
+  originalname: file.name,
+});
+const parseJSON = (value, fallback) => {
+  if (!value) return fallback;
+  if (typeof value !== "string") return value;
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    return fallback;
+  }
+};
 
 const createProduct = async (req, res) => {
+  const uploadedImageIds = [];
+
   try {
 
     const {
@@ -59,8 +78,6 @@ const createProduct = async (req, res) => {
       "image/png",
       "image/webp",
       "image/svg+xml",
-      "image/gif",
-      "image/avif"
     ];
 
     const coverFile = req.files.coverImg;
@@ -71,15 +88,6 @@ const createProduct = async (req, res) => {
       });
     }
 
-    const coverUpload = await cloudinary.uploader.upload(
-      coverFile.tempFilePath,
-      {
-        folder: "brilson/product-covers"
-      }
-    );
-
-    const coverImgUrl = coverUpload.secure_url;
-
     let files = req.files.images;
 
     // convert single image to array
@@ -87,25 +95,28 @@ const createProduct = async (req, res) => {
       files = [files];
     }
 
-    const imagesArray = [];
-
+    // check format
     for (const file of files) {
-
       if (!allowedFormats.includes(file.mimetype)) {
         return res.status(400).json({
           error: `Invalid image format: ${file.mimetype}`
         });
       }
-
-      const result = await cloudinary.uploader.upload(
-        file.tempFilePath,
-        {
-          folder: "brilson/products"
-        }
-      );
-
-      imagesArray.push(result.secure_url);
     }
+
+    // Cover image upload
+    const coverImage = await uploadImage(
+      await toUploadFile(coverFile),
+      "brilson/product-covers"
+    );
+    uploadedImageIds.push(coverImage._id);
+
+    // Product images upload (fail hui to uploadImages khud rollback karta hai)
+    const uploadFiles = await Promise.all(files.map(toUploadFile));
+
+    const uploadedImages = await uploadImages(uploadFiles, "brilson/products");
+    uploadedImages.forEach((img) => uploadedImageIds.push(img._id));
+
 
     const featureList = features ? JSON.parse(features) : [];
     const metaTagList = metaTags ? JSON.parse(metaTags) : [];
@@ -115,8 +126,8 @@ const createProduct = async (req, res) => {
       title,
       badge: badge || "",
       description,
-      images: imagesArray,
-      coverImg: coverImgUrl,
+      images: uploadedImages.map((img) => img._id),
+      coverImg: coverImage._id,
       stock: stock || 0,
       price: Number(price),
       oldPrice: oldPrice ? Number(oldPrice) : undefined,
@@ -151,13 +162,21 @@ const createProduct = async (req, res) => {
 
     console.error("Product Create Error:", err);
 
+    if (uploadedImageIds.length > 0) {
+      try {
+        await deleteImages(uploadedImageIds);
+      } catch (cleanupError) {
+        console.error("Image cleanup failed:", cleanupError);
+      }
+    }
+
     if (err instanceof SyntaxError) {
       return res.status(400).json({
         error: "Invalid JSON format in features or metaTags"
       });
     }
 
-    return res.status(500).json({
+    return res.status(err.statusCode || 500).json({
       success: false,
       error: err.message || "Internal Server Error"
     });
@@ -168,6 +187,8 @@ const createProduct = async (req, res) => {
 
 
 const editProduct = async (req, res) => {
+  const newUploadedIds = [];
+
   try {
     const productId = req.params.id;
 
@@ -196,116 +217,76 @@ const editProduct = async (req, res) => {
 
     const updatedData = { ...req.body };
 
-    const allowedFormats = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/webp",
-      "image/svg+xml",
-      "image/gif",
-      "image/avif",
-    ];
+    delete updatedData.coverImgId;
+    delete updatedData.existingImages;
+    delete updatedData.removedImages;
+    delete updatedData.croppedImagesMapping;
 
-    const uploadImage = async (file) => {
-      if (!allowedFormats.includes(file.mimetype)) {
-        throw new Error(`Invalid image format: ${file.mimetype}`);
-      }
-
-      const upload = await cloudinary.uploader.upload(
-        file.tempFilePath,
-        {
-          folder: "brilson/products"
-        }
-      );
-
-      return upload.secure_url;
-    };
+    const oldCoverId = existingProduct.coverImg
+      ? String(existingProduct.coverImg)
+      : null;
+    const oldImageIds = (existingProduct.images || []).map(String);
+    const oldImageSet = new Set(oldImageIds);
 
     // COVER IMAGE UPDATE
-    let finalCoverImg = existingProduct.coverImg;
+    let finalCoverId = oldCoverId;
 
     if (req.files && req.files.coverImg) {
       const coverFile = Array.isArray(req.files.coverImg)
         ? req.files.coverImg[0]
         : req.files.coverImg;
 
-      finalCoverImg = await uploadImage(coverFile);
+      const newCover = await uploadImage(
+        await toUploadFile(coverFile),
+        "brilson/product-covers"
+      );
+      newUploadedIds.push(newCover._id);
+      finalCoverId = String(newCover._id);
     }
 
-    updatedData.coverImg = finalCoverImg;
+    updatedData.coverImg = finalCoverId;
 
     // IMAGE UPDATE LOGIC
     let finalImages = [];
 
-    // Parse existing images (original URLs that are kept)
-    let existingImagesArray = [];
-    if (existingImages) {
-      try {
-        existingImagesArray = typeof existingImages === 'string'
-          ? JSON.parse(existingImages)
-          : existingImages;
-      } catch (e) {
-        existingImagesArray = [];
-      }
-    }
+    // Parse existing images 
+    const existingImagesArray = parseJSON(existingImages, []).map(String);
 
     // Parse removed images
-    let removedImagesArray = [];
-    if (removedImages) {
-      try {
-        removedImagesArray = typeof removedImages === 'string'
-          ? JSON.parse(removedImages)
-          : removedImages;
-      } catch (e) {
-        removedImagesArray = [];
-      }
-    }
+    const removedImagesArray = parseJSON(removedImages, []).map(String);
 
     // Parse cropped images mapping
-    let croppedMapping = [];
-    if (croppedImagesMapping) {
-      try {
-        croppedMapping = typeof croppedImagesMapping === 'string'
-          ? JSON.parse(croppedImagesMapping)
-          : croppedImagesMapping;
-      } catch (e) {
-        croppedMapping = [];
-      }
-    }
+    const croppedMapping = parseJSON(croppedImagesMapping, []);
 
-    // First, add all existing images that are not removed
-    // These are the original URLs that we're keeping
-    finalImages.push(...existingImagesArray);
+    finalImages.push(
+      ...existingImagesArray.filter((id) => oldImageSet.has(id))
+    );
 
-    // Handle cropped images that are being updated
-    // These will replace their original versions in the finalImages array
+    // Handle cropped images
     if (req.files && req.files.croppedImages) {
       let croppedFiles = req.files.croppedImages;
 
-      // Convert single file to array
       if (!Array.isArray(croppedFiles)) {
         croppedFiles = [croppedFiles];
       }
 
-      // Process each cropped image
       for (let i = 0; i < croppedMapping.length; i++) {
         const mapping = croppedMapping[i];
         const croppedFile = croppedFiles[i];
+        const originalId = mapping?.originalId ? String(mapping.originalId) : null;
 
-        if (croppedFile && mapping.originalUrl) {
-          // Upload the cropped image
-          const newUrl = await uploadImage(croppedFile);
+        if (croppedFile && originalId) {
+          const newImage = await uploadImage(
+            await toUploadFile(croppedFile),
+            "brilson/products"
+          );
+          newUploadedIds.push(newImage._id);
 
-          // Find and replace the original URL with the new cropped URL in finalImages
-          const index = finalImages.findIndex(img => img === mapping.originalUrl);
+          const index = finalImages.findIndex((id) => id === originalId);
           if (index !== -1) {
-            finalImages[index] = newUrl;
-          } else {
-            // If not found in finalImages, check if it was removed
-            // If it was removed, we don't want to add it back
-            if (!removedImagesArray.includes(mapping.originalUrl)) {
-              finalImages.push(newUrl);
-            }
+            finalImages[index] = String(newImage._id);
+          } else if (!removedImagesArray.includes(originalId)) {
+            finalImages.push(String(newImage._id));
           }
         }
       }
@@ -315,34 +296,34 @@ const editProduct = async (req, res) => {
     if (req.files && req.files.images) {
       let files = req.files.images;
 
-      // Convert single file to array
       if (!Array.isArray(files)) {
         files = [files];
       }
 
-      // Upload new images
       for (const file of files) {
-        const url = await uploadImage(file);
-        finalImages.push(url);
+        const newImage = await uploadImage(
+          await toUploadFile(file),
+          "brilson/products"
+        );
+        newUploadedIds.push(newImage._id);
+        finalImages.push(String(newImage._id));
       }
     }
 
-    // Final cleanup: remove any images that were marked for removal
     if (removedImagesArray.length > 0) {
-      finalImages = finalImages.filter(img => !removedImagesArray.includes(img));
+      finalImages = finalImages.filter((id) => !removedImagesArray.includes(id));
     }
 
-    // Set the final images array
     updatedData.images = finalImages;
 
     // FEATURES
     updatedData.features = features
-      ? (typeof features === 'string' ? JSON.parse(features) : features)
+      ? parseJSON(features, existingProduct.features)
       : existingProduct.features;
 
     // META TAGS
     updatedData.metaTags = metaTags
-      ? (typeof metaTags === 'string' ? JSON.parse(metaTags) : metaTags)
+      ? parseJSON(metaTags, existingProduct.metaTags)
       : existingProduct.metaTags;
 
     // GST
@@ -371,15 +352,49 @@ const editProduct = async (req, res) => {
       }
     );
 
+    const finalSet = new Set([finalCoverId, ...finalImages]);
+    const idsToDelete = [
+      ...(oldCoverId ? [oldCoverId] : []),
+      ...oldImageIds
+    ].filter((id) => !finalSet.has(id));
+
+    if (idsToDelete.length > 0) {
+      try {
+        const deleteResult = await deleteImages(idsToDelete);
+        if (deleteResult.failedCount > 0) {
+          console.log("Some old images not deleted:", deleteResult.failed);
+        }
+      } catch (cleanupError) {
+        console.log("Old image cleanup failed:", cleanupError);
+      }
+    }
+
+    const populatedProduct = await ProductModel.findById(updatedProduct._id)
+      .populate("coverImg", "secureUrl publicId")
+      .populate({
+        path: "images",
+        match: { isDeleted: 0 },
+        select: "secureUrl publicId"
+      });
+
     return res.status(200).json({
       success: true,
       message: "Product updated successfully",
-      product: updatedProduct
+      product: populatedProduct
     });
 
   } catch (err) {
     console.error("Edit Product Error:", err);
-    return res.status(500).json({
+
+    if (newUploadedIds.length > 0) {
+      try {
+        await deleteImages(newUploadedIds);
+      } catch (cleanupError) {
+        console.error("New image cleanup failed:", cleanupError);
+      }
+    }
+
+    return res.status(err.statusCode || 500).json({
       success: false,
       error: err.message || "Internal Server Error"
     });
@@ -422,7 +437,15 @@ const findProductById = async (req, res) => {
       });
     }
 
-    const product = await ProductModel.findById(id);
+    const product = await ProductModel.findById(id).populate({
+      path: "images",
+      match: { isDeleted: 0 },
+      select: "secureUrl fileName",
+    }).populate({
+      path: "coverImg",
+      match: { isDeleted: 0 },
+      select: "secureUrl fileName",
+    });
 
     if (!product) {
       return res.status(404).json({
@@ -451,7 +474,15 @@ const findProductById = async (req, res) => {
 const getAllProduct = async (req, res) => {
   try {
     const { isDelete } = req.query;
-    const allProducts = await ProductModel.find({ isDeleted: { $ne: 1 } }).sort({ createdAt: -1 });
+    const allProducts = await ProductModel.find({ isDeleted: { $ne: 1 } }).populate({
+      path: "images",
+      match: { isDeleted: 0 },
+      select: "secureUrl fileName",
+    }).populate({
+      path: "coverImg",
+      match: { isDeleted: 0 },
+      select: "secureUrl fileName",
+    }).sort({ createdAt: -1 });
 
     res.status(200).json({ message: "All Products", allProducts });
   } catch (err) {

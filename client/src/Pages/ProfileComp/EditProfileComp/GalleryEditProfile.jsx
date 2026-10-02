@@ -89,7 +89,7 @@ const GalleryEditProfile = () => {
 
   {/* IMAGE */}
   <img
-    src={item.image}
+    src={item.image?.secureUrl}
     alt=""
     className="w-full h-52 object-cover group-hover:scale-110 transition duration-500"
   />

@@ -131,7 +131,7 @@ const UpdateResume = () => {
               <FileText className="text-indigo-300" />
               <div>
                 <p className="font-medium">
-                  {existingResume.name}
+                  {existingResume.resume?.fileName || existingResume.name}
                 </p>
                 {/* <p className="text-xs text-gray-300 break-all">
           {existingResume.resume}
@@ -140,9 +140,9 @@ const UpdateResume = () => {
             </div>
 
             <a
-              href={existingResume.resume}
+              href={existingResume.resume?.secureUrl}
               target="_blank" aria-label="view"
-              download={existingResume.name}
+              download={existingResume.resume?.fileName}
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm transition"
             >

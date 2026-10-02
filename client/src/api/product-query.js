@@ -64,13 +64,16 @@ export const useUpdateProduct = () => {
             return data;
         },
 
-        onSuccess: (data) => {
+        onSuccess: (data, v) => {
             toast.success(
                 data?.message || "Product updated successfully"
             );
             queryClient.invalidateQueries({
                 queryKey: ["products"],
             })
+            queryClient.invalidateQueries({
+                queryKey: ["product", v.id],
+            });
         },
 
         onError: (error) => {

@@ -6,6 +6,7 @@ const ResumeSchema = new mongoose.Schema({
           type: mongoose.Schema.Types.ObjectId,
           ref: "CardProfile",
           required: true,
+          index: true,
         },
     
         owner: {
@@ -18,7 +19,8 @@ const ResumeSchema = new mongoose.Schema({
           type: String,
         },
         resume:{
-            type:String
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Image",
         },
         name:{
           type:String

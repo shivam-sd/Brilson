@@ -6,6 +6,7 @@ const CardProfileSchema = new mongoose.Schema(
     activationCode: {
       type: String,
       required: true,
+      index: true,
     },
 
     slug: {
