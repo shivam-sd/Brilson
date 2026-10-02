@@ -499,8 +499,8 @@ const CartPage = () => {
 
                                   <img
                                     src={
-                                      item.image ||
-                                      product.images?.[0]
+                                      item.image?.secureUrl ||
+                                      product.images?.secureUrl
                                     }
                                     alt={
                                       item.productTitle ||
