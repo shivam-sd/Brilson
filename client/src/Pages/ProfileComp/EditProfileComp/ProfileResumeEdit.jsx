@@ -90,8 +90,8 @@ const ProfileResumeEdit = () => {
 
               {/* Download */}
               <a
-                href={resume.resume}
-                download={resume.name}
+                href={resume.resume?.secureUrl}
+                download={resume.resume?.fileName}
                 target="_blank" aria-label="download"
                 className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-xl text-sm font-medium transition w-full sm:w-auto"
               >

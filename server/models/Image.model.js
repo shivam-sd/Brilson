@@ -36,7 +36,7 @@ const imageSchema = new mongoose.Schema(
 
         resourceType: {
             type: String,
-            enum: ["image"],
+            enum: ["image", "raw"],
             default: "image",
         },
 

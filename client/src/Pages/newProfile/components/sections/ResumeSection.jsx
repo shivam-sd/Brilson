@@ -5,8 +5,8 @@ import QueryState from "../ui/QueryState";
 
 export default function ResumeSection({ code }) {
   const query = useGetResume(code);
-  const url = ensureUrl(query.data?.resume?.resume);
-  const fileName = query.data?.resume?.name || "Resume.pdf";
+  const url = ensureUrl(query.data?.resume?.resume?.secureUrl);
+  const fileName = query.data?.resume?.resume?.fileName || query.data?.resume?.name || "Resume.pdf";
 
   return (
     <QueryState query={query} isEmpty={!url} emptyText="No resume uploaded yet.">
