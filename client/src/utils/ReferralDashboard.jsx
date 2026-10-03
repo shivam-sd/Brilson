@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, UserPlus, Calendar,
   ChevronDown, ChevronUp, Clock, CheckCircle,
-  XCircle, Gift, TrendingUp, Sparkles
+  XCircle, Gift, TrendingUp, Sparkles, Share2
 } from 'lucide-react';
 import { useGetReferrals } from '../api/client-query';
 import { toast } from 'react-toastify';
@@ -67,7 +67,7 @@ const ReferralDashboard = () => {
 
   // ===== STATUS BADGE COMPONENT =====
   const StatusBadge = ({ status }) => {
-    
+
     const styles = {
       completed: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
       in_progress: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
@@ -96,6 +96,26 @@ const ReferralDashboard = () => {
       <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${styles[currentStatus] || styles.pending}`}>
         {icons[currentStatus] || icons.pending}
         {labels[currentStatus] || 'pending'}
+      </span>
+    );
+  };
+
+  // ===== REFERRAL COUNT BADGE (NEW) =====
+  // Shows how many people THIS referral has, in turn, referred
+  const ReferCountBadge = ({ count = 0 }) => {
+    if (!count) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-700/40 text-gray-500 border border-gray-600/30">
+          <Share2 size={10} />
+          0 refers
+        </span>
+      );
+    }
+
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+        <Share2 size={10} />
+        {count} {count === 1 ? 'refer' : 'refers'}
       </span>
     );
   };
@@ -151,7 +171,7 @@ const ReferralDashboard = () => {
 
         {/* ===== STATS CARDS ===== */}
         <div className="p-4">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {/* Total */}
             <motion.div
               whileHover={{ y: -2 }}
@@ -196,6 +216,21 @@ const ReferralDashboard = () => {
               </p>
               <p className="text-[12px] text-gray-500 mt-1">in progress</p>
             </motion.div>
+
+            {/* NEW: Total referrals made by MY referrals */}
+            <motion.div
+              whileHover={{ y: -2 }}
+              className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-xl p-3 border border-gray-700/50"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <Share2 size={16} className="text-purple-400" />
+                <span className="text-[12px] text-gray-500">by them</span>
+              </div>
+              <p className="text-xl font-bold text-white">
+                {referralData?.totalReferralsOfMyReferrals || 0}
+              </p>
+              <p className="text-[12px] text-gray-500 mt-1">their refers</p>
+            </motion.div>
           </div>
 
           {/* ===== REFERRALS LIST ===== */}
@@ -228,18 +263,23 @@ const ReferralDashboard = () => {
                       <div className="divide-y divide-gray-700/30">
                         {refs.map((ref, idx) => (
                           <div
-                            key={idx}
-                            className="px-3 py-2 flex items-center justify-between hover:bg-gray-700/20 transition-colors"
+                            key={ref._id || idx}
+                            className="px-3 py-2 flex items-center justify-between gap-2 hover:bg-gray-700/20 transition-colors"
                           >
                             <div className="flex items-center gap-2 min-w-0">
-                              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
+                              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center shrink-0">
                                 <UserPlus size={12} className="text-indigo-400" />
                               </div>
                               <span className="text-sm font-medium text-white truncate max-w-[100px]">
                                 {ref.name || 'User'}
                               </span>
                             </div>
-                            <StatusBadge status={ref.referralStatus} />
+
+                            {/* Right side: status + how many THEY referred */}
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <ReferCountBadge count={ref.referralCount} />
+                              <StatusBadge status={ref.referralStatus} />
+                            </div>
                           </div>
                         ))}
                       </div>

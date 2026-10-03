@@ -39,8 +39,7 @@ const UpdateGallery = () => {
           image: null
         });
 
-        setPreview(res.data.data.image)
-        console.log(res)
+        setPreview(res.data.data.image?.secureUrl);
 
       } catch (err) {
         console.log(err);

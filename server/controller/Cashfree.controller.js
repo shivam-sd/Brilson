@@ -5,6 +5,7 @@ const UserModel = require("../models/User.model");
 const createInvoicePdf = require("../utils/createInvoicePdf");
 const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
 const axios = require("axios");
+const {emptyCart} = require("./AddToCart.cotroller")
 
 
 
@@ -207,6 +208,9 @@ const verifyCashfreePayment = async (req, res) => {
       await order.save();
 
       console.log("Invoice generated");
+
+      // after payment success cart clear
+      await emptyCart(req.user);
 
     } catch (invoiceError) {
 

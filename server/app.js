@@ -117,6 +117,7 @@ const { globalRateLimiter } = require("./middleware/rateLimiter");
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     })
   );
+  
   app.use(globalRateLimiter)
 
   app.use("/uploads", express.static(path.join(__dirname, "uploads")));

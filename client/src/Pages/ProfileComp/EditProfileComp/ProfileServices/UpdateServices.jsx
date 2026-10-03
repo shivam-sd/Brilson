@@ -52,7 +52,7 @@ const UpdateServices = () => {
           image: null,
         });
 
-        setPreview(data.image);
+        setPreview(data.image.secureUrl);
       } catch {
         toast.error("Failed to load service");
       }

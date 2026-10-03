@@ -1,17 +1,17 @@
 const mongoose = require("mongoose");
 
 const ProfileService = new mongoose.Schema(
-  { 
+  {
 
     cardId: {
-       type: mongoose.Schema.Types.ObjectId,
-       ref: "CardProfile",
-       required: true,
-     },
-     owner: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CardProfile",
+      required: true,
+    },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
 
     activationCode: {
       type: String,
@@ -27,12 +27,13 @@ const ProfileService = new mongoose.Schema(
       trim: true,
     },
 
-    image:{
-      type:String
+    image: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Image",
     },
 
-    link:{
-      type:String
+    link: {
+      type: String
     },
 
     features: [
@@ -52,6 +53,6 @@ const ProfileService = new mongoose.Schema(
   { timestamps: true }
 );
 
-const ProfileServicesModel = mongoose.model( "Profile Service", ProfileService );
+const ProfileServicesModel = mongoose.model("Profile Service", ProfileService);
 
 module.exports = ProfileServicesModel;

@@ -18,7 +18,7 @@ const authAdminToken = require("../middleware/authAdminToken");
 
 // RAZORPAY
 router.post("/create", authUserToken, createPaymentOrder);
-router.post("/verify", verifyPayment);
+router.post("/verify", authUserToken, verifyPayment);
 
 // payment webhook call automatically form razorpay dashboard
 router.post("/webhook", razorpayWebhook);
@@ -26,19 +26,19 @@ router.post("/webhook", razorpayWebhook);
 
 // CASHFREE
 router.post("/cashfree/create", authUserToken, createCashfreeOrder);
-router.post("/cashfree/verify", verifyCashfreePayment);
+router.post("/cashfree/verify", authUserToken, verifyCashfreePayment);
 
 
 // EKQR
 router.post("/ekqr/create", authUserToken, createEkqrOrder);
-router.post("/ekqr/verify", verifyEkqrPayment);
+router.post("/ekqr/verify", authUserToken, verifyEkqrPayment);
 router.post("/ekqr/webhook", ekqrWebhook);
 router.get("/ekqr/status/:orderId", authUserToken, checkEkqrStatus);
 router.get("/payment-status", authUserToken, paymentStatus);
 
 // PAYU
 router.post("/payu/create", authUserToken, createPayUOrder);
-router.post("/payu/verify", VerifyPayU);
+router.post("/payu/verify", authUserToken,VerifyPayU);
 
 router.get("/payu-failure", (req,res) => {
     res.status(500).json({message:"Payment Failed", success:false})

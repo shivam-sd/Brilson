@@ -353,7 +353,7 @@ export default function ImageCarousel({
               "
             >
               <img
-                src={img}
+                src={img.secureUrl}
                 alt={`${alt} ${index + 1}`}
                 width={800}
                 height={800}

@@ -82,7 +82,7 @@ const SignupPage = () => {
     }
 
     if (!form.referralCode) {
-      return toast.error("Please Enter Card Referral Key!");
+      return toast.error("Referral code is required");
     }
 
     const phoneRegex = /^\d{10}$/;

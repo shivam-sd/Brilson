@@ -6,7 +6,7 @@ const PaymentModel = require("../models/Payment.model");
 const crypto = require("crypto");
 const createInvoicePdf = require("../utils/createInvoicePdf");
 const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary"); 
-
+const {emptyCart} = require("./AddToCart.cotroller")
 
 
 //  CREATE PAYMENT ORDER 
@@ -148,6 +148,9 @@ const verifyPayment = async (req, res) => {
     } catch (invoiceError) {
       console.error("Invoice generation failed:", invoiceError);
     }
+
+    // after payment success cart clear
+    await emptyCart(req.user);
 
   } catch (err) {
     console.error("Verify Payment Error:", err);

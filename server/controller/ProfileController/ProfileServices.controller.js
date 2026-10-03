@@ -5,6 +5,7 @@ const ProfileGalleryModel = require("../../models/ProfileModel/ProfileGalleryMod
 const locationModel = require("../../models/ProfileModel/Location&Reviews.model");
 const PaymentDetailsModel = require("../../models/ProfileModel/PaymentDetails.Model");
 const resumeModel = require("../../models/ProfileModel/ProfileResume");
+const { uploadImage, deleteImage } = require("../../services/image.service");
 const cloudinary = require("cloudinary").v2;
 
 
@@ -26,31 +27,17 @@ const addService = async (req, res) => {
       return res.status(404).json({ message: "Card not found" });
     }
 
-    let imageUrl = "";
+    let imageId = null;
 
     const file = req.files?.image;
 
     if (file) {
-      const allowedFormats = [
-        "image/jpeg",
-        "image/png",
-        "image/jpg",
-        "image/gif",
-        "image/webp",
-      ];
-
-      if (!allowedFormats.includes(file.mimetype)) {
-        return res.status(400).json({
-          message: "Invalid image format",
-        });
-      }
-
-      const result = await cloudinary.uploader.upload(
-        file.tempFilePath,
-        { folder: "brilson/profile-services" }
+      const uploadedImage = await uploadImage(
+        file,
+        "brilson/profile-services"
       );
 
-      imageUrl = result.secure_url;
+      imageId = uploadedImage._id;
     }
 
     const service = await ProfileService.create({
@@ -61,7 +48,7 @@ const addService = async (req, res) => {
       description,
       features: JSON.parse(features || "[]"),
       price,
-      image: imageUrl,
+      image: imageId,
       link
     });
 
@@ -94,7 +81,6 @@ const updateService = async (req, res) => {
     if (price) service.price = price;
     if (link) service.link = link;
 
-    // Parse features if string
     if (features) {
       service.features =
         typeof features === "string"
@@ -102,30 +88,26 @@ const updateService = async (req, res) => {
           : features;
     }
 
-    // IMAGE UPLOAD
     const file = req.files?.image;
+    console.log("Received file:----", file);
 
     if (file) {
-      const allowedFormats = [
-        "image/jpeg",
-        "image/png",
-        "image/jpg",
-        "image/gif",
-        "image/webp",
-      ];
+      const oldImageId = service.image;
 
-      if (!allowedFormats.includes(file.mimetype)) {
-        return res.status(400).json({
-          message: "Invalid image format",
-        });
-      }
-
-      const result = await cloudinary.uploader.upload(
-        file.tempFilePath,
-        { folder: "brilson/profile-portfolio" }
+      const uploadedImage = await uploadImage(
+        file,
+        "brilson/profile-services"
       );
 
-      service.image = result.secure_url;
+      service.image = uploadedImage._id;
+
+      try {
+        if (oldImageId) {
+          await deleteImage(oldImageId);
+        }
+      } catch (deleteError) {
+        console.log("Old service image delete error:", deleteError);
+      }
     }
 
     await service.save();
@@ -147,10 +129,11 @@ const getServices = async (req, res) => {
   try {
     const { activationCode } = req.params;
 
-    const services = await ProfileService
-      .find({ activationCode })
-      .sort({ createdAt: -1 });
-
+    const services = await ProfileService.find({ activationCode }).populate({
+      path: "image",
+      match: { isDeleted: 0 },
+      select: "secureUrl fileName ",
+    }).sort({ createdAt: -1 });
     res.json({
       success: true,
       count: services.length,
@@ -168,7 +151,11 @@ const getSingleService = async (req, res) => {
   try {
     const { serviceId } = req.params;
 
-    const service = await ProfileService.findById(serviceId);
+    const service = await ProfileService.findById(serviceId).populate({
+      path: "image",
+      match: { isDeleted: 0 },
+      select: "secureUrl fileName ",
+    });
 
     if (!service) {
       return res.status(404).json({ message: "Service not found" });
@@ -186,14 +173,25 @@ const getSingleService = async (req, res) => {
 
 
 
+
 const deleteService = async (req, res) => {
   try {
     const { serviceId } = req.params;
 
-    const service = await ProfileService.findByIdAndDelete(serviceId);
+    const service = await ProfileService.findById(serviceId);
 
     if (!service) {
-      return res.status(404).json({ message: "Service not found" });
+      return res.status(404).json({
+        message: "Service not found",
+      });
+    }
+
+    const imageId = service.image;
+
+    await ProfileService.findByIdAndDelete(serviceId);
+
+    if (imageId) {
+      await deleteImage(imageId);
     }
 
     res.json({
@@ -202,7 +200,9 @@ const deleteService = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message,
+    });
   }
 };
 

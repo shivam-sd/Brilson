@@ -11,8 +11,11 @@ const cartSchema = new mongoose.Schema({
     ref: "Product",
     required: true,
   },
-  
-  image: String,
+
+  image: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Image",
+  },
 
   variantId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -23,6 +26,19 @@ const cartSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
+  // createdAt:{
+  //   type:Date,
+  //   default:Date.now
+  // }
+      reminderSentAt: {
+      type: Date,
+      default: null
+    },
+
+    reminderCount: {
+      type: Number,
+      default: 0
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Cart", cartSchema);

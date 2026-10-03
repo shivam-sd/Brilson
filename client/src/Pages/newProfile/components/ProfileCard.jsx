@@ -96,7 +96,7 @@ function ProfileCard({ profile, code }) {
         {/* Cover */}
         <div className="absolute inset-0">
           <SafeImage
-            src={coverImage}
+            src={coverImage?.secureUrl}
             alt=""
             eager
             className="lg:h-full h-full w-full bg-[#0a1016]"
@@ -151,7 +151,7 @@ function ProfileCard({ profile, code }) {
               "
             >
               <SafeImage
-                src={profileImage}
+                src={profileImage?.secureUrl}
                 alt={`Photo of ${name}`}
                 eager
                 className="h-full w-full rounded-full"
@@ -183,7 +183,7 @@ function ProfileCard({ profile, code }) {
           <div className="group relative">
             <div className="h-[124px] w-[124px] rounded-full border-4 border-orange-500 bg-[#05090d] p-[3px] shadow-[0_0_36px_-4px_rgba(249,115,22,0.5)] transition-transform duration-300 hover:scale-105 motion-reduce:transition-none sm:h-[134px] sm:w-[134px]">
               <SafeImage
-                src={profileImage}
+                src={profileImage?.secureUrl}
                 alt={`Photo of ${name}`}
                 eager
                 className="h-full w-full rounded-full"

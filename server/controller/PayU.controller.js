@@ -6,6 +6,7 @@ const PaymentModel = require("../models/PayU.model");
 const UserModel = require("../models/User.model");
 const createInvoicePdf = require("../utils/createInvoicePdf");
 const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
+const {emptyCart} = require("./AddToCart.cotroller")
 
 
  
@@ -68,7 +69,7 @@ const salt = config?.payU?.salt || process.env.PAYU_SALT;
         surl: `${process.env.PayU_Verify_Payment_Url1}/api/payment/payu/verify`,
         furl: `${process.env.PayU_Verify_Payment_Url1}/api/payment/payu-failure`,
         hash
-      }
+      } 
     });
 
   } catch (err) {
@@ -139,6 +140,9 @@ const VerifyPayU = async (req, res) => {
     } catch (invoiceError) {
       console.error("Invoice error:", invoiceError);
     }
+
+    // after payment success cart clear
+    await emptyCart(req.user);
 
     res.redirect(`${process.env.BASE_URL}/payment-success`);
 
