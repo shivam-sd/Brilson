@@ -1,11 +1,15 @@
+const cron = require("node-cron");
 const CartModel = require("../models/Cart.model");
 const UserModel = require("../models/User.model");
 const ProductModel = require("../models/Product.model");
+const sendCartReminder = require("../services/sendCartReminder");
+
 
 
 const addToCart = async (req, res) => {
   try {
     const userId = req.user;
+
     const { productId, quantity } = req.body;
 
     if (!productId) {
@@ -157,6 +161,20 @@ const clearCart = async (req, res) => {
     });
   }
 };
+
+
+
+const emptyCart = async (id) => {
+  try {
+    await CartModel.deleteMany({ userId: id });
+
+  } catch (err) {
+    console.error("Empty cart error:", err);
+  }
+};
+
+
+
 const mergeGuestCart = async (req, res) => {
   try {
     const userId = req.user;
@@ -285,11 +303,13 @@ const mergeGuestCart = async (req, res) => {
 
 
 
+
 module.exports = {
     addToCart,
     getUserCart,
     updateCartQty,
     removeFromCart,
     clearCart,
-    mergeGuestCart
+    mergeGuestCart,
+    emptyCart
   }

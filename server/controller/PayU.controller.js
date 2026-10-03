@@ -6,6 +6,7 @@ const PaymentModel = require("../models/PayU.model");
 const UserModel = require("../models/User.model");
 const createInvoicePdf = require("../utils/createInvoicePdf");
 const uploadInvoiceToCloudinary = require("../utils/uploadInvoceToCloudinary");
+const {emptyCart} = require("./AddToCart.cotroller")
 
 
  
@@ -139,6 +140,9 @@ const VerifyPayU = async (req, res) => {
     } catch (invoiceError) {
       console.error("Invoice error:", invoiceError);
     }
+
+    // after payment success cart clear
+    await emptyCart(req.user);
 
     res.redirect(`${process.env.BASE_URL}/payment-success`);
 
