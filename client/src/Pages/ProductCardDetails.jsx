@@ -301,7 +301,7 @@ const ProductCardPreference = () => {
             <FiX size={24} />
           </button>
           <img
-            src={activeImage || product.images?.[0]}
+            src={activeImage.secureUrl}
             alt={product.title}
             className="max-w-full max-h-full object-contain"
             onClick={(e) => e.stopPropagation()}
